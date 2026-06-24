@@ -36,7 +36,7 @@ export default async function DashboardPage() {
       where: { status: { in: ["open", "accepted", "in_progress"] } },
     }),
     prisma.project.count({
-      where: { status: { in: ["approved", "in_progress"] } },
+      where: { status: { in: ["approved", "scheduled", "in_progress"] } },
     }),
     prisma.assessment.findMany({
       where: { status: "completed", overallScore: { not: null } },

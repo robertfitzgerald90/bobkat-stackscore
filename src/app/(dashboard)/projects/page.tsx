@@ -1,64 +1,48 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ProjectsDashboard } from "@/components/projects/projects-dashboard";
+import { OPEN_PROJECT_STATUSES } from "@/lib/projects";
+import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 
 export default async function ProjectsPage() {
   const projects = await prisma.project.findMany({
-    orderBy: { updatedAt: "desc" },
-    include: {
-      client: true,
-      category: true,
-      assignedUser: true,
-    },
+    orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
+    include: projectInclude,
   });
 
+  const serialized = projects.map(serializeProject);
+
+  const byStatus = serialized.reduce(
+    (acc, project) => {
+      acc[project.status] = (acc[project.status] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const byClientMap = serialized.reduce(
+    (acc, project) => {
+      const key = project.clientId;
+      if (!acc[key]) {
+        acc[key] = { clientId: project.clientId, clientName: project.clientName, count: 0 };
+      }
+      acc[key].count += 1;
+      return acc;
+    },
+    {} as Record<string, { clientId: string; clientName: string; count: number }>,
+  );
+
+  const summary = {
+    total: serialized.length,
+    open: serialized.filter((p) => OPEN_PROJECT_STATUSES.includes(p.status)).length,
+    completed: serialized.filter((p) => p.status === "completed").length,
+    byStatus,
+    byClient: Object.values(byClientMap).sort((a, b) => a.clientName.localeCompare(b.clientName)),
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Projects</h2>
-        <p className="text-muted-foreground">Improvement work linked to recommendations</p>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Assigned</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell className="font-medium">{project.title}</TableCell>
-                  <TableCell>{project.client.companyName}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {project.status.replace("_", " ")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="capitalize">{project.priority}</TableCell>
-                  <TableCell>{project.assignedUser?.name ?? "—"}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+    <Suspense>
+      <ProjectsDashboard initialProjects={serialized} summary={summary} />
+    </Suspense>
   );
 }

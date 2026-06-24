@@ -495,7 +495,7 @@ export function AssessmentResults({
 
                   {recommendation.hasProject && recommendation.projectId ? (
                     <Link
-                      href="/projects"
+                      href={`/projects?selected=${recommendation.projectId}`}
                       className={buttonVariants({ variant: "outline", size: "sm" })}
                     >
                       <FolderKanban className="mr-2 h-4 w-4" />
