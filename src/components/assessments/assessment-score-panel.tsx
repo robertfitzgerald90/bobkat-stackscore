@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RATING_LABELS } from "@/lib/scoring";
+import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { AssessmentPreview } from "@/types/assessment-preview";
 import type { Priority, Rating } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
@@ -14,11 +15,14 @@ const PRIORITY_LABELS: Record<Priority, string> = {
   low: "Low",
 };
 
-const RATING_VARIANT: Record<Rating, "default" | "secondary" | "outline" | "destructive"> = {
-  exceptional: "default",
-  strong: "default",
+const RATING_VARIANT: Record<
+  Rating,
+  "success" | "default" | "secondary" | "warning" | "destructive"
+> = {
+  exceptional: "success",
+  strong: "success",
   stable: "secondary",
-  at_risk: "outline",
+  at_risk: "warning",
   critical: "destructive",
 };
 
@@ -64,7 +68,12 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Overall StackScore
           </p>
-          <p className="text-5xl font-bold tabular-nums">
+          <p
+            className={cn(
+              "text-5xl font-bold tabular-nums",
+              getScoreTextColorClass(preview.overallScore),
+            )}
+          >
             {preview.overallScore !== null ? preview.overallScore : "—"}
           </p>
           {overallRating ? (
@@ -141,9 +150,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-300",
-                    category.percentScore !== null && category.percentScore < 60
-                      ? "bg-destructive"
-                      : "bg-primary",
+                    getScoreBarColorClass(category.percentScore),
                   )}
                   style={{ width: `${category.percentScore ?? 0}%` }}
                 />

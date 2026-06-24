@@ -1,6 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,21 +23,24 @@ export function AppHeader({
     .toUpperCase();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
-      <div>
-        <h1 className="text-lg font-semibold">Bobkat StackScore</h1>
-        <p className="text-sm text-muted-foreground">Technology maturity assessments</p>
+    <header className="flex h-16 items-center justify-between border-b bg-card px-6 shadow-sm">
+      <div className="hidden sm:block">
+        <p className="text-sm font-medium text-brand">Technology Maturity Assessments</p>
+        <p className="text-xs text-muted-foreground">Executive-ready client insights</p>
       </div>
+      <BrandLogo showText={false} size={36} className="sm:hidden" />
       <DropdownMenu>
         <DropdownMenuTrigger
-          className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-muted"
         >
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>{initials}</AvatarFallback>
+          <Avatar className="h-8 w-8 border border-border">
+            <AvatarFallback className="bg-primary text-xs text-primary-foreground">
+              {initials}
+            </AvatarFallback>
           </Avatar>
           <div className="hidden text-left md:block">
             <p className="text-sm font-medium">{user.name}</p>
-            <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+            <p className="text-xs capitalize text-muted-foreground">{user.role}</p>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

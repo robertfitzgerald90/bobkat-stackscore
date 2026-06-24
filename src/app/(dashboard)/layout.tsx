@@ -21,11 +21,11 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen min-h-screen overflow-hidden bg-background">
       <AppSidebar role={user.role} />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <AppHeader user={user} />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-muted/40 p-6 lg:p-8">{children}</main>
       </div>
       <Toaster />
     </div>

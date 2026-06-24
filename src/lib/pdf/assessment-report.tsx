@@ -15,7 +15,7 @@ import {
   type AssessmentReportData,
 } from "@/lib/pdf/types";
 
-const logoPath = path.join(process.cwd(), "public", "branding", "bobkat-it-logo.png");
+const logoPath = path.join(process.cwd(), "public", "branding", "bobkat-it-logo-navy.png");
 
 const styles = StyleSheet.create({
   page: {
@@ -268,7 +268,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
         <PageFooter />
 
         <View style={styles.coverBand}>
-          <Image src={logoPath} style={styles.logo} alt="Bobkat IT logo" />
+          <Image src={logoPath} style={styles.logo} />
           <Text style={styles.brandName}>{BRAND.companyName}</Text>
           <Text style={styles.reportSubtitle}>{BRAND.reportTitle}</Text>
           <Text style={styles.clientName}>{clientName}</Text>

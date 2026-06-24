@@ -1,117 +1,194 @@
-import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { DashboardCommandCenter } from "@/components/dashboard/dashboard-command-center";
+import { getRating } from "@/lib/scoring";
+import type { Rating } from "@/generated/prisma/client";
+
+const EMPTY_DISTRIBUTION: Record<Rating, number> = {
+  exceptional: 0,
+  strong: 0,
+  stable: 0,
+  at_risk: 0,
+  critical: 0,
+};
 
 export default async function DashboardPage() {
-  const [totalClients, activeClients, assessmentsThisMonth, recentAssessments, atRiskCount, avg] =
-    await Promise.all([
-      prisma.client.count(),
-      prisma.client.count({ where: { status: "active" } }),
-      prisma.assessment.count({
-        where: {
-          status: "completed",
-          completedAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+  const [
+    clients,
+    openRecommendationsCount,
+    activeProjectsCount,
+    recentAssessments,
+    recentProjects,
+    recentRecommendations,
+    urgentRecommendations,
+  ] = await Promise.all([
+    prisma.client.findMany({
+      orderBy: { companyName: "asc" },
+      include: {
+        assessments: {
+          where: { status: "completed", overallScore: { not: null } },
+          orderBy: { completedAt: "desc" },
+          take: 2,
+          select: { id: true, overallScore: true },
         },
-      }),
-      prisma.assessment.findMany({
-        where: { status: "completed" },
-        orderBy: { completedAt: "desc" },
-        take: 5,
-        include: { client: true, assessor: true },
-      }),
-      prisma.assessment.count({
-        where: { status: "completed", overallScore: { lt: 60 } },
-      }),
-      prisma.assessment.aggregate({
-        where: { status: "completed", overallScore: { not: null } },
-        _avg: { overallScore: true },
-      }),
-    ]);
+      },
+    }),
+    prisma.assessmentRecommendation.count({
+      where: { status: { in: ["open", "accepted", "in_progress"] } },
+    }),
+    prisma.project.count({
+      where: { status: { in: ["approved", "in_progress"] } },
+    }),
+    prisma.assessment.findMany({
+      where: { status: "completed", overallScore: { not: null } },
+      orderBy: { completedAt: "desc" },
+      take: 5,
+      include: { client: { select: { companyName: true } } },
+    }),
+    prisma.project.findMany({
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      include: { client: { select: { companyName: true } } },
+    }),
+    prisma.assessmentRecommendation.findMany({
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      include: {
+        client: { select: { companyName: true, id: true } },
+        assessment: { select: { id: true } },
+      },
+    }),
+    prisma.assessmentRecommendation.findMany({
+      where: {
+        status: { in: ["open", "accepted", "in_progress"] },
+        priority: { in: ["critical", "high"] },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      include: {
+        client: { select: { companyName: true, id: true } },
+        assessment: { select: { id: true } },
+      },
+    }),
+  ]);
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-          <p className="text-muted-foreground">Overview of client technology assessments</p>
-        </div>
-        <Link href="/clients/new" className={buttonVariants()}>
-          New Client
-        </Link>
-      </div>
+  const clientHealth = clients.map((client) => {
+    const latest = client.assessments[0];
+    const score = latest?.overallScore != null ? Math.round(Number(latest.overallScore)) : null;
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Clients" value={totalClients} />
-        <StatCard title="Active Clients" value={activeClients} />
-        <StatCard title="Assessments This Month" value={assessmentsThisMonth} />
-        <StatCard
-          title="Average StackScore"
-          value={Math.round(Number(avg._avg.overallScore ?? 0))}
-        />
-      </div>
+    return {
+      id: client.id,
+      companyName: client.companyName,
+      status: client.status,
+      score,
+      rating: score !== null ? getRating(score) : null,
+      assessmentId: latest?.id ?? null,
+    };
+  });
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Assessments</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recentAssessments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No completed assessments yet.</p>
-            ) : (
-              recentAssessments.map((assessment) => (
-                <div
-                  key={assessment.id}
-                  className="flex items-center justify-between rounded-md border p-3"
-                >
-                  <div>
-                    <p className="font-medium">{assessment.client.companyName}</p>
-                    <p className="text-sm text-muted-foreground">{assessment.assessmentName}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{Number(assessment.overallScore)}</p>
-                    <Link
-                      href={`/assessments/${assessment.id}/results`}
-                      className={buttonVariants({ variant: "link", className: "h-auto p-0" })}
-                    >
-                      View
-                    </Link>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+  const latestScores = clientHealth
+    .map((client) => client.score)
+    .filter((score): score is number => score !== null);
 
-        <Card>
-          <CardHeader>
-            <CardTitle>At Risk Clients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <Badge variant="destructive">{atRiskCount}</Badge>
-              <p className="text-sm text-muted-foreground">
-                Clients with a latest StackScore below 60
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+  const averageClientScore =
+    latestScores.length > 0
+      ? Math.round(latestScores.reduce((sum, score) => sum + score, 0) / latestScores.length)
+      : null;
+
+  const averageClientRating =
+    averageClientScore !== null ? getRating(averageClientScore) : null;
+
+  const clientsWithPriorAssessment = clients.filter((client) => client.assessments.length >= 2);
+  const scoreTrend =
+    clientsWithPriorAssessment.length > 0
+      ? (() => {
+          const currentAverage = Math.round(
+            clientsWithPriorAssessment.reduce(
+              (sum, client) => sum + Number(client.assessments[0]!.overallScore),
+              0,
+            ) / clientsWithPriorAssessment.length,
+          );
+          const previousAverage = Math.round(
+            clientsWithPriorAssessment.reduce(
+              (sum, client) => sum + Number(client.assessments[1]!.overallScore),
+              0,
+            ) / clientsWithPriorAssessment.length,
+          );
+          return { change: currentAverage - previousAverage };
+        })()
+      : null;
+
+  const atRiskClientCount = clientHealth.filter(
+    (client) => client.score !== null && client.score < 60,
+  ).length;
+
+  const scoreDistribution = { ...EMPTY_DISTRIBUTION };
+  for (const client of clientHealth) {
+    if (client.rating) {
+      scoreDistribution[client.rating] += 1;
+    }
+  }
+
+  const criticalClients = clientHealth
+    .filter((client) => client.score !== null && client.score < 60 && client.rating !== null)
+    .map((client) => ({
+      id: client.id,
+      companyName: client.companyName,
+      score: client.score as number,
+      rating: client.rating as Rating,
+    }))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 5);
+
+  const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 } as const;
+  const sortedUrgentRecommendations = [...urgentRecommendations].sort(
+    (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
   );
-}
 
-function StatCard({ title, value }: { title: string; value: number }) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-3xl font-bold">{value}</p>
-      </CardContent>
-    </Card>
+    <DashboardCommandCenter
+      averageClientScore={averageClientScore}
+      averageClientRating={averageClientRating}
+      scoreTrend={scoreTrend}
+      atRiskClientCount={atRiskClientCount}
+      openRecommendationsCount={openRecommendationsCount}
+      activeProjectsCount={activeProjectsCount}
+      clientHealth={clientHealth}
+      scoreDistribution={scoreDistribution}
+      recentAssessments={recentAssessments.map((assessment) => ({
+        id: assessment.id,
+        assessmentName: assessment.assessmentName,
+        companyName: assessment.client.companyName,
+        clientId: assessment.clientId,
+        score: Math.round(Number(assessment.overallScore)),
+        completedAt: assessment.completedAt,
+      }))}
+      recentProjects={recentProjects.map((project) => ({
+        id: project.id,
+        title: project.title,
+        companyName: project.client.companyName,
+        status: project.status,
+        priority: project.priority,
+        updatedAt: project.updatedAt,
+      }))}
+      recentRecommendations={recentRecommendations.map((recommendation) => ({
+        id: recommendation.id,
+        title: recommendation.title,
+        companyName: recommendation.client.companyName,
+        clientId: recommendation.clientId,
+        assessmentId: recommendation.assessment.id,
+        priority: recommendation.priority,
+        status: recommendation.status,
+        updatedAt: recommendation.updatedAt,
+      }))}
+      criticalClients={criticalClients}
+      urgentRecommendations={sortedUrgentRecommendations.map((recommendation) => ({
+        id: recommendation.id,
+        title: recommendation.title,
+        companyName: recommendation.client.companyName,
+        clientId: recommendation.clientId,
+        assessmentId: recommendation.assessment.id,
+        priority: recommendation.priority,
+      }))}
+    />
   );
 }

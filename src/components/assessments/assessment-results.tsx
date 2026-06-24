@@ -28,6 +28,7 @@ import {
 } from "@/lib/assessments/results-summary";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
 import { calculateProjectedScore, RATING_LABELS } from "@/lib/scoring";
+import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 import { sanitizeFilename } from "@/lib/pdf/types";
@@ -40,11 +41,14 @@ const PRIORITY_LABELS: Record<Priority, string> = {
   low: "Low",
 };
 
-const RATING_VARIANT: Record<Rating, "default" | "secondary" | "outline" | "destructive"> = {
-  exceptional: "default",
-  strong: "default",
+const RATING_VARIANT: Record<
+  Rating,
+  "success" | "default" | "secondary" | "warning" | "destructive"
+> = {
+  exceptional: "success",
+  strong: "success",
   stable: "secondary",
-  at_risk: "outline",
+  at_risk: "warning",
   critical: "destructive",
 };
 
@@ -234,7 +238,7 @@ export function AssessmentResults({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card>
+        <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <TrendingUp className="h-4 w-4" />
@@ -242,14 +246,21 @@ export function AssessmentResults({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tabular-nums">{summary.overallScore}</p>
+            <p
+              className={cn(
+                "text-4xl font-bold tabular-nums",
+                getScoreTextColorClass(summary.overallScore),
+              )}
+            >
+              {summary.overallScore}
+            </p>
             <Badge variant={RATING_VARIANT[summary.overallRating]} className="mt-2">
               {summary.overallRatingLabel}
             </Badge>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <ArrowUpRight className="h-4 w-4" />
@@ -257,14 +268,21 @@ export function AssessmentResults({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tabular-nums text-primary">{summary.projectedScore}</p>
+            <p
+              className={cn(
+                "text-4xl font-bold tabular-nums",
+                getScoreTextColorClass(summary.projectedScore),
+              )}
+            >
+              {summary.projectedScore}
+            </p>
             <p className="mt-2 text-sm text-muted-foreground">
               If open recommendations are completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Critical Findings
@@ -282,7 +300,7 @@ export function AssessmentResults({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Open Recommendations
@@ -406,10 +424,7 @@ export function AssessmentResults({
               </p>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className={cn(
-                    "h-full rounded-full",
-                    category.percentScore < 60 ? "bg-destructive" : "bg-primary",
-                  )}
+                  className={cn("h-full rounded-full", getScoreBarColorClass(category.percentScore))}
                   style={{ width: `${category.percentScore}%` }}
                 />
               </div>

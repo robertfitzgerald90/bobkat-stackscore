@@ -40,10 +40,10 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Bobkat StackScore</CardTitle>
-        <CardDescription>Sign in to manage client assessments</CardDescription>
+    <Card className="w-full max-w-md shadow-md ring-border/60">
+      <CardHeader className="text-center">
+        <CardTitle className="text-brand">Sign in</CardTitle>
+        <CardDescription>Access your client assessments and reports</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
