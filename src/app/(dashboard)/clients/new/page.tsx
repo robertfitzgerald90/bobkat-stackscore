@@ -1,0 +1,138 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export default function NewClientPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    companyName: "",
+    primaryContactName: "",
+    primaryContactEmail: "",
+    primaryContactPhone: "",
+    industry: "",
+    employeeCount: "",
+    status: "prospect",
+  });
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setLoading(true);
+
+    const response = await fetch("/api/v1/clients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        employeeCount: form.employeeCount ? Number(form.employeeCount) : null,
+      }),
+    });
+
+    setLoading(false);
+
+    if (response.ok) {
+      const client = await response.json();
+      router.push(`/clients/${client.id}`);
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">New Client</h2>
+        <p className="text-muted-foreground">Add a business to assess</p>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Client Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="companyName">Company Name</Label>
+              <Input
+                id="companyName"
+                required
+                value={form.companyName}
+                onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="primaryContactName">Contact Name</Label>
+                <Input
+                  id="primaryContactName"
+                  required
+                  value={form.primaryContactName}
+                  onChange={(e) => setForm({ ...form, primaryContactName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="primaryContactEmail">Contact Email</Label>
+                <Input
+                  id="primaryContactEmail"
+                  type="email"
+                  required
+                  value={form.primaryContactEmail}
+                  onChange={(e) => setForm({ ...form, primaryContactEmail: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Input
+                  id="industry"
+                  value={form.industry}
+                  onChange={(e) => setForm({ ...form, industry: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="employeeCount">Employees</Label>
+                <Input
+                  id="employeeCount"
+                  type="number"
+                  value={form.employeeCount}
+                  onChange={(e) => setForm({ ...form, employeeCount: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select
+                value={form.status}
+                onValueChange={(value) =>
+                  setForm({ ...form, status: value ?? "prospect" })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="prospect">Prospect</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Client"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

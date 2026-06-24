@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  technician
+  client
+}
+
+enum ClientStatus {
+  prospect
+  active
+  inactive
+}
+
+enum AssessmentType {
+  initial
+  quarterly
+  annual
+  followup
+}
+
+enum AssessmentStatus {
+  draft
+  completed
+  archived
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+  critical
+}
+
+enum Priority {
+  low
+  medium
+  high
+  critical
+}
+
+enum RecommendationStatus {
+  open
+  accepted
+  declined
+  completed
+}
+
+enum ProjectStatus {
+  proposed
+  approved
+  in_progress
+  completed
+  deferred
+  declined
+}
+
+enum Rating {
+  exceptional
+  strong
+  stable
+  at_risk
+  critical
+}
+
+enum DocumentType {
+  report
+  diagram
+  contract
+  proposal
+  evidence
+  other
+}
+
+enum NoteType {
+  general
+  assessment
+  recommendation
+  project
+  system
+}
+
+enum Visibility {
+  internal
+  client_visible
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(technician)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assessments            Assessment[]             @relation("AssessorAssessments")
+  recommendationsCreated AssessmentRecommendation[] @relation("RecommendationCreator")
+  projectsAssigned       Project[]                @relation("ProjectAssignee")
+  documentsUploaded      Document[]
+  notes                  Note[]
+}
+
+model Client {
+  id                  String       @id @default(uuid())
+  companyName         String
+  primaryContactName  String
+  primaryContactEmail String
+  primaryContactPhone String?
+  industry            String?
+  employeeCount       Int?
+  deviceCount         Int?
+  locationCity        String?
+  locationState       String?
+  status              ClientStatus @default(prospect)
+  notes               String?      @db.Text
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  assessments     Assessment[]
+  recommendations AssessmentRecommendation[]
+  projects        Project[]
+  scoreHistory    ClientScoreHistory[]
+  documents       Document[]
+  activityNotes   Note[]
+}
+
+model AssessmentCategory {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  description  String?  @db.Text
+  maxPoints    Int
+  displayOrder Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  questions       AssessmentQuestion[]
+  categoryScores  AssessmentCategoryScore[]
+  recommendations AssessmentRecommendation[]
+  templates       RecommendationTemplate[]
+  projects        Project[]
+}
+
+model AssessmentQuestion {
+  id           String    @id @default(uuid())
+  code         String    @unique
+  categoryId   String
+  questionText String    @db.Text
+  helpText     String?   @db.Text
+  weight       Int
+  displayOrder Int
+  riskLevel    RiskLevel @default(medium)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  category      AssessmentCategory   @relation(fields: [categoryId], references: [id])
+  answerOptions AnswerOption[]
+  responses     AssessmentResponse[]
+}
+
+model AnswerOption {
+  id                       String   @id @default(uuid())
+  questionId               String
+  answerText               String
+  scoreValue               Int
+  displayOrder             Int
+  triggersRecommendation   Boolean  @default(false)
+  triggersCriticalFlag     Boolean  @default(false)
+  recommendationTemplateId String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  question               AssessmentQuestion      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  recommendationTemplate RecommendationTemplate? @relation(fields: [recommendationTemplateId], references: [id])
+  responses              AssessmentResponse[]
+}
+
+model Assessment {
+  id                  String           @id @default(uuid())
+  clientId            String
+  assessorUserId      String
+  assessmentName      String
+  assessmentType      AssessmentType
+  status              AssessmentStatus @default(draft)
+  assessmentDate      DateTime
+  overallScore        Decimal?         @db.Decimal(5, 2)
+  securityScore       Decimal?         @db.Decimal(5, 2)
+  backupScore         Decimal?         @db.Decimal(5, 2)
+  infrastructureScore Decimal?         @db.Decimal(5, 2)
+  endpointScore       Decimal?         @db.Decimal(5, 2)
+  documentationScore  Decimal?         @db.Decimal(5, 2)
+  bcdrScore           Decimal?         @db.Decimal(5, 2)
+  strategicScore      Decimal?         @db.Decimal(5, 2)
+  hasCriticalExposure Boolean          @default(false)
+  executiveSummary    String?          @db.Text
+  internalNotes       String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  completedAt         DateTime?
+
+  client          Client                    @relation(fields: [clientId], references: [id])
+  assessor        User                      @relation("AssessorAssessments", fields: [assessorUserId], references: [id])
+  responses       AssessmentResponse[]
+  categoryScores  AssessmentCategoryScore[]
+  recommendations AssessmentRecommendation[]
+  scoreHistory    ClientScoreHistory[]
+  documents       Document[]
+  notes           Note[]
+}
+
+model AssessmentResponse {
+  id                     String   @id @default(uuid())
+  assessmentId           String
+  questionId             String
+  selectedAnswerOptionId String
+  scoreEarned            Int
+  notes                  String?  @db.Text
+  evidence               String?  @db.Text
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  assessment           Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  question             AssessmentQuestion @relation(fields: [questionId], references: [id])
+  selectedAnswerOption AnswerOption       @relation(fields: [selectedAnswerOptionId], references: [id])
+
+  @@unique([assessmentId, questionId])
+}
+
+model AssessmentCategoryScore {
+  id             String   @id @default(uuid())
+  assessmentId   String
+  categoryId     String
+  pointsEarned   Decimal  @db.Decimal(6, 2)
+  pointsPossible Decimal  @db.Decimal(6, 2)
+  percentScore   Decimal  @db.Decimal(5, 2)
+  rating         Rating
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  assessment Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  category   AssessmentCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([assessmentId, categoryId])
+}
+
+model RecommendationTemplate {
+  id                    String   @id @default(uuid())
+  code                  String   @unique
+  categoryId            String
+  title                 String
+  description           String   @db.Text
+  businessImpact        String   @db.Text
+  suggestedService      String
+  priority              Priority
+  estimatedImpactPoints Int
+  consolidationGroupId  String?
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  category      AssessmentCategory @relation(fields: [categoryId], references: [id])
+  answerOptions AnswerOption[]
+  recommendations AssessmentRecommendation[]
+}
+
+model AssessmentRecommendation {
+  id                       String               @id @default(uuid())
+  assessmentId             String
+  clientId                 String
+  categoryId               String
+  recommendationTemplateId String?
+  consolidationGroupId     String?
+  title                    String
+  description              String               @db.Text
+  businessImpact           String               @db.Text
+  suggestedService         String?
+  priority                 Priority
+  status                   RecommendationStatus @default(open)
+  estimatedImpactPoints    Int
+  createdByUserId          String
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
+  completedAt              DateTime?
+
+  assessment             Assessment              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  client                 Client                  @relation(fields: [clientId], references: [id])
+  category               AssessmentCategory      @relation(fields: [categoryId], references: [id])
+  recommendationTemplate RecommendationTemplate? @relation(fields: [recommendationTemplateId], references: [id])
+  createdBy              User                    @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
+  project                Project?
+}
+
+model Project {
+  id                    String        @id @default(uuid())
+  clientId              String
+  recommendationId      String?       @unique
+  assignedUserId        String?
+  title                 String
+  description           String?       @db.Text
+  status                ProjectStatus @default(proposed)
+  priority              Priority
+  categoryId            String
+  estimatedImpactPoints Int?
+  actualImpactPoints    Int?
+  estimatedCost         Decimal?      @db.Decimal(10, 2)
+  startDate             DateTime?
+  targetCompletionDate  DateTime?
+  completedAt           DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  client         Client                    @relation(fields: [clientId], references: [id])
+  recommendation AssessmentRecommendation? @relation(fields: [recommendationId], references: [id])
+  assignedUser   User?                     @relation("ProjectAssignee", fields: [assignedUserId], references: [id])
+  category       AssessmentCategory        @relation(fields: [categoryId], references: [id])
+  documents      Document[]
+  notes          Note[]
+}
+
+model ClientScoreHistory {
+  id                  String   @id @default(uuid())
+  clientId            String
+  assessmentId        String?
+  recordedDate        DateTime
+  overallScore        Decimal  @db.Decimal(5, 2)
+  securityScore       Decimal? @db.Decimal(5, 2)
+  backupScore         Decimal? @db.Decimal(5, 2)
+  infrastructureScore Decimal? @db.Decimal(5, 2)
+  endpointScore       Decimal? @db.Decimal(5, 2)
+  documentationScore  Decimal? @db.Decimal(5, 2)
+  bcdrScore           Decimal? @db.Decimal(5, 2)
+  strategicScore      Decimal? @db.Decimal(5, 2)
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now())
+
+  client     Client      @relation(fields: [clientId], references: [id])
+  assessment Assessment? @relation(fields: [assessmentId], references: [id])
+}
+
+model Document {
+  id               String       @id @default(uuid())
+  clientId         String
+  assessmentId     String?
+  projectId        String?
+  documentType     DocumentType
+  title            String
+  fileUrl          String
+  uploadedByUserId String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  client     Client      @relation(fields: [clientId], references: [id])
+  assessment Assessment? @relation(fields: [assessmentId], references: [id])
+  project    Project?    @relation(fields: [projectId], references: [id])
+  uploadedBy User        @relation(fields: [uploadedByUserId], references: [id])
+}
+
+model Note {
+  id           String     @id @default(uuid())
+  clientId     String
+  assessmentId String?
+  projectId    String?
+  userId       String
+  noteType     NoteType   @default(general)
+  visibility   Visibility @default(internal)
+  content      String     @db.Text
+  createdAt    DateTime   @default(now())
+
+  client     Client      @relation(fields: [clientId], references: [id])
+  assessment Assessment? @relation(fields: [assessmentId], references: [id])
+  project    Project?    @relation(fields: [projectId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+}
