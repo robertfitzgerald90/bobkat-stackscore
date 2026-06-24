@@ -22,14 +22,14 @@ export function LoginForm() {
     setError("");
 
     const result = await signIn("credentials", {
-      email,
+      email: email.trim().toLowerCase(),
       password,
       redirect: false,
     });
 
     setLoading(false);
 
-    if (result?.error) {
+    if (!result?.ok || result?.error) {
       setError("Invalid email or password");
       return;
     }

@@ -12,6 +12,7 @@ const credentialsSchema = z.object({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       name: "credentials",
@@ -20,11 +21,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = credentialsSchema.safeParse(credentials);
+        const normalized = {
+          email:
+            typeof credentials?.email === "string"
+              ? credentials.email.trim().toLowerCase()
+              : "",
+          password:
+            typeof credentials?.password === "string" ? credentials.password : "",
+        };
+
+        const parsed = credentialsSchema.safeParse(normalized);
         if (!parsed.success) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email.toLowerCase() },
+          where: { email: parsed.data.email },
         });
 
         if (!user || !user.isActive) return null;
@@ -43,6 +53,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
+    async signIn({ user }) {
+      return !!user;
+    },
     async jwt({ token, user }) {
       if (user?.id) {
         token.id = user.id;

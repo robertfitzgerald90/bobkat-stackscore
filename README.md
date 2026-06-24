@@ -76,6 +76,12 @@ src/
 
 See the [`docs/`](docs/) folder for product requirements, scoring rules, API specification, and architecture.
 
+| Guide | Description |
+|-------|-------------|
+| [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md) | Local setup, env vars, seeding, troubleshooting |
+| [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | What's built, MVP gaps, commit checklist |
+| [MVP_PRD.md](docs/MVP_PRD.md) | Product requirements and user stories |
+
 ## Scripts
 
 | Command | Description |

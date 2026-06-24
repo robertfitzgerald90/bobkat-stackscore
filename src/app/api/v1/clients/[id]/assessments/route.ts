@@ -8,13 +8,13 @@ import {
   unauthorized,
 } from "@/lib/api/helpers";
 
-type RouteContext = { params: Promise<{ clientId: string }> };
+type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
 
-  const { clientId } = await context.params;
+  const { id: clientId } = await context.params;
   const { searchParams } = new URL(request.url);
   const { page, limit, skip } = parsePagination(searchParams);
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
 
-  const { clientId } = await context.params;
+  const { id: clientId } = await context.params;
   const body = await request.json();
 
   const client = await prisma.client.findUnique({ where: { id: clientId } });
