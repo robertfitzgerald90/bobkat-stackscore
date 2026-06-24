@@ -56,8 +56,8 @@ export default async function ClientDetailPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">{client.companyName}</h2>
+        <div className="min-w-0">
+          <h2 className="page-title">{client.companyName}</h2>
           <p className="text-muted-foreground">
             {client.primaryContactName} · {client.primaryContactEmail}
           </p>
@@ -65,27 +65,27 @@ export default async function ClientDetailPage({ params }: PageProps) {
             {formatClientStatus(client.status)}
           </Badge>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          {client.status !== "archived" ? (
+        {client.status !== "archived" ? (
+          <div className="w-full lg:max-w-2xl lg:shrink-0">
             <ClientAssessmentForms
               clientId={client.id}
               completedAssessments={completedAssessments}
             />
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
         <Link
           href={`/clients/${client.id}/improvement`}
-          className={buttonClassName({ variant: "default", size: "sm" })}
+          className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}
         >
           <TrendingUp className="mr-2 h-4 w-4" />
           Improvement Dashboard
         </Link>
         <Link
           href={`/clients/${client.id}/assessments/history`}
-          className={buttonClassName({ variant: "outline", size: "sm" })}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
         >
           <History className="mr-2 h-4 w-4" />
           Assessment History
@@ -104,16 +104,16 @@ export default async function ClientDetailPage({ params }: PageProps) {
               client.assessments.map((assessment) => (
                 <div
                   key={assessment.id}
-                  className="flex items-center justify-between rounded-md border p-3"
+                  className="flex flex-col gap-3 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium">{assessment.assessmentName}</p>
                     <p className="text-sm text-muted-foreground">
                       {formatAssessmentStatus(assessment.status)} ·{" "}
                       {formatAssessmentType(assessment.assessmentType)}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
                     {assessment.status === "completed" && assessment.sourceAssessmentId ? (
                       <Link
                         href={`/assessments/${assessment.id}/improvement`}

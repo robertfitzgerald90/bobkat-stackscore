@@ -33,14 +33,17 @@ export function ImprovementSummaryView({
             Comparing {summary.currentAssessmentName} against {summary.sourceAssessmentName}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="action-bar">
           <Link
             href={`/assessments/${summary.currentAssessmentId}/results`}
-            className={buttonClassName({ variant: "outline" })}
+            className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
           >
             View Results
           </Link>
-          <Link href={`/clients/${clientId}`} className={buttonClassName({ variant: "ghost" })}>
+          <Link
+            href={`/clients/${clientId}`}
+            className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
+          >
             Back to Client
           </Link>
         </div>

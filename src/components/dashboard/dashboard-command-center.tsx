@@ -155,14 +155,14 @@ export function DashboardCommandCenter({
               recommendations, and active improvement projects.
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap gap-3">
-            <Link href="/clients/new" className={buttonClassName({ variant: "inverse", size: "lg" })}>
+          <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Link href="/clients/new" className={buttonClassName({ variant: "inverse", size: "lg", className: "w-full sm:w-auto" })}>
               <Plus className="mr-2 h-4 w-4" />
               New Client
             </Link>
             <Link
               href="/clients"
-              className={buttonClassName({ variant: "inverseOutline", size: "lg" })}
+              className={buttonClassName({ variant: "inverseOutline", size: "lg", className: "w-full sm:w-auto" })}
             >
               <ClipboardList className="mr-2 h-4 w-4" />
               New Assessment
@@ -183,7 +183,7 @@ export function DashboardCommandCenter({
             <div className="flex items-baseline gap-1.5">
               <span
                 className={cn(
-                  "text-5xl font-bold tabular-nums tracking-tight",
+                  "text-4xl font-bold tabular-nums tracking-tight sm:text-5xl",
                   getScoreTextColorClass(averageClientScore),
                 )}
               >
@@ -523,31 +523,31 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
         </div>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-border/50 pt-3">
+      <div className="mt-3 flex flex-col gap-2 border-t border-border/50 pt-3 sm:flex-row sm:flex-wrap">
         <Link
           href={`/clients/${client.id}/improvement`}
-          className={buttonClassName({ variant: "ghost", size: "sm" })}
+          className={buttonClassName({ variant: "ghost", size: "sm", className: "w-full sm:w-auto" })}
         >
           Improvement
         </Link>
         {client.assessmentId ? (
           <Link
             href={`/assessments/${client.assessmentId}/results`}
-            className={buttonClassName({ variant: "outline", size: "sm" })}
+            className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
           >
             View Results
           </Link>
         ) : null}
         <Link
           href={`/clients/${client.id}`}
-          className={buttonClassName({ variant: "outline", size: "sm" })}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
         >
           <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
           Run Reassessment
         </Link>
         <Link
           href="/projects"
-          className={buttonClassName({ variant: "ghost", size: "sm" })}
+          className={buttonClassName({ variant: "ghost", size: "sm", className: "w-full sm:w-auto" })}
         >
           <FolderKanban className="mr-1.5 h-3.5 w-3.5" />
           View Projects

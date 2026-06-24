@@ -86,14 +86,14 @@ export function ProjectAdminActions({
             confirmation.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {!isCancelled ? (
-            <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelling}>
+            <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelling} className="w-full sm:w-auto">
               <Archive className="mr-2 h-4 w-4" />
               Cancel Project
             </Button>
           ) : null}
-          <Button variant="destructive" size="sm" onClick={openDeleteDialog}>
+          <Button variant="destructive" size="sm" onClick={openDeleteDialog} className="w-full sm:w-auto">
             <Trash2 className="mr-2 h-4 w-4" />
             Permanently Delete
           </Button>

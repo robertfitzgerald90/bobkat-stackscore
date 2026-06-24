@@ -33,14 +33,14 @@ export function ClientScoreSummary({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
         <div>
           <CardTitle>Score Trends</CardTitle>
           <CardDescription>Historical StackScore performance</CardDescription>
         </div>
         <Link
           href={`/clients/${clientId}/improvement`}
-          className={buttonClassName({ variant: "outline", size: "sm" })}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
         >
           View Dashboard
         </Link>
@@ -50,7 +50,7 @@ export function ClientScoreSummary({
           <p className="text-sm text-muted-foreground">No score history yet.</p>
         ) : (
           <>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <SummaryStat label="Initial" value={initialScore} />
               <SummaryStat label="Current" value={currentScore} emphasize />
               <div className="rounded-md border border-border/60 bg-muted/15 px-3 py-2">

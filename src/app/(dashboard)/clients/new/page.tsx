@@ -50,10 +50,10 @@ export default function NewClientPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">New Client</h2>
-        <p className="text-muted-foreground">Add a business to assess</p>
+        <h2 className="page-title">New Client</h2>
+        <p className="page-description">Add a business to assess</p>
       </div>
       <Card>
         <CardHeader>
@@ -128,7 +128,7 @@ export default function NewClientPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto">
               {loading ? "Creating..." : "Create Client"}
             </Button>
           </form>

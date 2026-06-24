@@ -48,7 +48,7 @@ export function PermanentDeleteDialog({
   const canDelete = confirmText === DELETE_CONFIRMATION_TEXT;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Close dialog"
@@ -59,7 +59,7 @@ export function PermanentDeleteDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="delete-dialog-title"
-        className="relative z-10 w-full max-w-lg rounded-xl border border-destructive/30 bg-card p-6 shadow-xl"
+        className="relative z-10 max-h-[90vh] w-full overflow-y-auto rounded-t-xl border border-destructive/30 bg-card p-4 shadow-xl sm:max-w-lg sm:rounded-xl sm:p-6"
       >
         <div className="space-y-4">
           <div>
@@ -115,13 +115,19 @@ export function PermanentDeleteDialog({
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
             <Button
               variant="destructive"
               disabled={!canDelete || loading}
+              className="w-full sm:w-auto"
               onClick={async () => {
                 await onConfirm();
               }}

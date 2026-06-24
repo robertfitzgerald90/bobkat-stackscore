@@ -211,33 +211,37 @@ export function AssessmentResults({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{clientName}</p>
-          <h2 className="text-2xl font-bold">{assessmentName}</h2>
+          <h2 className="page-title">{assessmentName}</h2>
           {completedAt ? (
             <p className="mt-1 text-sm text-muted-foreground">
               Completed {formatAssessmentCompletionDate(completedAt)}
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="action-bar">
           {hasImprovementSummary ? (
             <Link
               href={`/assessments/${assessmentId}/improvement`}
-              className={buttonVariants({ variant: "default" })}
+              className={buttonVariants({ variant: "default", className: "w-full sm:w-auto" })}
             >
               <TrendingUp className="mr-2 h-4 w-4" />
-              Improvement Summary
+              <span className="sm:hidden">Improvement</span>
+              <span className="hidden sm:inline">Improvement Summary</span>
             </Link>
           ) : null}
-          <Button onClick={exportPdf} disabled={exporting}>
+          <Button onClick={exportPdf} disabled={exporting} className="w-full sm:w-auto">
             <FileDown className="mr-2 h-4 w-4" />
-            {exporting ? "Generating PDF..." : "Export PDF"}
+            <span className="sm:hidden">{exporting ? "Exporting..." : "Export PDF"}</span>
+            <span className="hidden sm:inline">
+              {exporting ? "Generating PDF..." : "Export PDF"}
+            </span>
           </Button>
           <Link
             href={`/assessments/${assessmentId}`}
-            className={buttonVariants({ variant: "outline" })}
+            className={buttonVariants({ variant: "outline", className: "w-full sm:w-auto" })}
           >
             View Assessment
           </Link>

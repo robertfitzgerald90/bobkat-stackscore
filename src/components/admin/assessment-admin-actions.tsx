@@ -94,14 +94,14 @@ export function AssessmentAdminActions({
             confirmation.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
+        <CardContent className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {!isArchived ? (
-            <Button variant="outline" onClick={handleArchive} disabled={archiving}>
+            <Button variant="outline" onClick={handleArchive} disabled={archiving} className="w-full sm:w-auto">
               <Archive className="mr-2 h-4 w-4" />
               Archive Assessment
             </Button>
           ) : null}
-          <Button variant="destructive" onClick={openDeleteDialog}>
+          <Button variant="destructive" onClick={openDeleteDialog} className="w-full sm:w-auto">
             <Trash2 className="mr-2 h-4 w-4" />
             Permanently Delete
           </Button>

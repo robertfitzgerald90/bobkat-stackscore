@@ -245,10 +245,10 @@ export function AssessmentWizard({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{clientName}</p>
-          <h2 className="text-2xl font-bold">{assessmentName}</h2>
+          <h2 className="page-title">{assessmentName}</h2>
           {reassessmentInfo ? (
             <p className="mt-1 text-sm text-muted-foreground">
               Reassessment · baseline: {reassessmentInfo.sourceAssessmentName}
@@ -268,6 +268,7 @@ export function AssessmentWizard({
           onClick={completeAssessment}
           disabled={completing || answeredCount < totalCount}
           size="lg"
+          className="w-full sm:w-auto"
         >
           {completing ? "Completing..." : "Complete Assessment"}
         </Button>
@@ -275,7 +276,61 @@ export function AssessmentWizard({
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="order-2 min-w-0 grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:order-1">
-          <Card className="h-fit lg:sticky lg:top-6">
+          <div className="lg:hidden">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Category
+            </p>
+            <div className="-mx-1 overflow-x-auto pb-1">
+              <div className="flex gap-2 px-1">
+                {categories.map((category) => {
+                  const progress = getCategoryProgress(category);
+                  const isActive = category.id === activeCategoryId;
+                  const isComplete = progress.answered === progress.total;
+
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => setActiveCategoryId(category.id)}
+                      className={cn(
+                        "flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-left text-sm transition-colors",
+                        isActive
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card hover:bg-muted",
+                      )}
+                    >
+                      {isComplete ? (
+                        <CheckCircle2
+                          className={cn(
+                            "h-4 w-4 shrink-0",
+                            isActive ? "text-primary-foreground" : "text-primary",
+                          )}
+                        />
+                      ) : (
+                        <Circle
+                          className={cn(
+                            "h-4 w-4 shrink-0",
+                            isActive ? "text-primary-foreground/70" : "text-muted-foreground",
+                          )}
+                        />
+                      )}
+                      <span className="max-w-[140px] truncate">{category.name}</span>
+                      <span
+                        className={cn(
+                          "text-xs tabular-nums",
+                          isActive ? "text-primary-foreground/80" : "text-muted-foreground",
+                        )}
+                      >
+                        {progress.answered}/{progress.total}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <Card className="hidden h-fit lg:sticky lg:top-6 lg:block">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium">Categories</CardTitle>
             </CardHeader>

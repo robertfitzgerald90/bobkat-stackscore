@@ -18,6 +18,7 @@ import {
   formatAssessmentType,
 } from "@/lib/assessments/display";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { cn } from "@/lib/utils";
 
 type AssessmentHistoryViewProps = {
@@ -42,7 +43,10 @@ export function AssessmentHistoryView({
             modifying prior results.
           </p>
         </div>
-        <Link href={`/clients/${clientId}`} className={buttonClassName({ variant: "outline" })}>
+        <Link
+          href={`/clients/${clientId}`}
+          className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
+        >
           Back to Client
         </Link>
       </div>
@@ -59,6 +63,77 @@ export function AssessmentHistoryView({
           {history.length === 0 ? (
             <p className="text-sm text-muted-foreground">No assessments yet for this client.</p>
           ) : (
+            <>
+              <div className="table-mobile">
+                {history.map((entry) => (
+                  <MobileDataCard key={entry.id}>
+                    <div className="space-y-1">
+                      <p className="font-medium">{entry.assessmentName}</p>
+                      {entry.isReassessment && entry.sourceAssessmentName ? (
+                        <p className="text-xs text-muted-foreground">
+                          Reassessment of {entry.sourceAssessmentName}
+                        </p>
+                      ) : null}
+                    </div>
+                    <MobileDataRow label="Type">
+                      {formatAssessmentType(entry.assessmentType)}
+                    </MobileDataRow>
+                    <MobileDataRow label="Status">
+                      <span className="flex flex-wrap justify-end gap-1">
+                        <Badge variant="outline">{formatAssessmentStatus(entry.status)}</Badge>
+                        {entry.isReassessment ? (
+                          <Badge variant="secondary" className="text-xs">
+                            Reassessment
+                          </Badge>
+                        ) : null}
+                      </span>
+                    </MobileDataRow>
+                    <MobileDataRow label="Score">
+                      <span
+                        className={cn(
+                          "font-semibold tabular-nums",
+                          getScoreTextColorClass(entry.overallScore),
+                        )}
+                      >
+                        {entry.overallScore !== null ? entry.overallScore : "—"}
+                      </span>
+                    </MobileDataRow>
+                    <MobileDataRow label="Completed">
+                      {formatAssessmentCompletionDate(entry.completedAt)}
+                    </MobileDataRow>
+                    <MobileDataRow label="Assessor">{entry.assessorName}</MobileDataRow>
+                    <div className="flex flex-col gap-2 pt-1 sm:flex-row">
+                      {entry.status === "completed" ? (
+                        <>
+                          <Link
+                            href={`/assessments/${entry.id}/results`}
+                            className={buttonClassName({ variant: "outline", size: "sm", className: "w-full" })}
+                          >
+                            Results
+                          </Link>
+                          {entry.isReassessment ? (
+                            <Link
+                              href={`/assessments/${entry.id}/improvement`}
+                              className={buttonClassName({ variant: "outline", size: "sm", className: "w-full" })}
+                            >
+                              Improvement
+                            </Link>
+                          ) : null}
+                        </>
+                      ) : (
+                        <Link
+                          href={`/assessments/${entry.id}`}
+                          className={buttonClassName({ variant: "default", size: "sm", className: "w-full" })}
+                        >
+                          Continue
+                        </Link>
+                      )}
+                    </div>
+                  </MobileDataCard>
+                ))}
+              </div>
+
+              <div className="table-desktop">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -140,6 +215,8 @@ export function AssessmentHistoryView({
                 ))}
               </TableBody>
             </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -82,8 +82,8 @@ export function ClientAdminActions({ clientId, clientName, status }: ClientAdmin
             Archive clients to hide them from default views, or permanently delete with confirmation.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={handleArchive} disabled={archiving}>
+        <CardContent className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button variant="outline" onClick={handleArchive} disabled={archiving} className="w-full sm:w-auto">
             {isArchived ? (
               <>
                 <ArchiveRestore className="mr-2 h-4 w-4" />
@@ -96,7 +96,7 @@ export function ClientAdminActions({ clientId, clientName, status }: ClientAdmin
               </>
             )}
           </Button>
-          <Button variant="destructive" onClick={openDeleteDialog}>
+          <Button variant="destructive" onClick={openDeleteDialog} className="w-full sm:w-auto">
             <Trash2 className="mr-2 h-4 w-4" />
             Permanently Delete
           </Button>

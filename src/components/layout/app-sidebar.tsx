@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users, FolderKanban, Shield } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +18,17 @@ const navItems = [
   { href: "/admin/users", label: "Users", icon: Shield, adminOnly: true },
 ];
 
-export function AppSidebar({ role }: { role: string }) {
+function SidebarNav({
+  role,
+  onNavigate,
+}: {
+  role: string;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full min-h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    <>
       <div className="shrink-0 border-b border-sidebar-border px-5 py-5">
         <BrandLogo href="/dashboard" size={44} variant="sidebar" />
       </div>
@@ -32,6 +42,7 @@ export function AppSidebar({ role }: { role: string }) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onNavigate}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   active
@@ -52,6 +63,37 @@ export function AppSidebar({ role }: { role: string }) {
           Powered by {BRAND.companyName}
         </p>
       </div>
+    </>
+  );
+}
+
+export function AppSidebar({ role }: { role: string }) {
+  return (
+    <aside className="hidden h-full min-h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
+      <SidebarNav role={role} />
     </aside>
+  );
+}
+
+export function MobileSidebar({
+  role,
+  open,
+  onOpenChange,
+}: {
+  role: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="left"
+        className="flex h-full w-[min(100%,280px)] flex-col gap-0 border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:max-w-xs"
+      >
+        <div className="flex h-full min-h-0 flex-col">
+          <SidebarNav role={role} onNavigate={() => onOpenChange(false)} />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

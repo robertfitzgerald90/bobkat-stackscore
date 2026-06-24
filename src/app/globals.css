@@ -154,13 +154,13 @@
 
 @layer utilities {
   .page-shell {
-    @apply space-y-8;
+    @apply space-y-6 sm:space-y-8;
   }
   .page-header {
     @apply space-y-1;
   }
   .page-title {
-    @apply text-2xl font-semibold tracking-tight text-primary;
+    @apply text-xl font-semibold tracking-tight text-primary sm:text-2xl;
   }
   .dark .page-title {
     @apply text-foreground;
@@ -176,5 +176,17 @@
   }
   .dark .text-brand {
     color: var(--link);
+  }
+  .action-bar {
+    @apply flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end;
+  }
+  .action-bar-start {
+    @apply flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center;
+  }
+  .table-desktop {
+    @apply hidden md:block;
+  }
+  .table-mobile {
+    @apply space-y-3 md:hidden;
   }
 }

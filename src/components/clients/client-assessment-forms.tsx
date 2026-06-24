@@ -39,9 +39,11 @@ export function ClientAssessmentForms({
   }
 
   return (
-    <>
+    <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-start">
       <StartAssessmentForm clientId={clientId} />
-      <ReassessmentForm clientId={clientId} completedAssessments={completedAssessments} />
-    </>
+      {completedAssessments.length > 0 ? (
+        <ReassessmentForm clientId={clientId} completedAssessments={completedAssessments} />
+      ) : null}
+    </div>
   );
 }

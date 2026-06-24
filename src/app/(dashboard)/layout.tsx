@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { AppHeader } from "@/components/layout/app-header";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function DashboardLayout({
@@ -21,13 +20,9 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen min-h-screen overflow-hidden bg-background">
-      <AppSidebar role={user.role} />
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <AppHeader user={user} />
-        <main className="flex-1 overflow-y-auto bg-muted/40 p-6 lg:p-8">{children}</main>
-      </div>
+    <>
+      <DashboardShell user={user}>{children}</DashboardShell>
       <Toaster />
-    </div>
+    </>
   );
 }

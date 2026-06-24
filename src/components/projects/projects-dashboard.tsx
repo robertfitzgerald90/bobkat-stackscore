@@ -40,6 +40,7 @@ import {
 } from "@/lib/projects";
 import type { SerializedProject } from "@/lib/projects/serialize";
 import type { Priority, ProjectStatus } from "@/generated/prisma/client";
+import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -268,19 +269,25 @@ export function ProjectsDashboard({
               </CardTitle>
               <CardDescription>Manage status, notes, and completion</CardDescription>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               {(["all", "open", "completed"] as ViewFilter[]).map((option) => (
                 <Button
                   key={option}
                   variant={view === option ? "default" : "outline"}
                   size="sm"
+                  className="w-full sm:w-auto"
                   onClick={() => setView(option)}
                 >
                   {option === "all" ? "All Projects" : `${option} Projects`}
                 </Button>
               ))}
               {clientFilter !== "all" ? (
-                <Button variant="ghost" size="sm" onClick={() => setClientFilter("all")}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  onClick={() => setClientFilter("all")}
+                >
                   Clear client filter
                 </Button>
               ) : null}
@@ -288,6 +295,7 @@ export function ProjectsDashboard({
                 <Button
                   variant="ghost"
                   size="sm"
+                  className="w-full sm:w-auto"
                   onClick={() => setShowCancelled((current) => !current)}
                 >
                   {showCancelled ? "Hide Cancelled" : "Show Cancelled"}
@@ -311,6 +319,38 @@ export function ProjectsDashboard({
               ) : null}
             </div>
           ) : (
+            <>
+              <div className="table-mobile">
+                {filteredProjects.map((project) => (
+                  <MobileDataCard key={project.id} onClick={() => openProject(project)}>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-medium">{project.title}</p>
+                      <Badge variant={STATUS_VARIANT[project.status]} className="shrink-0">
+                        {formatProjectStatus(project.status)}
+                      </Badge>
+                    </div>
+                    <MobileDataRow label="Client">{project.clientName}</MobileDataRow>
+                    <MobileDataRow label="Priority">
+                      <Badge variant={PRIORITY_VARIANT[project.priority]}>
+                        {formatPriority(project.priority)}
+                      </Badge>
+                    </MobileDataRow>
+                    <MobileDataRow label="Score Impact">
+                      {project.estimatedImpactPoints !== null
+                        ? `+${project.estimatedImpactPoints}`
+                        : "—"}
+                    </MobileDataRow>
+                    <MobileDataRow label="Created">
+                      {formatDisplayDate(project.createdAt)}
+                    </MobileDataRow>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {project.recommendationTitle}
+                    </p>
+                  </MobileDataCard>
+                ))}
+              </div>
+
+              <div className="table-desktop">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -357,6 +397,8 @@ export function ProjectsDashboard({
                 ))}
               </TableBody>
             </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -432,21 +474,21 @@ export function ProjectsDashboard({
                   />
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  <Button onClick={saveProject} disabled={saving}>
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                  <Button onClick={saveProject} disabled={saving} className="w-full sm:w-auto">
                     <Save className="mr-2 h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
                   <Link
                     href={`/assessments/${selectedProject.assessmentId}/results`}
-                    className={buttonClassName({ variant: "outline" })}
+                    className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Assessment
                   </Link>
                   <Link
                     href={`/clients/${selectedProject.clientId}`}
-                    className={buttonClassName({ variant: "ghost" })}
+                    className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
                   >
                     View Client
                   </Link>

@@ -37,7 +37,7 @@ export function ClientImprovementDashboard({ analytics }: ClientImprovementDashb
         </div>
         <Link
           href={`/clients/${analytics.clientId}`}
-          className={buttonClassName({ variant: "outline" })}
+          className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Client

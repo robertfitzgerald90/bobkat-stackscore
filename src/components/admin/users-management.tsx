@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import type { SafeUser } from "@/lib/users/serialize";
 import type { UserRole } from "@/generated/prisma/client";
 import type { UserDeletionPreview } from "@/lib/records/types";
@@ -290,6 +291,85 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
           <CardTitle>All Users</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="table-mobile space-y-3">
+            {users.map((user) => (
+              <MobileDataCard key={user.id}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-medium">
+                      {user.name}
+                      {user.id === currentUserId ? (
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          You
+                        </Badge>
+                      ) : null}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                  <Badge variant={user.isActive ? "default" : "secondary"}>
+                    {user.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Role</Label>
+                  <Select
+                    value={user.role}
+                    onValueChange={(value) =>
+                      updateUser(user.id, { role: (value ?? user.role) as UserRole })
+                    }
+                    disabled={updatingUserId === user.id}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue>{formatUserRole(user.role)}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROLES.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {USER_ROLE_LABELS[role]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    disabled={updatingUserId === user.id}
+                    onClick={() => updateUser(user.id, { isActive: !user.isActive })}
+                  >
+                    {user.isActive ? "Disable" : "Activate"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      setResetUser(user);
+                      setResetPassword("");
+                    }}
+                  >
+                    <KeyRound className="mr-1 h-4 w-4" />
+                    Reset Password
+                  </Button>
+                  {user.id !== currentUserId ? (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => openDeleteUser(user)}
+                    >
+                      <Trash2 className="mr-1 h-4 w-4" />
+                      Delete
+                    </Button>
+                  ) : null}
+                </div>
+              </MobileDataCard>
+            ))}
+          </div>
+
+          <div className="table-desktop">
           <Table>
             <TableHeader>
               <TableRow>
@@ -376,6 +456,7 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 
