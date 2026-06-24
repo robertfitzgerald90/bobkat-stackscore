@@ -8,10 +8,10 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ASSESSMENT_TYPE_LABELS, formatAssessmentType } from "@/lib/assessments/display";
 
 export function StartAssessmentForm({ clientId }: { clientId: string }) {
   const router = useRouter();
@@ -50,14 +50,14 @@ export function StartAssessmentForm({ clientId }: { clientId: string }) {
           value={assessmentType}
           onValueChange={(value) => setAssessmentType(value ?? "initial")}
         >
-          <SelectTrigger>
-            <SelectValue />
+          <SelectTrigger className="w-full">
+            <span className="truncate">{formatAssessmentType(assessmentType)}</span>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="initial">Initial</SelectItem>
-            <SelectItem value="quarterly">Quarterly</SelectItem>
-            <SelectItem value="annual">Annual</SelectItem>
-            <SelectItem value="followup">Follow-up</SelectItem>
+            <SelectItem value="initial">{ASSESSMENT_TYPE_LABELS.initial}</SelectItem>
+            <SelectItem value="quarterly">{ASSESSMENT_TYPE_LABELS.quarterly}</SelectItem>
+            <SelectItem value="annual">{ASSESSMENT_TYPE_LABELS.annual}</SelectItem>
+            <SelectItem value="followup">{ASSESSMENT_TYPE_LABELS.followup}</SelectItem>
           </SelectContent>
         </Select>
       </div>

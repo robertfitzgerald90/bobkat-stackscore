@@ -2,6 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { formatUserRole } from "@/lib/display";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +41,7 @@ export function AppHeader({
           </Avatar>
           <div className="hidden text-left md:block">
             <p className="text-sm font-medium">{user.name}</p>
-            <p className="text-xs capitalize text-muted-foreground">{user.role}</p>
+            <p className="text-xs text-muted-foreground">{formatUserRole(user.role)}</p>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

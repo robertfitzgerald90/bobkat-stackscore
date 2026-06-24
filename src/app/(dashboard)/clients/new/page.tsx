@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CLIENT_STATUS_LABELS } from "@/lib/display";
 import {
   Select,
   SelectContent,
@@ -121,9 +122,9 @@ export default function NewClientPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="prospect">Prospect</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="prospect">{CLIENT_STATUS_LABELS.prospect}</SelectItem>
+                  <SelectItem value="active">{CLIENT_STATUS_LABELS.active}</SelectItem>
+                  <SelectItem value="inactive">{CLIENT_STATUS_LABELS.inactive}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

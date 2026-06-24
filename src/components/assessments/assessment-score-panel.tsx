@@ -2,18 +2,12 @@ import { AlertTriangle, ArrowUpRight, ShieldAlert, TrendingUp } from "lucide-rea
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { AssessmentPreview } from "@/types/assessment-preview";
-import type { Priority, Rating } from "@/generated/prisma/client";
+import type { Rating } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
-
-const PRIORITY_LABELS: Record<Priority, string> = {
-  critical: "Critical",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-};
 
 const RATING_VARIANT: Record<
   Rating,

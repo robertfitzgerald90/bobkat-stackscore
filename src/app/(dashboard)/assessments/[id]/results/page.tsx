@@ -28,6 +28,8 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
 
   if (!assessment || assessment.status !== "completed") notFound();
 
+  const hasImprovementSummary = assessment.sourceAssessmentId !== null;
+
   const criticalFindingsCount = await prisma.assessmentResponse.count({
     where: {
       assessmentId: id,
@@ -52,6 +54,7 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
       completedAt={assessment.completedAt?.toISOString() ?? null}
       executiveSummary={assessment.executiveSummary}
       summary={summary}
+      hasImprovementSummary={hasImprovementSummary}
     />
   );
 }

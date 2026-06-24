@@ -26,6 +26,8 @@ import {
   type AssessmentResultsSummary,
   type RecommendationSummary,
 } from "@/lib/assessments/results-summary";
+import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
+import { formatPriority, PRIORITY_LABELS } from "@/lib/display";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
 import { calculateProjectedScore, RATING_LABELS } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -33,13 +35,6 @@ import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/
 import { cn } from "@/lib/utils";
 import { sanitizeFilename } from "@/lib/pdf/types";
 import { toast } from "sonner";
-
-const PRIORITY_LABELS: Record<Priority, string> = {
-  critical: "Critical",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
-};
 
 const RATING_VARIANT: Record<
   Rating,
@@ -69,6 +64,7 @@ type AssessmentResultsProps = {
   completedAt: string | null;
   executiveSummary: string | null;
   summary: AssessmentResultsSummary;
+  hasImprovementSummary?: boolean;
 };
 
 export function AssessmentResults({
@@ -79,6 +75,7 @@ export function AssessmentResults({
   completedAt,
   executiveSummary,
   summary: initialSummary,
+  hasImprovementSummary = false,
 }: AssessmentResultsProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [exporting, setExporting] = useState(false);
@@ -219,11 +216,20 @@ export function AssessmentResults({
           <h2 className="text-2xl font-bold">{assessmentName}</h2>
           {completedAt ? (
             <p className="mt-1 text-sm text-muted-foreground">
-              Completed {new Date(completedAt).toLocaleDateString()}
+              Completed {formatAssessmentCompletionDate(completedAt)}
             </p>
           ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
+          {hasImprovementSummary ? (
+            <Link
+              href={`/assessments/${assessmentId}/improvement`}
+              className={buttonVariants({ variant: "default" })}
+            >
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Improvement Summary
+            </Link>
+          ) : null}
           <Button onClick={exportPdf} disabled={exporting}>
             <FileDown className="mr-2 h-4 w-4" />
             {exporting ? "Generating PDF..." : "Export PDF"}
@@ -393,9 +399,9 @@ export function AssessmentResults({
                   <div className="mb-1 flex items-center gap-2">
                     <Badge
                       variant={action.priority === "critical" ? "destructive" : "secondary"}
-                      className="text-xs capitalize"
+                      className="text-xs"
                     >
-                      {action.priority}
+                      {formatPriority(action.priority)}
                     </Badge>
                   </div>
                   <p className="leading-snug">{action.title}</p>
@@ -451,7 +457,6 @@ export function AssessmentResults({
                       variant={
                         recommendation.priority === "critical" ? "destructive" : "secondary"
                       }
-                      className="capitalize"
                     >
                       {PRIORITY_LABELS[recommendation.priority]}
                     </Badge>

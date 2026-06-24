@@ -17,6 +17,13 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
+import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
+import {
+  formatClientStatus,
+  formatPriority,
+  formatRelativeDisplayDate,
+} from "@/lib/display";
+import { formatProjectStatus } from "@/lib/projects";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { ClientStatus, Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
@@ -301,7 +308,7 @@ export function DashboardCommandCenter({
                 subtitle={assessment.companyName}
                 meta={
                   assessment.completedAt
-                    ? new Date(assessment.completedAt).toLocaleDateString()
+                    ? formatRelativeDisplayDate(assessment.completedAt)
                     : undefined
                 }
                 trailing={
@@ -331,10 +338,10 @@ export function DashboardCommandCenter({
                 key={project.id}
                 title={project.title}
                 subtitle={project.companyName}
-                meta={project.status.replace("_", " ")}
+                meta={formatProjectStatus(project.status)}
                 trailing={
-                  <Badge variant={PRIORITY_VARIANT[project.priority]} className="capitalize">
-                    {project.priority}
+                  <Badge variant={PRIORITY_VARIANT[project.priority]}>
+                    {formatPriority(project.priority)}
                   </Badge>
                 }
                 href="/projects"
@@ -354,13 +361,10 @@ export function DashboardCommandCenter({
                 key={recommendation.id}
                 title={recommendation.title}
                 subtitle={recommendation.companyName}
-                meta={recommendation.status.replace("_", " ")}
+                meta={RECOMMENDATION_STATUS_LABELS[recommendation.status]}
                 trailing={
-                  <Badge
-                    variant={PRIORITY_VARIANT[recommendation.priority]}
-                    className="capitalize"
-                  >
-                    {recommendation.priority}
+                  <Badge variant={PRIORITY_VARIANT[recommendation.priority]}>
+                    {formatPriority(recommendation.priority)}
                   </Badge>
                 }
                 href={`/assessments/${recommendation.assessmentId}/results`}
@@ -443,11 +447,8 @@ export function DashboardCommandCenter({
                           {recommendation.companyName}
                         </p>
                       </div>
-                      <Badge
-                        variant={PRIORITY_VARIANT[recommendation.priority]}
-                        className="shrink-0 capitalize"
-                      >
-                        {recommendation.priority}
+                      <Badge variant={PRIORITY_VARIANT[recommendation.priority]} className="shrink-0">
+                        {formatPriority(recommendation.priority)}
                       </Badge>
                     </div>
                     <Link
@@ -480,9 +481,7 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
             {client.companyName}
           </Link>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="capitalize">
-              {client.status}
-            </Badge>
+            <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
             {client.rating ? (
               <Badge variant={RATING_VARIANT[client.rating]} className="text-xs">
                 {RATING_DISPLAY_LABELS[client.rating]}
@@ -647,7 +646,7 @@ function ActivityRow({
       <div className="min-w-0">
         <p className="truncate font-medium">{title}</p>
         <p className="truncate text-sm text-muted-foreground">{subtitle}</p>
-        {meta ? <p className="mt-0.5 text-xs capitalize text-muted-foreground">{meta}</p> : null}
+        {meta ? <p className="mt-0.5 text-xs text-muted-foreground">{meta}</p> : null}
       </div>
       {trailing ? <div className="shrink-0">{trailing}</div> : null}
     </Link>
@@ -683,4 +682,4 @@ function EmptyState({
     </div>
   );
 }
-
+

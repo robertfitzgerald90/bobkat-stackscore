@@ -210,10 +210,13 @@ model Assessment {
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
   completedAt         DateTime?
+  sourceAssessmentId  String?
 
-  client          Client                    @relation(fields: [clientId], references: [id])
-  assessor        User                      @relation("AssessorAssessments", fields: [assessorUserId], references: [id])
-  responses       AssessmentResponse[]
+  client             Client                    @relation(fields: [clientId], references: [id])
+  assessor           User                      @relation("AssessorAssessments", fields: [assessorUserId], references: [id])
+  sourceAssessment   Assessment?               @relation("AssessmentReassessment", fields: [sourceAssessmentId], references: [id], onDelete: SetNull)
+  derivedAssessments Assessment[]              @relation("AssessmentReassessment")
+  responses          AssessmentResponse[]
   categoryScores  AssessmentCategoryScore[]
   recommendations AssessmentRecommendation[]
   scoreHistory    ClientScoreHistory[]

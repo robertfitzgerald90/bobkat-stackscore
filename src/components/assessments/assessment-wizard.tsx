@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { AssessmentScorePanel } from "@/components/assessments/assessment-score-panel";
+import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { toast } from "sonner";
 import type { AssessmentPreview } from "@/types/assessment-preview";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,13 @@ type QuestionResponse = {
   evidence: string | null;
 };
 
+type PreviousQuestionResponse = {
+  selectedAnswerOptionId: string;
+  answerText: string;
+  scoreEarned: number;
+  notes: string | null;
+};
+
 type Question = {
   id: string;
   code: string;
@@ -34,6 +42,7 @@ type Question = {
   weight: number;
   answerOptions: AnswerOption[];
   response: QuestionResponse | null;
+  previousResponse: PreviousQuestionResponse | null;
 };
 
 type Category = {
@@ -63,6 +72,10 @@ export function AssessmentWizard({
   const [completing, setCompleting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingQuestionId, setSavingQuestionId] = useState<string | null>(null);
+  const [reassessmentInfo, setReassessmentInfo] = useState<{
+    sourceAssessmentName: string | null;
+    sourceCompletedAt: string | null;
+  } | null>(null);
   const notesTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const loadQuestions = useCallback(async () => {
@@ -71,6 +84,7 @@ export function AssessmentWizard({
       const data = await response.json();
       setCategories(data.categories);
       setPreview(data.preview);
+      setReassessmentInfo(data.reassessment ?? null);
       setActiveCategoryId((current) => current || data.categories[0]?.id || "");
     }
     setLoading(false);
@@ -207,7 +221,11 @@ export function AssessmentWizard({
 
     if (response.ok) {
       toast.success("Assessment completed");
-      router.push(`/assessments/${assessmentId}/results`);
+      router.push(
+        reassessmentInfo
+          ? `/assessments/${assessmentId}/improvement`
+          : `/assessments/${assessmentId}/results`,
+      );
       router.refresh();
       return;
     }
@@ -231,11 +249,19 @@ export function AssessmentWizard({
         <div>
           <p className="text-sm text-muted-foreground">{clientName}</p>
           <h2 className="text-2xl font-bold">{assessmentName}</h2>
+          {reassessmentInfo ? (
+            <p className="mt-1 text-sm text-muted-foreground">
+              Reassessment · baseline: {reassessmentInfo.sourceAssessmentName}
+              {reassessmentInfo.sourceCompletedAt
+                ? ` (${formatAssessmentCompletionDate(reassessmentInfo.sourceCompletedAt)})`
+                : ""}
+            </p>
+          ) : null}
           <p className="mt-1 text-muted-foreground">
             {answeredCount} of {totalCount} questions answered
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Draft — auto-saves after each answer. Close and return anytime to resume.
+            In progress — auto-saves after each answer. Close and return anytime to resume.
           </p>
         </div>
         <Button
@@ -326,7 +352,6 @@ export function AssessmentWizard({
                     <CardHeader className="pb-3">
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <CardTitle className="text-base leading-snug">
-                          <span className="text-muted-foreground">{question.code}.</span>{" "}
                           {question.questionText}
                         </CardTitle>
                         <Badge variant="outline" className="shrink-0">
@@ -338,6 +363,25 @@ export function AssessmentWizard({
                       ) : null}
                     </CardHeader>
                     <CardContent className="space-y-4">
+                      {question.previousResponse ? (
+                        <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-sm">
+                          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Previous Answer
+                          </p>
+                          <p className="mt-1">{question.previousResponse.answerText}</p>
+                          {question.response &&
+                          question.response.selectedAnswerOptionId !==
+                            question.previousResponse.selectedAnswerOptionId ? (
+                            <Badge variant="warning" className="mt-2 text-xs">
+                              Changed from previous
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="mt-2 text-xs">
+                              Unchanged from previous
+                            </Badge>
+                          )}
+                        </div>
+                      ) : null}
                       <div className="flex flex-col gap-2">
                         {question.answerOptions.map((option) => {
                           const selected =

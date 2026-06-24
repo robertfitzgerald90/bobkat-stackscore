@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDisplayDate, formatPriority } from "@/lib/display";
 import {
   ALL_PROJECT_STATUSES,
   OPEN_PROJECT_STATUSES,
@@ -264,7 +265,6 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
                   variant={view === option ? "default" : "outline"}
                   size="sm"
                   onClick={() => setView(option)}
-                  className="capitalize"
                 >
                   {option === "all" ? "All Projects" : `${option} Projects`}
                 </Button>
@@ -317,8 +317,8 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
                       {project.recommendationTitle}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={PRIORITY_VARIANT[project.priority]} className="capitalize">
-                        {project.priority}
+                      <Badge variant={PRIORITY_VARIANT[project.priority]}>
+                        {formatPriority(project.priority)}
                       </Badge>
                     </TableCell>
                     <TableCell className="tabular-nums">
@@ -332,7 +332,7 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {new Date(project.createdAt).toLocaleDateString()}
+                      {formatDisplayDate(project.createdAt)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -369,14 +369,12 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
                   </div>
                   <div className="flex justify-between gap-4">
                     <span className="text-muted-foreground">Created</span>
-                    <span>{new Date(selectedProject.createdAt).toLocaleDateString()}</span>
+                    <span>{formatDisplayDate(selectedProject.createdAt)}</span>
                   </div>
                   <div className="flex justify-between gap-4">
                     <span className="text-muted-foreground">Completed</span>
                     <span>
-                      {selectedProject.completedAt
-                        ? new Date(selectedProject.completedAt).toLocaleDateString()
-                        : "—"}
+                      {formatDisplayDate(selectedProject.completedAt)}
                     </span>
                   </div>
                 </div>

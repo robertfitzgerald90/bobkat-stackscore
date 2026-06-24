@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatUserRole, USER_ROLE_LABELS } from "@/lib/display";
 import {
   Sheet,
   SheetContent,
@@ -208,8 +209,8 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
                 </SelectTrigger>
                 <SelectContent>
                   {ROLES.map((role) => (
-                    <SelectItem key={role} value={role} className="capitalize">
-                      {role}
+                    <SelectItem key={role} value={role}>
+                      {USER_ROLE_LABELS[role]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -279,13 +280,13 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
                       }
                       disabled={updatingUserId === user.id}
                     >
-                      <SelectTrigger className="w-[140px] capitalize">
-                        <SelectValue />
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue>{formatUserRole(user.role)}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {ROLES.map((role) => (
-                          <SelectItem key={role} value={role} className="capitalize">
-                            {role}
+                          <SelectItem key={role} value={role}>
+                            {USER_ROLE_LABELS[role]}
                           </SelectItem>
                         ))}
                       </SelectContent>

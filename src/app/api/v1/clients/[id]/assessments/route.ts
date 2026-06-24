@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createReassessment } from "@/lib/assessments/reassessment";
 import {
+  badRequest,
   getSessionUser,
   notFound,
   paginatedResponse,
@@ -26,6 +28,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       orderBy: { createdAt: "desc" },
       include: {
         assessor: { select: { id: true, name: true, email: true } },
+        sourceAssessment: { select: { id: true, assessmentName: true } },
       },
     }),
     prisma.assessment.count({ where: { clientId } }),
@@ -44,26 +47,55 @@ export async function POST(request: NextRequest, context: RouteContext) {
   const client = await prisma.client.findUnique({ where: { id: clientId } });
   if (!client) return notFound("Client not found");
 
-  const assessment = await prisma.assessment.create({
-    data: {
-      clientId,
-      assessorUserId: user.id,
-      assessmentName: body.assessmentName,
-      assessmentType: body.assessmentType,
-      assessmentDate: new Date(body.assessmentDate ?? new Date()),
-      status: "draft",
-    },
-  });
-
   const totalQuestions = await prisma.assessmentQuestion.count({
     where: { isActive: true },
   });
 
-  return NextResponse.json(
-    {
-      ...assessment,
-      progress: { answered: 0, total: totalQuestions },
-    },
-    { status: 201 },
-  );
+  try {
+    if (body.reassessment || body.sourceAssessmentId) {
+      const assessment = await createReassessment({
+        clientId,
+        assessorUserId: user.id,
+        assessmentName: body.assessmentName ?? `Reassessment ${new Date().toLocaleDateString()}`,
+        assessmentType: body.assessmentType ?? "followup",
+        assessmentDate: body.assessmentDate ? new Date(body.assessmentDate) : new Date(),
+        sourceAssessmentId: body.sourceAssessmentId,
+      });
+
+      const answered = await prisma.assessmentResponse.count({
+        where: { assessmentId: assessment.id },
+      });
+
+      return NextResponse.json(
+        {
+          ...assessment,
+          progress: { answered, total: totalQuestions },
+          reassessment: true,
+        },
+        { status: 201 },
+      );
+    }
+
+    const assessment = await prisma.assessment.create({
+      data: {
+        clientId,
+        assessorUserId: user.id,
+        assessmentName: body.assessmentName,
+        assessmentType: body.assessmentType,
+        assessmentDate: new Date(body.assessmentDate ?? new Date()),
+        status: "draft",
+      },
+    });
+
+    return NextResponse.json(
+      {
+        ...assessment,
+        progress: { answered: 0, total: totalQuestions },
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create assessment";
+    return badRequest(message);
+  }
 }

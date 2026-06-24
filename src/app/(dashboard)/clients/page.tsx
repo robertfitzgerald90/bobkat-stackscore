@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatClientStatus } from "@/lib/display";
 import {
   Table,
   TableBody,
@@ -59,9 +60,7 @@ export default async function ClientsPage() {
                   <TableCell className="font-medium">{client.companyName}</TableCell>
                   <TableCell>{client.primaryContactName}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {client.status}
-                    </Badge>
+                    <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
                   </TableCell>
                   <TableCell>
                     {client.assessments[0]?.overallScore
