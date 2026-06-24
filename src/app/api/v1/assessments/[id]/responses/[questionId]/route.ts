@@ -24,6 +24,37 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     return conflict("Cannot modify a completed assessment");
   }
 
+  const existingResponse = await prisma.assessmentResponse.findUnique({
+    where: {
+      assessmentId_questionId: {
+        assessmentId: id,
+        questionId,
+      },
+    },
+  });
+
+  if (!body.selectedAnswerOptionId) {
+    if (!existingResponse) {
+      return badRequest("Select an answer before saving notes");
+    }
+
+    const response = await prisma.assessmentResponse.update({
+      where: {
+        assessmentId_questionId: {
+          assessmentId: id,
+          questionId,
+        },
+      },
+      data: {
+        ...(body.notes !== undefined ? { notes: body.notes || null } : {}),
+        ...(body.evidence !== undefined ? { evidence: body.evidence || null } : {}),
+      },
+    });
+
+    const preview = await getAssessmentPreview(id);
+    return NextResponse.json({ ...response, preview });
+  }
+
   const answerOption = await prisma.answerOption.findUnique({
     where: { id: body.selectedAnswerOptionId },
     include: { question: true },
@@ -43,8 +74,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     update: {
       selectedAnswerOptionId: body.selectedAnswerOptionId,
       scoreEarned: answerOption.scoreValue,
-      notes: body.notes ?? null,
-      evidence: body.evidence ?? null,
+      ...(body.notes !== undefined ? { notes: body.notes || null } : {}),
+      ...(body.evidence !== undefined ? { evidence: body.evidence || null } : {}),
     },
     create: {
       assessmentId: id,
@@ -58,13 +89,5 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
   const preview = await getAssessmentPreview(id);
 
-  return NextResponse.json({
-    ...response,
-    preview: preview
-      ? {
-          overallScore: preview.overallScore,
-          overallRating: preview.overallRating,
-        }
-      : null,
-  });
+  return NextResponse.json({ ...response, preview });
 }

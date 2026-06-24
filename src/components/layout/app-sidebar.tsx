@@ -22,7 +22,7 @@ export function AppSidebar({ role }: { role: string }) {
           <ClipboardList className="h-6 w-6 text-primary" />
           <div>
             <p className="font-semibold">StackScore</p>
-            <p className="text-xs text-muted-foreground">BobKat IT</p>
+            <p className="text-xs text-muted-foreground">Bobkat IT</p>
           </div>
         </div>
       </div>

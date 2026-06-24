@@ -24,7 +24,7 @@ export default async function AdminUsersPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">Users</h2>
-        <p className="text-muted-foreground">Manage BobKat StackScore accounts</p>
+        <p className="text-muted-foreground">Manage Bobkat StackScore accounts</p>
       </div>
       <Card>
         <CardHeader>

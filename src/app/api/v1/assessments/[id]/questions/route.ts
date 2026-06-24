@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getAssessmentPreview } from "@/lib/assessments";
 import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -35,7 +36,10 @@ export async function GET(_request: Request, context: RouteContext) {
     responses.map((response) => [response.questionId, response]),
   );
 
+  const preview = await getAssessmentPreview(id);
+
   return NextResponse.json({
+    preview,
     categories: categories.map((category) => ({
       id: category.id,
       code: category.code,

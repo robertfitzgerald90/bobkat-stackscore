@@ -1,46 +1,77 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { AssessmentScorePanel } from "@/components/assessments/assessment-score-panel";
 import { toast } from "sonner";
+import type { AssessmentPreview } from "@/types/assessment-preview";
+import { cn } from "@/lib/utils";
 
 type AnswerOption = {
   id: string;
   answerText: string;
   scoreValue: number;
+  triggersCriticalFlag: boolean;
+  triggersRecommendation: boolean;
+};
+
+type QuestionResponse = {
+  selectedAnswerOptionId: string;
+  notes: string | null;
+  evidence: string | null;
 };
 
 type Question = {
   id: string;
   code: string;
   questionText: string;
+  helpText: string | null;
   weight: number;
   answerOptions: AnswerOption[];
-  response: { selectedAnswerOptionId: string } | null;
+  response: QuestionResponse | null;
 };
 
 type Category = {
   id: string;
+  code: string;
   name: string;
+  maxPoints: number;
   questions: Question[];
 };
 
-export function AssessmentWizard({ assessmentId }: { assessmentId: string }) {
+type AssessmentWizardProps = {
+  assessmentId: string;
+  assessmentName: string;
+  clientName: string;
+};
+
+export function AssessmentWizard({
+  assessmentId,
+  assessmentName,
+  clientName,
+}: AssessmentWizardProps) {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [previewScore, setPreviewScore] = useState<number | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+  const [preview, setPreview] = useState<AssessmentPreview | null>(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savingQuestionId, setSavingQuestionId] = useState<string | null>(null);
+  const notesTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const loadQuestions = useCallback(async () => {
     const response = await fetch(`/api/v1/assessments/${assessmentId}/questions`);
     if (response.ok) {
       const data = await response.json();
       setCategories(data.categories);
+      setPreview(data.preview);
+      setActiveCategoryId((current) => current || data.categories[0]?.id || "");
     }
     setLoading(false);
   }, [assessmentId]);
@@ -49,30 +80,122 @@ export function AssessmentWizard({ assessmentId }: { assessmentId: string }) {
     loadQuestions();
   }, [loadQuestions]);
 
-  const answeredCount = categories.reduce(
-    (sum, category) =>
-      sum + category.questions.filter((question) => question.response).length,
-    0,
-  );
-  const totalCount = categories.reduce((sum, category) => sum + category.questions.length, 0);
+  useEffect(() => {
+    const timers = notesTimers.current;
+    return () => {
+      for (const timer of timers.values()) {
+        clearTimeout(timer);
+      }
+    };
+  }, []);
 
-  async function saveAnswer(questionId: string, answerOptionId: string) {
+  const activeCategory = categories.find((category) => category.id === activeCategoryId);
+  const answeredCount = preview?.answeredCount ?? 0;
+  const totalCount = preview?.totalCount ?? 0;
+
+  function updateQuestionResponse(
+    questionId: string,
+    categoryId: string,
+    response: QuestionResponse,
+  ) {
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id !== categoryId
+          ? category
+          : {
+              ...category,
+              questions: category.questions.map((question) =>
+                question.id === questionId ? { ...question, response } : question,
+              ),
+            },
+      ),
+    );
+  }
+
+  async function saveAnswer(
+    questionId: string,
+    categoryId: string,
+    answerOptionId: string,
+    existingNotes?: string | null,
+  ) {
+    setSaving(true);
+    setSavingQuestionId(questionId);
+    updateQuestionResponse(questionId, categoryId, {
+      selectedAnswerOptionId: answerOptionId,
+      notes: existingNotes ?? null,
+      evidence: null,
+    });
+
     const response = await fetch(
       `/api/v1/assessments/${assessmentId}/responses/${questionId}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selectedAnswerOptionId: answerOptionId }),
+        body: JSON.stringify({
+          selectedAnswerOptionId: answerOptionId,
+          notes: existingNotes ?? undefined,
+        }),
       },
     );
 
+    setSaving(false);
+    setSavingQuestionId(null);
+
     if (response.ok) {
       const data = await response.json();
-      if (data.preview?.overallScore !== undefined) {
-        setPreviewScore(data.preview.overallScore);
-      }
-      await loadQuestions();
+      if (data.preview) setPreview(data.preview);
+      updateQuestionResponse(questionId, categoryId, {
+        selectedAnswerOptionId: data.selectedAnswerOptionId,
+        notes: data.notes,
+        evidence: data.evidence,
+      });
+      return;
     }
+
+    toast.error("Failed to save answer");
+    await loadQuestions();
+  }
+
+  function handleNotesChange(questionId: string, categoryId: string, notes: string) {
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id !== categoryId
+          ? category
+          : {
+              ...category,
+              questions: category.questions.map((question) =>
+                question.id === questionId && question.response
+                  ? { ...question, response: { ...question.response, notes } }
+                  : question,
+              ),
+            },
+      ),
+    );
+
+    const existingTimer = notesTimers.current.get(questionId);
+    if (existingTimer) clearTimeout(existingTimer);
+
+    const timer = setTimeout(async () => {
+      notesTimers.current.delete(questionId);
+      setSaving(true);
+
+      const response = await fetch(
+        `/api/v1/assessments/${assessmentId}/responses/${questionId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes }),
+        },
+      );
+
+      setSaving(false);
+
+      if (!response.ok) {
+        toast.error("Failed to save notes");
+      }
+    }, 600);
+
+    notesTimers.current.set(questionId, timer);
   }
 
   async function completeAssessment() {
@@ -93,69 +216,210 @@ export function AssessmentWizard({ assessmentId }: { assessmentId: string }) {
     toast.error(error.error ?? "Failed to complete assessment");
   }
 
+  function getCategoryProgress(category: Category) {
+    const answered = category.questions.filter((q) => q.response).length;
+    return { answered, total: category.questions.length };
+  }
+
   if (loading) {
     return <p className="text-muted-foreground">Loading assessment...</p>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Assessment</h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">{clientName}</p>
+          <h2 className="text-2xl font-bold">{assessmentName}</h2>
+          <p className="mt-1 text-muted-foreground">
             {answeredCount} of {totalCount} questions answered
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Draft — auto-saves after each answer. Close and return anytime to resume.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          {previewScore !== null ? (
-            <Badge variant="secondary">Preview Score: {previewScore}</Badge>
-          ) : null}
-          <Button
-            onClick={completeAssessment}
-            disabled={completing || answeredCount < totalCount}
-          >
-            {completing ? "Completing..." : "Complete Assessment"}
-          </Button>
-        </div>
+        <Button
+          onClick={completeAssessment}
+          disabled={completing || answeredCount < totalCount}
+          size="lg"
+        >
+          {completing ? "Completing..." : "Complete Assessment"}
+        </Button>
       </div>
 
-      <Tabs defaultValue={categories[0]?.id}>
-        <TabsList className="flex h-auto flex-wrap justify-start">
-          {categories.map((category) => (
-            <TabsTrigger key={category.id} value={category.id}>
-              {category.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {categories.map((category) => (
-          <TabsContent key={category.id} value={category.id} className="space-y-4">
-            {category.questions.map((question) => (
-              <Card key={question.id}>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    {question.code}. {question.questionText}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                  {question.answerOptions.map((option) => (
-                    <Button
-                      key={option.id}
-                      variant={
-                        question.response?.selectedAnswerOptionId === option.id
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => saveAnswer(question.id, option.id)}
-                    >
-                      {option.answerText}
-                    </Button>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-        ))}
-      </Tabs>
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="order-2 min-w-0 grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:order-1">
+          <Card className="h-fit lg:sticky lg:top-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 p-2 pt-0">
+              {categories.map((category) => {
+                const progress = getCategoryProgress(category);
+                const isActive = category.id === activeCategoryId;
+                const isComplete = progress.answered === progress.total;
+
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setActiveCategoryId(category.id)}
+                    className={cn(
+                      "flex w-full items-start gap-2 rounded-md px-3 py-2.5 text-left text-sm transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted",
+                    )}
+                  >
+                    {isComplete ? (
+                      <CheckCircle2
+                        className={cn(
+                          "mt-0.5 h-4 w-4 shrink-0",
+                          isActive ? "text-primary-foreground" : "text-primary",
+                        )}
+                      />
+                    ) : (
+                      <Circle
+                        className={cn(
+                          "mt-0.5 h-4 w-4 shrink-0",
+                          isActive ? "text-primary-foreground/70" : "text-muted-foreground",
+                        )}
+                      />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block leading-snug">{category.name}</span>
+                      <span
+                        className={cn(
+                          "text-xs",
+                          isActive ? "text-primary-foreground/80" : "text-muted-foreground",
+                        )}
+                      >
+                        {progress.answered}/{progress.total}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+          <div className="min-w-0 space-y-4">
+            {activeCategory ? (
+              <>
+                <div>
+                  <h3 className="text-lg font-semibold">{activeCategory.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {activeCategory.maxPoints} max points ·{" "}
+                    {getCategoryProgress(activeCategory).answered} of{" "}
+                    {getCategoryProgress(activeCategory).total} answered
+                  </p>
+                </div>
+
+                {activeCategory.questions.map((question) => (
+                  <Card
+                    key={question.id}
+                    className={cn(
+                      question.response && "border-primary/30",
+                      savingQuestionId === question.id && "opacity-80",
+                    )}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <CardTitle className="text-base leading-snug">
+                          <span className="text-muted-foreground">{question.code}.</span>{" "}
+                          {question.questionText}
+                        </CardTitle>
+                        <Badge variant="outline" className="shrink-0">
+                          {question.weight} pts
+                        </Badge>
+                      </div>
+                      {question.helpText ? (
+                        <CardDescription>{question.helpText}</CardDescription>
+                      ) : null}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-col gap-2">
+                        {question.answerOptions.map((option) => {
+                          const selected =
+                            question.response?.selectedAnswerOptionId === option.id;
+                          return (
+                            <Button
+                              key={option.id}
+                              variant={selected ? "default" : "outline"}
+                              className={cn(
+                                "h-auto justify-start whitespace-normal px-4 py-3 text-left",
+                                option.triggersCriticalFlag &&
+                                  !selected &&
+                                  "border-destructive/40",
+                                option.triggersRecommendation &&
+                                  !selected &&
+                                  "border-amber-500/40",
+                              )}
+                              onClick={() =>
+                                saveAnswer(
+                                  question.id,
+                                  activeCategory.id,
+                                  option.id,
+                                  question.response?.notes,
+                                )
+                              }
+                              disabled={savingQuestionId === question.id}
+                            >
+                              <span className="flex w-full items-center justify-between gap-2">
+                                <span>{option.answerText}</span>
+                                <span className="flex shrink-0 gap-1">
+                                  {option.triggersRecommendation ? (
+                                    <Badge variant="secondary" className="text-xs">
+                                      Rec
+                                    </Badge>
+                                  ) : null}
+                                  {option.triggersCriticalFlag ? (
+                                    <Badge variant="destructive" className="text-xs">
+                                      Critical
+                                    </Badge>
+                                  ) : null}
+                                </span>
+                              </span>
+                            </Button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor={`notes-${question.id}`}>Assessor Notes</Label>
+                        <textarea
+                          id={`notes-${question.id}`}
+                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder={
+                            question.response
+                              ? "Add observations, evidence, or context..."
+                              : "Select an answer first to add notes"
+                          }
+                          value={question.response?.notes ?? ""}
+                          disabled={!question.response}
+                          onChange={(event) =>
+                            handleNotesChange(
+                              question.id,
+                              activeCategory.id,
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            ) : (
+              <p className="text-muted-foreground">Select a category to begin.</p>
+            )}
+          </div>
+        </div>
+
+        <aside className="order-1 min-w-0 xl:order-2">
+          <AssessmentScorePanel preview={preview} saving={saving} />
+        </aside>
+      </div>
     </div>
   );
 }

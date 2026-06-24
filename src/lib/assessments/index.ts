@@ -10,6 +10,7 @@ import {
   calculateProjectedScore,
   RATING_LABELS,
   type CategoryScoreInput,
+  type ScoringResult,
 } from "@/lib/scoring";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -230,14 +231,27 @@ export async function completeAssessment(assessmentId: string, userId: string) {
   });
 }
 
-export async function getAssessmentPreview(assessmentId: string) {
+import type {
+  AssessmentPreview,
+  CategoryPreview,
+  RecommendationPreview,
+  RiskPreview,
+} from "@/types/assessment-preview";
+
+export type { AssessmentPreview, CategoryPreview, RecommendationPreview, RiskPreview };
+
+export async function getAssessmentPreview(
+  assessmentId: string,
+): Promise<AssessmentPreview | null> {
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {
       responses: {
         include: {
           question: { include: { category: true } },
-          selectedAnswerOption: true,
+          selectedAnswerOption: {
+            include: { recommendationTemplate: true },
+          },
         },
       },
     },
@@ -247,6 +261,7 @@ export async function getAssessmentPreview(assessmentId: string) {
 
   const categories = await prisma.assessmentCategory.findMany({
     where: { isActive: true },
+    orderBy: { displayOrder: "asc" },
   });
   const activeQuestions = await prisma.assessmentQuestion.findMany({
     where: { isActive: true },
@@ -279,10 +294,89 @@ export async function getAssessmentPreview(assessmentId: string) {
     (response) => response.selectedAnswerOption.triggersCriticalFlag,
   );
 
-  return calculateScores(
-    categoryInputs.filter((category) => category.pointsPossible > 0),
-    hasCriticalExposure,
+  const criticalFindingsCount = assessment.responses.filter(
+    (response) => response.selectedAnswerOption.triggersCriticalFlag,
+  ).length;
+
+  const answeredCount = assessment.responses.length;
+  const totalCount = activeQuestions.length;
+
+  const scoringInputs = categoryInputs.filter((category) => category.pointsPossible > 0);
+  const scoring: ScoringResult | null =
+    scoringInputs.length > 0
+      ? calculateScores(scoringInputs, hasCriticalExposure)
+      : null;
+
+  const scoreByCategoryId = new Map(
+    scoring?.categoryScores.map((category) => [category.categoryId, category]) ?? [],
   );
+
+  const categoryScores: CategoryPreview[] = categories.map((category) => {
+    const questions = activeQuestions.filter((q) => q.categoryId === category.id);
+    const answeredInCategory = questions.filter((q) => responsesByQuestion.has(q.id));
+    const scored = scoreByCategoryId.get(category.id);
+
+    return {
+      categoryId: category.id,
+      categoryCode: category.code,
+      categoryName: category.name,
+      answeredCount: answeredInCategory.length,
+      totalCount: questions.length,
+      percentScore: scored ? scored.percentScore : null,
+      rating: scored ? scored.rating : null,
+    };
+  });
+
+  const triggersWithCodes: TriggeredResponse[] = assessment.responses
+    .filter((response) => response.selectedAnswerOption.triggersRecommendation)
+    .map((response) => ({
+      questionCode: response.question.code,
+      answerText: response.selectedAnswerOption.answerText,
+      scoreValue: response.scoreEarned,
+      weight: response.question.weight,
+      templateCode: response.selectedAnswerOption.recommendationTemplate?.code ?? "",
+      triggersCriticalFlag: response.selectedAnswerOption.triggersCriticalFlag,
+    }))
+    .filter((response) => response.templateCode);
+
+  const allRecommendations = evaluateTriggers(triggersWithCodes);
+
+  const projectionImpact = calculateProjectionImpacts(allRecommendations);
+  const projectedScore =
+    scoring !== null
+      ? calculateProjectedScore(scoring.overallScore, [projectionImpact])
+      : null;
+
+  const recommendations = allRecommendations.map((recommendation) => ({
+    title: recommendation.title,
+    priority: recommendation.priority,
+    estimatedImpactPoints: recommendation.estimatedImpactPoints,
+    categoryName: recommendation.categoryName,
+  }));
+
+  const topRisks: RiskPreview[] = [...categoryScores]
+    .filter((category) => category.percentScore !== null && category.rating !== null)
+    .sort((a, b) => (a.percentScore ?? 100) - (b.percentScore ?? 100))
+    .slice(0, 5)
+    .map((category) => ({
+      categoryName: category.categoryName,
+      percentScore: category.percentScore!,
+      rating: category.rating!,
+    }));
+
+  return {
+    overallScore: scoring?.overallScore ?? null,
+    overallRating: scoring?.overallRating ?? null,
+    projectedScore,
+    hasCriticalExposure,
+    criticalFindingsCount,
+    answeredCount,
+    totalCount,
+    openRecommendationsCount: allRecommendations.length,
+    categoryScores,
+    recommendations,
+    topRisks,
+  };
 }
 
 export { CATEGORY_SCORE_FIELDS };

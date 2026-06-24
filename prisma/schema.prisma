@@ -49,8 +49,10 @@ enum Priority {
 enum RecommendationStatus {
   open
   accepted
-  declined
+  in_progress
   completed
+  deferred
+  declined
 }
 
 enum ProjectStatus {

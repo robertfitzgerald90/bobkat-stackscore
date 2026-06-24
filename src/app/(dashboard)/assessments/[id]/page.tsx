@@ -17,9 +17,10 @@ export default async function AssessmentPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <p className="text-sm text-muted-foreground">{assessment.client.companyName}</p>
-      <AssessmentWizard assessmentId={assessment.id} />
-    </div>
+    <AssessmentWizard
+      assessmentId={assessment.id}
+      assessmentName={assessment.assessmentName}
+      clientName={assessment.client.companyName}
+    />
   );
 }

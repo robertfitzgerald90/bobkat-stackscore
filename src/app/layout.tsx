@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BobKat StackScore",
+  title: "Bobkat StackScore",
   description: "Technology maturity assessments for small and medium businesses",
 };
 

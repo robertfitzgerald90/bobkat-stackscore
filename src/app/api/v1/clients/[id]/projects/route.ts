@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
+  conflict,
   getSessionUser,
   paginatedResponse,
   parsePagination,
@@ -48,22 +49,46 @@ export async function POST(request: NextRequest, context: RouteContext) {
   const { id: clientId } = await context.params;
   const body = await request.json();
 
-  const project = await prisma.project.create({
-    data: {
-      clientId,
-      recommendationId: body.recommendationId ?? null,
-      title: body.title,
-      description: body.description ?? null,
-      priority: body.priority,
-      categoryId: body.categoryId,
-      assignedUserId: body.assignedUserId ?? null,
-      estimatedImpactPoints: body.estimatedImpactPoints ?? null,
-      estimatedCost: body.estimatedCost ?? null,
-      targetCompletionDate: body.targetCompletionDate
-        ? new Date(body.targetCompletionDate)
-        : null,
-      status: "proposed",
-    },
+  if (body.recommendationId) {
+    const existing = await prisma.project.findUnique({
+      where: { recommendationId: body.recommendationId },
+    });
+    if (existing) {
+      return conflict("A project already exists for this recommendation");
+    }
+  }
+
+  const project = await prisma.$transaction(async (tx) => {
+    const created = await tx.project.create({
+      data: {
+        clientId,
+        recommendationId: body.recommendationId ?? null,
+        title: body.title,
+        description: body.description ?? null,
+        priority: body.priority,
+        categoryId: body.categoryId,
+        assignedUserId: body.assignedUserId ?? null,
+        estimatedImpactPoints: body.estimatedImpactPoints ?? null,
+        estimatedCost: body.estimatedCost ?? null,
+        targetCompletionDate: body.targetCompletionDate
+          ? new Date(body.targetCompletionDate)
+          : null,
+        status: "proposed",
+      },
+      include: {
+        category: true,
+        recommendation: true,
+      },
+    });
+
+    if (body.recommendationId) {
+      await tx.assessmentRecommendation.update({
+        where: { id: body.recommendationId },
+        data: { status: "accepted" },
+      });
+    }
+
+    return created;
   });
 
   return NextResponse.json(project, { status: 201 });

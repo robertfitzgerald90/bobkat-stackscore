@@ -24,7 +24,7 @@ export function AppHeader({
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-6">
       <div>
-        <h1 className="text-lg font-semibold">BobKat StackScore</h1>
+        <h1 className="text-lg font-semibold">Bobkat StackScore</h1>
         <p className="text-sm text-muted-foreground">Technology maturity assessments</p>
       </div>
       <DropdownMenu>

@@ -1,6 +1,6 @@
-# BobKat StackScore
+# Bobkat StackScore
 
-Technology maturity assessment platform for BobKat IT. Evaluates client environments across seven categories, calculates StackScores, generates recommendations, and tracks improvement over time.
+Technology maturity assessment platform for Bobkat IT. Evaluates client environments across seven categories, calculates StackScores, generates recommendations, and tracks improvement over time.
 
 ## Stack
 

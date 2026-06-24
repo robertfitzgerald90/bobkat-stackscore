@@ -42,7 +42,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>BobKat StackScore</CardTitle>
+        <CardTitle>Bobkat StackScore</CardTitle>
         <CardDescription>Sign in to manage client assessments</CardDescription>
       </CardHeader>
       <CardContent>
