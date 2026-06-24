@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
+import {
+  badRequest,
+  conflict,
+  getSessionUser,
+  notFound,
+  requireAdmin,
+  unauthorized,
+} from "@/lib/api/helpers";
+import { deleteClientPermanently } from "@/lib/records";
+import { parseDeleteConfirmation } from "@/lib/records/validate";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -49,4 +58,27 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   });
 
   return NextResponse.json(client);
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const user = await getSessionUser();
+  if (!user) return unauthorized();
+
+  const denied = requireAdmin(user);
+  if (denied) return denied;
+
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const confirmationError = parseDeleteConfirmation(body);
+  if (confirmationError) return confirmationError;
+
+  const existing = await prisma.client.findUnique({ where: { id } });
+  if (!existing) return notFound("Client not found");
+
+  try {
+    await deleteClientPermanently(id, user.id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return conflict(error instanceof Error ? error.message : "Unable to delete client");
+  }
 }

@@ -169,4 +169,5 @@ export const RECOMMENDATION_STATUS_LABELS: Record<RecommendationStatus, string> 
   completed: "Completed",
   deferred: "Deferred",
   declined: "Declined",
+  archived: "Archived",
 };

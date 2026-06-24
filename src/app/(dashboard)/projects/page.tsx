@@ -1,10 +1,14 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { ProjectsDashboard } from "@/components/projects/projects-dashboard";
 import { OPEN_PROJECT_STATUSES } from "@/lib/projects";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 
 export default async function ProjectsPage() {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
+
   const projects = await prisma.project.findMany({
     orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
     include: projectInclude,
@@ -42,7 +46,7 @@ export default async function ProjectsPage() {
 
   return (
     <Suspense>
-      <ProjectsDashboard initialProjects={serialized} summary={summary} />
+      <ProjectsDashboard initialProjects={serialized} summary={summary} isAdmin={isAdmin} />
     </Suspense>
   );
 }

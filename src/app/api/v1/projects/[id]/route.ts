@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   badRequest,
+  conflict,
   getSessionUser,
   notFound,
+  requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import { deleteProjectPermanently } from "@/lib/records";
+import { parseDeleteConfirmation } from "@/lib/records/validate";
 import { updateProjectWithWorkflow } from "@/lib/projects/service";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import { updateProjectSchema } from "@/lib/projects/schemas";
@@ -44,4 +48,27 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (!project) return notFound("Project not found");
 
   return NextResponse.json(project);
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const user = await getSessionUser();
+  if (!user) return unauthorized();
+
+  const denied = requireAdmin(user);
+  if (denied) return denied;
+
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const confirmationError = parseDeleteConfirmation(body);
+  if (confirmationError) return confirmationError;
+
+  const existing = await prisma.project.findUnique({ where: { id } });
+  if (!existing) return notFound("Project not found");
+
+  try {
+    await deleteProjectPermanently(id, user.id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return conflict(error instanceof Error ? error.message : "Unable to delete project");
+  }
 }

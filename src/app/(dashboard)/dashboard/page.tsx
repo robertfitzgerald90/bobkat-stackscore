@@ -22,6 +22,7 @@ export default async function DashboardPage() {
     urgentRecommendations,
   ] = await Promise.all([
     prisma.client.findMany({
+      where: { status: { not: "archived" } },
       orderBy: { companyName: "asc" },
       include: {
         assessments: {
@@ -45,6 +46,7 @@ export default async function DashboardPage() {
       include: { client: { select: { companyName: true } } },
     }),
     prisma.project.findMany({
+      where: { status: { not: "cancelled" } },
       orderBy: { updatedAt: "desc" },
       take: 5,
       include: { client: { select: { companyName: true } } },
@@ -73,13 +75,19 @@ export default async function DashboardPage() {
 
   const clientHealth = clients.map((client) => {
     const latest = client.assessments[0];
+    const previous = client.assessments[1];
     const score = latest?.overallScore != null ? Math.round(Number(latest.overallScore)) : null;
+    const scoreChange =
+      latest?.overallScore != null && previous?.overallScore != null
+        ? Math.round(Number(latest.overallScore)) - Math.round(Number(previous.overallScore))
+        : null;
 
     return {
       id: client.id,
       companyName: client.companyName,
       status: client.status,
       score,
+      scoreChange,
       rating: score !== null ? getRating(score) : null,
       assessmentId: latest?.id ?? null,
     };
@@ -160,6 +168,7 @@ export default async function DashboardPage() {
         companyName: assessment.client.companyName,
         clientId: assessment.clientId,
         score: Math.round(Number(assessment.overallScore)),
+        scoreChange: null,
         completedAt: assessment.completedAt,
       }))}
       recentProjects={recentProjects.map((project) => ({

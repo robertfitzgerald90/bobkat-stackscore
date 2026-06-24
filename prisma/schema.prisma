@@ -17,6 +17,7 @@ enum ClientStatus {
   prospect
   active
   inactive
+  archived
 }
 
 enum AssessmentType {
@@ -53,6 +54,7 @@ enum RecommendationStatus {
   completed
   deferred
   declined
+  archived
 }
 
 enum ProjectStatus {

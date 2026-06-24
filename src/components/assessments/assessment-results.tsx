@@ -54,6 +54,7 @@ const ALL_STATUSES: RecommendationStatus[] = [
   "completed",
   "deferred",
   "declined",
+  "archived",
 ];
 
 type AssessmentResultsProps = {

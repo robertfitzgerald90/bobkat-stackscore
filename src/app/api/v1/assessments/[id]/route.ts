@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
+import {
+  conflict,
+  getSessionUser,
+  notFound,
+  requireAdmin,
+  unauthorized,
+} from "@/lib/api/helpers";
+import { deleteAssessmentPermanently } from "@/lib/records";
+import { parseDeleteConfirmation } from "@/lib/records/validate";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -69,28 +77,25 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   return NextResponse.json(updated);
 }
 
-export async function DELETE(_request: NextRequest, context: RouteContext) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
 
+  const denied = requireAdmin(user);
+  if (denied) return denied;
+
   const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const confirmationError = parseDeleteConfirmation(body);
+  if (confirmationError) return confirmationError;
+
   const assessment = await prisma.assessment.findUnique({ where: { id } });
-
   if (!assessment) return notFound("Assessment not found");
-  if (assessment.status !== "draft") {
-    return NextResponse.json(
-      { error: "Only draft assessments can be deleted", code: "CONFLICT" },
-      { status: 409 },
-    );
-  }
 
-  if (user.role === "technician" && assessment.assessorUserId !== user.id) {
-    return NextResponse.json(
-      { error: "Insufficient permissions", code: "FORBIDDEN" },
-      { status: 403 },
-    );
+  try {
+    await deleteAssessmentPermanently(id, user.id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return conflict(error instanceof Error ? error.message : "Unable to delete assessment");
   }
-
-  await prisma.assessment.delete({ where: { id } });
-  return new NextResponse(null, { status: 204 });
 }

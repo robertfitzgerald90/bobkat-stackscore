@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ProjectAdminActions } from "@/components/admin/project-admin-actions";
 import { ExternalLink, FolderKanban, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
@@ -72,17 +73,23 @@ type ProjectsSummary = {
 type ProjectsDashboardProps = {
   initialProjects: SerializedProject[];
   summary: ProjectsSummary;
+  isAdmin?: boolean;
 };
 
 type ViewFilter = "all" | "open" | "completed";
 
-export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboardProps) {
+export function ProjectsDashboard({
+  initialProjects,
+  summary,
+  isAdmin = false,
+}: ProjectsDashboardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
   const [projects, setProjects] = useState(initialProjects);
   const [view, setView] = useState<ViewFilter>("all");
   const [clientFilter, setClientFilter] = useState<string>("all");
+  const [showCancelled, setShowCancelled] = useState(false);
   const [selectedProject, setSelectedProject] = useState<SerializedProject | null>(null);
   const [editStatus, setEditStatus] = useState<ProjectStatus>("proposed");
   const [editNotes, setEditNotes] = useState("");
@@ -114,12 +121,15 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
+      if (!isAdmin || !showCancelled) {
+        if (project.status === "cancelled") return false;
+      }
       if (view === "open" && !OPEN_PROJECT_STATUSES.includes(project.status)) return false;
       if (view === "completed" && project.status !== "completed") return false;
       if (clientFilter !== "all" && project.clientId !== clientFilter) return false;
       return true;
     });
-  }, [projects, view, clientFilter]);
+  }, [projects, view, clientFilter, isAdmin, showCancelled]);
 
   async function saveProject() {
     if (!selectedProject) return;
@@ -272,6 +282,15 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
               {clientFilter !== "all" ? (
                 <Button variant="ghost" size="sm" onClick={() => setClientFilter("all")}>
                   Clear client filter
+                </Button>
+              ) : null}
+              {isAdmin ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCancelled((current) => !current)}
+                >
+                  {showCancelled ? "Hide Cancelled" : "Show Cancelled"}
                 </Button>
               ) : null}
             </div>
@@ -438,6 +457,36 @@ export function ProjectsDashboard({ initialProjects, summary }: ProjectsDashboar
                     Completing this project will mark the linked recommendation as completed and
                     remove its points from projected score calculations.
                   </p>
+                ) : null}
+
+                {isAdmin && selectedProject ? (
+                  <ProjectAdminActions
+                    projectId={selectedProject.id}
+                    projectTitle={selectedProject.title}
+                    status={selectedProject.status}
+                    onUpdated={() => {
+                      router.refresh();
+                      const response = fetch(`/api/v1/projects/${selectedProject.id}`)
+                        .then((res) => res.json())
+                        .then((updated) => {
+                          setProjects((current) =>
+                            current.map((project) =>
+                              project.id === updated.id ? updated : project,
+                            ),
+                          );
+                          setSelectedProject(updated);
+                          setEditStatus(updated.status);
+                        });
+                      void response;
+                    }}
+                    onDeleted={() => {
+                      setProjects((current) =>
+                        current.filter((project) => project.id !== selectedProject.id),
+                      );
+                      closeProject();
+                      router.refresh();
+                    }}
+                  />
                 ) : null}
               </div>
             </>

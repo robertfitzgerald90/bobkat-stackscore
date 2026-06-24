@@ -4,6 +4,7 @@ export const CLIENT_STATUS_LABELS: Record<ClientStatus, string> = {
   prospect: "Prospect",
   active: "Active",
   inactive: "Inactive",
+  archived: "Archived",
 };
 
 export const USER_ROLE_LABELS: Record<UserRole, string> = {

@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   badRequest,
+  conflict,
   getSessionUser,
   notFound,
   requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import { deleteUserPermanently } from "@/lib/records";
+import { parseDeleteConfirmation } from "@/lib/records/validate";
 import { validateDeactivateAdmin, validateUserMutation } from "@/lib/users/guards";
 import { hashPassword } from "@/lib/users/password";
 import { updateUserSchema } from "@/lib/users/schemas";
@@ -50,4 +53,32 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   });
 
   return NextResponse.json(serializeUser(updated));
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const user = await getSessionUser();
+  if (!user) return unauthorized();
+
+  const denied = requireAdmin(user);
+  if (denied) return denied;
+
+  const { id } = await context.params;
+
+  if (id === user.id) {
+    return badRequest("You cannot permanently delete your own account.");
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const confirmationError = parseDeleteConfirmation(body);
+  if (confirmationError) return confirmationError;
+
+  const existing = await prisma.user.findUnique({ where: { id } });
+  if (!existing) return notFound("User not found");
+
+  try {
+    await deleteUserPermanently(id);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return conflict(error instanceof Error ? error.message : "Unable to delete user");
+  }
 }

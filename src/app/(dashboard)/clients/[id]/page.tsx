@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { History } from "lucide-react";
+import { History, TrendingUp } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { ClientAdminActions } from "@/components/admin/client-admin-actions";
+import { ClientScoreSummary } from "@/components/analytics/client-score-summary";
+import { getClientImprovementAnalytics } from "@/lib/analytics";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { StartAssessmentForm } from "@/components/clients/start-assessment-form";
-import { ReassessmentForm } from "@/components/clients/reassessment-form";
+import { ClientAssessmentForms } from "@/components/clients/client-assessment-forms";
 import {
   formatAssessmentStatus,
   formatAssessmentType,
-  formatAssessmentCompletionDate,
   sortCompletedAssessmentsNewestFirst,
 } from "@/lib/assessments/display";
 import { formatClientStatus } from "@/lib/display";
@@ -19,17 +21,24 @@ type PageProps = { params: Promise<{ id: string }> };
 
 export default async function ClientDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
 
   const client = await prisma.client.findUnique({
     where: { id },
     include: {
-      assessments: { orderBy: { createdAt: "desc" } },
-      scoreHistory: { orderBy: { recordedDate: "desc" }, take: 6 },
+      assessments: {
+        where: isAdmin ? undefined : { status: { not: "archived" } },
+        orderBy: { createdAt: "desc" },
+      },
+      scoreHistory: { orderBy: { recordedDate: "asc" } },
       projects: { orderBy: { updatedAt: "desc" }, take: 5 },
     },
   });
 
   if (!client) notFound();
+
+  const analytics = await getClientImprovementAnalytics(id);
 
   const completedAssessments = sortCompletedAssessmentsNewestFirst(
     client.assessments
@@ -57,12 +66,23 @@ export default async function ClientDetailPage({ params }: PageProps) {
           </Badge>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          <StartAssessmentForm clientId={client.id} />
-          <ReassessmentForm clientId={client.id} completedAssessments={completedAssessments} />
+          {client.status !== "archived" ? (
+            <ClientAssessmentForms
+              clientId={client.id}
+              completedAssessments={completedAssessments}
+            />
+          ) : null}
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Link
+          href={`/clients/${client.id}/improvement`}
+          className={buttonClassName({ variant: "default", size: "sm" })}
+        >
+          <TrendingUp className="mr-2 h-4 w-4" />
+          Improvement Dashboard
+        </Link>
         <Link
           href={`/clients/${client.id}/assessments/history`}
           className={buttonClassName({ variant: "outline", size: "sm" })}
@@ -119,24 +139,22 @@ export default async function ClientDetailPage({ params }: PageProps) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Score History</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {client.scoreHistory.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No score history yet.</p>
-            ) : (
-              client.scoreHistory.map((entry) => (
-                <div key={entry.id} className="flex justify-between text-sm">
-                  <span>{formatAssessmentCompletionDate(entry.recordedDate)}</span>
-                  <span className="font-semibold">{Number(entry.overallScore)}</span>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+        <ClientScoreSummary
+          clientId={client.id}
+          scoreTrend={analytics?.scoreTrend ?? []}
+          initialScore={analytics?.initialScore ?? null}
+          currentScore={analytics?.currentScore ?? null}
+          netImprovement={analytics?.netImprovement ?? null}
+        />
       </div>
+
+      {isAdmin ? (
+        <ClientAdminActions
+          clientId={client.id}
+          clientName={client.companyName}
+          status={client.status}
+        />
+      ) : null}
     </div>
   );
 }

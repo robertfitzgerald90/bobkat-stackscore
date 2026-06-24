@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { MaturityDistribution } from "@/components/dashboard/maturity-distribution";
+import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +27,7 @@ import {
 import { formatProjectStatus } from "@/lib/projects";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
-import type { ClientStatus, Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
+import type { ClientStatus, Priority, ProjectStatus, Rating, RecommendationStatus } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
 const RATING_VARIANT: Record<
@@ -52,6 +53,7 @@ type ClientHealthRow = {
   companyName: string;
   status: ClientStatus;
   score: number | null;
+  scoreChange: number | null;
   rating: Rating | null;
   assessmentId: string | null;
 };
@@ -62,6 +64,7 @@ type RecentAssessmentRow = {
   companyName: string;
   clientId: string;
   score: number;
+  scoreChange: number | null;
   completedAt: Date | null;
 };
 
@@ -338,7 +341,7 @@ export function DashboardCommandCenter({
                 key={project.id}
                 title={project.title}
                 subtitle={project.companyName}
-                meta={formatProjectStatus(project.status)}
+                meta={formatProjectStatus(project.status as ProjectStatus)}
                 trailing={
                   <Badge variant={PRIORITY_VARIANT[project.priority]}>
                     {formatPriority(project.priority)}
@@ -505,6 +508,9 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
             </span>
             <span className="text-sm font-medium text-muted-foreground">/ 100</span>
           </p>
+          <div className="mt-1 flex justify-end">
+            <TrendIndicator delta={client.scoreChange} />
+          </div>
         </div>
       </div>
 
@@ -518,6 +524,12 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
       ) : null}
 
       <div className="mt-3 flex flex-wrap gap-2 border-t border-border/50 pt-3">
+        <Link
+          href={`/clients/${client.id}/improvement`}
+          className={buttonClassName({ variant: "ghost", size: "sm" })}
+        >
+          Improvement
+        </Link>
         {client.assessmentId ? (
           <Link
             href={`/assessments/${client.assessmentId}/results`}

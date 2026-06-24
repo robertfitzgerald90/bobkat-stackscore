@@ -18,6 +18,8 @@ export function StartAssessmentForm({ clientId }: { clientId: string }) {
   const [loading, setLoading] = useState(false);
   const [assessmentName, setAssessmentName] = useState("Initial Assessment");
   const [assessmentType, setAssessmentType] = useState("initial");
+  const nameFieldId = `start-assessment-name-${clientId}`;
+  const typeFieldId = `start-assessment-type-${clientId}`;
 
   async function startAssessment() {
     setLoading(true);
@@ -41,16 +43,20 @@ export function StartAssessmentForm({ clientId }: { clientId: string }) {
   return (
     <div className="w-full max-w-sm space-y-3 rounded-lg border p-4">
       <div className="space-y-2">
-        <Label>Assessment Name</Label>
-        <Input value={assessmentName} onChange={(e) => setAssessmentName(e.target.value)} />
+        <Label htmlFor={nameFieldId}>Assessment Name</Label>
+        <Input
+          id={nameFieldId}
+          value={assessmentName}
+          onChange={(e) => setAssessmentName(e.target.value)}
+        />
       </div>
       <div className="space-y-2">
-        <Label>Type</Label>
+        <Label htmlFor={typeFieldId}>Type</Label>
         <Select
           value={assessmentType}
           onValueChange={(value) => setAssessmentType(value ?? "initial")}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger id={typeFieldId} className="w-full">
             <span className="truncate">{formatAssessmentType(assessmentType)}</span>
           </SelectTrigger>
           <SelectContent>

@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") ?? undefined;
 
   const where = {
-    ...(status ? { status: status as "prospect" | "active" | "inactive" } : {}),
+    ...(status ? { status: status as "prospect" | "active" | "inactive" | "archived" } : {}),
     ...(search
       ? { companyName: { contains: search, mode: "insensitive" as const } }
       : {}),

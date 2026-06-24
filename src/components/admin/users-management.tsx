@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { KeyRound, UserPlus } from "lucide-react";
+import { KeyRound, Trash2, UserPlus } from "lucide-react";
+import { PermanentDeleteDialog } from "@/components/admin/permanent-delete-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ import {
 } from "@/components/ui/table";
 import type { SafeUser } from "@/lib/users/serialize";
 import type { UserRole } from "@/generated/prisma/client";
+import type { UserDeletionPreview } from "@/lib/records/types";
+import { DELETE_CONFIRMATION_TEXT } from "@/lib/records/types";
 import { toast } from "sonner";
 
 const ROLES: UserRole[] = ["admin", "technician", "client"];
@@ -50,6 +53,9 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
   const [resetPassword, setResetPassword] = useState("");
   const [resetting, setResetting] = useState(false);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [deleteUser, setDeleteUser] = useState<SafeUser | null>(null);
+  const [deletePreview, setDeletePreview] = useState<UserDeletionPreview | null>(null);
+  const [deletingUser, setDeletingUser] = useState(false);
   const [createForm, setCreateForm] = useState({
     name: "",
     email: "",
@@ -64,6 +70,40 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
       const data = await response.json();
       setUsers(data.data);
     }
+  }
+
+  async function openDeleteUser(user: SafeUser) {
+    const response = await fetch(`/api/v1/users/${user.id}/deletion-preview`);
+    if (!response.ok) {
+      toast.error("Unable to load deletion preview");
+      return;
+    }
+    setDeletePreview(await response.json());
+    setDeleteUser(user);
+  }
+
+  async function handlePermanentDeleteUser() {
+    if (!deleteUser) return;
+
+    setDeletingUser(true);
+    const response = await fetch(`/api/v1/users/${deleteUser.id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirm: DELETE_CONFIRMATION_TEXT }),
+    });
+    setDeletingUser(false);
+
+    if (!response.ok) {
+      const error = await response.json();
+      toast.error(error.error ?? "Unable to delete user");
+      return;
+    }
+
+    toast.success("User permanently deleted");
+    setDeleteUser(null);
+    setDeletePreview(null);
+    await refreshUsers();
+    router.refresh();
   }
 
   async function handleCreate(event: React.FormEvent) {
@@ -320,6 +360,16 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
                         <KeyRound className="mr-1 h-4 w-4" />
                         Reset Password
                       </Button>
+                      {user.id !== currentUserId ? (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => openDeleteUser(user)}
+                        >
+                          <Trash2 className="mr-1 h-4 w-4" />
+                          Delete
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -355,6 +405,35 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
           </form>
         </SheetContent>
       </Sheet>
+
+      <PermanentDeleteDialog
+        open={!!deleteUser}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteUser(null);
+            setDeletePreview(null);
+          }
+        }}
+        title="Permanently Delete User"
+        description="Users are normally disabled instead of deleted. Permanent deletion is only available when the user has no assessment or recommendation ownership history."
+        entityName={deleteUser?.name ?? ""}
+        countItems={
+          deletePreview
+            ? [
+                { label: "Assessments conducted", count: deletePreview.counts.assessments },
+                {
+                  label: "Recommendations created",
+                  count: deletePreview.counts.recommendationsCreated,
+                },
+                { label: "Projects assigned", count: deletePreview.counts.projectsAssigned },
+                { label: "Documents uploaded", count: deletePreview.counts.documentsUploaded },
+                { label: "Notes authored", count: deletePreview.counts.notes },
+              ]
+            : []
+        }
+        onConfirm={handlePermanentDeleteUser}
+        loading={deletingUser}
+      />
     </div>
   );
 }

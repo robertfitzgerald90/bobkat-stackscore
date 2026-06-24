@@ -53,6 +53,10 @@ export function ReassessmentForm({
   );
   const [assessmentType, setAssessmentType] = useState("followup");
 
+  const baselineFieldId = `reassessment-baseline-${clientId}`;
+  const nameFieldId = `reassessment-name-${clientId}`;
+  const typeFieldId = `reassessment-type-${clientId}`;
+
   const selectedBaseline = sortedAssessments.find(
     (assessment) => assessment.id === sourceAssessmentId,
   );
@@ -95,12 +99,12 @@ export function ReassessmentForm({
         preserved as immutable snapshots.
       </p>
       <div className="space-y-2">
-        <Label>Baseline Assessment</Label>
+        <Label htmlFor={baselineFieldId}>Baseline Assessment</Label>
         <Select
           value={sourceAssessmentId}
           onValueChange={(value) => setSourceAssessmentId(value ?? "")}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger id={baselineFieldId} className="w-full">
             {selectedBaseline ? (
               <span className="truncate">{selectedBaseline.assessmentName}</span>
             ) : (
@@ -123,16 +127,20 @@ export function ReassessmentForm({
         ) : null}
       </div>
       <div className="space-y-2">
-        <Label>Assessment Name</Label>
-        <Input value={assessmentName} onChange={(e) => setAssessmentName(e.target.value)} />
+        <Label htmlFor={nameFieldId}>Assessment Name</Label>
+        <Input
+          id={nameFieldId}
+          value={assessmentName}
+          onChange={(e) => setAssessmentName(e.target.value)}
+        />
       </div>
       <div className="space-y-2">
-        <Label>Type</Label>
+        <Label htmlFor={typeFieldId}>Type</Label>
         <Select
           value={assessmentType}
           onValueChange={(value) => setAssessmentType(value ?? "followup")}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger id={typeFieldId} className="w-full">
             <span className="truncate">{formatAssessmentType(assessmentType)}</span>
           </SelectTrigger>
           <SelectContent>
