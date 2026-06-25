@@ -76,11 +76,28 @@ src/
 
 See the [`docs/`](docs/) folder for product requirements, scoring rules, API specification, and architecture.
 
+### Operational guides
+
 | Guide | Description |
 |-------|-------------|
 | [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md) | Local setup, env vars, seeding, troubleshooting |
 | [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | What's built, MVP gaps, commit checklist |
 | [MVP_PRD.md](docs/MVP_PRD.md) | Product requirements and user stories |
+
+### Technical specifications (DOC-###)
+
+| Document | Description |
+|----------|-------------|
+| [DOC-300 – Technical Architecture](docs/DOC-300%20-%20Technical%20Architecture.md) | Stack, services, deployment |
+| [DOC-302 – API Specification](docs/DOC-302%20-%20API%20Specification.md) | REST API reference |
+| [DOC-301 – Database Schema Specification](docs/DOC301%20-%20Database%20Schema%20Specification.md) | Relational data model |
+| [DOC-303 – RBAC & Security Specification](docs/DOC-303%20RBAC%20&%20Security%20Specification.md) | Roles and permissions |
+| [DOC-111A – Scoring Engine Specification](docs/DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Authoritative scoring rules |
+| [DOC-115 – Question Scoring Matrix](docs/DOC-115%20-%20Question%20Scoring%20Matrix.md) | Question weights and answer scores |
+| [DOC-114 – Assessment Question Bank Specification](docs/DOC-114%20-%20Assessment%20Question%20Bank%20Specification.md) | 50 assessment questions (v1) |
+| [DOC-112 – Recommendation Engine Specification](docs/DOC112%20-%20Recommendation%20Engine%20Specification.md) | Recommendation rules |
+
+Legacy filenames (e.g. `TechnicalArchitecture.md`, `ScoringSpecification.md`) redirect to the canonical DOC-### documents above.
 
 ## Scripts
 

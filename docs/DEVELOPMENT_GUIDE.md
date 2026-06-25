@@ -189,6 +189,11 @@ Or use `npm.cmd` instead of `npm`.
 |----------|-------------|
 | [PROJECT_STATUS.md](PROJECT_STATUS.md) | What is built, what remains for MVP |
 | [MVP_PRD.md](MVP_PRD.md) | Product requirements |
-| [TechnicalArchitecture.md](TechnicalArchitecture.md) | Stack and service design |
-| [API_Specification.md](API_Specification.md) | REST API reference |
-| [ScoringSpecification.md](ScoringSpecification.md) | Authoritative scoring rules |
+| [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md) | Stack and service design |
+| [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md) | REST API reference |
+| [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md) | Data model and Prisma schema |
+| [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md) | Roles and permissions |
+| [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Authoritative scoring rules |
+| [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md) | Question weights and answer scores |
+| [DOC-114 – Assessment Question Bank Specification](DOC-114%20-%20Assessment%20Question%20Bank%20Specification.md) | Assessment question bank (v1) |
+| [DOC-112 – Recommendation Engine Specification](DOC112%20-%20Recommendation%20Engine%20Specification.md) | Recommendation engine rules |

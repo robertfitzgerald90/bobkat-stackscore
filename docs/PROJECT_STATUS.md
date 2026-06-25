@@ -20,21 +20,21 @@ BobKat StackScore has progressed from **documentation-only** to a **functional a
 
 Original product docs:
 
-- `Vision.md` — Business purpose and 7-category scoring framework
-- `DatabaseSchema.md` — 14-entity relational model
-- `AssessmentQuestions.md` — 50 assessment questions (v1)
-- `ScoreCalculation.md` — Scoring methodology (partially superseded)
-- `RecommendationEngine.md` — Recommendation rules and examples
+- `DOC-001 – Product Vision` — Business purpose and 7-category scoring framework
+- `DOC-301 – Database Schema Specification` — 14-entity relational model
+- `DOC-114 – Assessment Question Bank Specification` — 50 assessment questions (v1)
+- `DOC-111B – Scoring Methodology Reference` — Scoring methodology (partially superseded)
+- `DOC-112 – Recommendation Engine Specification` — Recommendation rules and examples
 
 Pre-development specs (gap resolution):
 
-- `QuestionScoringMatrix.md` — Weights and answer scores for all 50 questions
-- `ScoringSpecification.md` — Authoritative scoring rules (critical flags, rounding, caps)
+- `DOC-115 – Question Scoring Matrix` — Weights and answer scores for all 50 questions
+- `DOC-111A – Scoring Engine Specification` — Authoritative scoring rules (critical flags, rounding, caps)
 - `RecommendationRuleCatalog.json` — Machine-readable recommendation triggers
 - `MVP_PRD.md` — Personas, user stories, scope
-- `RBAC_Security_Spec.md` — Roles and permissions
-- `TechnicalArchitecture.md` — Stack, services, deployment
-- `API_Specification.md` — REST endpoint definitions
+- `DOC-303 – RBAC & Security Specification` — Roles and permissions
+- `DOC-300 – Technical Architecture` — Stack, services, deployment
+- `DOC-302 – API Specification` — REST endpoint definitions
 
 ### Phase 2 — Application scaffold
 
@@ -55,7 +55,7 @@ Pre-development specs (gap resolution):
 
 **Backend services:**
 
-- `lib/scoring/` — Category and overall score calculation per ScoringSpecification
+- `lib/scoring/` — Category and overall score calculation per DOC-111A – Scoring Engine Specification
 - `lib/recommendations/` — Trigger evaluation and consolidation
 - `lib/assessments/` — Atomic assessment completion transaction
 
@@ -223,7 +223,7 @@ and PROJECT_STATUS documentation for local setup and MVP status.
 Per [MVP_PRD.md](MVP_PRD.md):
 
 1. All Must-have user stories implemented
-2. Scoring matches ScoringSpecification worked examples
+2. Scoring matches DOC-111A – Scoring Engine Specification worked examples
 3. All 50 questions seed correctly
 4. Recommendation generation matches catalog
 5. One end-to-end test assessment completes

@@ -240,7 +240,7 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 - Role-based access (admin, technician)
 - Client CRUD
 - Full 50-question assessment workflow (draft → complete)
-- Scoring per [ScoringSpecification.md](ScoringSpecification.md)
+- Scoring per [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md)
 - Auto-recommendation generation per [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
 - Recommendation status management
 - Project creation and tracking from recommendations
@@ -289,12 +289,12 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 
 | Dependency | Document |
 | ---------- | -------- |
-| Question weights and scores | [QuestionScoringMatrix.md](QuestionScoringMatrix.md) |
-| Scoring rules | [ScoringSpecification.md](ScoringSpecification.md) |
+| Question weights and scores | [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md) |
+| Scoring rules | [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md) |
 | Recommendation rules | [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json) |
-| Data model | [DatabaseSchema.md](DatabaseSchema.md) |
-| RBAC | [RBAC_Security_Spec.md](RBAC_Security_Spec.md) |
-| Architecture | [TechnicalArchitecture.md](TechnicalArchitecture.md) |
+| Data model | [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md) |
+| RBAC | [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md) |
+| Architecture | [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md) |
 
 ---
 
@@ -315,7 +315,7 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 MVP is ready for internal use when:
 
 1. All Must-have user stories are implemented
-2. Scoring matches worked examples in ScoringSpecification
+2. Scoring matches worked examples in DOC-111A – Scoring Engine Specification
 3. All 50 questions seed correctly with answer options
 4. Recommendation generation matches catalog triggers
 5. At least one end-to-end test assessment completes successfully

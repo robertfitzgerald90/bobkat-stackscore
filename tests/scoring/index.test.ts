@@ -7,7 +7,7 @@ import {
 } from "@/lib/scoring";
 
 describe("scoring", () => {
-  it("calculates category and overall scores per ScoringSpecification example", () => {
+  it("calculates category and overall scores per DOC-111A example", () => {
     const categories = calculateCategoryScores([
       {
         categoryId: "1",
