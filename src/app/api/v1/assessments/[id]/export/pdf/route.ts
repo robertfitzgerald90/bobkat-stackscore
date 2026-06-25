@@ -55,6 +55,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const reportData = {
     clientName: assessment.client.companyName,
     assessmentName: assessment.assessmentName,
+    assessmentType: assessment.assessmentType,
     assessmentDate: formatReportDate(assessment.assessmentDate.toISOString()),
     completedAt: assessment.completedAt?.toISOString() ?? null,
     executiveSummary: assessment.executiveSummary,

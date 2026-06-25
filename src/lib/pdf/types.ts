@@ -4,6 +4,7 @@ import type { Priority } from "@/generated/prisma/client";
 export type AssessmentReportData = {
   clientName: string;
   assessmentName: string;
+  assessmentType: string;
   assessmentDate: string;
   completedAt: string | null;
   executiveSummary: string | null;
@@ -21,6 +22,14 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
 
 export function formatReportDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export function formatGeneratedDate(date: Date = new Date()): string {
+  return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
