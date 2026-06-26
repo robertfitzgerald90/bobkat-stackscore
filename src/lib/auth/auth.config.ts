@@ -9,6 +9,7 @@ export const authConfig = {
     maxAge: 60 * 60 * 24,
   },
   providers: [],
+  secret: process.env.AUTH_SECRET,
   callbacks: {
     authorized({ auth, request }) {
       const isLoggedIn = !!auth?.user;

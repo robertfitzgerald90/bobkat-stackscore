@@ -37,6 +37,42 @@ Copy `.env.example` to `.env` and configure:
 
 The dev server is pinned to **port 3000**. Production `npm start` also uses port 3000 unless you override.
 
+### Local vs Vercel (Neon)
+
+| Environment | Database | Config location |
+|-------------|----------|-----------------|
+| **Local dev** | Home/LAN PostgreSQL (`192.168.x.x`) | `.env` (gitignored) |
+| **Vercel production** | Neon | Vercel dashboard env vars only |
+
+See **[ENVIRONMENTS.md](ENVIRONMENTS.md)** for the full split and Vercel build setup.
+
+---
+
+## Vercel + Neon deployment
+
+1. **Vercel → Settings → Environment Variables → Production** (enable for **Build** and **Runtime**):
+
+   | Variable | Value |
+   |----------|--------|
+   | `DATABASE_URL` | Neon connection string (`?sslmode=require`) |
+   | `AUTH_SECRET` | 32+ character random string |
+   | `AUTH_URL` | `https://stackscore.bobkatit.com` |
+   | `NEXT_PUBLIC_APP_URL` | `https://stackscore.bobkatit.com` |
+
+2. **Build Command:** `npm run vercel-build`
+
+3. **One-time** — apply schema and seed to Neon (from your machine):
+
+   ```bash
+   set DATABASE_URL=postgresql://...@ep-xxx.neon.tech/neondb?sslmode=require
+   npm run db:migrate:deploy
+   npm run db:seed
+   ```
+
+4. Push code and **Redeploy** on Vercel.
+
+If build fails with `DATABASE_URL` not found, the variable is missing or not enabled for **Build** in Vercel.
+
 ---
 
 ## Fresh Database Install

@@ -7,8 +7,17 @@ export async function GET() {
   const checks: Record<string, CheckStatus> = {
     database: "error",
     authSecret: process.env.AUTH_SECRET ? "ok" : "error",
-    authUrl: process.env.AUTH_URL ? "ok" : "warn",
+    authUrl: "ok",
   };
+
+  if (!process.env.AUTH_URL) {
+    checks.authUrl = "warn";
+  } else if (
+    process.env.NODE_ENV === "production" &&
+    /localhost|127\.0\.0\.1/i.test(process.env.AUTH_URL)
+  ) {
+    checks.authUrl = "error";
+  }
 
   try {
     await prisma.$queryRaw`SELECT 1`;

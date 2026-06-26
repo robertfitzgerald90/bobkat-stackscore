@@ -91,6 +91,7 @@ See the [`docs/`](docs/) folder for product requirements, scoring rules, API spe
 
 | Guide | Description |
 |-------|-------------|
+| [ENVIRONMENTS.md](docs/ENVIRONMENTS.md) | Local vs Vercel (Neon) database setup |
 | [DEPLOY.md](docs/DEPLOY.md) | Production / pilot deployment |
 | [PILOT_GO_LIVE.md](docs/PILOT_GO_LIVE.md) | Pre-flight checklist for field use |
 | [KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) | What v1.0 includes and excludes |

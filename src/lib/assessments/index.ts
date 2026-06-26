@@ -1,13 +1,10 @@
 import { prisma } from "@/lib/db";
 import {
   buildExecutiveSummary,
-  calculateProjectionImpacts,
-  evaluateTriggers,
-  type TriggeredResponse,
 } from "@/lib/recommendations";
+import { generateRecommendations } from "@/lib/recommendations/generate";
 import {
   calculateScores,
-  calculateProjectedScore,
   RATING_LABELS,
   type CategoryScoreInput,
   type ScoringResult,
@@ -92,23 +89,9 @@ export async function completeAssessment(assessmentId: string, userId: string) {
 
   const scoring = calculateScores(categoryInputs, hasCriticalExposure);
 
-  const triggeredResponses: TriggeredResponse[] = assessment.responses
-    .filter((response) => response.selectedAnswerOption.triggersRecommendation)
-    .map((response) => ({
-      questionCode: response.question.code,
-      answerText: response.selectedAnswerOption.answerText,
-      scoreValue: response.scoreEarned,
-      weight: response.question.weight,
-      templateCode: response.selectedAnswerOption.recommendationTemplate?.code ?? "",
-      triggersCriticalFlag: response.selectedAnswerOption.triggersCriticalFlag,
-    }))
-    .filter((response) => response.templateCode);
-
-  const generatedRecommendations = evaluateTriggers(triggeredResponses);
-  const projectionImpact = calculateProjectionImpacts(generatedRecommendations);
-  const projectedScore = calculateProjectedScore(
+  const { recommendations: generatedRecommendations, projectedScore } = generateRecommendations(
+    assessment.responses,
     scoring.overallScore,
-    [projectionImpact],
   );
 
   const strengths = [...scoring.categoryScores]
@@ -330,25 +313,13 @@ export async function getAssessmentPreview(
     };
   });
 
-  const triggersWithCodes: TriggeredResponse[] = assessment.responses
-    .filter((response) => response.selectedAnswerOption.triggersRecommendation)
-    .map((response) => ({
-      questionCode: response.question.code,
-      answerText: response.selectedAnswerOption.answerText,
-      scoreValue: response.scoreEarned,
-      weight: response.question.weight,
-      templateCode: response.selectedAnswerOption.recommendationTemplate?.code ?? "",
-      triggersCriticalFlag: response.selectedAnswerOption.triggersCriticalFlag,
-    }))
-    .filter((response) => response.templateCode);
-
-  const allRecommendations = evaluateTriggers(triggersWithCodes);
-
-  const projectionImpact = calculateProjectionImpacts(allRecommendations);
-  const projectedScore =
+  const recommendationResult =
     scoring !== null
-      ? calculateProjectedScore(scoring.overallScore, [projectionImpact])
+      ? generateRecommendations(assessment.responses, scoring.overallScore)
       : null;
+
+  const allRecommendations = recommendationResult?.recommendations ?? [];
+  const projectedScore = recommendationResult?.projectedScore ?? null;
 
   const recommendations = allRecommendations.map((recommendation) => ({
     title: recommendation.title,

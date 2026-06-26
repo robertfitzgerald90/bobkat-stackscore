@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack -p 3000",
     "build": "prisma generate && next build --turbopack",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "start": "next start -p 3000",
     "lint": "eslint",
     "test": "vitest run",
@@ -15,6 +16,7 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:setup": "prisma migrate deploy && prisma db seed",
+    "db:neon:setup": "prisma migrate deploy && prisma db seed",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"

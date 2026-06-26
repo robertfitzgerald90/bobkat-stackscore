@@ -29,6 +29,10 @@ import {
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { formatPriority, PRIORITY_LABELS } from "@/lib/display";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
+import {
+  getPriorityTimeline,
+  groupRecommendationsByPriority,
+} from "@/lib/recommendations/display";
 import { calculateProjectedScore, RATING_LABELS } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
@@ -45,6 +49,16 @@ const RATING_VARIANT: Record<
   stable: "secondary",
   at_risk: "warning",
   critical: "destructive",
+};
+
+const PRIORITY_BADGE_VARIANT: Record<
+  Priority,
+  "destructive" | "warning" | "secondary" | "outline"
+> = {
+  critical: "destructive",
+  high: "warning",
+  medium: "secondary",
+  low: "outline",
 };
 
 const ALL_STATUSES: RecommendationStatus[] = [
@@ -448,88 +462,121 @@ export function AssessmentResults({
         <CardHeader>
           <CardTitle>Recommendations</CardTitle>
           <CardDescription>
-            Track status and convert recommendations into client projects
+            Automatically generated from assessment findings — prioritized by business risk with
+            estimated score improvements. No pricing included.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {summary.recommendations.map((recommendation) => (
-            <div key={recommendation.id} className="rounded-lg border p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium">{recommendation.title}</p>
-                    <Badge
-                      variant={
-                        recommendation.priority === "critical" ? "destructive" : "secondary"
-                      }
-                    >
-                      {PRIORITY_LABELS[recommendation.priority]}
-                    </Badge>
-                    {recommendation.consolidationGroupId ? (
-                      <Badge variant="outline">Consolidated</Badge>
-                    ) : null}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{recommendation.businessImpact}</p>
-                  {recommendation.suggestedService ? (
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">Service:</span>{" "}
-                      {recommendation.suggestedService}
-                    </p>
-                  ) : null}
-                  <p className="text-xs text-muted-foreground">
-                    {recommendation.categoryName} · +{recommendation.estimatedImpactPoints} pts
-                  </p>
+        <CardContent className="space-y-8">
+          {summary.recommendations.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No recommendations were triggered. This assessment did not surface actionable gaps
+              against the rule catalog.
+            </p>
+          ) : (
+            groupRecommendationsByPriority(summary.recommendations).map((group) => (
+              <div key={group.priority} className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-2">
+                  <h3 className="text-sm font-semibold">{PRIORITY_LABELS[group.priority]}</h3>
+                  <Badge variant={PRIORITY_BADGE_VARIANT[group.priority]}>
+                    {group.items.length}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    Target timeline: {getPriorityTimeline(group.priority)}
+                  </span>
                 </div>
+                <div className="space-y-4">
+                  {group.items.map((recommendation) => (
+                    <div key={recommendation.id} className="rounded-lg border p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1 space-y-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-medium">{recommendation.title}</p>
+                            <Badge variant={PRIORITY_BADGE_VARIANT[recommendation.priority]}>
+                              {PRIORITY_LABELS[recommendation.priority]}
+                            </Badge>
+                            {recommendation.consolidationGroupId ? (
+                              <Badge variant="outline">Consolidated</Badge>
+                            ) : null}
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                              Recommended Action
+                            </p>
+                            <p className="text-sm leading-relaxed">{recommendation.description}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                              Business Impact
+                            </p>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {recommendation.businessImpact}
+                            </p>
+                          </div>
+                          {recommendation.suggestedService ? (
+                            <p className="text-sm">
+                              <span className="text-muted-foreground">Suggested service:</span>{" "}
+                              {recommendation.suggestedService}
+                            </p>
+                          ) : null}
+                          <p className="text-xs text-muted-foreground">
+                            {recommendation.categoryName} · +
+                            {recommendation.estimatedImpactPoints} pts estimated improvement
+                          </p>
+                        </div>
 
-                <div className="flex flex-col items-end gap-2">
-                  <Select
-                    value={recommendation.status}
-                    items={RECOMMENDATION_STATUS_LABELS}
-                    onValueChange={(value) =>
-                      updateRecommendationStatus(
-                        recommendation.id,
-                        (value ?? recommendation.status) as RecommendationStatus,
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-[160px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ALL_STATUSES.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {RECOMMENDATION_STATUS_LABELS[status]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        <div className="flex flex-col items-end gap-2">
+                          <Select
+                            value={recommendation.status}
+                            items={RECOMMENDATION_STATUS_LABELS}
+                            onValueChange={(value) =>
+                              updateRecommendationStatus(
+                                recommendation.id,
+                                (value ?? recommendation.status) as RecommendationStatus,
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[160px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ALL_STATUSES.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {RECOMMENDATION_STATUS_LABELS[status]}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
 
-                  {recommendation.hasProject && recommendation.projectId ? (
-                    <Link
-                      href={`/projects?selected=${recommendation.projectId}`}
-                      className={buttonVariants({ variant: "outline", size: "sm" })}
-                    >
-                      <FolderKanban className="mr-2 h-4 w-4" />
-                      View Project
-                    </Link>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => convertToProject(recommendation)}
-                      disabled={
-                        recommendation.status === "completed" ||
-                        recommendation.status === "declined"
-                      }
-                    >
-                      <FolderKanban className="mr-2 h-4 w-4" />
-                      Convert to Project
-                    </Button>
-                  )}
+                          {recommendation.hasProject && recommendation.projectId ? (
+                            <Link
+                              href={`/projects?selected=${recommendation.projectId}`}
+                              className={buttonVariants({ variant: "outline", size: "sm" })}
+                            >
+                              <FolderKanban className="mr-2 h-4 w-4" />
+                              View Project
+                            </Link>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => convertToProject(recommendation)}
+                              disabled={
+                                recommendation.status === "completed" ||
+                                recommendation.status === "declined"
+                              }
+                            >
+                              <FolderKanban className="mr-2 h-4 w-4" />
+                              Convert to Project
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </CardContent>
       </Card>
 

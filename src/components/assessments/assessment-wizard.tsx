@@ -296,7 +296,13 @@ export function AssessmentWizard({
     setCompleting(false);
 
     if (response.ok) {
-      toast.success("Assessment completed");
+      const result = (await response.json()) as { recommendationCount?: number };
+      const count = result.recommendationCount ?? 0;
+      toast.success(
+        count > 0
+          ? `Assessment completed — ${count} recommendation${count === 1 ? "" : "s"} generated`
+          : "Assessment completed",
+      );
       router.push(
         reassessmentInfo
           ? `/assessments/${assessmentId}/improvement`

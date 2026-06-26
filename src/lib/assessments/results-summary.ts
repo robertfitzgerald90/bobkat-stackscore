@@ -2,6 +2,7 @@ import {
   calculateProjectionImpacts,
   type GeneratedRecommendation,
 } from "@/lib/recommendations";
+import { sortByRecommendationPriority } from "@/lib/recommendations/display";
 import { calculateProjectedScore, getRating, RATING_LABELS } from "@/lib/scoring";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
 
@@ -158,7 +159,7 @@ export function buildAssessmentResultsSummary(
     topStrengths,
     topRisks,
     immediateActions,
-    recommendations: recommendationSummaries,
+    recommendations: sortByRecommendationPriority(recommendationSummaries),
   };
 }
 
