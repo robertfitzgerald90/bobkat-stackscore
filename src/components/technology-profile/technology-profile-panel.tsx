@@ -16,6 +16,7 @@ import { RATING_LABELS } from "@/lib/scoring";
 import { getRating } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { V2_CATEGORY_DISPLAY_ORDER } from "@/lib/assessment-library/category-mapping";
+import { formatDisplayDate } from "@/lib/display";
 import { cn } from "@/lib/utils";
 import type { Rating, TrendDirection } from "@/generated/prisma/client";
 
@@ -140,7 +141,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
               <div className="rounded-md border px-3 py-2">
                 <p className="text-xs text-muted-foreground">Last Assessed</p>
                 <p className="text-sm font-medium">
-                  {profile.lastAssessedAt.toLocaleDateString()}
+                  {formatDisplayDate(profile.lastAssessedAt)}
                 </p>
               </div>
             ) : null}
@@ -151,7 +152,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
                   Next Assessment
                 </p>
                 <p className="text-sm font-medium">
-                  {profile.nextRecommendedAssessmentAt.toLocaleDateString()}
+                  {formatDisplayDate(profile.nextRecommendedAssessmentAt)}
                 </p>
               </div>
             ) : null}

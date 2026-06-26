@@ -15,7 +15,7 @@ import { ScoreTrendChart } from "@/components/analytics/score-trend-chart";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatPriority, PRIORITY_LABELS } from "@/lib/display";
+import { formatPriority, PRIORITY_LABELS, formatDisplayDate } from "@/lib/display";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
 import { formatProjectStatus } from "@/lib/projects";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
@@ -70,12 +70,8 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
     profile.categoryScores.map((category) => [category.categoryCode, category]),
   );
 
-  const lastAssessed = profile.lastAssessedAt
-    ? new Date(profile.lastAssessedAt).toLocaleDateString()
-    : null;
-  const nextAssessment = profile.nextRecommendedAssessmentAt
-    ? new Date(profile.nextRecommendedAssessmentAt).toLocaleDateString()
-    : null;
+  const lastAssessed = formatDisplayDate(profile.lastAssessedAt, null);
+  const nextAssessment = formatDisplayDate(profile.nextRecommendedAssessmentAt, null);
 
   return (
     <div className="space-y-6">
@@ -353,9 +349,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
                   ) : null}
                 </div>
                 <div className="text-xs text-muted-foreground sm:text-right">
-                  {project.completedAt
-                    ? new Date(project.completedAt).toLocaleDateString()
-                    : "—"}
+                  {formatDisplayDate(project.completedAt)}
                   {project.estimatedImpactPoints !== null
                     ? ` · +${project.estimatedImpactPoints} pts`
                     : ""}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { History, Layers, TrendingUp } from "lucide-react";
+import { History, Building2, Layers, TrendingUp } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ClientAdminActions } from "@/components/admin/client-admin-actions";
@@ -10,6 +10,7 @@ import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClientAssessmentForms } from "@/components/clients/client-assessment-forms";
+import { BusinessSnapshot } from "@/components/business-profile/business-snapshot";
 import { TechnologyProfilePanel } from "@/components/technology-profile/technology-profile-panel";
 import {
   formatAssessmentStatus,
@@ -76,7 +77,16 @@ export default async function ClientDetailPage({ params }: PageProps) {
         ) : null}
       </div>
 
+      <BusinessSnapshot clientId={client.id} />
+
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <Link
+          href={`/clients/${client.id}/business-profile`}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
+        >
+          <Building2 className="mr-2 h-4 w-4" />
+          Business Profile
+        </Link>
         <Link
           href={`/clients/${client.id}/technology-profile`}
           className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}

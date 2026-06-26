@@ -122,6 +122,7 @@ Contributors **must**:
 | **Tests** | Meaningful tests for business behavior when requested or when risk is high |
 | **Secrets** | Never commit credentials; follow DOC-303 |
 
+The Business Profile shall remain intentionally lightweight. StackScore is not a CRM. Business information is collected only when it improves technology consulting decisions.
 ---
 
 # Documentation Requirements

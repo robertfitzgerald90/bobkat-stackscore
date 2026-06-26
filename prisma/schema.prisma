@@ -20,6 +20,42 @@ enum ClientStatus {
   archived
 }
 
+enum ComplianceFramework {
+  none
+  cmmc
+  nist_800_171
+  iso_27001
+  hipaa
+  pci_dss
+  sox
+  other
+}
+
+enum PrimaryBusinessGoal {
+  improve_cybersecurity
+  reduce_downtime
+  support_growth
+  increase_productivity
+  improve_compliance
+  standardize_technology
+  reduce_it_costs
+  modernize_infrastructure
+  other
+}
+
+enum ItSupportModel {
+  internal
+  msp
+  hybrid
+  none
+}
+
+enum EnvironmentType {
+  cloud
+  hybrid
+  on_premises
+}
+
 enum AssessmentType {
   initial
   quarterly
@@ -159,20 +195,29 @@ model User {
 }
 
 model Client {
-  id                  String       @id @default(uuid())
-  companyName         String
-  primaryContactName  String
-  primaryContactEmail String
-  primaryContactPhone String?
-  industry            String?
-  employeeCount       Int?
-  deviceCount         Int?
-  locationCity        String?
-  locationState       String?
-  status              ClientStatus @default(prospect)
-  notes               String?      @db.Text
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+  id                        String               @id @default(uuid())
+  companyName               String
+  primaryContactName        String
+  primaryContactEmail       String
+  primaryContactPhone       String?
+  primaryContactTitle       String?
+  industry                  String?
+  employeeCount             Int?
+  numberOfLocations         Int?
+  deviceCount               Int?
+  primaryBusinessGoal       PrimaryBusinessGoal?
+  highestTechnologyPriority String?
+  technologyVision          String?              @db.Text
+  complianceFramework       ComplianceFramework? @default(none)
+  complianceDetails         Json?
+  itSupportModel            ItSupportModel?
+  environmentType           EnvironmentType?
+  locationCity              String?
+  locationState             String?
+  status                    ClientStatus         @default(prospect)
+  notes                     String?              @db.Text
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @updatedAt
 
   assessments     Assessment[]
   recommendations AssessmentRecommendation[]
