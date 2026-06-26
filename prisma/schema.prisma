@@ -74,6 +74,33 @@ enum Rating {
   critical
 }
 
+enum ResponseType {
+  binary
+  ternary
+  maturity
+}
+
+enum MaturityTier {
+  nascent
+  foundational
+  developing
+  mature
+  optimized
+}
+
+enum TrendDirection {
+  improving
+  stable
+  declining
+}
+
+enum ProfileSnapshotTrigger {
+  assessment_completed
+  project_completed
+  scheduled_review
+  manual
+}
+
 enum DocumentType {
   report
   diagram
@@ -132,21 +159,25 @@ model Client {
   assessments     Assessment[]
   recommendations AssessmentRecommendation[]
   projects        Project[]
-  scoreHistory    ClientScoreHistory[]
-  documents       Document[]
-  activityNotes   Note[]
+  scoreHistory       ClientScoreHistory[]
+  documents          Document[]
+  activityNotes      Note[]
+  technologyProfile  TechnologyProfile?
+  profileSnapshots   TechnologyProfileSnapshot[]
 }
 
 model AssessmentCategory {
-  id           String   @id @default(uuid())
-  code         String   @unique
-  name         String
-  description  String?  @db.Text
-  maxPoints    Int
-  displayOrder Int
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  description   String?  @db.Text
+  maxPoints     Int
+  displayOrder  Int
+  v2CategoryCode String?
+  v2DisplayName  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   questions       AssessmentQuestion[]
   categoryScores  AssessmentCategoryScore[]
@@ -156,17 +187,26 @@ model AssessmentCategory {
 }
 
 model AssessmentQuestion {
-  id           String    @id @default(uuid())
-  code         String    @unique
-  categoryId   String
-  questionText String    @db.Text
-  helpText     String?   @db.Text
-  weight       Int
-  displayOrder Int
-  riskLevel    RiskLevel @default(medium)
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                 String       @id @default(uuid())
+  code               String       @unique
+  v2QuestionId       String?      @unique
+  categoryId         String
+  questionText       String       @db.Text
+  helpText           String?      @db.Text
+  purpose            String?      @db.Text
+  capability         String?
+  responseType       ResponseType @default(ternary)
+  evidenceRequired   String?      @db.Text
+  relatedService     String?
+  relatedPlaybook    String?
+  relatedTechnologies String[]    @default([])
+  adminNotes         String?      @db.Text
+  weight             Int
+  displayOrder       Int
+  riskLevel          RiskLevel    @default(medium)
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 
   category      AssessmentCategory   @relation(fields: [categoryId], references: [id])
   answerOptions AnswerOption[]
@@ -222,8 +262,50 @@ model Assessment {
   categoryScores  AssessmentCategoryScore[]
   recommendations AssessmentRecommendation[]
   scoreHistory    ClientScoreHistory[]
-  documents       Document[]
-  notes           Note[]
+  documents              Document[]
+  notes                  Note[]
+  currentForProfiles     TechnologyProfile[]        @relation("ProfileCurrentAssessment")
+  profileSnapshots       TechnologyProfileSnapshot[]
+}
+
+model TechnologyProfile {
+  id                          String          @id @default(uuid())
+  clientId                    String          @unique
+  overallStackScore           Decimal?        @db.Decimal(5, 2)
+  maturityTier                MaturityTier?
+  categoryScores              Json?
+  riskSummary                 Json?
+  currentAssessmentId         String?
+  lastAssessedAt              DateTime?
+  nextRecommendedAssessmentAt DateTime?
+  trendDirection              TrendDirection?
+  criticalExposureCount       Int             @default(0)
+  openRecommendationCount     Int             @default(0)
+  createdAt                   DateTime        @default(now())
+  updatedAt                   DateTime        @updatedAt
+
+  client            Client                      @relation(fields: [clientId], references: [id])
+  currentAssessment Assessment?                 @relation("ProfileCurrentAssessment", fields: [currentAssessmentId], references: [id], onDelete: SetNull)
+  snapshots         TechnologyProfileSnapshot[]
+}
+
+model TechnologyProfileSnapshot {
+  id                  String                 @id @default(uuid())
+  clientId            String
+  technologyProfileId String
+  triggerType         ProfileSnapshotTrigger
+  triggerAssessmentId String?
+  snapshotAt          DateTime
+  overallStackScore   Decimal                @db.Decimal(5, 2)
+  maturityTier        MaturityTier
+  categoryScores      Json
+  riskSummary         Json?
+  metadata            Json?
+  createdAt           DateTime               @default(now())
+
+  client            Client            @relation(fields: [clientId], references: [id])
+  technologyProfile TechnologyProfile @relation(fields: [technologyProfileId], references: [id], onDelete: Cascade)
+  triggerAssessment Assessment?       @relation(fields: [triggerAssessmentId], references: [id], onDelete: SetNull)
 }
 
 model AssessmentResponse {

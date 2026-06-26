@@ -10,6 +10,7 @@ import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClientAssessmentForms } from "@/components/clients/client-assessment-forms";
+import { TechnologyProfilePanel } from "@/components/technology-profile/technology-profile-panel";
 import {
   formatAssessmentStatus,
   formatAssessmentType,
@@ -91,6 +92,8 @@ export default async function ClientDetailPage({ params }: PageProps) {
           Assessment History
         </Link>
       </div>
+
+      <TechnologyProfilePanel clientId={client.id} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

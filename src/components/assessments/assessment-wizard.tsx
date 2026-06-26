@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { AssessmentScorePanel } from "@/components/assessments/assessment-score-panel";
+import { AssessmentProgressBar } from "@/components/assessments/assessment-progress-bar";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { toast } from "sonner";
 import type { AssessmentPreview } from "@/types/assessment-preview";
@@ -37,8 +38,12 @@ type PreviousQuestionResponse = {
 type Question = {
   id: string;
   code: string;
+  v2QuestionId: string | null;
+  capability: string | null;
   questionText: string;
   helpText: string | null;
+  purpose: string | null;
+  evidenceRequired: string | null;
   weight: number;
   answerOptions: AnswerOption[];
   response: QuestionResponse | null;
@@ -67,6 +72,7 @@ export function AssessmentWizard({
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [preview, setPreview] = useState<AssessmentPreview | null>(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
@@ -106,6 +112,37 @@ export function AssessmentWizard({
   const activeCategory = categories.find((category) => category.id === activeCategoryId);
   const answeredCount = preview?.answeredCount ?? 0;
   const totalCount = preview?.totalCount ?? 0;
+
+  const flatQuestions = useMemo(
+    () =>
+      categories.flatMap((category) =>
+        category.questions.map((question) => ({ category, question })),
+      ),
+    [categories],
+  );
+
+  const currentFlatIndex = useMemo(() => {
+    if (!activeCategory) return 0;
+    const categoryStart = categories.findIndex((c) => c.id === activeCategoryId);
+    let index = 0;
+    for (let i = 0; i < categoryStart; i++) {
+      index += categories[i]?.questions.length ?? 0;
+    }
+    return index + activeQuestionIndex;
+  }, [activeCategory, activeCategoryId, activeQuestionIndex, categories]);
+
+  function navigateToFlatIndex(targetIndex: number) {
+    if (targetIndex < 0 || targetIndex >= flatQuestions.length) return;
+    const entry = flatQuestions[targetIndex];
+    setActiveCategoryId(entry.category.id);
+    const questionIndex = entry.category.questions.findIndex((q) => q.id === entry.question.id);
+    setActiveQuestionIndex(Math.max(0, questionIndex));
+  }
+
+  function handleCategorySelect(categoryId: string) {
+    setActiveCategoryId(categoryId);
+    setActiveQuestionIndex(0);
+  }
 
   function updateQuestionResponse(
     questionId: string,
@@ -212,6 +249,45 @@ export function AssessmentWizard({
     notesTimers.current.set(questionId, timer);
   }
 
+  function handleEvidenceChange(questionId: string, categoryId: string, evidence: string) {
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id !== categoryId
+          ? category
+          : {
+              ...category,
+              questions: category.questions.map((question) =>
+                question.id === questionId && question.response
+                  ? { ...question, response: { ...question.response, evidence } }
+                  : question,
+              ),
+            },
+      ),
+    );
+
+    const existingTimer = notesTimers.current.get(`evidence-${questionId}`);
+    if (existingTimer) clearTimeout(existingTimer);
+
+    const timer = setTimeout(async () => {
+      notesTimers.current.delete(`evidence-${questionId}`);
+      setSaving(true);
+
+      const response = await fetch(
+        `/api/v1/assessments/${assessmentId}/responses/${questionId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ evidence }),
+        },
+      );
+
+      setSaving(false);
+      if (!response.ok) toast.error("Failed to save evidence");
+    }, 600);
+
+    notesTimers.current.set(`evidence-${questionId}`, timer);
+  }
+
   async function completeAssessment() {
     setCompleting(true);
     const response = await fetch(`/api/v1/assessments/${assessmentId}/complete`, {
@@ -240,11 +316,19 @@ export function AssessmentWizard({
   }
 
   if (loading) {
-    return <p className="text-muted-foreground">Loading assessment...</p>;
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading assessment...</p>
+      </div>
+    );
   }
+
+  const activeQuestion = activeCategory?.questions[activeQuestionIndex];
 
   return (
     <div className="space-y-6">
+      <AssessmentProgressBar answeredCount={answeredCount} totalCount={totalCount} />
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{clientName}</p>
@@ -291,7 +375,7 @@ export function AssessmentWizard({
                     <button
                       key={category.id}
                       type="button"
-                      onClick={() => setActiveCategoryId(category.id)}
+                      onClick={() => handleCategorySelect(category.id)}
                       className={cn(
                         "flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-left text-sm transition-colors",
                         isActive
@@ -344,7 +428,7 @@ export function AssessmentWizard({
                   <button
                     key={category.id}
                     type="button"
-                    onClick={() => setActiveCategoryId(category.id)}
+                    onClick={() => handleCategorySelect(category.id)}
                     className={cn(
                       "flex w-full items-start gap-2 rounded-md px-3 py-2.5 text-left text-sm transition-colors",
                       isActive
@@ -385,129 +469,204 @@ export function AssessmentWizard({
           </Card>
 
           <div className="min-w-0 space-y-4">
-            {activeCategory ? (
+            {activeCategory && activeQuestion ? (
               <>
-                <div>
-                  <h3 className="text-lg font-semibold">{activeCategory.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {activeCategory.maxPoints} max points ·{" "}
-                    {getCategoryProgress(activeCategory).answered} of{" "}
-                    {getCategoryProgress(activeCategory).total} answered
-                  </p>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-lg font-semibold">{activeCategory.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Question {currentFlatIndex + 1} of {flatQuestions.length} ·{" "}
+                      {activeCategory.maxPoints} max category points
+                    </p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      disabled={currentFlatIndex === 0}
+                      onClick={() => navigateToFlatIndex(currentFlatIndex - 1)}
+                      aria-label="Previous question"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      disabled={currentFlatIndex >= flatQuestions.length - 1}
+                      onClick={() => navigateToFlatIndex(currentFlatIndex + 1)}
+                      aria-label="Next question"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
-                {activeCategory.questions.map((question) => (
-                  <Card
-                    key={question.id}
-                    className={cn(
-                      question.response && "border-primary/30",
-                      savingQuestionId === question.id && "opacity-80",
-                    )}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <CardTitle className="text-base leading-snug">
-                          {question.questionText}
-                        </CardTitle>
-                        <Badge variant="outline" className="shrink-0">
-                          {question.weight} pts
+                <Card
+                  key={activeQuestion.id}
+                  className={cn(
+                    activeQuestion.response && "border-primary/30",
+                    savingQuestionId === activeQuestion.id && "opacity-80",
+                  )}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="outline" className="font-mono text-xs">
+                        {activeQuestion.code}
+                      </Badge>
+                      {activeQuestion.v2QuestionId ? (
+                        <Badge variant="secondary" className="font-mono text-xs">
+                          {activeQuestion.v2QuestionId}
                         </Badge>
+                      ) : null}
+                      {activeQuestion.capability ? (
+                        <Badge variant="secondary" className="text-xs">
+                          {activeQuestion.capability}
+                        </Badge>
+                      ) : null}
+                      <Badge variant="outline" className="ml-auto shrink-0">
+                        {activeQuestion.weight} pts
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-base leading-snug pt-2">
+                      {activeQuestion.questionText}
+                    </CardTitle>
+                    {activeQuestion.helpText ? (
+                      <CardDescription>{activeQuestion.helpText}</CardDescription>
+                    ) : null}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {activeQuestion.previousResponse ? (
+                      <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-sm">
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Previous Answer
+                        </p>
+                        <p className="mt-1">{activeQuestion.previousResponse.answerText}</p>
+                        {activeQuestion.response &&
+                        activeQuestion.response.selectedAnswerOptionId !==
+                          activeQuestion.previousResponse.selectedAnswerOptionId ? (
+                          <Badge variant="warning" className="mt-2 text-xs">
+                            Changed from previous
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="mt-2 text-xs">
+                            Unchanged from previous
+                          </Badge>
+                        )}
                       </div>
-                      {question.helpText ? (
-                        <CardDescription>{question.helpText}</CardDescription>
-                      ) : null}
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {question.previousResponse ? (
-                        <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-sm">
-                          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                            Previous Answer
-                          </p>
-                          <p className="mt-1">{question.previousResponse.answerText}</p>
-                          {question.response &&
-                          question.response.selectedAnswerOptionId !==
-                            question.previousResponse.selectedAnswerOptionId ? (
-                            <Badge variant="warning" className="mt-2 text-xs">
-                              Changed from previous
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary" className="mt-2 text-xs">
-                              Unchanged from previous
-                            </Badge>
-                          )}
-                        </div>
-                      ) : null}
-                      <div className="flex flex-col gap-2">
-                        {question.answerOptions.map((option) => {
-                          const selected =
-                            question.response?.selectedAnswerOptionId === option.id;
-                          return (
-                            <Button
-                              key={option.id}
-                              variant={selected ? "default" : "outline"}
-                              className={cn(
-                                "h-auto justify-start whitespace-normal px-4 py-3 text-left",
-                                option.triggersCriticalFlag &&
-                                  !selected &&
-                                  "border-destructive/40",
-                                option.triggersRecommendation &&
-                                  !selected &&
-                                  "border-amber-500/40",
-                              )}
-                              onClick={() =>
-                                saveAnswer(
-                                  question.id,
-                                  activeCategory.id,
-                                  option.id,
-                                  question.response?.notes,
-                                )
-                              }
-                              disabled={savingQuestionId === question.id}
-                            >
-                              <span className="flex w-full items-center justify-between gap-2">
-                                <span>{option.answerText}</span>
-                                <span className="flex shrink-0 gap-1">
-                                  {option.triggersRecommendation ? (
-                                    <Badge variant="secondary" className="text-xs">
-                                      Rec
-                                    </Badge>
-                                  ) : null}
-                                  {option.triggersCriticalFlag ? (
-                                    <Badge variant="destructive" className="text-xs">
-                                      Critical
-                                    </Badge>
-                                  ) : null}
-                                </span>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      {activeQuestion.answerOptions.map((option) => {
+                        const selected =
+                          activeQuestion.response?.selectedAnswerOptionId === option.id;
+                        return (
+                          <Button
+                            key={option.id}
+                            variant={selected ? "default" : "outline"}
+                            className={cn(
+                              "h-auto justify-start whitespace-normal px-4 py-3 text-left",
+                              option.triggersCriticalFlag &&
+                                !selected &&
+                                "border-destructive/40",
+                              option.triggersRecommendation &&
+                                !selected &&
+                                "border-amber-500/40",
+                            )}
+                            onClick={() =>
+                              saveAnswer(
+                                activeQuestion.id,
+                                activeCategory.id,
+                                option.id,
+                                activeQuestion.response?.notes,
+                              )
+                            }
+                            disabled={savingQuestionId === activeQuestion.id}
+                          >
+                            <span className="flex w-full items-center justify-between gap-2">
+                              <span>{option.answerText}</span>
+                              <span className="flex shrink-0 gap-1">
+                                {option.triggersRecommendation ? (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Rec
+                                  </Badge>
+                                ) : null}
+                                {option.triggersCriticalFlag ? (
+                                  <Badge variant="destructive" className="text-xs">
+                                    Critical
+                                  </Badge>
+                                ) : null}
                               </span>
-                            </Button>
-                          );
-                        })}
-                      </div>
+                            </span>
+                          </Button>
+                        );
+                      })}
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor={`notes-${question.id}`}>Assessor Notes</Label>
-                        <textarea
-                          id={`notes-${question.id}`}
-                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder={
-                            question.response
-                              ? "Add observations, evidence, or context..."
-                              : "Select an answer first to add notes"
-                          }
-                          value={question.response?.notes ?? ""}
-                          disabled={!question.response}
-                          onChange={(event) =>
-                            handleNotesChange(
-                              question.id,
-                              activeCategory.id,
-                              event.target.value,
-                            )
-                          }
-                        />
+                    <div className="space-y-2">
+                      <Label htmlFor={`notes-${activeQuestion.id}`}>Assessor Notes</Label>
+                      <textarea
+                        id={`notes-${activeQuestion.id}`}
+                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder={
+                          activeQuestion.response
+                            ? "Add observations, context, or discussion points..."
+                            : "Select an answer first to add notes"
+                        }
+                        value={activeQuestion.response?.notes ?? ""}
+                        disabled={!activeQuestion.response}
+                        onChange={(event) =>
+                          handleNotesChange(
+                            activeQuestion.id,
+                            activeCategory.id,
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor={`evidence-${activeQuestion.id}`}>
+                        Evidence
+                        {activeQuestion.evidenceRequired ? (
+                          <span className="ml-1 font-normal text-muted-foreground">
+                            — {activeQuestion.evidenceRequired}
+                          </span>
+                        ) : null}
+                      </Label>
+                      <textarea
+                        id={`evidence-${activeQuestion.id}`}
+                        className="flex min-h-[72px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder={
+                          activeQuestion.response
+                            ? "Document verification source, screenshot reference, or system report..."
+                            : "Select an answer first to add evidence"
+                        }
+                        value={activeQuestion.response?.evidence ?? ""}
+                        disabled={!activeQuestion.response}
+                        onChange={(event) =>
+                          handleEvidenceChange(
+                            activeQuestion.id,
+                            activeCategory.id,
+                            event.target.value,
+                          )
+                        }
+                      />
+                    </div>
+
+                    {activeQuestion.response ? (
+                      <div className="flex justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={currentFlatIndex >= flatQuestions.length - 1}
+                          onClick={() => navigateToFlatIndex(currentFlatIndex + 1)}
+                        >
+                          Next Question
+                          <ChevronRight className="ml-1 h-4 w-4" />
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    ) : null}
+                  </CardContent>
+                </Card>
               </>
             ) : (
               <p className="text-muted-foreground">Select a category to begin.</p>

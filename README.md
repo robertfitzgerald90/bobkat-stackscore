@@ -32,10 +32,21 @@ Required variables:
 
 ### 3. Set up the database
 
+**New install (recommended):**
+
+```bash
+npm run db:migrate:deploy
+npm run db:seed
+```
+
+**Development only** (quick schema sync without migration history):
+
 ```bash
 npm run db:push
 npm run db:seed
 ```
+
+If you already used `db push` on an existing database, baseline before deploying migrations — see [DEPLOY.md](docs/DEPLOY.md#existing-database-previously-used-db-push).
 
 Seed creates:
 
@@ -80,6 +91,9 @@ See the [`docs/`](docs/) folder for product requirements, scoring rules, API spe
 
 | Guide | Description |
 |-------|-------------|
+| [DEPLOY.md](docs/DEPLOY.md) | Production / pilot deployment |
+| [PILOT_GO_LIVE.md](docs/PILOT_GO_LIVE.md) | Pre-flight checklist for field use |
+| [KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) | What v1.0 includes and excludes |
 | [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md) | Local setup, env vars, seeding, troubleshooting |
 | [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | What's built, MVP gaps, commit checklist |
 | [MVP_PRD.md](docs/MVP_PRD.md) | Product requirements and user stories |
@@ -105,8 +119,13 @@ Legacy filenames (e.g. `TechnicalArchitecture.md`, `ScoringSpecification.md`) re
 
 | Command | Description |
 | ------- | ----------- |
-| `npm run dev` | Start dev server |
+| `npm run dev` | Start dev server (port 3000) |
 | `npm run build` | Generate Prisma client and build |
-| `npm run db:migrate` | Run migrations |
+| `npm run start` | Start production server (port 3000) |
+| `npm test` | Run unit tests |
+| `npm run smoke` | Post-deploy health + auth smoke check |
+| `npm run db:migrate` | Create/apply migrations (dev) |
+| `npm run db:migrate:deploy` | Apply migrations (production) |
+| `npm run db:setup` | Migrate + seed (fresh install) |
 | `npm run db:seed` | Seed assessment data and users |
 | `npm run db:studio` | Open Prisma Studio |

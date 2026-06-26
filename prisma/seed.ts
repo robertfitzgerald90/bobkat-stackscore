@@ -2,7 +2,12 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import catalog from "../data/RecommendationRuleCatalog.json";
 import { prisma } from "../src/lib/db";
-import { CATEGORIES, QUESTIONS_BY_CATEGORY } from "./seed-data";
+import {
+  QUESTION_METADATA_BY_CODE,
+  V2_CATEGORY_METADATA,
+} from "../src/lib/assessment-library/metadata";
+import { backfillTechnologyProfiles } from "../src/lib/technology-profile";
+import { CATEGORIES, QUESTIONS_BY_CATEGORY, type SeedAnswer } from "./seed-data";
 import { Priority } from "../src/generated/prisma/client";
 
 async function main() {
@@ -11,6 +16,7 @@ async function main() {
   const categoryIdByCode = new Map<string, string>();
 
   for (const category of CATEGORIES) {
+    const v2Meta = V2_CATEGORY_METADATA[category.code];
     const record = await prisma.assessmentCategory.upsert({
       where: { code: category.code },
       update: {
@@ -18,6 +24,8 @@ async function main() {
         description: category.description,
         maxPoints: category.maxPoints,
         displayOrder: category.displayOrder,
+        v2CategoryCode: v2Meta?.v2CategoryCode,
+        v2DisplayName: v2Meta?.v2DisplayName,
         isActive: true,
       },
       create: {
@@ -26,6 +34,8 @@ async function main() {
         description: category.description,
         maxPoints: category.maxPoints,
         displayOrder: category.displayOrder,
+        v2CategoryCode: v2Meta?.v2CategoryCode,
+        v2DisplayName: v2Meta?.v2DisplayName,
       },
     });
     categoryIdByCode.set(category.code, record.id);
@@ -71,10 +81,25 @@ async function main() {
     if (!categoryId) continue;
 
     for (const question of questions) {
+      const metadata = QUESTION_METADATA_BY_CODE.get(question.code);
+      const helpText = metadata
+        ? `${metadata.purpose} Evidence: ${metadata.evidenceRequired}`
+        : null;
+
       const questionRecord = await prisma.assessmentQuestion.upsert({
         where: { code: question.code },
         update: {
           questionText: question.questionText,
+          helpText,
+          v2QuestionId: metadata?.v2QuestionId,
+          purpose: metadata?.purpose,
+          capability: metadata?.capability,
+          responseType: metadata?.responseType ?? "ternary",
+          evidenceRequired: metadata?.evidenceRequired,
+          relatedService: metadata?.relatedService,
+          relatedPlaybook: metadata?.relatedPlaybook,
+          relatedTechnologies: metadata?.relatedTechnologies ?? [],
+          adminNotes: metadata?.adminNotes,
           weight: question.weight,
           displayOrder: question.displayOrder,
           riskLevel: question.riskLevel,
@@ -84,6 +109,16 @@ async function main() {
         create: {
           code: question.code,
           questionText: question.questionText,
+          helpText,
+          v2QuestionId: metadata?.v2QuestionId,
+          purpose: metadata?.purpose,
+          capability: metadata?.capability,
+          responseType: metadata?.responseType ?? "ternary",
+          evidenceRequired: metadata?.evidenceRequired,
+          relatedService: metadata?.relatedService,
+          relatedPlaybook: metadata?.relatedPlaybook,
+          relatedTechnologies: metadata?.relatedTechnologies ?? [],
+          adminNotes: metadata?.adminNotes,
           weight: question.weight,
           displayOrder: question.displayOrder,
           riskLevel: question.riskLevel,
@@ -91,25 +126,7 @@ async function main() {
         },
       });
 
-      await prisma.answerOption.deleteMany({ where: { questionId: questionRecord.id } });
-
-      for (const [index, answer] of question.answers.entries()) {
-        const templateId = answer.templateCode
-          ? templateIdByCode.get(answer.templateCode)
-          : undefined;
-
-        await prisma.answerOption.create({
-          data: {
-            questionId: questionRecord.id,
-            answerText: answer.text,
-            scoreValue: answer.scoreValue,
-            displayOrder: index + 1,
-            triggersCriticalFlag: answer.triggersCriticalFlag ?? false,
-            triggersRecommendation: answer.triggersRecommendation ?? false,
-            recommendationTemplateId: templateId,
-          },
-        });
-      }
+      await syncAnswerOptions(questionRecord.id, question.answers, templateIdByCode);
     }
   }
 
@@ -148,6 +165,8 @@ async function main() {
     },
   });
 
+  await backfillTechnologyProfiles();
+
   console.log("Seed complete.");
   console.log("Admin: admin@bobkatit.com");
   console.log("Technician: technician@bobkatit.com");
@@ -164,6 +183,52 @@ function getCategoryCodeForQuestion(questionId: string): string {
   if (num <= 39) return "documentation";
   if (num <= 45) return "bcdr";
   return "strategic";
+}
+
+/** Update answer options in place — never delete options referenced by assessments. */
+async function syncAnswerOptions(
+  questionId: string,
+  answers: SeedAnswer[],
+  templateIdByCode: Map<string, string>,
+) {
+  const existing = await prisma.answerOption.findMany({
+    where: { questionId },
+    include: { _count: { select: { responses: true } } },
+  });
+
+  const existingByOrder = new Map(existing.map((option) => [option.displayOrder, option]));
+  const seedOrders = new Set<number>();
+
+  for (const [index, answer] of answers.entries()) {
+    const displayOrder = index + 1;
+    seedOrders.add(displayOrder);
+
+    const templateId = answer.templateCode
+      ? templateIdByCode.get(answer.templateCode)
+      : undefined;
+
+    const data = {
+      answerText: answer.text,
+      scoreValue: answer.scoreValue,
+      displayOrder,
+      triggersCriticalFlag: answer.triggersCriticalFlag ?? false,
+      triggersRecommendation: answer.triggersRecommendation ?? false,
+      recommendationTemplateId: templateId ?? null,
+    };
+
+    const match = existingByOrder.get(displayOrder);
+    if (match) {
+      await prisma.answerOption.update({ where: { id: match.id }, data });
+    } else {
+      await prisma.answerOption.create({ data: { questionId, ...data } });
+    }
+  }
+
+  for (const option of existing) {
+    if (seedOrders.has(option.displayOrder)) continue;
+    if (option._count.responses > 0) continue;
+    await prisma.answerOption.delete({ where: { id: option.id } });
+  }
 }
 
 main()

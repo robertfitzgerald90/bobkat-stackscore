@@ -75,8 +75,13 @@ export async function GET(_request: Request, context: RouteContext) {
         return {
           id: question.id,
           code: question.code,
+          v2QuestionId: question.v2QuestionId,
+          capability: question.capability,
           questionText: question.questionText,
           helpText: question.helpText,
+          purpose: question.purpose,
+          evidenceRequired: question.evidenceRequired,
+          responseType: question.responseType,
           weight: question.weight,
           answerOptions: question.answerOptions,
           response: responseByQuestion.get(question.id) ?? null,

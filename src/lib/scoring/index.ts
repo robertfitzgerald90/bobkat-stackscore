@@ -100,3 +100,7 @@ export function calculateProjectedScore(
   const totalImpact = impactPoints.reduce((sum, points) => sum + points, 0);
   return Math.min(100, currentScore + totalImpact);
 }
+
+export { getMaturityTier, getMaturityTierLabel, MATURITY_TIER_LABELS } from "./maturity";
+export { getScoreBarColorClass, getScoreTextColorClass } from "./score-display";
+export { RATING_DISPLAY_LABELS, RATING_BADGE_VARIANT, MATURITY_CATEGORY_ORDER } from "./rating-display";

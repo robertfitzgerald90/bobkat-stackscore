@@ -21,33 +21,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const normalized = {
-          email:
-            typeof credentials?.email === "string"
-              ? credentials.email.trim().toLowerCase()
-              : "",
-          password:
-            typeof credentials?.password === "string" ? credentials.password : "",
-        };
+        try {
+          const normalized = {
+            email:
+              typeof credentials?.email === "string"
+                ? credentials.email.trim().toLowerCase()
+                : "",
+            password:
+              typeof credentials?.password === "string" ? credentials.password : "",
+          };
 
-        const parsed = credentialsSchema.safeParse(normalized);
-        if (!parsed.success) return null;
+          const parsed = credentialsSchema.safeParse(normalized);
+          if (!parsed.success) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email },
-        });
+          const user = await prisma.user.findUnique({
+            where: { email: parsed.data.email },
+          });
 
-        if (!user || !user.isActive) return null;
+          if (!user || !user.isActive) return null;
 
-        const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
-        if (!valid) return null;
+          const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
+          if (!valid) return null;
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("[auth] authorize failed:", error);
+          return null;
+        }
       },
     }),
   ],

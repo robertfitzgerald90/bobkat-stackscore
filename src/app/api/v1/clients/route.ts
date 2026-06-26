@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
       locationState: body.locationState ?? null,
       status: body.status ?? "prospect",
       notes: body.notes ?? null,
+      technologyProfile: { create: {} },
     },
   });
 

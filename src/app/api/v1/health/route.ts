@@ -1,19 +1,39 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+type CheckStatus = "ok" | "error" | "warn";
+
 export async function GET() {
-  let database: "connected" | "disconnected" = "disconnected";
+  const checks: Record<string, CheckStatus> = {
+    database: "error",
+    authSecret: process.env.AUTH_SECRET ? "ok" : "error",
+    authUrl: process.env.AUTH_URL ? "ok" : "warn",
+  };
 
   try {
     await prisma.$queryRaw`SELECT 1`;
-    database = "connected";
+    checks.database = "ok";
   } catch {
-    database = "disconnected";
+    checks.database = "error";
   }
 
-  return NextResponse.json({
-    status: database === "connected" ? "ok" : "degraded",
-    database,
-    version: "1.0.0",
-  });
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.AUTH_SECRET &&
+    process.env.AUTH_SECRET.length < 32
+  ) {
+    checks.authSecret = "error";
+  }
+
+  const hasError = Object.values(checks).includes("error");
+
+  return NextResponse.json(
+    {
+      status: hasError ? "unhealthy" : "ok",
+      checks,
+      version: "1.0.0",
+      environment: process.env.NODE_ENV ?? "development",
+    },
+    { status: hasError ? 503 : 200 },
+  );
 }

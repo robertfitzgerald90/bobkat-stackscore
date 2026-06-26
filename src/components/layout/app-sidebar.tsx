@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FolderKanban, Shield } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, Shield, BookOpen } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import {
   Sheet,
@@ -16,6 +16,7 @@ const navItems = [
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/users", label: "Users", icon: Shield, adminOnly: true },
+  { href: "/admin/assessment-library", label: "Assessment Library", icon: BookOpen, adminOnly: true },
 ];
 
 function SidebarNav({

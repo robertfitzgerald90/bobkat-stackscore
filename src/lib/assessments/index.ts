@@ -220,6 +220,8 @@ export async function completeAssessment(assessmentId: string, userId: string) {
     });
   });
 
+  await syncProfileFromAssessment(assessmentId);
+
   return prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {
@@ -237,6 +239,7 @@ import type {
   RecommendationPreview,
   RiskPreview,
 } from "@/types/assessment-preview";
+import { syncProfileFromAssessment } from "@/lib/technology-profile";
 
 export type { AssessmentPreview, CategoryPreview, RecommendationPreview, RiskPreview };
 

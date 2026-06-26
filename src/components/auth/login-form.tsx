@@ -21,22 +21,32 @@ export function LoginForm() {
     setLoading(true);
     setError("");
 
-    const result = await signIn("credentials", {
-      email: email.trim().toLowerCase(),
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email: email.trim().toLowerCase(),
+        password,
+        redirect: false,
+      });
 
-    setLoading(false);
+      if (!result?.ok || result?.error) {
+        const message =
+          result?.error === "Configuration"
+            ? "Authentication is not configured. Contact your administrator."
+            : result?.error === "CredentialsSignin"
+              ? "Invalid email or password"
+              : "Unable to sign in. Please try again.";
+        setError(message);
+        return;
+      }
 
-    if (!result?.ok || result?.error) {
-      setError("Invalid email or password");
-      return;
+      const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
+      setError("Unable to reach the server. Check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-
-    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   return (
@@ -52,8 +62,9 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onValueChange={setEmail}
               required
             />
           </div>
@@ -62,8 +73,9 @@ export function LoginForm() {
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onValueChange={setPassword}
               required
             />
           </div>
