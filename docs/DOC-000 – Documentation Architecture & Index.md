@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 1.1
+**Version:** 1.4
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 25, 2026
@@ -93,6 +93,10 @@ Authoritative specifications that translate business architecture into software 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
 | [DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | 1.0 | Governing (domain) | v2 | Draft |
+| [DOC-121](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) | Database Schema Specification | 1.0 | Governing (database) | v2 | Draft |
+| [DOC-122](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Roles & Permissions Specification | 1.0 | Governing (security) | v2 | Draft |
+| [DOC-123](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | 1.0 | Governing (workflow) | v2 | Draft |
+| [DOC-124](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md) | Service Layer Specification | 1.0 | Governing (services) | v2 | Draft |
 
 ### DOC-120 – Domain Model Specification
 
@@ -106,16 +110,52 @@ Authoritative specifications that translate business architecture into software 
 | **Depends on** | DOC-001, DOC-003, DOC-100–107, DOC-110–114, DOC-118 |
 | **Used by** | DOC-121, DOC-122, DOC-123, DOC-124, DOC-301 |
 
-Planned domain architecture companions (not yet published): DOC-121–DOC-124.
+### DOC-121 – Database Schema Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-121 |
+| **Title** | Database Schema Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines the database-level structure required to support the StackScore domain model; guides future Prisma schema design. |
+| **Depends on** | DOC-120 |
+| **Used by** | DOC-301, DOC-122, DOC-124 |
+
+### DOC-122 – Roles & Permissions Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-122 |
+| **Title** | Roles & Permissions Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines user roles, permission boundaries, access rules, and security expectations across StackScore modules. |
+| **Depends on** | DOC-120, DOC-121 |
+| **Used by** | DOC-303, DOC-302, DOC-124 |
+
+### DOC-124 – Service Layer Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-124 |
+| **Title** | Service Layer Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines the application service layer — business services, dependencies, domain events, and orchestration rules that implement DOC-123 workflows against the DOC-120 domain model. |
+| **Depends on** | DOC-120, DOC-121, DOC-122, DOC-123 |
+| **Used by** | DOC-300, DOC-302 |
+
+Domain architecture tier (DOC-120 – DOC-124) is fully specified at Draft v1.0.
 
 ## Technical layer
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
 | DOC-300 | Technical Architecture | Governing | v1 + v2 | Implementation guide |
-| DOC-301 | Database Schema Specification | Governing | v1 + v2 | Schema spec |
-| DOC-302 | API Specification | Governing | v1 + v2 | API spec |
-| DOC-303 | RBAC & Security Specification | Governing | v1 + v2 | Security spec |
+| DOC-301 | Database Schema Specification | Governing | v1 + v2 | Schema spec (v1 implementation; see DOC-121 for v2 target) |
+| DOC-302 | API Specification | Governing | v1 + v2 | API spec (see DOC-124 for v2 service delegation) |
+| DOC-303 | RBAC & Security Specification | Governing | v1 + v2 | Security spec (v1 enforcement; see DOC-122 for v2 target) |
 
 ## Machine-readable artifacts
 
@@ -159,6 +199,9 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
 * [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
+* [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
+* [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
+* [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
 
 ---
 
@@ -168,3 +211,6 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | ------- | ---- | ------ | ------- |
 | 1.0 | 2026-06-25 | BobKat IT | Stage A — initial documentation registry |
 | 1.1 | 2026-06-25 | BobKat IT | Registered DOC-107, DOC-120 (Domain Architecture tier), and dependency metadata |
+| 1.2 | 2026-06-25 | BobKat IT | Registered DOC-121 (database architecture) and DOC-123 (workflow); DOC-301 v2 target note |
+| 1.3 | 2026-06-25 | BobKat IT | Registered DOC-122 (roles & permissions); DOC-303 v2 target note |
+| 1.4 | 2026-06-25 | BobKat IT | Registered DOC-124 (service layer); Domain Architecture tier DOC-120–124 complete |
