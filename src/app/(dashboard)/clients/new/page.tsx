@@ -114,6 +114,7 @@ export default function NewClientPage() {
               <Label>Status</Label>
               <Select
                 value={form.status}
+                items={CLIENT_STATUS_LABELS}
                 onValueChange={(value) =>
                   setForm({ ...form, status: value ?? "prospect" })
                 }

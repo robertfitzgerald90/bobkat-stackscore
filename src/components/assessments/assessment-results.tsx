@@ -484,6 +484,7 @@ export function AssessmentResults({
                 <div className="flex flex-col items-end gap-2">
                   <Select
                     value={recommendation.status}
+                    items={RECOMMENDATION_STATUS_LABELS}
                     onValueChange={(value) =>
                       updateRecommendationStatus(
                         recommendation.id,

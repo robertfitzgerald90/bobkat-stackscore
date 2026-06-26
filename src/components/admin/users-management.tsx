@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatUserRole, USER_ROLE_LABELS } from "@/lib/display";
+import { USER_ROLE_LABELS } from "@/lib/display";
 import {
   Sheet,
   SheetContent,
@@ -38,6 +38,11 @@ import type { UserRole } from "@/generated/prisma/client";
 import type { UserDeletionPreview } from "@/lib/records/types";
 import { DELETE_CONFIRMATION_TEXT } from "@/lib/records/types";
 import { toast } from "sonner";
+
+const USER_ACTIVE_LABELS = {
+  active: "Active",
+  inactive: "Inactive",
+} as const;
 
 const ROLES: UserRole[] = ["admin", "technician", "client"];
 
@@ -238,6 +243,7 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
               <Label>Role</Label>
               <Select
                 value={createForm.role}
+                items={USER_ROLE_LABELS}
                 onValueChange={(value) =>
                   setCreateForm((prev) => ({
                     ...prev,
@@ -261,6 +267,7 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
               <Label>Status</Label>
               <Select
                 value={createForm.isActive ? "active" : "inactive"}
+                items={USER_ACTIVE_LABELS}
                 onValueChange={(value) =>
                   setCreateForm((prev) => ({
                     ...prev,
@@ -314,13 +321,14 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
                   <Label className="text-xs text-muted-foreground">Role</Label>
                   <Select
                     value={user.role}
+                    items={USER_ROLE_LABELS}
                     onValueChange={(value) =>
                       updateUser(user.id, { role: (value ?? user.role) as UserRole })
                     }
                     disabled={updatingUserId === user.id}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue>{formatUserRole(user.role)}</SelectValue>
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {ROLES.map((role) => (
@@ -395,13 +403,14 @@ export function UsersManagement({ initialUsers, currentUserId }: UsersManagement
                   <TableCell>
                     <Select
                       value={user.role}
+                      items={USER_ROLE_LABELS}
                       onValueChange={(value) =>
                         updateUser(user.id, { role: (value ?? user.role) as UserRole })
                       }
                       disabled={updatingUserId === user.id}
                     >
                       <SelectTrigger className="w-[140px]">
-                        <SelectValue>{formatUserRole(user.role)}</SelectValue>
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {ROLES.map((role) => (

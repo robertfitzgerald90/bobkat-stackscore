@@ -444,6 +444,7 @@ export function ProjectsDashboard({
                   <Label htmlFor="project-status">Status</Label>
                   <Select
                     value={editStatus}
+                    items={PROJECT_STATUS_LABELS}
                     onValueChange={(value) => setEditStatus((value ?? editStatus) as ProjectStatus)}
                   >
                     <SelectTrigger id="project-status">

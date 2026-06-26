@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import {
   ASSESSMENT_TYPE_LABELS,
   formatAssessmentCompletionDate,
-  formatAssessmentType,
   sortCompletedAssessmentsNewestFirst,
 } from "@/lib/assessments/display";
 
@@ -44,6 +43,22 @@ export function ReassessmentForm({
   const sortedAssessments = useMemo(
     () => sortCompletedAssessmentsNewestFirst(completedAssessments),
     [completedAssessments],
+  );
+
+  const baselineItems = useMemo(
+    () =>
+      Object.fromEntries(
+        sortedAssessments.map((assessment) => [assessment.id, assessment.assessmentName]),
+      ),
+    [sortedAssessments],
+  );
+
+  const reassessmentTypeItems = useMemo(
+    () =>
+      Object.fromEntries(
+        REASSESSMENT_TYPE_OPTIONS.map((type) => [type, ASSESSMENT_TYPE_LABELS[type]]),
+      ),
+    [],
   );
 
   const latest = sortedAssessments[0];
@@ -102,14 +117,11 @@ export function ReassessmentForm({
         <Label htmlFor={baselineFieldId}>Baseline Assessment</Label>
         <Select
           value={sourceAssessmentId}
+          items={baselineItems}
           onValueChange={(value) => setSourceAssessmentId(value ?? "")}
         >
           <SelectTrigger id={baselineFieldId} className="w-full">
-            {selectedBaseline ? (
-              <span className="truncate">{selectedBaseline.assessmentName}</span>
-            ) : (
-              <SelectValue placeholder="Select baseline assessment" />
-            )}
+            <SelectValue placeholder="Select baseline assessment" />
           </SelectTrigger>
           <SelectContent>
             {sortedAssessments.map((assessment) => (
@@ -138,10 +150,11 @@ export function ReassessmentForm({
         <Label htmlFor={typeFieldId}>Type</Label>
         <Select
           value={assessmentType}
+          items={reassessmentTypeItems}
           onValueChange={(value) => setAssessmentType(value ?? "followup")}
         >
           <SelectTrigger id={typeFieldId} className="w-full">
-            <span className="truncate">{formatAssessmentType(assessmentType)}</span>
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {REASSESSMENT_TYPE_OPTIONS.map((type) => (

@@ -32,35 +32,35 @@ Products and technologies are implementation options selected after the appropri
 
 Assessment
 
-â†“
+then
 
 Scoring Engine
 
-â†“
+then
 
 Technology Profile
 
-â†“
+then
 
 Improvement Opportunities
 
-â†“
+then
 
 Recommendations
 
-â†“
+then
 
 Solution Playbooks
 
-â†“
+then
 
 Services
 
-â†“
+then
 
 Products
 
-â†“
+then
 
 Technology Improvement Plan
 
@@ -198,27 +198,27 @@ The goal is to:
 
 Assessment Answer
 
-â†“
+then
 
 Risk Evaluation
 
-â†“
+then
 
 Priority Assignment
 
-â†“
+then
 
 Business Impact Statement
 
-â†“
+then
 
 Recommended Action
 
-â†“
+then
 
 Estimated Score Improvement
 
-â†“
+then
 
 Project Creation
 
