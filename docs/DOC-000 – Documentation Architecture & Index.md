@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 25, 2026
@@ -22,10 +22,11 @@ This document is the master registry for all StackScore documentation. It define
 DOC-000 (this index)
     │
     ├── Business Governance (DOC-001 – DOC-005)
-    ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-106)
+    ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-107)
     ├── Client Hub (DOC-113)
     ├── Assessment Domain (DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
+    ├── Domain Architecture (DOC-120 – DOC-124)
     └── Technical Layer (DOC-300 – DOC-303)
 ```
 
@@ -57,10 +58,11 @@ If documents conflict, resolve in this order:
 | DOC-100 | Service Catalog Specification | Governing | v2 | Draft |
 | DOC-101 | Approved Technology Catalog Specification | Governing | v2 | Draft |
 | DOC-102 | Pricing Engine Specification | Governing | v2 | Draft |
-| DOC-103 | Technology Improvement Plan Specification | Governing | v2 | Draft (Stage A stub) |
-| DOC-104 | Technology Roadmap Specification | Governing | v2 | Draft (Stage A stub) |
-| DOC-105 | Project Generation Specification | Governing | v2 | Draft (Stage A stub) |
-| DOC-106 | Solution Playbook Specification | Governing | v2 | Draft (Stage A stub) |
+| DOC-103 | Technology Improvement Plan Specification | Governing | v2 | Draft |
+| DOC-104 | Technology Roadmap Specification | Governing | v2 | Draft |
+| DOC-105 | Project Generation Specification | Governing | v2 | Draft |
+| DOC-106 | Solution Playbook Specification | Governing | v2 | Draft |
+| DOC-107 | Technology Completion Report Specification | Governing | v2 | Draft |
 
 ## Assessment & scoring
 
@@ -83,6 +85,28 @@ If documents conflict, resolve in this order:
 | DOC-115 | Question Scoring Matrix (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-117 | Assessment Question Bank (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-118 | v1 to v2 Compatibility Reference | Governing (migration) | Both | Approved |
+
+## Domain architecture
+
+Authoritative specifications that translate business architecture into software domain concepts. These documents guide schema, API, service layer, and workflow design without defining implementation artifacts directly.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | 1.0 | Governing (domain) | v2 | Draft |
+
+### DOC-120 – Domain Model Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-120 |
+| **Title** | Domain Model Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines StackScore core business objects, ownership model, relationships, lifecycle rules, and domain boundaries. |
+| **Depends on** | DOC-001, DOC-003, DOC-100–107, DOC-110–114, DOC-118 |
+| **Used by** | DOC-121, DOC-122, DOC-123, DOC-124, DOC-301 |
+
+Planned domain architecture companions (not yet published): DOC-121–DOC-124.
 
 ## Technical layer
 
@@ -134,6 +158,7 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 * [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
 * [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
+* [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
 
 ---
 
@@ -142,3 +167,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | Version | Date | Author | Changes |
 | ------- | ---- | ------ | ------- |
 | 1.0 | 2026-06-25 | BobKat IT | Stage A — initial documentation registry |
+| 1.1 | 2026-06-25 | BobKat IT | Registered DOC-107, DOC-120 (Domain Architecture tier), and dependency metadata |
