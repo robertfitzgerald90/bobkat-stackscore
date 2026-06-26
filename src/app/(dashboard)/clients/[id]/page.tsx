@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { History, TrendingUp } from "lucide-react";
+import { History, Layers, TrendingUp } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ClientAdminActions } from "@/components/admin/client-admin-actions";
@@ -77,6 +77,13 @@ export default async function ClientDetailPage({ params }: PageProps) {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <Link
+          href={`/clients/${client.id}/technology-profile`}
+          className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}
+        >
+          <Layers className="mr-2 h-4 w-4" />
+          Technology Profile
+        </Link>
         <Link
           href={`/clients/${client.id}/improvement`}
           className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}

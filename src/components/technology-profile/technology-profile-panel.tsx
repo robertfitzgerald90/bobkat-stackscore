@@ -5,6 +5,7 @@ import {
   ArrowDown,
   ArrowUp,
   Calendar,
+  ExternalLink,
   Minus,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +86,13 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
               View Assessment
             </Link>
           ) : null}
+          <Link
+            href={`/clients/${clientId}/technology-profile`}
+            className={buttonClassName({ variant: "default", size: "sm" })}
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Full Profile
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">

@@ -112,7 +112,12 @@ export async function syncProfileFromAssessment(assessmentId: string) {
     overallScore,
   );
 
-  const openRecommendationCount = assessment.recommendations.length;
+  const openRecommendationCount = await prisma.assessmentRecommendation.count({
+    where: {
+      clientId: assessment.clientId,
+      status: { in: ["open", "accepted", "in_progress"] },
+    },
+  });
   const criticalExposureCount = assessment.responses.filter(
     (r) => r.selectedAnswerOption.triggersCriticalFlag,
   ).length;
@@ -305,3 +310,12 @@ export function buildScoringRiskSummary(
 ): RiskSummary {
   return buildRiskSummary(responses, scoring.hasCriticalExposure);
 }
+
+export { getTechnologyProfileDetail } from "./detail";
+export { computeJourneyProgress, deriveJourneyPhase } from "./journey";
+export type {
+  ProfileAudience,
+  TechnologyProfileDetail,
+  TechnologyJourneyProgress,
+} from "./types";
+export { resolveProfileAudience } from "./types";
