@@ -70,8 +70,12 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
     profile.categoryScores.map((category) => [category.categoryCode, category]),
   );
 
-  const lastAssessed = formatDisplayDate(profile.lastAssessedAt, null);
-  const nextAssessment = formatDisplayDate(profile.nextRecommendedAssessmentAt, null);
+  const lastAssessed = profile.lastAssessedAt
+    ? formatDisplayDate(profile.lastAssessedAt)
+    : "Not yet";
+  const nextAssessment = profile.nextRecommendedAssessmentAt
+    ? formatDisplayDate(profile.nextRecommendedAssessmentAt)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -133,7 +137,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg font-semibold">{lastAssessed ?? "Not yet"}</p>
+            <p className="text-lg font-semibold">{lastAssessed}</p>
             {nextAssessment ? (
               <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />

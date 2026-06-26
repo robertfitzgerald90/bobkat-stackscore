@@ -86,6 +86,25 @@ Project Settings → Build & Development Settings:
 
 `vercel-build` runs `prisma generate`, `prisma migrate deploy` (on Vercel only), then `next build`.
 
+### Migrations already applied manually
+
+If `npm run db:migrate:deploy` succeeds against Neon from your machine (no pending migrations), the database is ready. You do **not** need `prisma migrate resolve` — "already exists" errors mean those migrations are already recorded.
+
+If Vercel build still fails during `prisma migrate deploy` (connection/pooler issues), either:
+
+1. Fix the Vercel build log error (see below), or
+2. Set `SKIP_PRISMA_MIGRATE=1` in Vercel env vars (Production, **Build** scope) and redeploy. Run `npm run db:migrate:deploy` locally whenever you add new migrations.
+
+### Vercel build still fails
+
+Open the failed deployment → **Build** logs and find the last `>` command:
+
+| Last command | Fix |
+|--------------|-----|
+| *(immediate exit)* | `DATABASE_URL` missing — enable for **Build** + **Runtime** in Vercel |
+| `prisma migrate deploy` | Use Neon **direct** (non-pooler) URL for build, or set `SKIP_PRISMA_MIGRATE=1` |
+| `next build` | TypeScript/compile error — read the lines above the exit in the log |
+
 ## Local vs production
 
 | | Local (`.env`) | Production (Vercel) |
