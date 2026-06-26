@@ -60,6 +60,10 @@ export function requireAdmin(user: SessionUser) {
   return requireRole(user, ["admin"]);
 }
 
+export function requireConsultantOrAdmin(user: SessionUser) {
+  return requireRole(user, ["admin", "technician"]);
+}
+
 export function parsePagination(searchParams: URLSearchParams) {
   const page = Math.max(1, Number(searchParams.get("page") ?? 1));
   const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 20)));

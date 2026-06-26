@@ -1,0 +1,108 @@
+{
+  "$schema": "stackscore/playbook-catalog/v1",
+  "version": "1.0.0",
+  "playbooks": [
+    {
+      "id": "cybersecurity",
+      "name": "Cybersecurity",
+      "description": "Strengthen identity, endpoint, email, and network security controls to reduce breach and ransomware risk.",
+      "effortLevel": "medium",
+      "estimatedEffortWeeks": "4-8",
+      "typicalServices": [
+        "MFA Deployment",
+        "Endpoint Security Management",
+        "Managed Endpoint Security",
+        "Microsoft 365 Security & Protection",
+        "Security Awareness Training",
+        "Identity Management",
+        "Network Security",
+        "Patch Management Services"
+      ],
+      "typicalTechnologies": ["Microsoft Entra ID", "SentinelOne", "CrowdStrike", "Microsoft Defender"]
+    },
+    {
+      "id": "business_continuity",
+      "name": "Business Continuity",
+      "description": "Establish reliable backup, recovery validation, and ransomware-resilient data protection.",
+      "effortLevel": "medium",
+      "estimatedEffortWeeks": "4-10",
+      "typicalServices": [
+        "Backup & Disaster Recovery",
+        "Microsoft 365 Backup",
+        "Managed Backup Monitoring",
+        "Business Continuity Planning"
+      ],
+      "typicalTechnologies": ["Veeam", "Datto", "Acronis", "Microsoft 365"]
+    },
+    {
+      "id": "infrastructure_modernization",
+      "name": "Infrastructure Modernization",
+      "description": "Refresh aging network and power infrastructure and improve reliability and monitoring.",
+      "effortLevel": "high",
+      "estimatedEffortWeeks": "6-16",
+      "typicalServices": [
+        "Network Infrastructure",
+        "Wireless Networking",
+        "Infrastructure Services",
+        "Managed Network Services",
+        "Network Infrastructure & Deployment",
+        "Infrastructure Modernization"
+      ],
+      "typicalTechnologies": ["Fortinet", "Cisco Meraki", "Ubiquiti", "APC"]
+    },
+    {
+      "id": "operations_excellence",
+      "name": "Operations Excellence",
+      "description": "Improve asset visibility, documentation, and day-to-day IT operations maturity.",
+      "effortLevel": "low",
+      "estimatedEffortWeeks": "2-6",
+      "typicalServices": [
+        "Endpoint Management",
+        "Documentation Services",
+        "Documentation & Assessment Services",
+        "Managed IT Services",
+        "Lifecycle Management"
+      ],
+      "typicalTechnologies": ["ConnectWise Automate", "IT Glue", "HaloPSA"]
+    },
+    {
+      "id": "strategic_it",
+      "name": "Strategic IT",
+      "description": "Align technology investments with business goals through governance and planning.",
+      "effortLevel": "low",
+      "estimatedEffortWeeks": "2-4",
+      "typicalServices": ["vCIO Consulting", "Modern Workplace Services", "Security Hardening"],
+      "typicalTechnologies": ["Microsoft 365", "Azure"]
+    }
+  ],
+  "serviceMappings": {
+    "MFA Deployment": "cybersecurity",
+    "Endpoint Security Management": "cybersecurity",
+    "Managed Endpoint Security": "cybersecurity",
+    "Microsoft 365 Security & Protection": "cybersecurity",
+    "Security Awareness Training": "cybersecurity",
+    "Identity Management": "cybersecurity",
+    "Network Security": "cybersecurity",
+    "Patch Management Services": "cybersecurity",
+    "Microsoft 365 Protection": "cybersecurity",
+    "Security Hardening": "cybersecurity",
+    "Backup & Disaster Recovery": "business_continuity",
+    "Microsoft 365 Backup": "business_continuity",
+    "Managed Backup Monitoring": "business_continuity",
+    "Business Continuity Planning": "business_continuity",
+    "Network Infrastructure": "infrastructure_modernization",
+    "Wireless Networking": "infrastructure_modernization",
+    "Infrastructure Services": "infrastructure_modernization",
+    "Managed Network Services": "infrastructure_modernization",
+    "Network Infrastructure & Deployment": "infrastructure_modernization",
+    "Infrastructure Modernization": "infrastructure_modernization",
+    "Network Consulting": "infrastructure_modernization",
+    "Endpoint Management": "operations_excellence",
+    "Documentation Services": "operations_excellence",
+    "Documentation & Assessment Services": "operations_excellence",
+    "Managed IT Services": "operations_excellence",
+    "Lifecycle Management": "operations_excellence",
+    "vCIO Consulting": "strategic_it",
+    "Modern Workplace Services": "strategic_it"
+  }
+}

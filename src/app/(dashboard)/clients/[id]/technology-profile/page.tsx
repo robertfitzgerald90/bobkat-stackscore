@@ -30,6 +30,14 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
           <h2 className="page-title">Technology Profile</h2>
           <p className="page-description">{detail.client.companyName}</p>
         </div>
+        {session.user.role !== "client" ? (
+          <Link
+            href={`/clients/${id}/improvement-plan`}
+            className={buttonClassName({ variant: "default", size: "sm" })}
+          >
+            Start Improvement Plan
+          </Link>
+        ) : null}
       </div>
 
       <TechnologyProfileDetailView detail={detail} />

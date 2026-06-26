@@ -1,5 +1,6 @@
 import type { AssessmentResultsSummary } from "@/lib/assessments/results-summary";
-import type { Priority } from "@/generated/prisma/client";
+import type { Priority, MaturityTier } from "@/generated/prisma/client";
+import type { TipRecommendationView, TipRoadmapPhaseView } from "@/lib/technology-improvement-plan/types";
 
 export type AssessmentReportData = {
   clientName: string;
@@ -39,3 +40,28 @@ export function formatGeneratedDate(date: Date = new Date()): string {
 export function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9-_]+/g, "-").replace(/-+/g, "-").slice(0, 80);
 }
+
+export type TipReportData = {
+  clientName: string;
+  title: string;
+  version: number;
+  generatedDate: string;
+  assessmentName: string | null;
+  executiveSummary: string;
+  currentScore: number;
+  projectedScore: number;
+  maturityTier: MaturityTier | null;
+  recommendations: TipRecommendationView[];
+  roadmapPhases: TipRoadmapPhaseView[];
+  clientInvestmentTotal: number;
+  journeyPhaseLabel: string;
+  journeyProgressPercent: number;
+  includeInternalDetails: boolean;
+  investmentBreakdown?: {
+    labor: number;
+    hardware: number;
+    services: number;
+    marginPercent: number;
+    clientTotal: number;
+  };
+};

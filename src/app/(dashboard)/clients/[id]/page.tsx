@@ -85,8 +85,15 @@ export default async function ClientDetailPage({ params }: PageProps) {
           Technology Profile
         </Link>
         <Link
-          href={`/clients/${client.id}/improvement`}
+          href={`/clients/${client.id}/improvement-plan`}
           className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}
+        >
+          <TrendingUp className="mr-2 h-4 w-4" />
+          Improvement Plan
+        </Link>
+        <Link
+          href={`/clients/${client.id}/improvement`}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
         >
           <TrendingUp className="mr-2 h-4 w-4" />
           Improvement Dashboard
