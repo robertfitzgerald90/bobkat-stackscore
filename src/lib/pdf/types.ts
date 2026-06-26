@@ -41,6 +41,24 @@ export function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9-_]+/g, "-").replace(/-+/g, "-").slice(0, 80);
 }
 
+export type TipCategorySummary = {
+  name: string;
+  score: number;
+  ratingLabel: string;
+  hasRecommendations: boolean;
+};
+
+export type TipInvestmentLineItem = {
+  category: string;
+  description: string;
+  amount: number;
+};
+
+export type TipBusinessOutcome = {
+  title: string;
+  description: string;
+};
+
 export type TipReportData = {
   clientName: string;
   title: string;
@@ -50,10 +68,15 @@ export type TipReportData = {
   executiveSummary: string;
   currentScore: number;
   projectedScore: number;
+  scoreImprovement: number;
   maturityTier: MaturityTier | null;
+  maturityTierLabel: string | null;
   recommendations: TipRecommendationView[];
   roadmapPhases: TipRoadmapPhaseView[];
   clientInvestmentTotal: number;
+  investmentLineItems: TipInvestmentLineItem[];
+  categorySummaries: TipCategorySummary[];
+  businessOutcomes: TipBusinessOutcome[];
   journeyPhaseLabel: string;
   journeyProgressPercent: number;
   includeInternalDetails: boolean;
@@ -62,6 +85,7 @@ export type TipReportData = {
     hardware: number;
     services: number;
     marginPercent: number;
+    marginAmount: number;
     clientTotal: number;
   };
 };

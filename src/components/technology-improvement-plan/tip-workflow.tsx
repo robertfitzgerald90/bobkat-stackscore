@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Download,
   Loader2,
-  Trash2,
 } from "lucide-react";
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +18,13 @@ import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatPriority } from "@/lib/display";
+import { TipRecommendationsStep } from "@/components/technology-improvement-plan/tip-recommendations-step";
+import { TipReportPreview } from "@/components/technology-improvement-plan/tip-report-preview";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
+import {
+  mergeRecommendationCatalog,
+  validateTipSelection,
+} from "@/lib/technology-improvement-plan/selection";
 import {
   TIP_STEP_LABELS,
   TIP_WORKFLOW_STEPS,
@@ -28,7 +32,6 @@ import {
   type TipWorkflowStep,
   type TipWizardState,
 } from "@/lib/technology-improvement-plan/types";
-import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -104,37 +107,26 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
 
   const goNext = async () => {
     if (isLast) return;
+
+    if (activeStep === "recommendations") {
+      const seeds = mergeRecommendationCatalog(
+        plan.recommendations,
+        plan.excludedRecommendations,
+        plan.deferredRecommendations,
+      );
+      const validationError = validateTipSelection(seeds, plan.wizardState);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+    }
+
     await goToStep(steps[stepIndex + 1]);
   };
 
   const goBack = async () => {
     if (isFirst) return;
     await goToStep(steps[stepIndex - 1]);
-  };
-
-  const removeRecommendation = (id: string) => {
-    const removed = new Set(plan.wizardState.removedRecommendationIds);
-    removed.add(id);
-    const recommendationOrder = plan.wizardState.recommendationOrder.filter((recId) => recId !== id);
-    const roadmapPhases = plan.wizardState.roadmapPhases.map((phase) => ({
-      ...phase,
-      recommendationIds: phase.recommendationIds.filter((recId) => recId !== id),
-    }));
-    updateWizardState({
-      removedRecommendationIds: [...removed],
-      recommendationOrder,
-      roadmapPhases,
-    });
-  };
-
-  const moveRecommendation = (id: string, direction: "up" | "down") => {
-    const order = [...plan.wizardState.recommendationOrder];
-    const index = order.indexOf(id);
-    if (index < 0) return;
-    const swapWith = direction === "up" ? index - 1 : index + 1;
-    if (swapWith < 0 || swapWith >= order.length) return;
-    [order[index], order[swapWith]] = [order[swapWith], order[index]];
-    updateWizardState({ recommendationOrder: order });
   };
 
   const movePhase = (phaseId: string, direction: "up" | "down") => {
@@ -234,117 +226,15 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
       ) : null}
 
       {activeStep === "recommendations" ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Review Recommendations</CardTitle>
-            <CardDescription>
-              Remove, reorder, and annotate recommendations before building the improvement plan.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="global-executive-notes">Executive notes (plan-wide)</Label>
-              <textarea
-                id="global-executive-notes"
-                className="min-h-24 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                value={plan.wizardState.globalExecutiveNotes}
-                disabled={!plan.isEditable}
-                onChange={(event) =>
-                  updateWizardState({ globalExecutiveNotes: event.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="global-consultant-notes">Consultant notes (internal)</Label>
-              <textarea
-                id="global-consultant-notes"
-                className="min-h-24 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                value={plan.wizardState.globalConsultantNotes}
-                disabled={!plan.isEditable}
-                onChange={(event) =>
-                  updateWizardState({ globalConsultantNotes: event.target.value })
-                }
-              />
-            </div>
-            {plan.recommendations.map((rec, index) => (
-              <div key={rec.id} className="rounded-md border p-4">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium">{rec.title}</p>
-                      <Badge variant="outline">{formatPriority(rec.priority)}</Badge>
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">{rec.businessImpact}</p>
-                  </div>
-                  {plan.isEditable ? (
-                    <div className="flex shrink-0 gap-1">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={index === 0}
-                        onClick={() => moveRecommendation(rec.id, "up")}
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={index === plan.recommendations.length - 1}
-                        onClick={() => moveRecommendation(rec.id, "down")}
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeRecommendation(rec.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="mt-3 grid gap-3 lg:grid-cols-2">
-                  <div>
-                    <Label>Executive note</Label>
-                    <textarea
-                      className="mt-1 min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={plan.wizardState.executiveNotesByRecId[rec.id] ?? rec.executiveNote}
-                      disabled={!plan.isEditable}
-                      onChange={(event) =>
-                        updateWizardState({
-                          executiveNotesByRecId: {
-                            ...plan.wizardState.executiveNotesByRecId,
-                            [rec.id]: event.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Consultant note</Label>
-                    <textarea
-                      className="mt-1 min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={plan.wizardState.consultantNotesByRecId[rec.id] ?? rec.consultantNote}
-                      disabled={!plan.isEditable}
-                      onChange={(event) =>
-                        updateWizardState({
-                          consultantNotesByRecId: {
-                            ...plan.wizardState.consultantNotesByRecId,
-                            [rec.id]: event.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <TipRecommendationsStep
+          plan={plan}
+          isEditable={plan.isEditable}
+          onPlanChange={setPlan}
+          onPersist={async (wizardState) => {
+            const saved = await savePlan({ wizardState });
+            if (saved) setPlan(saved);
+          }}
+        />
       ) : null}
 
       {activeStep === "playbooks" ? (
@@ -500,65 +390,26 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
       ) : null}
 
       {activeStep === "preview" ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Report Preview</CardTitle>
-            <CardDescription>
-              Browser preview aligned with the DOC-126 Technology Improvement Plan PDF layout.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <PreviewSection title="Cover">
-              <p className="text-2xl font-semibold text-primary">Technology Improvement Plan</p>
-              <p className="text-muted-foreground">{plan.clientName}</p>
-              <p className="text-sm">Version {plan.version}</p>
-            </PreviewSection>
-            <PreviewSection title="Executive Summary">
-              <textarea
-                className="min-h-28 w-full rounded-md border bg-background px-3 py-2 text-sm"
-                disabled={!plan.isEditable}
-                value={
-                  plan.wizardState.executiveSummary ||
-                  plan.wizardState.globalExecutiveNotes ||
-                  plan.executiveSummary ||
-                  ""
-                }
-                onChange={(event) => updateWizardState({ executiveSummary: event.target.value })}
-                placeholder="Summarize current state, priorities, and expected business outcomes."
-              />
-              <p className="mt-2 text-sm">
-                StackScore {plan.currentScore} ({RATING_LABELS[getRating(plan.currentScore)]}) →{" "}
-                {plan.projectedScore} ({RATING_LABELS[getRating(plan.projectedScore)]})
-              </p>
-            </PreviewSection>
-            <PreviewSection title="Recommendations">
-              {plan.recommendations.map((rec) => (
-                <div key={rec.id} className="border-b py-2 last:border-0">
-                  <p className="font-medium">{rec.title}</p>
-                  <p className="text-sm text-muted-foreground">{rec.businessImpact}</p>
-                </div>
-              ))}
-            </PreviewSection>
-            <PreviewSection title="Phased Roadmap">
-              {plan.roadmapPhases.map((phase) => (
-                <p key={phase.id} className="text-sm">
-                  <span className="font-medium">{phase.label}:</span> projected score{" "}
-                  {phase.projectedScore}
-                </p>
-              ))}
-            </PreviewSection>
-            <PreviewSection title="Investment Summary (client-facing)">
-              <p className="text-lg font-semibold">
-                {formatCurrency(plan.investment.clientTotal || plan.investmentInternal.clientTotal)}
-              </p>
-              {!isAdmin ? (
-                <p className="text-sm text-muted-foreground">
-                  Internal cost breakdown is available to administrators only.
-                </p>
-              ) : null}
-            </PreviewSection>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold">Report Preview</h3>
+            <p className="text-sm text-muted-foreground">
+              Executive-ready layout matching the generated PDF deliverable.
+            </p>
+          </div>
+          <TipReportPreview
+            plan={plan}
+            isAdmin={isAdmin}
+            isEditable={plan.isEditable}
+            executiveSummary={
+              plan.wizardState.executiveSummary ||
+              plan.wizardState.globalExecutiveNotes ||
+              plan.executiveSummary ||
+              ""
+            }
+            onExecutiveSummaryChange={(value) => updateWizardState({ executiveSummary: value })}
+          />
+        </div>
       ) : null}
 
       {activeStep === "complete" ? (
@@ -659,14 +510,5 @@ function SummaryTile({
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="text-xl font-semibold">{value}</p>
     </div>
-  );
-}
-
-function PreviewSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-md border p-4">
-      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">{title}</h3>
-      {children}
-    </section>
   );
 }

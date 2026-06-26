@@ -2,21 +2,17 @@ import type { Prisma } from "@/generated/prisma/client";
 import type { UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile/detail";
-import { sortByRecommendationPriority } from "@/lib/recommendations/display";
-import {
-  createDefaultWizardState,
-  mergeWizardState,
-} from "@/lib/technology-improvement-plan/defaults";
-import { buildPlaybookViews } from "@/lib/technology-improvement-plan/playbooks";
+import { mergeWizardState, createDefaultWizardState } from "@/lib/technology-improvement-plan/defaults";
 import { computeInvestmentView } from "@/lib/technology-improvement-plan/pricing";
 import {
-  buildRoadmapPhaseViews,
-  computeOverallProjectedScore,
-} from "@/lib/technology-improvement-plan/roadmap";
+  computeTipDerivedState,
+  parseWizardState,
+  syncWizardStateAfterSelectionChange,
+  type RecommendationSeed,
+} from "@/lib/technology-improvement-plan/selection";
 import type {
   TipPlanDetail,
   TipPlanSummary,
-  TipRecommendationView,
   TipUpdatePayload,
   TipWizardState,
 } from "@/lib/technology-improvement-plan/types";
@@ -28,27 +24,6 @@ type TipRecord = Prisma.TechnologyImprovementPlanGetPayload<{
     assessment: { select: { assessmentName: true; overallScore: true } };
   };
 }>;
-
-function parseWizardState(raw: unknown): TipWizardState {
-  const state = raw as TipWizardState;
-  return {
-    removedRecommendationIds: state.removedRecommendationIds ?? [],
-    recommendationOrder: state.recommendationOrder ?? [],
-    consultantNotesByRecId: state.consultantNotesByRecId ?? {},
-    executiveNotesByRecId: state.executiveNotesByRecId ?? {},
-    globalConsultantNotes: state.globalConsultantNotes ?? "",
-    globalExecutiveNotes: state.globalExecutiveNotes ?? "",
-    investment: state.investment ?? {
-      laborCents: 0,
-      hardwareCents: 0,
-      servicesCents: 0,
-      marginPercent: 35,
-    },
-    roadmapPhases: state.roadmapPhases ?? [],
-    executiveSummary: state.executiveSummary ?? "",
-    frozenAt: state.frozenAt ?? null,
-  };
-}
 
 function toSummary(record: TipRecord): TipPlanSummary {
   return {
@@ -78,28 +53,10 @@ async function loadAssessmentRecommendations(clientId: string, assessmentId: str
   });
 }
 
-function buildRecommendationViews(
+function toRecommendationSeeds(
   recommendations: Awaited<ReturnType<typeof loadAssessmentRecommendations>>,
-  wizardState: TipWizardState,
-): TipRecommendationView[] {
-  const removed = new Set(wizardState.removedRecommendationIds);
-  const active = recommendations.filter((rec) => !removed.has(rec.id));
-  const orderIndex = new Map(
-    wizardState.recommendationOrder.map((id, index) => [id, index]),
-  );
-
-  const sorted = sortByRecommendationPriority(active).sort((left, right) => {
-    const leftOrder = orderIndex.get(left.id);
-    const rightOrder = orderIndex.get(right.id);
-    if (leftOrder !== undefined && rightOrder !== undefined) {
-      return leftOrder - rightOrder;
-    }
-    if (leftOrder !== undefined) return -1;
-    if (rightOrder !== undefined) return 1;
-    return 0;
-  });
-
-  return sorted.map((rec, index) => ({
+): RecommendationSeed[] {
+  return recommendations.map((rec) => ({
     id: rec.id,
     title: rec.title,
     description: rec.description,
@@ -108,10 +65,23 @@ function buildRecommendationViews(
     suggestedService: rec.suggestedService,
     estimatedImpactPoints: rec.estimatedImpactPoints,
     categoryName: rec.category.name,
-    consultantNote: wizardState.consultantNotesByRecId[rec.id] ?? "",
-    executiveNote: wizardState.executiveNotesByRecId[rec.id] ?? "",
-    sortOrder: index,
   }));
+}
+
+function buildInvestmentForRole(
+  investmentInternal: ReturnType<typeof computeInvestmentView>,
+  isAdmin: boolean,
+) {
+  if (isAdmin) return investmentInternal;
+  return {
+    labor: 0,
+    hardware: 0,
+    services: 0,
+    subtotal: 0,
+    marginPercent: 0,
+    marginAmount: 0,
+    clientTotal: investmentInternal.clientTotal,
+  };
 }
 
 export async function assembleTipPlanDetail(
@@ -127,45 +97,32 @@ export async function assembleTipPlanDetail(
     loadAssessmentRecommendations(record.clientId, record.assessmentId),
   ]);
 
-  const recommendationViews = buildRecommendationViews(recommendations, wizardState);
-  const playbooks = buildPlaybookViews(recommendationViews);
-  const investmentInternal = computeInvestmentView(wizardState.investment);
+  const seeds = toRecommendationSeeds(recommendations);
+  const syncedState = syncWizardStateAfterSelectionChange(seeds, wizardState);
   const currentScore =
     profile?.profile.overallStackScore ??
     (record.assessment?.overallScore ? Math.round(Number(record.assessment.overallScore)) : 0);
-  const projectedScore = computeOverallProjectedScore(currentScore, recommendationViews);
-  const roadmapPhases = buildRoadmapPhaseViews(
-    currentScore,
-    recommendationViews,
-    wizardState.roadmapPhases,
-  );
 
-  const investment = isAdmin
-    ? investmentInternal
-    : {
-        labor: 0,
-        hardware: 0,
-        services: 0,
-        subtotal: 0,
-        marginPercent: 0,
-        marginAmount: 0,
-        clientTotal: investmentInternal.clientTotal,
-      };
+  const derived = computeTipDerivedState(seeds, syncedState, currentScore);
+  const investment = buildInvestmentForRole(derived.investmentInternal, isAdmin);
 
   return {
     ...toSummary(record),
-    wizardState,
+    wizardState: syncedState,
     executiveSummary: record.executiveSummary,
     isEditable,
     isAdmin,
     profile,
-    recommendations: recommendationViews,
-    playbooks,
+    recommendations: derived.recommendations,
+    excludedRecommendations: derived.excludedRecommendations,
+    deferredRecommendations: derived.deferredRecommendations,
+    selectionSummary: derived.selectionSummary,
+    playbooks: derived.playbooks,
     investment,
-    investmentInternal: isAdmin ? investmentInternal : investment,
-    roadmapPhases,
+    investmentInternal: isAdmin ? derived.investmentInternal : investment,
+    roadmapPhases: derived.roadmapPhases,
     currentScore,
-    projectedScore,
+    projectedScore: derived.projectedScore,
     assessmentName: record.assessment?.assessmentName ?? null,
     clientName: record.client.companyName,
   };
@@ -229,13 +186,16 @@ export async function createTipPlan(
   }
 
   const recommendations = await loadAssessmentRecommendations(clientId, resolvedAssessmentId);
-  const wizardState = createDefaultWizardState(
-    recommendations.map((rec) => ({
-      id: rec.id,
-      priority: rec.priority,
-      estimatedImpactPoints: rec.estimatedImpactPoints,
-      suggestedService: rec.suggestedService,
-    })),
+  const wizardState = syncWizardStateAfterSelectionChange(
+    toRecommendationSeeds(recommendations),
+    createDefaultWizardState(
+      recommendations.map((rec) => ({
+        id: rec.id,
+        priority: rec.priority,
+        estimatedImpactPoints: rec.estimatedImpactPoints,
+        suggestedService: rec.suggestedService,
+      })),
+    ),
   );
 
   const title = `Technology Improvement Plan — ${client.companyName}`;
@@ -273,9 +233,16 @@ export async function updateTipPlan(
   }
 
   const currentState = parseWizardState(existing.wizardState);
-  const nextState = payload.wizardState
+  const mergedState = payload.wizardState
     ? mergeWizardState(currentState, payload.wizardState)
     : currentState;
+
+  const recommendations = await loadAssessmentRecommendations(
+    clientId,
+    existing.assessmentId,
+  );
+  const seeds = toRecommendationSeeds(recommendations);
+  const nextState = syncWizardStateAfterSelectionChange(seeds, mergedState);
 
   const record = await prisma.technologyImprovementPlan.update({
     where: { id: tipId },
@@ -317,9 +284,17 @@ export async function generateTipPlan(
     return assembleTipPlanDetail(existing, role);
   }
 
-  const currentState = parseWizardState(existing.wizardState);
+  const recommendations = await loadAssessmentRecommendations(
+    clientId,
+    existing.assessmentId,
+  );
+  const seeds = toRecommendationSeeds(recommendations);
+  const syncedState = syncWizardStateAfterSelectionChange(
+    seeds,
+    parseWizardState(existing.wizardState),
+  );
   const frozenState: TipWizardState = {
-    ...currentState,
+    ...syncedState,
     frozenAt: new Date().toISOString(),
   };
 

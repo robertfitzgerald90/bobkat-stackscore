@@ -24,8 +24,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const plan = await getTipPlan(clientId, tipId, user.role);
   if (!plan) return notFound("Technology Improvement Plan not found");
 
-  const includeInternal = user.role === "admin";
-  const reportData = buildTipReportData(plan, includeInternal);
+  const reportData = buildTipReportData(plan, false);
   const buffer = await generateTipReportPdf(reportData);
   const filename = `${sanitizeFilename(plan.clientName)}-technology-improvement-plan-v${plan.version}.pdf`;
 

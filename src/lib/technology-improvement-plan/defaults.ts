@@ -75,6 +75,7 @@ export function createDefaultWizardState(
 
   return {
     removedRecommendationIds: [],
+    deferredRecommendationIds: [],
     recommendationOrder: active,
     consultantNotesByRecId: {},
     executiveNotesByRecId: {},
@@ -100,6 +101,8 @@ export function mergeWizardState(
     executiveNotesByRecId: patch.executiveNotesByRecId ?? current.executiveNotesByRecId,
     removedRecommendationIds:
       patch.removedRecommendationIds ?? current.removedRecommendationIds,
+    deferredRecommendationIds:
+      patch.deferredRecommendationIds ?? current.deferredRecommendationIds,
     recommendationOrder: patch.recommendationOrder ?? current.recommendationOrder,
   };
 }

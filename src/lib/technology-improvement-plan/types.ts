@@ -44,6 +44,7 @@ export type TipRoadmapPhase = {
 
 export type TipWizardState = {
   removedRecommendationIds: string[];
+  deferredRecommendationIds: string[];
   recommendationOrder: string[];
   consultantNotesByRecId: Record<string, string>;
   executiveNotesByRecId: Record<string, string>;
@@ -115,6 +116,18 @@ export type TipPlanSummary = {
   updatedAt: string;
 };
 
+export type TipSelectionSummary = {
+  includedCount: number;
+  excludedCount: number;
+  deferredCount: number;
+  clientInvestmentTotal: number;
+  laborTotal: number;
+  hardwareTotal: number;
+  servicesTotal: number;
+  projectedScoreImprovement: number;
+  estimatedTimeline: string;
+};
+
 export type TipPlanDetail = TipPlanSummary & {
   wizardState: TipWizardState;
   executiveSummary: string | null;
@@ -122,6 +135,9 @@ export type TipPlanDetail = TipPlanSummary & {
   isAdmin: boolean;
   profile: TechnologyProfileDetail | null;
   recommendations: TipRecommendationView[];
+  excludedRecommendations: TipRecommendationView[];
+  deferredRecommendations: TipRecommendationView[];
+  selectionSummary: TipSelectionSummary;
   playbooks: TipPlaybookView[];
   investment: TipInvestmentView;
   investmentInternal: TipInvestmentView;
