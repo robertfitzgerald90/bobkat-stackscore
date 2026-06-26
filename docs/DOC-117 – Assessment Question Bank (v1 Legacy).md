@@ -1,4 +1,6 @@
-# BobKat StackScore - Assessment Questions v1
+> **Migration notice (Stage A):** Renamed from DOC-114 Question Bank to resolve ID collision with [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md). **Active** for the running application until Phase 5 cutover (target: TBD).
+
+# DOC-117 – Assessment Question Bank (v1 Legacy)
 
 ## Security & Protection (20 Points)
 

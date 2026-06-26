@@ -1,10 +1,12 @@
-# BobKat StackScore - Scoring Specification (Authoritative)
+> **Migration notice (Stage A):** This document is **Appendix A – v1 Implementation Reference** under [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md). It remains **implementation-active** for the running application until Phase 5 cutover (target: TBD). **DOC-111** is the long-term authoritative scoring specification.
+
+# Appendix A – v1 Scoring Implementation (Active for Running Application)
 
 ## Purpose
 
-This document is the **final, authoritative** scoring specification for BobKat StackScore v1. It supersedes conflicting sections in [DOC-111B – Scoring Methodology Reference](DOC-111B%20-%20Scoring%20Methodology%20Reference.md) where noted.
+This document is the **v1 implementation** scoring specification for BobKat StackScore. It supersedes conflicting sections in [DOC-111B – Scoring Methodology Reference](DOC-111B%20-%20Scoring%20Engine%20Specification.md) where noted.
 
-**Related documents:** [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md), [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+**Related documents:** [DOC-115 – Question Scoring Matrix (v1 Legacy)](DOC-115%20-%20Question%20Scoring%20Matrix.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
 
 ---
 

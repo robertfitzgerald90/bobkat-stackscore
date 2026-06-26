@@ -180,94 +180,11 @@ Professional presentation is considered a core feature of the platform.
 
 ---
 
-# User Interface Standards
+# Visual & Interface Standards
 
-## Typography
+Visual design, typography, color palette, component patterns, responsive layout, accessibility requirements, and report formatting are defined in **[DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)**.
 
-Primary Font:
-
-Inter
-
-Headings should clearly establish hierarchy.
-
-Body text should remain highly readable.
-
-Avoid decorative fonts.
-
----
-
-## Color Palette
-
-Primary
-
-Deep Navy (#082F5B)
-
-Secondary
-
-Steel Blue
-
-Background
-
-White
-
-Light Gray
-
-Status Colors
-
-Critical
-
-Red
-
-Warning
-
-Amber
-
-Healthy
-
-Green
-
-Informational
-
-Blue
-
----
-
-## Cards
-
-Cards should include:
-
-* Rounded corners
-* Consistent spacing
-* Subtle shadows
-* Clear hierarchy
-* Generous padding
-
-Avoid clutter.
-
----
-
-## Tables
-
-Tables should:
-
-* Support sorting
-* Support filtering
-* Support search
-* Use alternating row spacing where appropriate
-* Avoid horizontal scrolling whenever practical
-
----
-
-## Forms
-
-Forms should:
-
-* Validate inputs immediately
-* Display clear error messages
-* Minimize required fields
-* Group related information logically
-
-Long forms should be divided into sections.
+DOC-004 retains workflow and philosophy principles only. Do not duplicate visual specifications here.
 
 ---
 
@@ -299,13 +216,7 @@ Users should never feel uncertain about the next step.
 
 # Accessibility
 
-The platform should:
-
-* Maintain sufficient color contrast
-* Avoid relying solely on color to communicate status
-* Use descriptive icons
-* Support keyboard navigation where practical
-* Remain usable across desktop and tablet devices
+Accessibility requirements (contrast, keyboard navigation, status communication) are defined in [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
 
 ---
 
@@ -327,6 +238,7 @@ The Design Principles are considered successful when:
 * DOC-001 – Product Vision
 * DOC-002 – Product Philosophy
 * DOC-003 – BobKat Technology Improvement Lifecycle
+* DOC-005 – UI & UX Standards (canonical visual specifications)
 * DOC-100 – Service Catalog Specification
 
 ---
@@ -335,4 +247,5 @@ The Design Principles are considered successful when:
 
 | Version | Date       | Author    | Changes                   |
 | ------- | ---------- | --------- | ------------------------- |
-| 1.0     | 2026-06-24 | BobKat IT | Initial Design Principles |
+| 1.0 | 2026-06-25 | BobKat IT | Initial Design Principles |
+| 1.1 | 2026-06-25 | BobKat IT | Stage A — visual standards delegated to DOC-005 |

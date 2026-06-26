@@ -6,7 +6,7 @@ The software architecture shall implement the business architecture defined in:
 
 - [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
 - [DOC-002 – Product Philosophy](DOC-002-Product%20Philosophy.md)
-- [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
+- [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md)
 - [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md)
 - [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
 
@@ -16,7 +16,7 @@ If technical implementation conflicts with business architecture, the governing 
 
 This document defines the technology stack, application architecture, deployment model, and API boundaries for BobKat StackScore MVP.
 
-**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md)
+**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md), [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
 
 ---
 
@@ -60,7 +60,7 @@ BobKat StackScore MVP is a **monolithic full-stack web application** with a clea
 | UI | React + Tailwind CSS + shadcn/ui | Consistent, accessible component library |
 | Database | PostgreSQL 15+ | Relational model matches domain; strong JSON support if needed |
 | ORM | Prisma | Schema-first; migrations; type-safe queries |
-| Auth | Custom session auth (iron-session or Lucia) | Simple email/password for MVP; SSO later |
+| Auth | Auth.js v5 (NextAuth) credentials provider with JWT session strategy | Implemented; HTTP-only secure cookie signed with `AUTH_SECRET`; SSO in Phase 2 |
 | Validation | Zod | Shared schemas between API and forms |
 | Charts | Recharts | Score trend visualization |
 | Testing | Vitest + Playwright | Unit tests for scoring; E2E for assessment flow |
@@ -168,14 +168,13 @@ bobkat-stackscore/
 
 ### Schema source
 
-[DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md) is implemented in `prisma/schema.prisma`.
+[DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) is implemented in `prisma/schema.prisma`.
 
 ### MVP schema additions
 
 | Addition | Purpose |
 | -------- | ------- |
 | `Assessments.hasCriticalExposure` | Boolean for critical flag warning |
-| `Sessions` table | Server-side session storage (if not using encrypted cookies only) |
 
 ### Seed data
 

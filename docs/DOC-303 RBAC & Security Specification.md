@@ -4,7 +4,7 @@
 
 This document defines role-based access control, authentication requirements, and security policies for BobKat StackScore MVP.
 
-**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md), [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md)
+**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md)
 
 ---
 
@@ -15,9 +15,9 @@ This document defines role-based access control, authentication requirements, an
 | Aspect | Specification |
 | ------ | ------------- |
 | Method | Email + password |
-| Session | HTTP-only secure cookie with server-side session store |
+| Session | Auth.js v5 (NextAuth) JWT strategy; HTTP-only secure cookie signed with `AUTH_SECRET` |
 | Password hashing | bcrypt (cost factor 12) or argon2id |
-| Session duration | 8 hours idle timeout; 24 hours absolute maximum |
+| Session duration | 24 hours maximum (`maxAge` on JWT session) |
 | Password policy | Minimum 10 characters; no common-password blocklist |
 | MFA | Not required in MVP; planned for Phase 2 |
 | SSO (Azure AD) | Phase 2 |
@@ -27,14 +27,14 @@ This document defines role-based access control, authentication requirements, an
 1. User submits email and password
 2. Server validates credentials against `Users.passwordHash`
 3. Server checks `Users.isActive = true`
-4. Server creates session and sets secure cookie
+4. Server creates JWT session and sets secure cookie
 5. Failed attempts return generic "Invalid credentials" (no email enumeration)
 
 ### Session invalidation
 
-- Logout destroys server session
-- Admin disabling a user (`isActive = false`) invalidates all active sessions on next request
-- Password change invalidates all other sessions
+- Logout clears JWT session cookie
+- Admin disabling a user (`isActive = false`) invalidates access on next request (JWT re-validated against database)
+- Password change requires re-login (invalidate prior sessions by credential change policy)
 
 ---
 

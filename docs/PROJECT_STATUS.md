@@ -20,16 +20,21 @@ BobKat StackScore has progressed from **documentation-only** to a **functional a
 
 Original product docs:
 
+- `DOC-000 – Documentation Architecture & Index` — Master registry (Stage A)
 - `DOC-001 – Product Vision` — Business purpose and 7-category scoring framework
 - `DOC-301 – Database Schema Specification` — 14-entity relational model
-- `DOC-114 – Assessment Question Bank Specification` — 50 assessment questions (v1)
+- `DOC-117 – Assessment Question Bank (v1 Legacy)` — 50 assessment questions (v1; formerly DOC-114)
+- `DOC-114 – Assessment Library Specification` — v2 assessment meta-standard
 - `DOC-111B – Scoring Methodology Reference` — Scoring methodology (partially superseded)
-- `DOC-112 – Recommendation Engine Specification` — Recommendation rules and examples
+- `DOC-112 – Recommendation Engine Specification` — Recommendation rules (merged with former DOC112)
 
 Pre-development specs (gap resolution):
 
-- `DOC-115 – Question Scoring Matrix` — Weights and answer scores for all 50 questions
-- `DOC-111A – Scoring Engine Specification` — Authoritative scoring rules (critical flags, rounding, caps)
+- `DOC-115 – Question Scoring Matrix (v1 Legacy)` — Weights and answer scores for all 50 questions
+- `DOC-111 – Scoring Engine Specification` — Authoritative v2 scoring rules
+- `DOC-111A – v1 Scoring Implementation (Appendix A)` — Active v1 scoring rules for running application
+- `DOC-103 – DOC-106` — TIP, Roadmap, Project Generation, Solution Playbooks (Stage A stubs)
+- `DOC-118 – v1 to v2 Compatibility Reference` — Migration mapping tables
 - `RecommendationRuleCatalog.json` — Machine-readable recommendation triggers
 - `MVP_PRD.md` — Personas, user stories, scope
 - `DOC-303 – RBAC & Security Specification` — Roles and permissions

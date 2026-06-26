@@ -10,7 +10,7 @@
 
 # Purpose
 
-This document defines the visual identity, user experience, interaction patterns, and interface standards for BobKat StackScore.
+This document defines the visual identity, user experience, interaction patterns, and interface standards for BobKat StackScore. It is the **canonical source** for typography, color, layout, components, accessibility, and report formatting. Workflow and philosophy principles remain in [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md).
 
 The goal is to ensure every screen feels like part of a single, cohesive product regardless of when or how it was developed.
 
@@ -390,4 +390,5 @@ The UI & UX Standards are considered successful when:
 
 | Version | Date       | Author    | Changes                   |
 | ------- | ---------- | --------- | ------------------------- |
-| 1.0     | 2026-06-24 | BobKat IT | Initial UI & UX Standards |
+| 1.0 | 2026-06-24 | BobKat IT | Initial UI & UX Standards |
+| 1.1 | 2026-06-25 | BobKat IT | Stage A — declared canonical visual specification source |

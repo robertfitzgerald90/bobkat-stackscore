@@ -1,10 +1,12 @@
-# BobKat StackScore - Question Scoring Matrix v1
+> **Migration notice (Stage A):** This document is a **v1 legacy scoring matrix** scheduled for deprecation at Phase 5. Content will be distributed into DOC-114A–G category libraries. **Active** for the running application until cutover. See [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
+
+# DOC-115 – Question Scoring Matrix (v1 Legacy)
 
 ## Purpose
 
 This document is the authoritative scoring reference for all 50 assessment questions in v1. It defines question weights, answer option point values, risk levels, and recommendation template linkage.
 
-**Related documents:** [DOC-114 – Assessment Question Bank Specification](DOC-114%20-%20Assessment%20Question%20Bank%20Specification.md), [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+**Related documents:** [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md), [DOC-111A – v1 Scoring Implementation (Appendix A)](DOC-111A%20-%20Scoring%20Engine%20Specification.md), [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
 
 ---
 

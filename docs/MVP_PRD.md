@@ -14,7 +14,7 @@
 
 BobKat StackScore MVP is an **internal assessment tool** that enables BobKat IT staff to evaluate client technology environments, calculate maturity scores, generate prioritized recommendations, and track improvement projects over time.
 
-MVP delivers the core assessor workflow end-to-end. Client self-service portal, PDF exports, and third-party integrations are explicitly deferred.
+MVP delivers the core assessor workflow end-to-end. Client self-service portal and third-party integrations remain deferred. **PDF assessment report export is in scope** per [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) (implemented).
 
 ---
 
@@ -256,7 +256,7 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 | Feature | Target phase |
 | ------- | ------------ |
 | Client portal (client role login) | Phase 2 |
-| PDF / print report export | Phase 2 |
+| PDF / print report export | **In scope (MVP)** — see DOC-005 Reports & PDF Exports |
 | Documents upload and storage | Phase 2 |
 | Activity log / notes timeline | Phase 2 |
 | Microsoft 365 integration | Phase 3 |
@@ -292,7 +292,7 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 | Question weights and scores | [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md) |
 | Scoring rules | [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md) |
 | Recommendation rules | [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json) |
-| Data model | [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md) |
+| Data model | [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) |
 | RBAC | [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md) |
 | Architecture | [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md) |
 
@@ -305,7 +305,7 @@ The primary MVP deliverable is an **in-app assessment results view** containing:
 | Who runs assessments? | BobKat staff only |
 | Client self-assessment? | No (Phase 2 portal) |
 | Edit completed assessments? | No — create new assessment |
-| PDF reports? | Phase 2 |
+| PDF reports? | **Yes** — assessment PDF export (MVP) |
 | Which roles in MVP? | admin, technician (client role dormant) |
 
 ---

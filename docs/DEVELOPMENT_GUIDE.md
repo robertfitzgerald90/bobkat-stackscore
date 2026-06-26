@@ -191,9 +191,12 @@ Or use `npm.cmd` instead of `npm`.
 | [MVP_PRD.md](MVP_PRD.md) | Product requirements |
 | [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md) | Stack and service design |
 | [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md) | REST API reference |
-| [DOC-301 – Database Schema Specification](DOC301%20-%20Database%20Schema%20Specification.md) | Data model and Prisma schema |
+| [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) | Data model and Prisma schema |
 | [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md) | Roles and permissions |
-| [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Authoritative scoring rules |
+| [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md) | Authoritative scoring rules (v2 target) |
+| [DOC-111A – v1 Scoring Implementation](DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Active v1 scoring rules |
 | [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md) | Question weights and answer scores |
-| [DOC-114 – Assessment Question Bank Specification](DOC-114%20-%20Assessment%20Question%20Bank%20Specification.md) | Assessment question bank (v1) |
-| [DOC-112 – Recommendation Engine Specification](DOC112%20-%20Recommendation%20Engine%20Specification.md) | Recommendation engine rules |
+| [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md) | Assessment question bank (v1) |
+| [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) | Recommendation engine rules |
+| [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) | Master documentation registry |
+| [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md) | Migration mapping tables |
