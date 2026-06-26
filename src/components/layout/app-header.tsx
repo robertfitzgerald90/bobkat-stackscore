@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -68,16 +69,18 @@ export function AppHeader({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel className="md:hidden">
-            <p className="text-sm font-medium">{user.name}</p>
-            <p className="text-xs font-normal text-muted-foreground">
-              {formatUserRole(user.role)}
-            </p>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator className="md:hidden" />
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
-            Sign out
-          </DropdownMenuItem>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="md:hidden">
+              <p className="text-sm font-medium">{user.name}</p>
+              <p className="text-xs font-normal text-muted-foreground">
+                {formatUserRole(user.role)}
+              </p>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="md:hidden" />
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
