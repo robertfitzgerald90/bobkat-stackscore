@@ -54,6 +54,7 @@ The report shall:
 8. Warranty & Support Information
 9. Recommended Next Steps
 10. Technology Journey Summary
+11. Technology Journey Closing Page (per [DOC-126](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md#11-technology-journey-closing-page))
 
 ---
 
@@ -166,6 +167,10 @@ Every Technology Completion Report shall conclude with:
 
 > Technology is never finished—it is continuously improved. This project represents another step in your organization's Technology Journey. Your updated Technology Profile reflects today's progress, while your Technology Roadmap identifies future opportunities to further strengthen, secure, and modernize your environment.
 
+The report shall then end with the standard **Technology Journey closing page** per DOC-126:
+
+> Every technology investment should move your organization closer to a more secure, reliable, efficient, and resilient operating environment. StackScore exists to measure, guide, and document that journey.
+
 ---
 
 # Business Rules
@@ -186,6 +191,7 @@ Every Technology Completion Report shall conclude with:
 * [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
 * [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
 * [DOC-106 – Solution Playbook Specification](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
+* [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
 * [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 
 ---

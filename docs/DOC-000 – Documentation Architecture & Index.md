@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 1.4
+**Version:** 1.9
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 25, 2026
@@ -19,6 +19,8 @@ This document is the master registry for all StackScore documentation. It define
 # Authority Hierarchy
 
 ```text
+DOC-129 (Engineering Constitution — governs all development)
+    │
 DOC-000 (this index)
     │
     ├── Business Governance (DOC-001 – DOC-005)
@@ -27,19 +29,42 @@ DOC-000 (this index)
     ├── Assessment Domain (DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120 – DOC-124)
+    ├── Reporting Architecture (DOC-125 – DOC-126)
+    ├── Experience Architecture (DOC-127)
+    ├── Integration Architecture (DOC-128)
     └── Technical Layer (DOC-300 – DOC-303)
 ```
 
 If documents conflict, resolve in this order:
 
-1. DOC-000 disposition table below
-2. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
-3. Higher authority tier wins within the same domain
-4. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
+1. [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — source of truth hierarchy
+2. DOC-000 disposition table below
+3. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+4. Higher authority tier wins within the same domain
+5. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
+6. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
 
 ---
 
 # Document Registry
+
+## Engineering constitution
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-129](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | **Governing (constitution)** | v2 | Draft |
+
+### DOC-129 – AI Development Rules & Engineering Constitution
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-129 |
+| **Title** | AI Development Rules & Engineering Constitution |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Mandatory engineering rules for all contributors and AI assistants; documentation-driven development and source of truth hierarchy. |
+| **Depends on** | DOC-000 |
+| **Used by** | All development activity; DOC-300, DOC-302; AI-assisted and human contributors |
 
 ## Business governance
 
@@ -148,6 +173,79 @@ Authoritative specifications that translate business architecture into software 
 
 Domain architecture tier (DOC-120 – DOC-124) is fully specified at Draft v1.0.
 
+## Reporting architecture
+
+Cross-cutting reporting engine standards governing report types, audiences, data sources, versioning, and export rules across client-facing and internal deliverables.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-125](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md) | Reporting Engine Specification | 1.0 | Governing (reporting) | v2 | Draft |
+| [DOC-126](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md) | PDF Generation Specification | 1.1 | Governing (document generation) | v2 | Draft |
+
+### DOC-125 – Reporting Engine Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-125 |
+| **Title** | Reporting Engine Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines StackScore reporting architecture, report types, data sources, audience rules, lifecycle, and business reporting standards. |
+| **Depends on** | DOC-005, DOC-103, DOC-104, DOC-107, DOC-113, DOC-120, DOC-122, DOC-124 |
+| **Used by** | DOC-124 (Reporting Service), DOC-005, DOC-302, DOC-126 |
+
+### DOC-126 – PDF Generation Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-126 |
+| **Title** | PDF Generation Specification |
+| **Version** | 1.1 |
+| **Status** | Draft |
+| **Purpose** | Defines PDF architecture, branding, formatting, and generation rules for all StackScore document exports. |
+| **Depends on** | DOC-005, DOC-103, DOC-104, DOC-107, DOC-122, DOC-125 |
+| **Used by** | DOC-124 (Document Service), DOC-005 |
+
+## Experience architecture
+
+Application experience standards for role-based dashboards, widgets, and actionable home screens.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-127](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Dashboard Specification | 1.0 | Governing (experience) | v2 | Draft |
+
+### DOC-127 – Dashboard Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-127 |
+| **Title** | Dashboard Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines dashboard architecture, layouts, widgets, KPIs, quick actions, and role-based UX including Today's Focus action card. |
+| **Depends on** | DOC-005, DOC-113, DOC-122, DOC-123, DOC-124 |
+| **Used by** | DOC-005, DOC-124 (Dashboard Service), DOC-300 |
+
+## Integration architecture
+
+External platform connectivity standards — vendor-neutral connectors, sync rules, and security boundaries.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-128](DOC-128%20%E2%80%93%20Integration%20Specification.md) | Integration Specification | 1.0 | Governing (integration) | v2 | Draft |
+
+### DOC-128 – Integration Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-128 |
+| **Title** | Integration Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines external integration architecture, connector model, vendor catalog, sync rules, and security for third-party platforms. |
+| **Depends on** | DOC-120, DOC-122, DOC-123, DOC-124 |
+| **Used by** | DOC-124 (Integration Service), DOC-302, DOC-303, DOC-127 |
+
 ## Technical layer
 
 | ID | Title | Authority | Version lane | Status |
@@ -202,6 +300,11 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
+* [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
+* [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
+* [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
+* [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
 
 ---
 
@@ -214,3 +317,8 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 1.2 | 2026-06-25 | BobKat IT | Registered DOC-121 (database architecture) and DOC-123 (workflow); DOC-301 v2 target note |
 | 1.3 | 2026-06-25 | BobKat IT | Registered DOC-122 (roles & permissions); DOC-303 v2 target note |
 | 1.4 | 2026-06-25 | BobKat IT | Registered DOC-124 (service layer); Domain Architecture tier DOC-120–124 complete |
+| 1.5 | 2026-06-25 | BobKat IT | Registered DOC-125 (Reporting Architecture tier) |
+| 1.6 | 2026-06-25 | BobKat IT | Registered DOC-126 (PDF / document generation architecture) |
+| 1.7 | 2026-06-25 | BobKat IT | Registered DOC-127 (Experience Architecture — dashboard specification) |
+| 1.8 | 2026-06-25 | BobKat IT | Registered DOC-128 (Integration Architecture tier) |
+| 1.9 | 2026-06-25 | BobKat IT | Registered DOC-129 (Engineering Constitution); conflict resolution and hierarchy updated |
