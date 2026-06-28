@@ -134,10 +134,11 @@ function getMaturityLabel(score: number): string {
 }
 
 export const V2_CATEGORY_DISPLAY_ORDER = [
+  "infrastructure",
   "security",
   "business_continuity",
-  "infrastructure",
-  "operations",
+  "productivity",
   "documentation",
   "strategic_it",
+  "operations",
 ] as const;

@@ -313,9 +313,30 @@ export function buildScoringRiskSummary(
 
 export { getTechnologyProfileDetail } from "./detail";
 export { computeJourneyProgress, deriveJourneyPhase } from "./journey";
+export {
+  buildBusinessSnapshot,
+  buildCategoryInsights,
+  buildProfileDocuments,
+  buildRoadmapPreview,
+  computeJourneyScores,
+  computeScoreDeltaSincePrevious,
+  countRecommendationsByV2Category,
+  deriveNextRecommendedAction,
+  formatComplianceStatus,
+  projectScoreFromRecommendations,
+  resolveProfileCapabilities,
+} from "./overview";
 export type {
+  CategoryScoreInsight,
+  NextRecommendedAction,
   ProfileAudience,
-  TechnologyProfileDetail,
+  ProfileBusinessSnapshot,
+  ProfileCapabilities,
+  ProfileDocumentSummary,
+  ProfileTipSummary,
+  RoadmapPhasePreview,
   TechnologyJourneyProgress,
+  TechnologyJourneyScores,
+  TechnologyProfileDetail,
 } from "./types";
 export { resolveProfileAudience } from "./types";
