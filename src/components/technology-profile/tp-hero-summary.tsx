@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, Calendar, Target } from "lucide-react";
+import { AlertTriangle, ArrowRight, Calendar, ClipboardList, Target } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
+import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { TREND_CONFIG } from "@/components/technology-profile/tp-constants";
 import { formatDisplayDate } from "@/lib/display";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
@@ -14,8 +15,9 @@ type TpHeroSummaryProps = {
 };
 
 export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
-  const { profile, client, businessSnapshot, journeyScores, nextAction } = detail;
+  const { profile, client, businessSnapshot, journeyScores, nextAction, journey } = detail;
   const score = profile.overallStackScore;
+  const hasAssessment = journey.assessmentsCompleted > 0;
   const rating = score !== null ? getRating(score) : null;
   const trend = profile.trendDirection ? TREND_CONFIG[profile.trendDirection] : null;
   const TrendIcon = trend?.icon;
@@ -29,7 +31,7 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
 
   return (
     <section className="overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background shadow-sm ring-1 ring-border/60">
-      <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-start">
+      <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-start">
         <div className="min-w-0 space-y-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -73,8 +75,8 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
           ) : null}
         </div>
 
-        <div className="flex flex-col items-start gap-3 sm:items-end sm:text-right">
-          <div>
+        <div className="flex flex-col items-start gap-3 lg:items-end lg:text-right">
+          <div className="w-full sm:w-auto">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               StackScore
             </p>
@@ -86,6 +88,11 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             >
               {score !== null ? score : "—"}
             </p>
+            {!hasAssessment ? (
+              <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+                Complete an initial assessment to establish the baseline StackScore.
+              </p>
+            ) : null}
             {rating ? (
               <p className="mt-1 text-sm font-medium text-muted-foreground">
                 {RATING_LABELS[rating]}
@@ -111,15 +118,30 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
         </div>
       </div>
 
+      {!hasAssessment && !detail.sections.showNextActionCta ? (
+        <div className="border-t border-border/60 bg-muted/20 px-4 py-4 sm:px-6">
+          <TpEmptyState
+            icon={ClipboardList}
+            title="Profile not established"
+            message="Run the first assessment to populate scores, categories, and recommendations for this client."
+            className="border-none bg-transparent py-4"
+          />
+        </div>
+      ) : null}
+
       {detail.sections.showNextActionCta ? (
-        <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="min-w-0">
             <p className="text-sm font-semibold">{nextAction.label}</p>
             <p className="text-sm text-muted-foreground">{nextAction.description}</p>
           </div>
           <Link
             href={nextAction.href}
-            className={buttonClassName({ variant: "default", size: "sm", className: "shrink-0" })}
+            className={buttonClassName({
+              variant: "default",
+              size: "sm",
+              className: "w-full shrink-0 sm:w-auto",
+            })}
           >
             {nextAction.label}
             <ArrowRight className="ml-2 h-4 w-4" />

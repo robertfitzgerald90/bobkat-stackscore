@@ -1,5 +1,7 @@
 import { Route } from "lucide-react";
+import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type {
   TechnologyJourneyProgress,
@@ -8,6 +10,7 @@ import type {
 import { cn } from "@/lib/utils";
 
 type TpTechnologyJourneyProps = {
+  clientId: string;
   journey: TechnologyJourneyProgress;
   journeyScores: TechnologyJourneyScores;
 };
@@ -22,16 +25,15 @@ function ScoreLadderStep({ label, score, highlight }: LadderStep) {
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col items-center rounded-lg border px-3 py-4 text-center",
+        "flex flex-1 flex-col items-center rounded-lg border px-2 py-3 text-center sm:px-3 sm:py-4",
         highlight ? "border-primary/40 bg-primary/5" : "border-border/60",
       )}
     >
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs">
+        {label}
+      </p>
       <p
-        className={cn(
-          "mt-1 text-2xl font-bold tabular-nums",
-          getScoreTextColorClass(score),
-        )}
+        className={cn("mt-1 text-xl font-bold tabular-nums sm:text-2xl", getScoreTextColorClass(score))}
       >
         {score !== null ? score : "—"}
       </p>
@@ -48,7 +50,8 @@ function JourneyStat({ label, value }: { label: string; value: number }) {
   );
 }
 
-export function TpTechnologyJourney({ journey, journeyScores }: TpTechnologyJourneyProps) {
+export function TpTechnologyJourney({ clientId, journey, journeyScores }: TpTechnologyJourneyProps) {
+  const hasAssessment = journey.assessmentsCompleted > 0;
   const steps: LadderStep[] = [
     { label: "Initial", score: journeyScores.initialScore },
     { label: "Current", score: journeyScores.currentScore, highlight: true },
@@ -79,18 +82,30 @@ export function TpTechnologyJourney({ journey, journeyScores }: TpTechnologyJour
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {steps.map((step) => (
-            <ScoreLadderStep key={step.label} {...step} />
-          ))}
-        </div>
+        {!hasAssessment ? (
+          <TpEmptyState
+            icon={Route}
+            title="Journey not started"
+            message="The assess → improve → maintain lifecycle begins with the first completed assessment."
+            actionLabel="Start assessment"
+            actionHref={clientTechnologyProfilePath(clientId)}
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {steps.map((step) => (
+                <ScoreLadderStep key={step.label} {...step} />
+              ))}
+            </div>
 
-        {journeyScores.scoreDeltaSinceInitial !== null ? (
-          <p className="text-center text-sm text-muted-foreground">
-            {journeyScores.scoreDeltaSinceInitial >= 0 ? "+" : ""}
-            {journeyScores.scoreDeltaSinceInitial} pts since first assessment
-          </p>
-        ) : null}
+            {journeyScores.scoreDeltaSinceInitial !== null ? (
+              <p className="text-center text-sm text-muted-foreground">
+                {journeyScores.scoreDeltaSinceInitial >= 0 ? "+" : ""}
+                {journeyScores.scoreDeltaSinceInitial} pts since first assessment
+              </p>
+            ) : null}
+          </>
+        )}
 
         <div className="grid grid-cols-2 gap-2 text-sm">
           <JourneyStat label="Assessments" value={journey.assessmentsCompleted} />

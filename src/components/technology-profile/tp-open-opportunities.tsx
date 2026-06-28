@@ -3,8 +3,10 @@ import { Lightbulb, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { PRIORITY_LABELS } from "@/lib/display";
 import type {
   ProfileCapabilities,
@@ -17,19 +19,21 @@ type TpOpenOpportunitiesProps = {
   clientId: string;
   recommendations: ProfileRecommendationSummary[];
   capabilities: ProfileCapabilities;
+  assessmentsCompleted: number;
 };
 
 export function TpOpenOpportunities({
   clientId,
   recommendations,
   capabilities,
+  assessmentsCompleted,
 }: TpOpenOpportunitiesProps) {
   const visible = recommendations.slice(0, MAX_OPPORTUNITIES);
 
   return (
     <Card className="stat-card">
       <CardHeader>
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
@@ -43,7 +47,11 @@ export function TpOpenOpportunities({
           {capabilities.canEditImprovementPlan && recommendations.length > 0 ? (
             <Link
               href={`/clients/${clientId}/improvement-plan`}
-              className={buttonClassName({ variant: "outline", size: "sm" })}
+              className={buttonClassName({
+                variant: "outline",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
             >
               <TrendingUp className="mr-2 h-4 w-4" />
               Improvement Plan
@@ -53,9 +61,30 @@ export function TpOpenOpportunities({
       </CardHeader>
       <CardContent className="space-y-3">
         {visible.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No open recommendations. Complete an assessment to identify opportunities.
-          </p>
+          assessmentsCompleted === 0 ? (
+            <TpEmptyState
+              icon={Lightbulb}
+              title="No opportunities yet"
+              message="Complete an assessment to generate prioritized recommendations for this client."
+              actionLabel="Start assessment"
+              actionHref={clientTechnologyProfilePath(clientId)}
+            />
+          ) : (
+            <TpEmptyState
+              icon={Lightbulb}
+              title="All caught up"
+              message="No open recommendations right now. Start an Improvement Plan or schedule a reassessment when priorities shift."
+              positive
+              actionLabel={
+                capabilities.canEditImprovementPlan ? "Open Improvement Plan" : undefined
+              }
+              actionHref={
+                capabilities.canEditImprovementPlan
+                  ? `/clients/${clientId}/improvement-plan`
+                  : undefined
+              }
+            />
+          )
         ) : (
           visible.map((recommendation) => (
             <div
@@ -77,7 +106,11 @@ export function TpOpenOpportunities({
               </p>
               <Link
                 href={`/assessments/${recommendation.assessmentId}/results`}
-                className={buttonClassName({ variant: "link", size: "sm", className: "mt-2 h-auto p-0" })}
+                className={buttonClassName({
+                  variant: "link",
+                  size: "sm",
+                  className: "mt-2 h-auto p-0",
+                })}
               >
                 View in assessment
               </Link>

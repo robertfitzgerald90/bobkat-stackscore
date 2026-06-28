@@ -3,6 +3,7 @@ import { Map, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { ProfileTipSummary, RoadmapPhasePreview } from "@/lib/technology-profile/types";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,7 @@ export function TpRoadmapPreview({
   return (
     <Card className="stat-card h-full">
       <CardHeader>
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
               <Map className="h-4 w-4" />
@@ -36,14 +37,22 @@ export function TpRoadmapPreview({
           {activeTip ? (
             <Link
               href={`/clients/${clientId}/improvement-plan/${activeTip.id}`}
-              className={buttonClassName({ variant: "outline", size: "sm" })}
+              className={buttonClassName({
+                variant: "outline",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
             >
               Open Plan
             </Link>
           ) : canEditImprovementPlan ? (
             <Link
               href={`/clients/${clientId}/improvement-plan`}
-              className={buttonClassName({ variant: "outline", size: "sm" })}
+              className={buttonClassName({
+                variant: "outline",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
             >
               <TrendingUp className="mr-2 h-4 w-4" />
               Start Plan
@@ -53,20 +62,15 @@ export function TpRoadmapPreview({
       </CardHeader>
       <CardContent className="space-y-3">
         {phases.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-8 text-center">
-            <p className="text-sm font-medium">No roadmap yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Start an Improvement Plan to build a phased technology roadmap.
-            </p>
-            {canEditImprovementPlan ? (
-              <Link
-                href={`/clients/${clientId}/improvement-plan`}
-                className={buttonClassName({ variant: "default", size: "sm", className: "mt-4" })}
-              >
-                Start Improvement Plan
-              </Link>
-            ) : null}
-          </div>
+          <TpEmptyState
+            icon={Map}
+            title="No roadmap yet"
+            message="Start an Improvement Plan to group recommendations into phased milestones with projected scores."
+            actionLabel={canEditImprovementPlan ? "Start Improvement Plan" : undefined}
+            actionHref={
+              canEditImprovementPlan ? `/clients/${clientId}/improvement-plan` : undefined
+            }
+          />
         ) : (
           <>
             {activeTip ? (
@@ -91,7 +95,7 @@ export function TpRoadmapPreview({
             {phases.map((phase, index) => (
               <div
                 key={phase.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-4 py-3"
+                className="flex flex-col gap-2 rounded-lg border border-border/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Phase {index + 1}</p>
@@ -103,7 +107,7 @@ export function TpRoadmapPreview({
                 </div>
                 <p
                   className={cn(
-                    "shrink-0 text-xl font-bold tabular-nums",
+                    "text-xl font-bold tabular-nums sm:shrink-0",
                     getScoreTextColorClass(phase.projectedScore),
                   )}
                 >

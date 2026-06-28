@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { CheckCircle2, FolderKanban } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { buttonClassName } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDisplayDate } from "@/lib/display";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
@@ -21,13 +22,17 @@ export function TpRecentProgress({ projects }: TpRecentProgressProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         {projects.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No completed projects yet. Convert recommendations into projects to track delivery.
-          </p>
+          <TpEmptyState
+            icon={CheckCircle2}
+            title="No completed projects"
+            message="When improvement projects finish, expected and actual StackScore impact will appear here."
+            actionLabel="View projects"
+            actionHref="/projects"
+          />
         ) : (
           projects.map((project) => (
             <div key={project.id} className="rounded-lg border border-border/60 p-4 text-sm">
-              <div className="mb-1 flex flex-wrap items-start justify-between gap-2">
+              <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
                 <p className="font-semibold">{project.title}</p>
                 {project.completedAt ? (
                   <span className="text-xs text-muted-foreground">
@@ -52,7 +57,11 @@ export function TpRecentProgress({ projects }: TpRecentProgressProps) {
               </div>
               <Link
                 href={`/projects?selected=${project.id}`}
-                className={buttonClassName({ variant: "link", size: "sm", className: "mt-2 h-auto p-0" })}
+                className={buttonClassName({
+                  variant: "link",
+                  size: "sm",
+                  className: "mt-2 h-auto p-0",
+                })}
               >
                 <FolderKanban className="mr-1 inline h-3.5 w-3.5" />
                 Open project
