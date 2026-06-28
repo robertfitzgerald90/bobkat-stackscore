@@ -345,5 +345,4 @@ export {
   trimBusinessSnapshotForClient,
 } from "./visibility";
 export { hasAnyCategoryScore, isBusinessSnapshotSparse } from "./display";
-export type { ProfileSectionVisibility } from "./types";
 export { resolveProfileAudience } from "./types";
