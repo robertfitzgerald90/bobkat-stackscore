@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeftRight, Building2, History, TrendingUp } from "lucide-react";
+import { ArrowLeftRight, Building2, CalendarRange, History, TrendingUp } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
 import type { ProfileSectionVisibility } from "@/lib/technology-profile/types";
 
@@ -25,6 +25,13 @@ export function TpQuickActions({
       </Link>
       {sections.showInternalQuickActions ? (
         <>
+          <Link
+            href={`/clients/${clientId}/quarterly-review`}
+            className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
+          >
+            <CalendarRange className="mr-2 h-4 w-4" />
+            Quarterly Review
+          </Link>
           <Link
             href={`/clients/${clientId}/improvement-plan`}
             className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}

@@ -62,6 +62,9 @@ export function classifyReportDocument(
   if (documentType === "technology_improvement_plan") {
     return null;
   }
+  if (documentType === "quarterly_business_review") {
+    return "quarterly_review";
+  }
 
   const normalized = title.toLowerCase();
 

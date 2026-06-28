@@ -144,7 +144,13 @@ enum DocumentType {
   proposal
   evidence
   technology_improvement_plan
+  quarterly_business_review
   other
+}
+
+enum QuarterlyBusinessReviewStatus {
+  draft
+  generated
 }
 
 enum TechnologyImprovementPlanStatus {
@@ -192,6 +198,7 @@ model User {
   documentsUploaded      Document[]
   notes                  Note[]
   improvementPlansCreated TechnologyImprovementPlan[]
+  quarterlyBusinessReviewsCreated QuarterlyBusinessReview[]
 }
 
 model Client {
@@ -228,6 +235,7 @@ model Client {
   technologyProfile  TechnologyProfile?
   profileSnapshots   TechnologyProfileSnapshot[]
   improvementPlans   TechnologyImprovementPlan[]
+  quarterlyBusinessReviews QuarterlyBusinessReview[]
 }
 
 model AssessmentCategory {
@@ -535,6 +543,7 @@ model Document {
   assessmentId     String?
   projectId        String?
   tipId            String?      @unique
+  qbrId            String?      @unique
   documentType     DocumentType
   title            String
   fileUrl          String
@@ -546,6 +555,7 @@ model Document {
   assessment Assessment? @relation(fields: [assessmentId], references: [id])
   project    Project?    @relation(fields: [projectId], references: [id])
   tip        TechnologyImprovementPlan? @relation(fields: [tipId], references: [id])
+  quarterlyBusinessReview QuarterlyBusinessReview? @relation(fields: [qbrId], references: [id])
   uploadedBy User        @relation(fields: [uploadedByUserId], references: [id])
 }
 
@@ -568,6 +578,24 @@ model TechnologyImprovementPlan {
   assessment Assessment? @relation(fields: [assessmentId], references: [id])
   createdBy  User        @relation(fields: [createdByUserId], references: [id])
   document   Document?
+}
+
+model QuarterlyBusinessReview {
+  id                String                        @id @default(uuid())
+  clientId          String
+  reviewPeriodStart DateTime
+  reviewPeriodEnd   DateTime
+  title             String
+  status            QuarterlyBusinessReviewStatus @default(draft)
+  executiveSummary  String?                       @db.Text
+  generatedAt       DateTime?
+  createdByUserId   String
+  createdAt         DateTime                      @default(now())
+  updatedAt         DateTime                      @updatedAt
+
+  client    Client    @relation(fields: [clientId], references: [id])
+  createdBy User      @relation(fields: [createdByUserId], references: [id])
+  document  Document?
 }
 
 model Note {

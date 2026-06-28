@@ -154,6 +154,7 @@ export type ProfileDocumentSummary = {
   createdAt: string;
   assessmentId: string | null;
   tipId: string | null;
+  qbrId: string | null;
   downloadHref: string | null;
 };
 

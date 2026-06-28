@@ -192,15 +192,18 @@
 }
 
 @media print {
-  .comparison-report .print\:hidden {
+  .comparison-report .print\:hidden,
+  .qbr-report .print\:hidden {
     display: none !important;
   }
 
-  .comparison-report {
+  .comparison-report,
+  .qbr-report {
     color: #111;
   }
 
-  .comparison-report .stat-card {
+  .comparison-report .stat-card,
+  .qbr-report .stat-card {
     break-inside: avoid;
     box-shadow: none;
     border: 1px solid #ddd;

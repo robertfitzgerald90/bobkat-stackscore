@@ -401,6 +401,8 @@ export function buildProfileDocuments(input: {
     createdAt: Date;
     assessmentId: string | null;
     tipId: string | null;
+    qbrId: string | null;
+    fileUrl: string;
   }>;
 }): ProfileDocumentSummary[] {
   const rows: ProfileDocumentSummary[] = [];
@@ -413,6 +415,7 @@ export function buildProfileDocuments(input: {
       createdAt: input.lastAssessedAt ?? new Date().toISOString(),
       assessmentId: input.currentAssessmentId,
       tipId: null,
+      qbrId: null,
       downloadHref: `/api/v1/assessments/${input.currentAssessmentId}/export/pdf`,
     });
   }
@@ -425,12 +428,15 @@ export function buildProfileDocuments(input: {
       createdAt: document.createdAt.toISOString(),
       assessmentId: document.assessmentId,
       tipId: document.tipId,
+      qbrId: document.qbrId,
       downloadHref:
-        document.documentType === "technology_improvement_plan" && document.tipId
-          ? `/api/v1/clients/${input.clientId}/tip/${document.tipId}/pdf`
-          : document.assessmentId
-            ? `/api/v1/assessments/${document.assessmentId}/export/pdf`
-            : null,
+        document.documentType === "quarterly_business_review" && document.qbrId
+          ? document.fileUrl || `/clients/${input.clientId}/quarterly-review/${document.qbrId}`
+          : document.documentType === "technology_improvement_plan" && document.tipId
+            ? `/api/v1/clients/${input.clientId}/tip/${document.tipId}/pdf`
+            : document.assessmentId
+              ? `/api/v1/assessments/${document.assessmentId}/export/pdf`
+              : null,
     });
   }
 

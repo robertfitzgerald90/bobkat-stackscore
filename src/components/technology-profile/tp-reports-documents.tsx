@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Download, FileText, Map, Route } from "lucide-react";
+import { Download, ExternalLink, FileText, Map, Route } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
@@ -19,6 +19,7 @@ type TpReportsDocumentsProps = {
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   report: "Assessment Report",
   technology_improvement_plan: "Improvement Plan",
+  quarterly_business_review: "Quarterly Business Review",
   proposal: "Proposal",
   diagram: "Diagram",
   contract: "Contract",
@@ -28,6 +29,7 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
 
 function DocumentIcon({ type }: { type: DocumentType }) {
   if (type === "technology_improvement_plan") return <Route className="h-4 w-4" />;
+  if (type === "quarterly_business_review") return <FileText className="h-4 w-4" />;
   return <FileText className="h-4 w-4" />;
 }
 
@@ -82,17 +84,31 @@ export function TpReportsDocuments({
                   </div>
                 </div>
                 {document.downloadHref ? (
-                  <a
-                    href={document.downloadHref}
-                    className={buttonClassName({
-                      variant: "outline",
-                      size: "sm",
-                      className: "w-full shrink-0 sm:w-auto",
-                    })}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </a>
+                  document.documentType === "quarterly_business_review" ? (
+                    <Link
+                      href={document.downloadHref}
+                      className={buttonClassName({
+                        variant: "outline",
+                        size: "sm",
+                        className: "w-full shrink-0 sm:w-auto",
+                      })}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View Report
+                    </Link>
+                  ) : (
+                    <a
+                      href={document.downloadHref}
+                      className={buttonClassName({
+                        variant: "outline",
+                        size: "sm",
+                        className: "w-full shrink-0 sm:w-auto",
+                      })}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </a>
+                  )
                 ) : (
                   <span className="text-xs text-muted-foreground">No file available</span>
                 )}

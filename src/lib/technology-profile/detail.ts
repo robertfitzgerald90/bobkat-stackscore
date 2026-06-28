@@ -216,6 +216,8 @@ export async function getTechnologyProfileDetail(
         createdAt: true,
         assessmentId: true,
         tipId: true,
+        qbrId: true,
+        fileUrl: true,
       },
     }),
     prisma.technologyImprovementPlan.findFirst({
@@ -367,6 +369,7 @@ export async function getTechnologyProfileDetail(
     : allDocuments.filter(
         (document) =>
           document.documentType === "technology_improvement_plan" ||
+          document.documentType === "quarterly_business_review" ||
           document.id.startsWith("assessment-report-"),
       );
 

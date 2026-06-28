@@ -92,6 +92,9 @@ describe("technology journey timeline", () => {
     expect(classifyReportDocument("Improvement Plan", "technology_improvement_plan")).toBe(
       null,
     );
+    expect(
+      classifyReportDocument("Q2 Quarterly Business Review", "quarterly_business_review"),
+    ).toBe("quarterly_review");
   });
 
   it("builds chronological events with profile impact and links", () => {

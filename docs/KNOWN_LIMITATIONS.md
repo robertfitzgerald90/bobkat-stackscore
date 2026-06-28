@@ -29,7 +29,7 @@
 | Service catalog / pricing engine | Not built |
 | Client portal (client role login) | Role exists; no portal UI |
 | Today's Focus dashboards (DOC-127) | Not built |
-| QBR / multi-report PDF suite | Assessment PDF only |
+| QBR PDF export | Interactive browser QBR report implemented; dedicated QBR PDF deferred |
 | Integrations (NinjaOne, M365, etc.) | Not built |
 | Audit log | Not built |
 | Multi-tenant / SaaS | Single-tenant BobKat use |
