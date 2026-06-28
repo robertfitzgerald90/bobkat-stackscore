@@ -53,6 +53,9 @@ export type ProfileRecommendationSummary = {
   categoryName: string;
   categoryCode: string;
   assessmentId: string;
+  latestAssessmentId: string;
+  triggeredInLatestAssessment: boolean;
+  isRecurrence: boolean;
 };
 
 export type ProfileProjectSummary = {

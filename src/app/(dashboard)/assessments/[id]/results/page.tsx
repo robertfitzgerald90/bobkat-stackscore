@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentResults } from "@/components/assessments/assessment-results";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
 
@@ -20,17 +21,12 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
         include: { category: true },
         orderBy: { category: { displayOrder: "asc" } },
       },
-      recommendations: {
-        orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-        include: {
-          category: true,
-          project: { select: { id: true } },
-        },
-      },
     },
   });
 
   if (!assessment || assessment.status !== "completed") notFound();
+
+  const recommendations = await getRecommendationsTriggeredByAssessment(id);
 
   const hasImprovementSummary = assessment.sourceAssessmentId !== null;
 
@@ -46,7 +42,7 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
     assessment.hasCriticalExposure,
     criticalFindingsCount,
     assessment.categoryScores,
-    assessment.recommendations,
+    recommendations,
   );
 
   return (

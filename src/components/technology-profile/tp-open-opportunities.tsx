@@ -103,9 +103,13 @@ export function TpOpenOpportunities({
               <p className="text-xs text-muted-foreground">
                 {recommendation.categoryName} · +{recommendation.estimatedImpactPoints} pts ·{" "}
                 {RECOMMENDATION_STATUS_LABELS[recommendation.status]}
+                {!recommendation.triggeredInLatestAssessment ? (
+                  <> · Not triggered in latest assessment</>
+                ) : null}
+                {recommendation.isRecurrence ? <> · Recurrence</> : null}
               </p>
               <Link
-                href={`/assessments/${recommendation.assessmentId}/results`}
+                href={`/assessments/${recommendation.latestAssessmentId}/results`}
                 className={buttonClassName({
                   variant: "link",
                   size: "sm",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import {
   conflict,
   getSessionUser,
@@ -30,14 +31,19 @@ export async function GET(_request: NextRequest, context: RouteContext) {
         },
       },
       categoryScores: { include: { category: true } },
-      recommendations: {
-        orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-        include: { category: true },
-      },
     },
   });
 
   if (!assessment) return notFound("Assessment not found");
+
+  const recommendations =
+    assessment.status === "completed"
+      ? await getRecommendationsTriggeredByAssessment(id)
+      : await prisma.assessmentRecommendation.findMany({
+          where: { assessmentId: id },
+          orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
+          include: { category: true },
+        });
 
   const totalQuestions = await prisma.assessmentQuestion.count({
     where: { isActive: true },
@@ -45,6 +51,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   return NextResponse.json({
     ...assessment,
+    recommendations,
     progress: {
       answered: assessment.responses.length,
       total: totalQuestions,

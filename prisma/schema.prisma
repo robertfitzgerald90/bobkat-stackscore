@@ -325,6 +325,8 @@ model Assessment {
   responses          AssessmentResponse[]
   categoryScores  AssessmentCategoryScore[]
   recommendations AssessmentRecommendation[]
+  latestRecommendations AssessmentRecommendation[] @relation("RecommendationLatestAssessment")
+  recommendationTriggers RecommendationAssessmentTrigger[]
   scoreHistory    ClientScoreHistory[]
   documents              Document[]
   notes                  Note[]
@@ -435,6 +437,13 @@ model AssessmentRecommendation {
   categoryId               String
   recommendationTemplateId String?
   consolidationGroupId     String?
+  dedupeKey                String
+  latestAssessmentId       String
+  lastTriggeredAt          DateTime             @default(now())
+  latestTriggerReason      String?              @db.Text
+  triggeredInLatestAssessment Boolean           @default(true)
+  isRecurrence             Boolean              @default(false)
+  recurrenceCount          Int                  @default(0)
   title                    String
   description              String               @db.Text
   businessImpact           String               @db.Text
@@ -448,11 +457,29 @@ model AssessmentRecommendation {
   completedAt              DateTime?
 
   assessment             Assessment              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  latestAssessment       Assessment              @relation("RecommendationLatestAssessment", fields: [latestAssessmentId], references: [id])
   client                 Client                  @relation(fields: [clientId], references: [id])
   category               AssessmentCategory      @relation(fields: [categoryId], references: [id])
   recommendationTemplate RecommendationTemplate? @relation(fields: [recommendationTemplateId], references: [id])
   createdBy              User                    @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
   project                Project?
+  triggers               RecommendationAssessmentTrigger[]
+
+  @@index([clientId, dedupeKey])
+}
+
+model RecommendationAssessmentTrigger {
+  id               String   @id @default(uuid())
+  recommendationId String
+  assessmentId     String
+  triggeredAt      DateTime @default(now())
+  triggerReason    String?  @db.Text
+
+  recommendation AssessmentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  assessment     Assessment               @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([recommendationId, assessmentId])
+  @@index([assessmentId])
 }
 
 model Project {

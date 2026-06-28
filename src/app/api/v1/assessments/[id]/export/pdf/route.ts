@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { generateAssessmentReportPdf } from "@/lib/pdf/generate";
 import { formatReportDate, sanitizeFilename } from "@/lib/pdf/types";
 import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
@@ -23,19 +24,14 @@ export async function GET(_request: Request, context: RouteContext) {
         include: { category: true },
         orderBy: { category: { displayOrder: "asc" } },
       },
-      recommendations: {
-        orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-        include: {
-          category: true,
-          project: { select: { id: true } },
-        },
-      },
     },
   });
 
   if (!assessment || assessment.status !== "completed") {
     return notFound("Completed assessment not found");
   }
+
+  const recommendations = await getRecommendationsTriggeredByAssessment(id);
 
   const criticalFindingsCount = await prisma.assessmentResponse.count({
     where: {
@@ -49,7 +45,7 @@ export async function GET(_request: Request, context: RouteContext) {
     assessment.hasCriticalExposure,
     criticalFindingsCount,
     assessment.categoryScores,
-    assessment.recommendations,
+    recommendations,
   );
 
   const reportData = {

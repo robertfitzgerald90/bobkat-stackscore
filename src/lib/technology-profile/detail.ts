@@ -267,6 +267,9 @@ export async function getTechnologyProfileDetail(
       categoryName: recommendation.category.name,
       categoryCode: recommendation.category.code,
       assessmentId: recommendation.assessmentId,
+      latestAssessmentId: recommendation.latestAssessmentId,
+      triggeredInLatestAssessment: recommendation.triggeredInLatestAssessment,
+      isRecurrence: recommendation.isRecurrence,
     }),
   );
 

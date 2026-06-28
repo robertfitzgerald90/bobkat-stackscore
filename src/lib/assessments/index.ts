@@ -2,7 +2,9 @@ import { prisma } from "@/lib/db";
 import {
   buildExecutiveSummary,
 } from "@/lib/recommendations";
-import { generateRecommendations } from "@/lib/recommendations/generate";
+import { generateRecommendations, collectTriggeredResponses } from "@/lib/recommendations/generate";
+import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
+import { syncClientRecommendations } from "@/lib/recommendations/sync";
 import {
   calculateScores,
   RATING_LABELS,
@@ -89,6 +91,7 @@ export async function completeAssessment(assessmentId: string, userId: string) {
 
   const scoring = calculateScores(categoryInputs, hasCriticalExposure);
 
+  const triggeredResponses = collectTriggeredResponses(assessment.responses);
   const { recommendations: generatedRecommendations, projectedScore } = generateRecommendations(
     assessment.responses,
     scoring.overallScore,
@@ -120,7 +123,6 @@ export async function completeAssessment(assessmentId: string, userId: string) {
 
   await prisma.$transaction(async (tx) => {
     await tx.assessmentCategoryScore.deleteMany({ where: { assessmentId } });
-    await tx.assessmentRecommendation.deleteMany({ where: { assessmentId } });
 
     for (const categoryScore of scoring.categoryScores) {
       await tx.assessmentCategoryScore.create({
@@ -135,36 +137,13 @@ export async function completeAssessment(assessmentId: string, userId: string) {
       });
     }
 
-    const categoryRecords = await tx.assessmentCategory.findMany();
-    const categoryNameToId = new Map(
-      categoryRecords.map((category) => [category.name, category.id]),
-    );
-
-    for (const recommendation of generatedRecommendations) {
-      const template = await tx.recommendationTemplate.findUnique({
-        where: { code: recommendation.templateCode },
-      });
-
-      await tx.assessmentRecommendation.create({
-        data: {
-          assessmentId,
-          clientId: assessment.clientId,
-          categoryId:
-            template?.categoryId ??
-            categoryNameToId.get(recommendation.categoryName) ??
-            categoryRecords[0].id,
-          recommendationTemplateId: template?.id,
-          consolidationGroupId: recommendation.consolidationGroupId,
-          title: recommendation.title,
-          description: recommendation.description,
-          businessImpact: recommendation.businessImpact,
-          suggestedService: recommendation.suggestedService,
-          priority: recommendation.priority,
-          estimatedImpactPoints: recommendation.estimatedImpactPoints,
-          createdByUserId: userId,
-        },
-      });
-    }
+    await syncClientRecommendations(tx, {
+      clientId: assessment.clientId,
+      assessmentId,
+      userId,
+      generated: generatedRecommendations,
+      triggeredResponses,
+    });
 
     const updateData: Prisma.AssessmentUpdateInput = {
       status: "completed",
@@ -205,15 +184,22 @@ export async function completeAssessment(assessmentId: string, userId: string) {
 
   await syncProfileFromAssessment(assessmentId);
 
-  return prisma.assessment.findUnique({
+  const recommendations = await getRecommendationsTriggeredByAssessment(assessmentId);
+
+  const completed = await prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {
       categoryScores: { include: { category: true } },
-      recommendations: { orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }] },
       client: true,
       assessor: { select: { id: true, name: true, email: true } },
     },
   });
+
+  if (!completed) {
+    throw new Error("Assessment not found after completion");
+  }
+
+  return { ...completed, recommendations };
 }
 
 import type {
