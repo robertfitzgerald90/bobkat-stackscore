@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QbrDetail } from "@/lib/qbr/service";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { formatDisplayDate } from "@/lib/display";
 import { QbrReportView } from "@/components/qbr/qbr-report-view";
 import { toast } from "sonner";
@@ -137,10 +136,11 @@ export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflow
           </div>
         ) : (
           <Link
-            href={clientTechnologyProfilePath(clientId)}
-            className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
+            href={`/clients/${clientId}/quarterly-review`}
+            className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2 report-no-print" })}
           >
-            Back to Technology Profile
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            All Quarterly Reviews
           </Link>
         )}
       </div>

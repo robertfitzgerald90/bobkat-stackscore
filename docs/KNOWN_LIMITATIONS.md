@@ -29,8 +29,8 @@
 | Service catalog / pricing engine | Not built |
 | Client portal (client role login) | Role exists; no portal UI |
 | Today's Focus dashboards (DOC-127) | Not built |
+| Assessment browser preview | Unified framework assessment report at `/assessments/[id]/report` |
 | QBR PDF export | Interactive browser reports use unified `stackscore-report` framework; dedicated QBR PDF deferred |
-| Assessment browser preview | Assessment PDF only; unified framework ready for assessment preview migration |
 | Integrations (NinjaOne, M365, etc.) | Not built |
 | Audit log | Not built |
 | Multi-tenant / SaaS | Single-tenant BobKat use |

@@ -420,7 +420,7 @@ export function buildProfileDocuments(input: {
       assessmentId: input.currentAssessmentId,
       tipId: null,
       qbrId: null,
-      downloadHref: `/api/v1/assessments/${input.currentAssessmentId}/export/pdf`,
+      downloadHref: `/assessments/${input.currentAssessmentId}/report`,
     });
   }
 

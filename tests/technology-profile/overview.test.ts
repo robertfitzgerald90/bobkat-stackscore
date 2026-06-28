@@ -189,7 +189,7 @@ describe("technology profile overview", () => {
     });
 
     expect(documents).toHaveLength(1);
-    expect(documents[0]?.downloadHref).toBe("/api/v1/assessments/assessment-1/export/pdf");
+    expect(documents[0]?.downloadHref).toBe("/assessments/assessment-1/report");
     expect(documents[0]?.createdAt).toBe("2025-06-01T00:00:00.000Z");
   });
 

@@ -84,7 +84,8 @@ export function TpReportsDocuments({
                   </div>
                 </div>
                 {document.downloadHref ? (
-                  document.documentType === "quarterly_business_review" ? (
+                  document.documentType === "quarterly_business_review" ||
+                  document.id.startsWith("assessment-report-") ? (
                     <Link
                       href={document.downloadHref}
                       className={buttonClassName({

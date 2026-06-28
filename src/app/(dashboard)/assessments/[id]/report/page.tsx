@@ -1,21 +1,17 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { buildAssessmentReportData } from "@/lib/assessments/report-data";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { prisma } from "@/lib/db";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
-import { generateAssessmentReportPdf } from "@/lib/pdf/generate";
-import { sanitizeFilename } from "@/lib/pdf/types";
-import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
+import { AssessmentReportPreview } from "@/components/assessments/assessment-report-preview";
 
-export const runtime = "nodejs";
+type PageProps = { params: Promise<{ id: string }> };
 
-type RouteContext = { params: Promise<{ id: string }> };
-
-export async function GET(_request: Request, context: RouteContext) {
-  const user = await getSessionUser();
-  if (!user) return unauthorized();
-
-  const { id } = await context.params;
+export default async function AssessmentReportPage({ params }: PageProps) {
+  const { id } = await params;
+  const session = await auth();
+  if (!session?.user) redirect("/login");
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
@@ -28,9 +24,7 @@ export async function GET(_request: Request, context: RouteContext) {
     },
   });
 
-  if (!assessment || assessment.status !== "completed") {
-    return notFound("Completed assessment not found");
-  }
+  if (!assessment || assessment.status !== "completed") notFound();
 
   const recommendations = await getRecommendationsTriggeredByAssessment(id);
 
@@ -59,15 +53,13 @@ export async function GET(_request: Request, context: RouteContext) {
     summary,
   });
 
-  const buffer = await generateAssessmentReportPdf(reportData);
-
-  const filename = `${sanitizeFilename(assessment.client.companyName)}-stackscore-report.pdf`;
-
-  return new NextResponse(new Uint8Array(buffer), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${filename}"`,
-      "Cache-Control": "no-store",
-    },
-  });
+  return (
+    <div className="page-shell">
+      <AssessmentReportPreview
+        assessmentId={assessment.id}
+        clientId={assessment.clientId}
+        data={reportData}
+      />
+    </div>
+  );
 }

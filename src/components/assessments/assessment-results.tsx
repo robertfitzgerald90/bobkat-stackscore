@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   FileDown,
+  FileText,
   FolderKanban,
   ShieldAlert,
   TrendingUp,
@@ -246,6 +247,13 @@ export function AssessmentResults({
               <span className="hidden sm:inline">Improvement Summary</span>
             </Link>
           ) : null}
+          <Link
+            href={`/assessments/${assessmentId}/report`}
+            className={buttonVariants({ variant: "outline", className: "w-full sm:w-auto" })}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            View Report
+          </Link>
           <Button onClick={exportPdf} disabled={exporting} className="w-full sm:w-auto">
             <FileDown className="mr-2 h-4 w-4" />
             <span className="sm:hidden">{exporting ? "Exporting..." : "Export PDF"}</span>
