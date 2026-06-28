@@ -2,23 +2,37 @@
  * Merge duplicate active recommendations per client + dedupe key.
  * Keeps the oldest createdAt row, re-links projects, merges trigger history, deletes duplicates.
  *
- * Usage: node scripts/merge-duplicate-recommendations.mjs [--dry-run]
+ * Usage:
+ *   npm run merge:recommendations
+ *   npm run merge:recommendations -- --dry-run
  */
 import "dotenv/config";
-import { prisma } from "../src/lib/db/index.ts";
+import type { RecommendationStatus } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db";
 
 const dryRun = process.argv.includes("--dry-run");
 
-const ACTIVE_STATUSES = ["open", "accepted", "in_progress", "deferred"];
+const ACTIVE_STATUSES: RecommendationStatus[] = [
+  "open",
+  "accepted",
+  "in_progress",
+  "deferred",
+];
+
+type DuplicateGroup = {
+  clientId: string;
+  dedupeKey: string;
+  count: number;
+};
 
 async function main() {
-  const groups = await prisma.$queryRawUnsafe(`
+  const groups = await prisma.$queryRaw<DuplicateGroup[]>`
     SELECT "clientId", "dedupeKey", COUNT(*)::int AS count
     FROM "AssessmentRecommendation"
     WHERE status IN ('open', 'accepted', 'in_progress', 'deferred')
     GROUP BY "clientId", "dedupeKey"
     HAVING COUNT(*) > 1
-  `);
+  `;
 
   if (groups.length === 0) {
     console.log("No duplicate active recommendations found.");
@@ -53,12 +67,15 @@ async function main() {
     }
 
     await prisma.$transaction(async (tx) => {
+      let keeperHasProject = Boolean(keeper.project);
+
       for (const duplicate of extras) {
-        if (duplicate.project && !keeper.project) {
+        if (duplicate.project && !keeperHasProject) {
           await tx.project.update({
             where: { id: duplicate.project.id },
             data: { recommendationId: keeper.id },
           });
+          keeperHasProject = true;
         }
 
         for (const trigger of duplicate.triggers) {
@@ -87,7 +104,7 @@ async function main() {
 
       const latest = [...duplicates].sort(
         (a, b) => b.lastTriggeredAt.getTime() - a.lastTriggeredAt.getTime(),
-      )[0];
+      )[0]!;
 
       await tx.assessmentRecommendation.update({
         where: { id: keeper.id },

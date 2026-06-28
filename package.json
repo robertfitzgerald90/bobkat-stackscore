@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "tsx scripts/smoke-check.ts",
+    "merge:recommendations": "tsx scripts/merge-duplicate-recommendations.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
