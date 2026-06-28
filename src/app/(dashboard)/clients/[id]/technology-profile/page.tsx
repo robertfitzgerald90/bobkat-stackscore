@@ -62,22 +62,16 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/clients"
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
+            className={buttonClassName({ variant: "ghost", size: "sm", className: "-ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Clients
           </Link>
-          <h2 className="page-title">{detail.client.companyName}</h2>
-          <p className="text-muted-foreground">
-            {detail.client.primaryContactName} · {detail.client.primaryContactEmail}
-          </p>
-          <Badge variant="outline" className="mt-2">
-            {formatClientStatus(client.status)}
-          </Badge>
+          <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
         </div>
         {client.status !== "archived" ? (
           <div className="w-full lg:max-w-2xl lg:shrink-0">
