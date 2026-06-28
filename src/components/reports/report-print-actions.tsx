@@ -1,0 +1,65 @@
+"use client";
+
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { Printer } from "lucide-react";
+import { buttonClassName } from "@/components/ui/button";
+
+type ReportPrintActionsProps = {
+  clientName?: string;
+  title: string;
+  description?: string;
+  printLabel?: string;
+  backHref?: string;
+  backLabel?: string;
+  extraActions?: ReactNode;
+  onPrint?: () => void;
+};
+
+export function ReportPrintActions({
+  clientName,
+  title,
+  description,
+  printLabel = "Print Report",
+  backHref,
+  backLabel = "Back to Technology Profile",
+  extraActions,
+  onPrint,
+}: ReportPrintActionsProps) {
+  function handlePrint() {
+    if (onPrint) {
+      onPrint();
+      return;
+    }
+    window.print();
+  }
+
+  return (
+    <div className="report-no-print flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="page-header">
+        {clientName ? <p className="text-sm text-muted-foreground">{clientName}</p> : null}
+        <h2 className="page-title">{title}</h2>
+        {description ? <p className="page-description">{description}</p> : null}
+      </div>
+      <div className="action-bar">
+        {extraActions}
+        <button
+          type="button"
+          onClick={handlePrint}
+          className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
+        >
+          <Printer className="mr-2 h-4 w-4" />
+          {printLabel}
+        </button>
+        {backHref ? (
+          <Link
+            href={backHref}
+            className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
+          >
+            {backLabel}
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+}

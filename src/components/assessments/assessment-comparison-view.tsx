@@ -2,25 +2,24 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronDown,
-  ChevronUp,
-  Minus,
-  Printer,
-} from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Table,
+  ReportDeltaSuccess,
+  ReportMetricCard,
+  ReportMetricGrid,
+  ReportPrintActions,
+  ReportSection,
+  ReportShell,
+  ReportTable,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/reports";
 import type { AssessmentComparison } from "@/lib/assessments/comparison";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
@@ -40,67 +39,42 @@ export function AssessmentComparisonView({
 }: AssessmentComparisonViewProps) {
   const [showQuestionChanges, setShowQuestionChanges] = useState(false);
 
-  function handlePrint() {
-    window.print();
-  }
-
   return (
-    <div className="comparison-report space-y-6 print:space-y-4">
-      <div className="flex flex-col gap-4 print:hidden sm:flex-row sm:items-start sm:justify-between">
-        <div className="page-header">
-          <p className="text-sm text-muted-foreground">{comparison.clientName}</p>
-          <h2 className="page-title">Assessment Comparison</h2>
-          <p className="page-description">
-            {comparison.previous.assessmentName} → {comparison.current.assessmentName}
-          </p>
-        </div>
-        <div className="action-bar">
+    <ReportShell>
+      <ReportPrintActions
+        clientName={comparison.clientName}
+        title="Assessment Comparison"
+        description={`${comparison.previous.assessmentName} → ${comparison.current.assessmentName}`}
+        printLabel="Export Comparison Report"
+        backHref={clientTechnologyProfilePath(clientId)}
+        extraActions={
           <Link
             href={`/clients/${clientId}/assessments/compare`}
             className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
           >
             Change Selection
           </Link>
-          <button
-            type="button"
-            onClick={handlePrint}
-            className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
-          >
-            <Printer className="mr-2 h-4 w-4" />
-            Export Comparison Report
-          </button>
-          <Link
-            href={clientTechnologyProfilePath(clientId)}
-            className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
-          >
-            Back to Technology Profile
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
-      <Card className="stat-card border-primary/20 bg-primary/5">
-        <CardHeader>
-          <CardTitle>Executive Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm leading-relaxed text-foreground">{comparison.executiveSummary}</p>
-        </CardContent>
-      </Card>
+      <ReportSection title="Executive Summary">
+        <p className="text-sm leading-relaxed text-foreground">{comparison.executiveSummary}</p>
+      </ReportSection>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <SummaryMetric
-          title="Previous StackScore"
+      <ReportMetricGrid columns={4}>
+        <ReportMetricCard
+          label="Previous StackScore"
           value={String(comparison.previous.overallScore)}
           subtitle={formatAssessmentCompletionDate(comparison.previous.completedAt)}
         />
-        <SummaryMetric
-          title="Current StackScore"
+        <ReportMetricCard
+          label="Current StackScore"
           value={String(comparison.current.overallScore)}
           subtitle={formatAssessmentCompletionDate(comparison.current.completedAt)}
           highlight
         />
-        <SummaryMetric
-          title="Net Change"
+        <ReportMetricCard
+          label="Net Change"
           value={`${comparison.scoreChange > 0 ? "+" : ""}${comparison.scoreChange}`}
           subtitle="Overall Technology Profile movement"
           tone={
@@ -111,8 +85,8 @@ export function AssessmentComparisonView({
                 : "neutral"
           }
         />
-        <SummaryMetric
-          title="Maturity"
+        <ReportMetricCard
+          label="Maturity"
           value={comparison.current.maturityTierLabel}
           subtitle={
             comparison.maturityChanged
@@ -120,7 +94,7 @@ export function AssessmentComparisonView({
               : "Unchanged maturity tier"
           }
         />
-      </div>
+      </ReportMetricGrid>
 
       <Card className="stat-card">
         <CardHeader>
@@ -153,7 +127,7 @@ export function AssessmentComparisonView({
           <CardDescription>Technology Profile categories with score movement</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
+          <ReportTable>
             <TableHeader>
               <TableRow>
                 <TableHead>Category</TableHead>
@@ -180,7 +154,7 @@ export function AssessmentComparisonView({
                   </TableCell>
                   <TableCell className="text-right">
                     {row.change !== null ? (
-                      <ChangeIndicator change={row.change} compact />
+                      <ReportDeltaSuccess change={row.change} compact />
                     ) : (
                       "—"
                     )}
@@ -191,7 +165,7 @@ export function AssessmentComparisonView({
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </ReportTable>
         </CardContent>
       </Card>
 
@@ -265,7 +239,7 @@ export function AssessmentComparisonView({
                 No answer changes were recorded between these assessments.
               </p>
             ) : (
-              <Table>
+              <ReportTable>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Question</TableHead>
@@ -286,54 +260,17 @@ export function AssessmentComparisonView({
                       <TableCell>{change.previousAnswer}</TableCell>
                       <TableCell>{change.currentAnswer}</TableCell>
                       <TableCell className="text-right">
-                        <ChangeIndicator change={change.scoreImpact} compact />
+                        <ReportDeltaSuccess change={change.scoreImpact} compact />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+              </ReportTable>
             )}
           </CardContent>
         )}
       </Card>
-    </div>
-  );
-}
-
-function SummaryMetric({
-  title,
-  value,
-  subtitle,
-  tone = "neutral",
-  highlight = false,
-}: {
-  title: string;
-  value: string;
-  subtitle: string;
-  tone?: "positive" | "negative" | "neutral";
-  highlight?: boolean;
-}) {
-  return (
-    <Card className={cn("stat-card", highlight && "border-primary/20 bg-primary/5")}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p
-          className={cn(
-            "text-3xl font-bold tabular-nums",
-            tone === "positive" && "text-success",
-            tone === "negative" && "text-destructive",
-            tone === "neutral" && !highlight && "text-brand",
-          )}
-        >
-          {value}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-      </CardContent>
-    </Card>
+    </ReportShell>
   );
 }
 
@@ -440,24 +377,4 @@ function TrendBadge({ trend }: { trend: "improved" | "declined" | "unchanged" | 
     return <Badge variant="outline">No Change</Badge>;
   }
   return <Badge variant="secondary">Not Assessed</Badge>;
-}
-
-function ChangeIndicator({
-  change,
-  compact = false,
-}: {
-  change: number;
-  compact?: boolean;
-}) {
-  const Icon = change > 0 ? ArrowUp : change < 0 ? ArrowDown : Minus;
-  const color =
-    change > 0 ? "text-success" : change < 0 ? "text-destructive" : "text-muted-foreground";
-
-  return (
-    <span className={cn("inline-flex items-center gap-1 text-sm font-medium", color)}>
-      <Icon className={cn(compact ? "h-3.5 w-3.5" : "h-4 w-4")} />
-      {change > 0 ? "+" : ""}
-      {change}
-    </span>
-  );
 }
