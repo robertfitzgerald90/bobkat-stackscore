@@ -38,6 +38,14 @@ Every recommendation, project, roadmap, and reassessment exists to improve that 
 
 ---
 
+Vendor Neutrality Principle
+
+StackScore evaluates technology capabilities rather than products or manufacturers.
+
+Recommendations should focus on business outcomes and required capabilities. Specific vendors or technologies may be suggested by consultants but shall not be required by the platform.
+
+---
+
 ## Principle 2 – One Assessment. One Methodology.
 
 Every commercial client follows the same assessment methodology.

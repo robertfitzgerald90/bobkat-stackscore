@@ -190,3 +190,19 @@
     @apply space-y-3 md:hidden;
   }
 }
+
+@media print {
+  .comparison-report .print\:hidden {
+    display: none !important;
+  }
+
+  .comparison-report {
+    color: #111;
+  }
+
+  .comparison-report .stat-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}

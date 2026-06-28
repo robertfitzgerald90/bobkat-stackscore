@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { Building2, History, TrendingUp } from "lucide-react";
+import { ArrowLeftRight, Building2, History, TrendingUp } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
 import type { ProfileSectionVisibility } from "@/lib/technology-profile/types";
 
 type TpQuickActionsProps = {
   clientId: string;
   sections: ProfileSectionVisibility;
+  showCompareAssessments?: boolean;
 };
 
-export function TpQuickActions({ clientId, sections }: TpQuickActionsProps) {
+export function TpQuickActions({
+  clientId,
+  sections,
+  showCompareAssessments = false,
+}: TpQuickActionsProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
       <Link
@@ -37,13 +42,28 @@ export function TpQuickActions({ clientId, sections }: TpQuickActionsProps) {
         </>
       ) : null}
       {sections.showAssessmentResultsLink ? (
-        <Link
-          href={`/clients/${clientId}/assessments/history`}
-          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
-        >
-          <History className="mr-2 h-4 w-4" />
-          Assessment History
-        </Link>
+        <>
+          {showCompareAssessments ? (
+            <Link
+              href={`/clients/${clientId}/assessments/compare`}
+              className={buttonClassName({
+                variant: "outline",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
+            >
+              <ArrowLeftRight className="mr-2 h-4 w-4" />
+              Compare Assessments
+            </Link>
+          ) : null}
+          <Link
+            href={`/clients/${clientId}/assessments/history`}
+            className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
+          >
+            <History className="mr-2 h-4 w-4" />
+            Assessment History
+          </Link>
+        </>
       ) : null}
     </div>
   );

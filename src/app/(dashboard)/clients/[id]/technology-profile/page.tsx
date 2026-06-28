@@ -86,7 +86,13 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
         ) : null}
       </div>
 
-      <TpQuickActions clientId={id} sections={sections} />
+      <TpQuickActions
+        clientId={id}
+        sections={sections}
+        showCompareAssessments={
+          sections.showAssessmentResultsLink && completedAssessments.length >= 2
+        }
+      />
 
       <TechnologyProfileDetailView detail={detail} />
 
