@@ -47,6 +47,17 @@ export function AssessmentComparisonForm({
     [completedAssessments],
   );
 
+  const assessmentItems = useMemo(
+    () =>
+      Object.fromEntries(
+        sorted.map((assessment) => [
+          assessment.id,
+          formatAssessmentBaselineSummary(assessment),
+        ]),
+      ),
+    [sorted],
+  );
+
   const defaultCurrent = initialCurrentId ?? sorted[0]?.id ?? "";
   const defaultPrevious =
     initialPreviousId ?? sorted.find((assessment) => assessment.id !== defaultCurrent)?.id ?? "";
@@ -89,13 +100,17 @@ export function AssessmentComparisonForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="previous-assessment">Previous Assessment</Label>
-            <Select value={previousId} onValueChange={(value) => setPreviousId(value ?? "")}>
-              <SelectTrigger id="previous-assessment">
+            <Select
+              value={previousId}
+              items={assessmentItems}
+              onValueChange={(value) => setPreviousId(value ?? "")}
+            >
+              <SelectTrigger id="previous-assessment" className="w-full">
                 <SelectValue placeholder="Select previous assessment" />
               </SelectTrigger>
               <SelectContent>
                 {sorted.map((assessment) => (
-                  <SelectItem key={assessment.id} value={assessment.id}>
+                  <SelectItem key={assessment.id} value={assessment.id} multiline>
                     {formatAssessmentBaselineSummary(assessment)}
                   </SelectItem>
                 ))}
@@ -104,13 +119,17 @@ export function AssessmentComparisonForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="current-assessment">Current Assessment</Label>
-            <Select value={currentId} onValueChange={(value) => setCurrentId(value ?? "")}>
-              <SelectTrigger id="current-assessment">
+            <Select
+              value={currentId}
+              items={assessmentItems}
+              onValueChange={(value) => setCurrentId(value ?? "")}
+            >
+              <SelectTrigger id="current-assessment" className="w-full">
                 <SelectValue placeholder="Select current assessment" />
               </SelectTrigger>
               <SelectContent>
                 {sorted.map((assessment) => (
-                  <SelectItem key={assessment.id} value={assessment.id}>
+                  <SelectItem key={assessment.id} value={assessment.id} multiline>
                     {formatAssessmentBaselineSummary(assessment)}
                   </SelectItem>
                 ))}
