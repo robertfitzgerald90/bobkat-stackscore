@@ -1,10 +1,10 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 1.9
+**Version:** 2.0
 **Status:** Approved
 **Owner:** BobKat IT
-**Last Updated:** June 25, 2026
+**Last Updated:** June 26, 2026
 
 ---
 
@@ -25,10 +25,11 @@ DOC-000 (this index)
     │
     ├── Business Governance (DOC-001 – DOC-005)
     ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-107)
-    ├── Client Hub (DOC-113)
+    ├── Client Hub (DOC-108, DOC-113)
     ├── Assessment Domain (DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120 – DOC-124)
+    ├── Architecture Diagrams (DOC-130)
     ├── Reporting Architecture (DOC-125 – DOC-126)
     ├── Experience Architecture (DOC-127)
     ├── Integration Architecture (DOC-128)
@@ -89,6 +90,13 @@ If documents conflict, resolve in this order:
 | DOC-106 | Solution Playbook Specification | Governing | v2 | Draft |
 | DOC-107 | Technology Completion Report Specification | Governing | v2 | Draft |
 
+## Client hub
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Governing | v2 | Draft |
+| DOC-113 | Technology Profile Specification | Governing | v2 | Draft |
+
 ## Assessment & scoring
 
 | ID | Title | Authority | Version lane | Status |
@@ -98,7 +106,6 @@ If documents conflict, resolve in this order:
 | DOC-111A | Scoring Engine — Appendix A (v1 Implementation) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-111B | Scoring Methodology — Appendix B (Business Context) | Appendix — reference only | v1 | Partially superseded |
 | DOC-112 | Recommendation Engine Specification | Governing | v2 + v1 appendix | Draft |
-| DOC-113 | Technology Profile Specification | Governing | v2 | Draft |
 | DOC-114 | Assessment Library Specification | Governing (meta-standard) | v2 | Draft |
 | DOC-114A | Infrastructure Assessment Library | Governing | v2 | Draft (outline) |
 | DOC-114B | Security Assessment Library | Governing | v2 | Draft (outline) |
@@ -172,6 +179,26 @@ Authoritative specifications that translate business architecture into software 
 | **Used by** | DOC-300, DOC-302 |
 
 Domain architecture tier (DOC-120 – DOC-124) is fully specified at Draft v1.0.
+
+## Architecture diagrams
+
+Canonical Mermaid diagrams explaining lifecycle, domain, services, data flow, and role access.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-130](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md) | Architecture Diagrams Specification | 1.0 | Governing (visual) | v2 | Draft |
+
+### DOC-130 – Architecture Diagrams Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-130 |
+| **Title** | Architecture Diagrams Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines standard Mermaid architecture diagrams for lifecycle, domain model, Technology Profile relationships, service layer, data flow, and role access. |
+| **Depends on** | DOC-108, DOC-113, DOC-120, DOC-121, DOC-123, DOC-124, DOC-129 |
+| **Used by** | DOC-000, onboarding, architecture reviews, DOC-300 |
 
 ## Reporting architecture
 
@@ -304,7 +331,9 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
 * [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
 * [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
+* [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
 * [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
+* [DOC-130 – Architecture Diagrams Specification](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
 
 ---
 
@@ -322,3 +351,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 1.7 | 2026-06-25 | BobKat IT | Registered DOC-127 (Experience Architecture — dashboard specification) |
 | 1.8 | 2026-06-25 | BobKat IT | Registered DOC-128 (Integration Architecture tier) |
 | 1.9 | 2026-06-25 | BobKat IT | Registered DOC-129 (Engineering Constitution); conflict resolution and hierarchy updated |
+| 2.0 | 2026-06-26 | BobKat IT | Registered DOC-108 (Client hub) and DOC-130 (Architecture Diagrams) |
