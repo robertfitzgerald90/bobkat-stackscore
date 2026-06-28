@@ -30,6 +30,7 @@
 | Client portal (client role login) | Role exists; no portal UI |
 | Today's Focus dashboards (DOC-127) | Not built |
 | Assessment browser preview | Unified framework assessment report at `/assessments/[id]/report` |
+| Progress & completion browser reports | Unified framework shells at `/clients/[id]/progress-report` and `/clients/[id]/projects/[projectId]/completion-report`; PDF export deferred |
 | QBR PDF export | Interactive browser reports use unified `stackscore-report` framework; dedicated QBR PDF deferred |
 | Integrations (NinjaOne, M365, etc.) | Not built |
 | Audit log | Not built |

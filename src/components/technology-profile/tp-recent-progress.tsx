@@ -7,10 +7,11 @@ import { formatDisplayDate } from "@/lib/display";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
 type TpRecentProgressProps = {
+  clientId: string;
   projects: ProfileProjectSummary[];
 };
 
-export function TpRecentProgress({ projects }: TpRecentProgressProps) {
+export function TpRecentProgress({ clientId, projects }: TpRecentProgressProps) {
   return (
     <Card className="stat-card h-full">
       <CardHeader>
@@ -56,11 +57,21 @@ export function TpRecentProgress({ projects }: TpRecentProgressProps) {
                 ) : null}
               </div>
               <Link
-                href={`/projects?selected=${project.id}`}
+                href={`/clients/${clientId}/projects/${project.id}/completion-report`}
                 className={buttonClassName({
                   variant: "link",
                   size: "sm",
                   className: "mt-2 h-auto p-0",
+                })}
+              >
+                View completion report
+              </Link>
+              <Link
+                href={`/projects?selected=${project.id}`}
+                className={buttonClassName({
+                  variant: "link",
+                  size: "sm",
+                  className: "mt-1 block h-auto p-0 text-muted-foreground",
                 })}
               >
                 <FolderKanban className="mr-1 inline h-3.5 w-3.5" />

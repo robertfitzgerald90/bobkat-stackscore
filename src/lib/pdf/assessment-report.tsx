@@ -1,7 +1,5 @@
-import path from "path";
 import {
   Document,
-  Font,
   Image,
   Page,
   StyleSheet,
@@ -11,6 +9,20 @@ import {
 import { formatAssessmentType } from "@/lib/assessments/display";
 import type { RecommendationSummary } from "@/lib/assessments/results-summary";
 import { BRAND } from "@/lib/branding";
+import {
+  COLORS,
+  PDF_RATING_BAR as RATING_BAR,
+  PDF_TARGET_SCORE as TARGET_SCORE,
+  PdfBulletSection,
+  PdfClosingHero,
+  PdfMiniScoreBar,
+  PdfPageFooter,
+  PdfPriorityBadge,
+  PdfScoreGauge,
+  PdfSectionTitle,
+  getPdfLogoPath,
+  registerPdfFonts,
+} from "@/lib/pdf/shared";
 import {
   computeRoadmapScores,
   countByPriority,
@@ -26,50 +38,7 @@ import {
 import { RATING_LABELS } from "@/lib/scoring";
 import type { Priority, Rating } from "@/generated/prisma/client";
 
-const logoPath = path.join(process.cwd(), "public", "branding", "bobkat-it-logo-navy.png");
-const TARGET_SCORE = 80;
-
-Font.registerHyphenationCallback((word) => [word]);
-
-const COLORS = {
-  navy: BRAND.primaryColor,
-  slate: "#334155",
-  muted: "#64748B",
-  border: "#E2E8F0",
-  surface: BRAND.lightBackground,
-  critical: "#DC2626",
-  criticalBg: "#FEF2F2",
-  criticalBorder: "#FECACA",
-  high: "#9A3412",
-  highBg: "#FFF7ED",
-  highBorder: "#FED7AA",
-  medium: "#475569",
-  mediumBg: "#F8FAFC",
-  low: "#64748B",
-  success: "#15803D",
-  successBg: "#F0FDF4",
-  warning: "#B45309",
-  warningBg: "#FFFBEB",
-  target: "#082F5B",
-};
-
-const PRIORITY_BADGE: Record<
-  Priority,
-  { label: string; bg: string; text: string; border: string }
-> = {
-  critical: { label: "CRITICAL", bg: COLORS.criticalBg, text: COLORS.critical, border: COLORS.criticalBorder },
-  high: { label: "HIGH", bg: COLORS.highBg, text: COLORS.high, border: COLORS.highBorder },
-  medium: { label: "MEDIUM", bg: COLORS.mediumBg, text: COLORS.medium, border: COLORS.border },
-  low: { label: "LOW", bg: "#FFFFFF", text: COLORS.low, border: COLORS.border },
-};
-
-const RATING_BAR: Record<Rating, string> = {
-  critical: "#DC2626",
-  at_risk: "#D97706",
-  stable: "#7D97AC",
-  strong: "#16A34A",
-  exceptional: "#082F5B",
-};
+registerPdfFonts();
 
 const styles = StyleSheet.create({
   page: {
@@ -592,107 +561,6 @@ const styles = StyleSheet.create({
   warningText: { fontSize: 9, color: "#7F1D1D", lineHeight: 1.55 },
 });
 
-function PageFooter({ generatedDate }: { generatedDate: string }) {
-  const contact = [BRAND.email, BRAND.phone, BRAND.website].filter(Boolean).join("  |  ");
-
-  return (
-    <View style={styles.footer} fixed>
-      <Text style={{ fontSize: 8, color: COLORS.muted, maxWidth: "34%" }}>{BRAND.companyName}</Text>
-      <Text style={styles.footerCenter}>
-        Generated {generatedDate}
-        {contact ? `  |  ${contact}` : ""}
-      </Text>
-      <Text
-        style={{ fontSize: 8, color: COLORS.muted, textAlign: "right", minWidth: "18%" }}
-        render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-      />
-    </View>
-  );
-}
-
-function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
-  return (
-    <View wrap={false} style={styles.sectionTitleWrap}>
-      <Text style={styles.sectionTitle} orphans={2} widows={2}>
-        {title}
-      </Text>
-      {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
-    </View>
-  );
-}
-
-function ScoreGauge({
-  score,
-  label,
-  ratingLabel,
-  variant = "default",
-  showTarget = true,
-}: {
-  score: number;
-  label: string;
-  ratingLabel: string;
-  variant?: "default" | "accent";
-  showTarget?: boolean;
-}) {
-  const rating = getRating(score);
-  const width = `${Math.max(0, Math.min(100, Math.round(score)))}%`;
-
-  return (
-    <View wrap={false} style={variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard}>
-      <Text style={styles.gaugeLabel}>{label}</Text>
-      <Text style={styles.gaugeValue}>{score}</Text>
-      <Text style={styles.gaugeRating}>{ratingLabel}</Text>
-      <View style={styles.gaugeTrack}>
-        <View style={[styles.gaugeFill, { width, backgroundColor: RATING_BAR[rating] }]} />
-        {showTarget ? <View style={[styles.targetLine, { left: `${TARGET_SCORE}%` }]} /> : null}
-      </View>
-      {showTarget ? <Text style={styles.targetCaption}>Target: {TARGET_SCORE}+</Text> : null}
-    </View>
-  );
-}
-
-function MiniScoreBar({ score, width = 120 }: { score: number; width?: number }) {
-  const rating = getRating(score);
-  const fillWidth = `${Math.max(0, Math.min(100, Math.round(score)))}%`;
-
-  return (
-    <View style={[styles.roadmapBarWrap, { width }]}>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: fillWidth, backgroundColor: RATING_BAR[rating] }]} />
-      </View>
-    </View>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: Priority }) {
-  const badge = PRIORITY_BADGE[priority];
-  return (
-    <Text
-      style={[
-        styles.priorityBadge,
-        { backgroundColor: badge.bg, color: badge.text, borderColor: badge.border },
-      ]}
-    >
-      {badge.label}
-    </Text>
-  );
-}
-
-function BulletSection({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null;
-
-  return (
-    <View wrap={false} style={styles.bulletSection}>
-      <Text style={styles.bulletHeading}>{title}</Text>
-      {items.map((item) => (
-        <Text key={item} style={styles.bulletItem}>
-          • {item}
-        </Text>
-      ))}
-    </View>
-  );
-}
-
 function CategoryScoreCard({
   categoryName,
   percentScore,
@@ -747,7 +615,7 @@ function RecommendationCard({
     <View wrap={false} style={styles.recommendationCard}>
       <View style={styles.recommendationHeader}>
         <Text style={styles.recommendationTitle}>{title}</Text>
-        <PriorityBadge priority={priority} />
+        <PdfPriorityBadge priority={priority} />
       </View>
       <View style={styles.recommendationField}>
         <Text style={styles.recommendationFieldLabel}>Potential Score Impact</Text>
@@ -919,7 +787,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       subject={BRAND.reportTitle}
     >
       <Page size="LETTER" style={styles.coverPage} wrap={false}>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.coverHero}>
           <Text style={styles.coverProduct}>Bobkat {BRAND.productName}</Text>
@@ -928,7 +796,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
         <View style={styles.coverBody}>
           <View style={styles.coverBrandRow}>
-            <Image src={logoPath} style={styles.coverBrandLogo} />
+            <Image src={getPdfLogoPath()} style={styles.coverBrandLogo} />
             <View>
               <Text style={styles.coverPreparedBy}>{BRAND.companyName}</Text>
               <Text style={styles.coverFinePrint}>Technology maturity assessment partner</Text>
@@ -962,21 +830,21 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.sectionBlock}>
           <View wrap={false}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Recommendation Summary"
               subtitle="Prioritized remediation opportunities and projected StackScore impact"
             />
             <View style={styles.scoreRow}>
-              <ScoreGauge
+              <PdfScoreGauge
                 score={summary.overallScore}
                 label="Current StackScore"
                 ratingLabel={summary.overallRatingLabel}
               />
-              <ScoreGauge
+              <PdfScoreGauge
                 score={summary.projectedScore}
                 label="Projected StackScore"
                 ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
@@ -1022,11 +890,11 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.sectionBlock}>
           <View wrap={false}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Technology Maturity Roadmap"
               subtitle="Phased StackScore improvement path for executive planning"
             />
@@ -1048,7 +916,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               }
             >
               <Text style={styles.roadmapLabel}>{milestone.label}</Text>
-              <MiniScoreBar score={milestone.score} />
+              <PdfMiniScoreBar score={milestone.score} />
               <Text style={styles.roadmapScore}>
                 {milestone.isTarget ? `${TARGET_SCORE}+` : milestone.score}
               </Text>
@@ -1071,21 +939,21 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.sectionBlock}>
           <View wrap={false}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Executive Summary"
               subtitle="Skimmable assessment highlights for leadership review"
             />
             <View style={styles.scoreRow}>
-              <ScoreGauge
+              <PdfScoreGauge
                 score={summary.overallScore}
                 label="Current StackScore"
                 ratingLabel={summary.overallRatingLabel}
               />
-              <ScoreGauge
+              <PdfScoreGauge
                 score={summary.projectedScore}
                 label="Projected StackScore"
                 ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
@@ -1105,22 +973,22 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           ) : null}
 
           <View wrap={false} style={styles.panel}>
-            <BulletSection title="Overall Risk" items={overallRiskBullets} />
-            <BulletSection title="Top Strengths" items={strengthBullets} />
-            <BulletSection title="Top Risks" items={riskBullets} />
-            <BulletSection title="Immediate Priorities" items={priorityBullets} />
-            <BulletSection title="Projected Improvement" items={improvementBullets} />
-            <BulletSection title="Assessment Overview" items={overviewBullets} />
+            <PdfBulletSection title="Overall Risk" items={overallRiskBullets} />
+            <PdfBulletSection title="Top Strengths" items={strengthBullets} />
+            <PdfBulletSection title="Top Risks" items={riskBullets} />
+            <PdfBulletSection title="Immediate Priorities" items={priorityBullets} />
+            <PdfBulletSection title="Projected Improvement" items={improvementBullets} />
+            <PdfBulletSection title="Assessment Overview" items={overviewBullets} />
           </View>
         </View>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.sectionBlock}>
           <View wrap={false}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Category Scores"
               subtitle="Technology maturity performance across assessed domains"
             />
@@ -1145,11 +1013,11 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
         <View style={styles.sectionBlock}>
           <View wrap={false}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Detailed Recommendations"
               subtitle="Prioritized remediation guidance with business impact and service alignment"
             />
@@ -1198,22 +1066,20 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap={false}>
-        <PageFooter generatedDate={generatedDate} />
+        <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.closingHero}>
-          <Text style={styles.closingHeroTitle}>Technology Improvement Plan</Text>
-          <Text style={styles.closingHeroSubtitle}>
-            A prioritized path from current maturity to your projected StackScore target
-          </Text>
-        </View>
+        <PdfClosingHero
+          title="Technology Improvement Plan"
+          subtitle="A prioritized path from current maturity to your projected StackScore target"
+        />
 
         <View wrap={false} style={styles.scoreRow}>
-          <ScoreGauge
+          <PdfScoreGauge
             score={summary.overallScore}
             label="Current Score"
             ratingLabel={summary.overallRatingLabel}
           />
-          <ScoreGauge
+          <PdfScoreGauge
             score={summary.projectedScore}
             label="Projected Score"
             ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}

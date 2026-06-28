@@ -1,7 +1,5 @@
-import path from "path";
 import {
   Document,
-  Font,
   Image,
   Page,
   StyleSheet,
@@ -13,54 +11,24 @@ import { getPriorityTimeline } from "@/lib/recommendations/display";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import {
+  COLORS,
+  PDF_RATING_BAR as RATING_BAR,
+  PDF_TARGET_SCORE as TARGET_SCORE,
+  PdfConfidentialFooter,
+  PdfJourneyClosingHero,
+  PdfPriorityBadge,
+  PdfReportHeader,
+  PdfScoreGauge,
+  PdfSectionTitle,
+  getPdfLogoPath,
+  registerPdfFonts,
+} from "@/lib/pdf/shared";
+import {
   formatGeneratedDate,
   type TipReportData,
 } from "@/lib/pdf/types";
-import type { Priority, Rating } from "@/generated/prisma/client";
 
-const logoPath = path.join(process.cwd(), "public", "branding", "bobkat-it-logo-navy.png");
-const TARGET_SCORE = 80;
-
-Font.registerHyphenationCallback((word) => [word]);
-
-const COLORS = {
-  navy: BRAND.primaryColor,
-  navyLight: "#EEF4F8",
-  slate: "#334155",
-  muted: "#64748B",
-  border: "#E2E8F0",
-  surface: BRAND.lightBackground,
-  white: "#FFFFFF",
-  critical: "#DC2626",
-  criticalBg: "#FEF2F2",
-  criticalBorder: "#FECACA",
-  high: "#9A3412",
-  highBg: "#FFF7ED",
-  highBorder: "#FED7AA",
-  medium: "#475569",
-  mediumBg: "#F8FAFC",
-  low: "#64748B",
-  success: "#15803D",
-  accent: "#7D97AC",
-};
-
-const RATING_BAR: Record<Rating, string> = {
-  critical: "#DC2626",
-  at_risk: "#D97706",
-  stable: "#7D97AC",
-  strong: "#16A34A",
-  exceptional: "#082F5B",
-};
-
-const PRIORITY_BADGE: Record<
-  Priority,
-  { label: string; bg: string; text: string; border: string }
-> = {
-  critical: { label: "CRITICAL", bg: COLORS.criticalBg, text: COLORS.critical, border: COLORS.criticalBorder },
-  high: { label: "HIGH", bg: COLORS.highBg, text: COLORS.high, border: COLORS.highBorder },
-  medium: { label: "MEDIUM", bg: COLORS.mediumBg, text: COLORS.medium, border: COLORS.border },
-  low: { label: "LOW", bg: COLORS.white, text: COLORS.low, border: COLORS.border },
-};
+registerPdfFonts();
 
 const styles = StyleSheet.create({
   coverPage: {
@@ -536,103 +504,6 @@ const styles = StyleSheet.create({
   journeyStepLabel: { fontSize: 8, color: "rgba(255,255,255,0.9)", textAlign: "center" },
 });
 
-function ReportFooter({ clientName, generatedDate }: { clientName: string; generatedDate: string }) {
-  const contact = [BRAND.email, BRAND.website].filter(Boolean).join("  ·  ");
-
-  return (
-    <View style={styles.footer} fixed>
-      <Text style={styles.footerLeft}>
-        Confidential — Prepared exclusively for {clientName} by {BRAND.companyName}. Unauthorized
-        distribution prohibited.
-      </Text>
-      <Text style={styles.footerCenter}>
-        {BRAND.productName} · Generated {generatedDate}
-        {contact ? `\n${contact}` : ""}
-      </Text>
-      <Text
-        style={styles.footerPage}
-        render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-      />
-    </View>
-  );
-}
-
-function ReportHeader({
-  clientName,
-  generatedDate,
-}: {
-  clientName: string;
-  generatedDate: string;
-}) {
-  return (
-    <View style={styles.pageHeader} fixed>
-      <View style={styles.pageHeaderLeft}>
-        {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image src={logoPath} style={styles.pageHeaderLogo} />
-        <View>
-          <Text style={styles.pageHeaderBrand}>
-            {BRAND.companyName} · {BRAND.productName}
-          </Text>
-          <Text style={styles.pageHeaderDoc}>Technology Improvement Plan</Text>
-        </View>
-      </View>
-      <View style={styles.pageHeaderRight}>
-        <Text style={styles.pageHeaderClient}>{clientName}</Text>
-        <Text style={styles.pageHeaderDate}>Prepared {generatedDate}</Text>
-      </View>
-    </View>
-  );
-}
-
-function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
-  return (
-    <View wrap={false} style={styles.sectionTitleWrap}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
-    </View>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: Priority }) {
-  const badge = PRIORITY_BADGE[priority];
-  return (
-    <Text
-      style={[
-        styles.priorityBadge,
-        { backgroundColor: badge.bg, color: badge.text, borderColor: badge.border },
-      ]}
-    >
-      {badge.label}
-    </Text>
-  );
-}
-
-function ScoreGauge({
-  score,
-  label,
-  ratingLabel,
-  variant = "default",
-}: {
-  score: number;
-  label: string;
-  ratingLabel: string;
-  variant?: "default" | "accent";
-}) {
-  const rating = getRating(score);
-  const width = `${Math.max(0, Math.min(100, Math.round(score)))}%`;
-
-  return (
-    <View wrap={false} style={variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard}>
-      <Text style={styles.gaugeLabel}>{label}</Text>
-      <Text style={styles.gaugeValue}>{score}</Text>
-      <Text style={styles.gaugeRating}>{ratingLabel}</Text>
-      <View style={styles.gaugeTrack}>
-        <View style={[styles.gaugeFill, { width, backgroundColor: RATING_BAR[rating] }]} />
-      </View>
-    </View>
-  );
-}
-
 function InvestmentTable({ data }: { data: TipReportData }) {
   return (
     <View wrap={false}>
@@ -684,7 +555,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
     >
       {/* Cover */}
       <Page size="LETTER" style={styles.coverPage} wrap={false}>
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
         <View style={styles.coverHero}>
           <Text style={styles.coverProduct}>Generated by {BRAND.productName}</Text>
@@ -698,7 +569,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         <View style={styles.coverBody}>
           <View style={styles.coverBrandRow}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
-            <Image src={logoPath} style={styles.coverBrandLogo} />
+            <Image src={getPdfLogoPath()} style={styles.coverBrandLogo} />
             <View>
               <Text style={styles.coverPreparedBy}>Prepared by {BRAND.companyName}</Text>
               <Text style={styles.coverFinePrint}>
@@ -744,11 +615,15 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
       {/* Executive overview */}
       <Page size="LETTER" style={styles.page} wrap>
-        <ReportHeader clientName={data.clientName} generatedDate={data.generatedDate} />
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfReportHeader
+          clientName={data.clientName}
+          generatedDate={data.generatedDate}
+          documentLabel="Technology Improvement Plan"
+        />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
         <View style={styles.sectionBlock}>
-          <SectionTitle
+          <PdfSectionTitle
             title="Executive Summary"
             subtitle="Business context, profile trajectory, and expected outcomes"
           />
@@ -756,16 +631,18 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         </View>
 
         <View wrap={false} style={styles.scoreRow}>
-          <ScoreGauge
+          <PdfScoreGauge
             score={data.currentScore}
             label="Technology Profile — Today"
             ratingLabel={RATING_LABELS[currentRating]}
+            showTarget={false}
           />
-          <ScoreGauge
+          <PdfScoreGauge
             score={data.projectedScore}
             label="Technology Profile — Projected"
             ratingLabel={RATING_LABELS[projectedRating]}
             variant="accent"
+            showTarget={false}
           />
         </View>
 
@@ -782,7 +659,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
         {data.businessOutcomes.length > 0 ? (
           <View style={styles.sectionBlock}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Expected Business Outcomes"
               subtitle="Primary value drivers from prioritized initiatives"
             />
@@ -799,7 +676,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
         {data.categorySummaries.length > 0 ? (
           <View style={styles.sectionBlock}>
-            <SectionTitle
+            <PdfSectionTitle
               title="Category Profile Summary"
               subtitle="Current maturity by domain — highlighted categories include planned improvements"
             />
@@ -840,11 +717,15 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
       {/* Recommendations */}
       <Page size="LETTER" style={styles.page} wrap>
-        <ReportHeader clientName={data.clientName} generatedDate={data.generatedDate} />
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfReportHeader
+          clientName={data.clientName}
+          generatedDate={data.generatedDate}
+          documentLabel="Technology Improvement Plan"
+        />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
         <View style={styles.sectionBlock}>
-          <SectionTitle
+          <PdfSectionTitle
             title="Prioritized Recommendations"
             subtitle="Initiatives ordered by business impact and implementation priority"
           />
@@ -852,7 +733,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
             <View key={rec.id} wrap={false} style={styles.recommendationCard}>
               <View style={styles.recommendationHeader}>
                 <Text style={styles.recommendationTitle}>{rec.title}</Text>
-                <PriorityBadge priority={rec.priority} />
+                <PdfPriorityBadge priority={rec.priority} />
               </View>
               <View style={styles.recMetaRow}>
                 <View style={styles.recMetaBox}>
@@ -891,11 +772,15 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
       {/* Roadmap */}
       <Page size="LETTER" style={styles.page} wrap>
-        <ReportHeader clientName={data.clientName} generatedDate={data.generatedDate} />
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfReportHeader
+          clientName={data.clientName}
+          generatedDate={data.generatedDate}
+          documentLabel="Technology Improvement Plan"
+        />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
         <View style={styles.sectionBlock}>
-          <SectionTitle
+          <PdfSectionTitle
             title="Phased Implementation Roadmap"
             subtitle="Sequential delivery plan with projected profile progression"
           />
@@ -924,11 +809,15 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
       {/* Investment + approval */}
       <Page size="LETTER" style={styles.page} wrap={false}>
-        <ReportHeader clientName={data.clientName} generatedDate={data.generatedDate} />
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfReportHeader
+          clientName={data.clientName}
+          generatedDate={data.generatedDate}
+          documentLabel="Technology Improvement Plan"
+        />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
         <View style={styles.sectionBlock}>
-          <SectionTitle
+          <PdfSectionTitle
             title="Investment Summary"
             subtitle="Professional services and technology investment required to execute this plan"
           />
@@ -936,7 +825,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         </View>
 
         <View wrap={false} style={styles.signatureBlock}>
-          <SectionTitle
+          <PdfSectionTitle
             title="Approval"
             subtitle="Authorization to proceed with the initiatives outlined in this plan"
           />
@@ -953,43 +842,32 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
 
       {/* Technology Journey closing */}
       <Page size="LETTER" style={styles.page} wrap={false}>
-        <ReportHeader clientName={data.clientName} generatedDate={data.generatedDate} />
-        <ReportFooter clientName={data.clientName} generatedDate={data.generatedDate} />
+        <PdfReportHeader
+          clientName={data.clientName}
+          generatedDate={data.generatedDate}
+          documentLabel="Technology Improvement Plan"
+        />
+        <PdfConfidentialFooter clientName={data.clientName} generatedDate={data.generatedDate} />
 
-        <View style={styles.closingHero}>
-          <Text style={styles.closingHeroTitle}>Your Technology Journey</Text>
-          <Text style={styles.closingHeroSubtitle}>
-            {BRAND.companyName} partners with organizations through Assess → Improve → Maintain to
-            deliver measurable, lasting technology outcomes.
-          </Text>
-          <View style={styles.journeySteps}>
-            {(["Assess", "Improve", "Maintain"] as const).map((step) => (
-              <View key={step} style={styles.journeyStep}>
-                <View
-                  style={[
-                    styles.journeyStepDot,
-                    data.journeyPhaseLabel.toLowerCase().startsWith(step.toLowerCase().slice(0, 4))
-                      ? styles.journeyStepDotActive
-                      : {},
-                  ]}
-                />
-                <Text style={styles.journeyStepLabel}>{step}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+        <PdfJourneyClosingHero
+          title="Your Technology Journey"
+          subtitle={`${BRAND.companyName} partners with organizations through Assess → Improve → Maintain to deliver measurable, lasting technology outcomes.`}
+          activePhaseLabel={data.journeyPhaseLabel}
+        />
 
         <View wrap={false} style={styles.scoreRow}>
-          <ScoreGauge
+          <PdfScoreGauge
             score={data.currentScore}
             label="Starting StackScore"
             ratingLabel={RATING_LABELS[currentRating]}
+            showTarget={false}
           />
-          <ScoreGauge
+          <PdfScoreGauge
             score={data.projectedScore}
             label="Target StackScore"
             ratingLabel={RATING_LABELS[projectedRating]}
             variant="accent"
+            showTarget={false}
           />
         </View>
 

@@ -7,12 +7,14 @@ type TpQuickActionsProps = {
   clientId: string;
   sections: ProfileSectionVisibility;
   showCompareAssessments?: boolean;
+  showProgressReport?: boolean;
 };
 
 export function TpQuickActions({
   clientId,
   sections,
   showCompareAssessments = false,
+  showProgressReport = false,
 }: TpQuickActionsProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
@@ -32,6 +34,19 @@ export function TpQuickActions({
             <CalendarRange className="mr-2 h-4 w-4" />
             Quarterly Review
           </Link>
+          {showProgressReport ? (
+            <Link
+              href={`/clients/${clientId}/progress-report`}
+              className={buttonClassName({
+                variant: "outline",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
+            >
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Progress Report
+            </Link>
+          ) : null}
           <Link
             href={`/clients/${clientId}/improvement-plan`}
             className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}

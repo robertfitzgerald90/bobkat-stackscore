@@ -75,7 +75,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
       {sections.showRecentProgress || sections.showRoadmapPreview ? (
         <div className="grid gap-6 lg:grid-cols-2">
           {sections.showRecentProgress ? (
-            <TpRecentProgress projects={detail.completedProjects} />
+            <TpRecentProgress clientId={detail.profile.clientId} projects={detail.completedProjects} />
           ) : null}
           {sections.showRoadmapPreview ? (
             <TpRoadmapPreview

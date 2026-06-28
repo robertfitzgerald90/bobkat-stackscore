@@ -92,6 +92,7 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
         showCompareAssessments={
           sections.showAssessmentResultsLink && completedAssessments.length >= 2
         }
+        showProgressReport={completedAssessments.length > 0}
       />
 
       <TechnologyProfileDetailView detail={detail} />
