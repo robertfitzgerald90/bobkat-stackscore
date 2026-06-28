@@ -17,6 +17,7 @@ describe("technology profile visibility", () => {
     expect(sections.showRoadmapPreview).toBe(true);
     expect(sections.showNextActionCta).toBe(true);
     expect(sections.showBusinessSnapshotLimited).toBe(false);
+    expect(sections.showJourneyTimeline).toBe(true);
   });
 
   it("hides internal workflow sections from client role", () => {
@@ -33,6 +34,7 @@ describe("technology profile visibility", () => {
     expect(sections.showNextActionCta).toBe(false);
     expect(sections.showBusinessSnapshotLimited).toBe(true);
     expect(sections.showRecommendationCounts).toBe(false);
+    expect(sections.showJourneyTimeline).toBe(false);
   });
 
   it("allows technician to view internal sections without pricing", () => {

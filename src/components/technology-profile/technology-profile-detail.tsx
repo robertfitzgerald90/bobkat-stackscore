@@ -5,6 +5,7 @@ import { TpActiveProjects } from "@/components/technology-profile/tp-active-proj
 import { TpBusinessSnapshot } from "@/components/technology-profile/tp-business-snapshot";
 import { TpCategoryScores } from "@/components/technology-profile/tp-category-scores";
 import { TpHeroSummary } from "@/components/technology-profile/tp-hero-summary";
+import { TpJourneyTimeline } from "@/components/technology-profile/tp-journey-timeline";
 import { TpOpenOpportunities } from "@/components/technology-profile/tp-open-opportunities";
 import { TpRecentProgress } from "@/components/technology-profile/tp-recent-progress";
 import { TpReportsDocuments } from "@/components/technology-profile/tp-reports-documents";
@@ -53,6 +54,14 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
           assessmentsCompleted={journey.assessmentsCompleted}
         />
       </div>
+
+      {sections.showJourneyTimeline ? (
+        <TpJourneyTimeline
+          clientId={profile.clientId}
+          events={detail.journeyTimeline}
+          assessmentsCompleted={journey.assessmentsCompleted}
+        />
+      ) : null}
 
       {sections.showOpenOpportunities ? (
         <TpOpenOpportunities

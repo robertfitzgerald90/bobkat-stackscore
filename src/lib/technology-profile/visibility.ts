@@ -25,6 +25,7 @@ export function resolveProfileSectionVisibility(
     showRoadmapBuilderLink: capabilities.canEditImprovementPlan,
     showNextActionCta: !isClient,
     showRecommendationCounts: !isClient,
+    showJourneyTimeline: !isClient,
   };
 }
 

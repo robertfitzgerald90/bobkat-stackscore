@@ -2,6 +2,7 @@ import type { UserRole } from "@/generated/prisma/client";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
 import type { V2CategoryScore } from "@/lib/assessment-library/category-mapping";
 import type { CategoryScoreResult } from "@/lib/scoring";
+import type { JourneyTimelineEvent } from "@/lib/technology-profile/timeline";
 import type {
   ComplianceFramework,
   EnvironmentType,
@@ -111,6 +112,7 @@ export type ProfileSectionVisibility = {
   showRoadmapBuilderLink: boolean;
   showNextActionCta: boolean;
   showRecommendationCounts: boolean;
+  showJourneyTimeline: boolean;
 };
 
 export type NextRecommendedAction = {
@@ -206,4 +208,5 @@ export type TechnologyProfileDetail = {
   activeTip: ProfileTipSummary | null;
   scoreDeltaSincePrevious: number | null;
   sections: ProfileSectionVisibility;
+  journeyTimeline: JourneyTimelineEvent[];
 };

@@ -29,6 +29,7 @@ import {
   resolveProfileSectionVisibility,
   trimBusinessSnapshotForClient,
 } from "@/lib/technology-profile/visibility";
+import { getClientJourneyTimeline } from "@/lib/technology-profile/timeline-build";
 import {
   computeTipDerivedState,
   parseWizardState,
@@ -370,6 +371,7 @@ export async function getTechnologyProfileDetail(
       );
 
   const sections = resolveProfileSectionVisibility(role, capabilities);
+  const journeyTimeline = audience === "internal" ? await getClientJourneyTimeline(clientId) : [];
 
   const baseDetail: TechnologyProfileDetail = {
     profile: {
@@ -413,6 +415,7 @@ export async function getTechnologyProfileDetail(
     activeTip: tipContext.activeTip,
     scoreDeltaSincePrevious,
     sections,
+    journeyTimeline,
   };
 
   if (audience === "client") {
@@ -432,6 +435,7 @@ export async function getTechnologyProfileDetail(
         ...insight,
         openRecommendationCount: 0,
       })),
+      journeyTimeline: [],
     };
   }
 
