@@ -89,7 +89,7 @@ export function AssessmentComparisonForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="previous-assessment">Previous Assessment</Label>
-            <Select value={previousId} onValueChange={setPreviousId}>
+            <Select value={previousId} onValueChange={(value) => setPreviousId(value ?? "")}>
               <SelectTrigger id="previous-assessment">
                 <SelectValue placeholder="Select previous assessment" />
               </SelectTrigger>
@@ -104,7 +104,7 @@ export function AssessmentComparisonForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="current-assessment">Current Assessment</Label>
-            <Select value={currentId} onValueChange={setCurrentId}>
+            <Select value={currentId} onValueChange={(value) => setCurrentId(value ?? "")}>
               <SelectTrigger id="current-assessment">
                 <SelectValue placeholder="Select current assessment" />
               </SelectTrigger>
