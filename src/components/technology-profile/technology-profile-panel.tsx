@@ -24,7 +24,7 @@ import { getRating } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { formatDisplayDate } from "@/lib/display";
 import { cn } from "@/lib/utils";
-import type { Rating, TrendDirection } from "@/generated/prisma/client";
+import type { Rating } from "@/generated/prisma/client";
 
 type TechnologyProfilePanelProps = {
   clientId: string;

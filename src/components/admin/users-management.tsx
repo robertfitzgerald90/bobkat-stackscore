@@ -32,7 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
+import { MobileDataCard } from "@/components/ui/mobile-data-card";
 import type { SafeUser } from "@/lib/users/serialize";
 import type { UserRole } from "@/generated/prisma/client";
 import type { UserDeletionPreview } from "@/lib/records/types";

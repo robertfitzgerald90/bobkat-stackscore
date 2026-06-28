@@ -390,6 +390,11 @@ export function deriveNextRecommendedAction(context: NextActionContext): NextRec
   };
 }
 
+function parseQbrIdFromFileUrl(fileUrl: string): string | null {
+  const match = fileUrl.match(/\/quarterly-review\/([^/?#]+)/);
+  return match?.[1] ?? null;
+}
+
 export function buildProfileDocuments(input: {
   clientId: string;
   currentAssessmentId: string | null;
@@ -401,7 +406,6 @@ export function buildProfileDocuments(input: {
     createdAt: Date;
     assessmentId: string | null;
     tipId: string | null;
-    qbrId: string | null;
     fileUrl: string;
   }>;
 }): ProfileDocumentSummary[] {
@@ -428,10 +432,10 @@ export function buildProfileDocuments(input: {
       createdAt: document.createdAt.toISOString(),
       assessmentId: document.assessmentId,
       tipId: document.tipId,
-      qbrId: document.qbrId,
+      qbrId: parseQbrIdFromFileUrl(document.fileUrl),
       downloadHref:
-        document.documentType === "quarterly_business_review" && document.qbrId
-          ? document.fileUrl || `/clients/${input.clientId}/quarterly-review/${document.qbrId}`
+        document.documentType === "quarterly_business_review"
+          ? document.fileUrl
           : document.documentType === "technology_improvement_plan" && document.tipId
             ? `/api/v1/clients/${input.clientId}/tip/${document.tipId}/pdf`
             : document.assessmentId

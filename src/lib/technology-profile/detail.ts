@@ -216,7 +216,6 @@ export async function getTechnologyProfileDetail(
         createdAt: true,
         assessmentId: true,
         tipId: true,
-        qbrId: true,
         fileUrl: true,
       },
     }),

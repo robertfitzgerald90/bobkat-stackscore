@@ -1,7 +1,6 @@
 import { ClipboardList } from "lucide-react";
 import { ScoreTrendChart } from "@/components/analytics/score-trend-chart";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
-import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";

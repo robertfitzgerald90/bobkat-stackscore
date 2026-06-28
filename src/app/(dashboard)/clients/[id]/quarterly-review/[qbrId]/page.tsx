@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { prisma } from "@/lib/db";
 import { getQuarterlyBusinessReview } from "@/lib/qbr";
 import { QbrReviewWorkflow } from "@/components/qbr/qbr-review-workflow";
