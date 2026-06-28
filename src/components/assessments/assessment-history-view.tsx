@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { AssessmentHistoryEntry } from "@/lib/assessments/reassessment";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import {
   formatAssessmentCompletionDate,
   formatAssessmentStatus,
@@ -44,10 +45,10 @@ export function AssessmentHistoryView({
           </p>
         </div>
         <Link
-          href={`/clients/${clientId}`}
+          href={clientTechnologyProfilePath(clientId)}
           className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
-          Back to Client
+          Back to Technology Profile
         </Link>
       </div>
 

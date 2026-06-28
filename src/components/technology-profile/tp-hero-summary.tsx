@@ -111,19 +111,21 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">{nextAction.label}</p>
-          <p className="text-sm text-muted-foreground">{nextAction.description}</p>
+      {detail.sections.showNextActionCta ? (
+        <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">{nextAction.label}</p>
+            <p className="text-sm text-muted-foreground">{nextAction.description}</p>
+          </div>
+          <Link
+            href={nextAction.href}
+            className={buttonClassName({ variant: "default", size: "sm", className: "shrink-0" })}
+          >
+            {nextAction.label}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
         </div>
-        <Link
-          href={nextAction.href}
-          className={buttonClassName({ variant: "default", size: "sm", className: "shrink-0" })}
-        >
-          {nextAction.label}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
-      </div>
+      ) : null}
     </section>
   );
 }

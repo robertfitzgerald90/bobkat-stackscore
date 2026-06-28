@@ -10,6 +10,7 @@ type TpReportsDocumentsProps = {
   clientId: string;
   documents: ProfileDocumentSummary[];
   activeTip: ProfileTipSummary | null;
+  showRoadmapBuilderLink?: boolean;
 };
 
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
@@ -27,7 +28,12 @@ function DocumentIcon({ type }: { type: DocumentType }) {
   return <FileText className="h-4 w-4" />;
 }
 
-export function TpReportsDocuments({ clientId, documents, activeTip }: TpReportsDocumentsProps) {
+export function TpReportsDocuments({
+  clientId,
+  documents,
+  activeTip,
+  showRoadmapBuilderLink = true,
+}: TpReportsDocumentsProps) {
   return (
     <Card className="stat-card">
       <CardHeader>
@@ -72,7 +78,7 @@ export function TpReportsDocuments({ clientId, documents, activeTip }: TpReports
               </div>
             ))}
 
-            {activeTip ? (
+            {activeTip && showRoadmapBuilderLink ? (
               <div className="flex flex-col gap-3 rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 rounded-md bg-muted p-2 text-muted-foreground">

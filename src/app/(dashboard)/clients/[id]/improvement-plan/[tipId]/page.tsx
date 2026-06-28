@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getTipPlan } from "@/lib/technology-improvement-plan";
 import { TipWorkflow } from "@/components/technology-improvement-plan/tip-workflow";
 import { buttonClassName } from "@/components/ui/button";
@@ -12,7 +13,7 @@ export default async function ImprovementPlanWizardPage({ params }: PageProps) {
   const { id, tipId } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(`/clients/${id}`);
+  if (session.user.role === "client") redirect(clientTechnologyProfilePath(id));
 
   const plan = await getTipPlan(id, tipId, session.user.role);
   if (!plan) notFound();

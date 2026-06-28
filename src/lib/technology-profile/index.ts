@@ -338,5 +338,11 @@ export type {
   TechnologyJourneyProgress,
   TechnologyJourneyScores,
   TechnologyProfileDetail,
+  ProfileSectionVisibility,
 } from "./types";
+export {
+  resolveProfileSectionVisibility,
+  trimBusinessSnapshotForClient,
+} from "./visibility";
+export type { ProfileSectionVisibility } from "./types";
 export { resolveProfileAudience } from "./types";

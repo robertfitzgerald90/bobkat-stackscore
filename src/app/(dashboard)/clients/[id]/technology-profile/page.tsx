@@ -1,11 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Building2, History, TrendingUp } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ClientAdminActions } from "@/components/admin/client-admin-actions";
 import { ClientAssessmentForms } from "@/components/clients/client-assessment-forms";
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
+import { TpQuickActions } from "@/components/technology-profile/tp-quick-actions";
 import { buttonClassName } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
@@ -60,6 +61,8 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
       })),
   );
 
+  const { sections } = detail;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -73,7 +76,7 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
           </Link>
           <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
         </div>
-        {client.status !== "archived" ? (
+        {sections.showAssessmentForms && client.status !== "archived" ? (
           <div className="w-full lg:max-w-2xl lg:shrink-0">
             <ClientAssessmentForms
               clientId={client.id}
@@ -83,40 +86,11 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
-        <Link
-          href={`/clients/${id}/business-profile`}
-          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
-        >
-          <Building2 className="mr-2 h-4 w-4" />
-          Business Profile
-        </Link>
-        <Link
-          href={`/clients/${id}/improvement-plan`}
-          className={buttonClassName({ variant: "default", size: "sm", className: "w-full sm:w-auto" })}
-        >
-          <TrendingUp className="mr-2 h-4 w-4" />
-          Improvement Plan
-        </Link>
-        <Link
-          href={`/clients/${id}/improvement`}
-          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
-        >
-          <TrendingUp className="mr-2 h-4 w-4" />
-          Improvement Dashboard
-        </Link>
-        <Link
-          href={`/clients/${id}/assessments/history`}
-          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
-        >
-          <History className="mr-2 h-4 w-4" />
-          Assessment History
-        </Link>
-      </div>
+      <TpQuickActions clientId={id} sections={sections} />
 
       <TechnologyProfileDetailView detail={detail} />
 
-      {isAdmin ? (
+      {sections.showAdminActions ? (
         <ClientAdminActions
           clientId={client.id}
           clientName={client.companyName}

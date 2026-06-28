@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { getBusinessProfile } from "@/lib/business-profile";
 import { BusinessProfileForm } from "@/components/business-profile/business-profile-form";
 import { buttonClassName } from "@/components/ui/button";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -20,11 +21,11 @@ export default async function BusinessProfilePage({ params }: PageProps) {
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <div>
         <Link
-          href={`/clients/${id}`}
+          href={clientTechnologyProfilePath(id)}
           className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Client
+          Back to Technology Profile
         </Link>
         <h2 className="page-title">Business Profile</h2>
         <p className="page-description">

@@ -8,6 +8,7 @@ type TpBusinessSnapshotProps = {
   clientId: string;
   snapshot: ProfileBusinessSnapshot;
   capabilities: ProfileCapabilities;
+  limited?: boolean;
 };
 
 function formatCount(value: number | null) {
@@ -15,21 +16,33 @@ function formatCount(value: number | null) {
   return value.toLocaleString();
 }
 
-export function TpBusinessSnapshot({ clientId, snapshot, capabilities }: TpBusinessSnapshotProps) {
-  const gridItems = [
-    { label: "Industry", value: snapshot.industry || "—" },
-    { label: "Employees", value: formatCount(snapshot.employeeCount) },
-    { label: "Locations", value: formatCount(snapshot.numberOfLocations) },
-    { label: "Business Goal", value: snapshot.primaryBusinessGoalLabel },
-    { label: "IT Support", value: snapshot.itSupportModelLabel },
-    { label: "Environment", value: snapshot.environmentTypeLabel },
-    {
-      label: "Compliance",
-      value: snapshot.complianceFrameworkLabel,
-      subvalue: snapshot.complianceStatus,
-    },
-    { label: "Technology Vision", value: snapshot.technologyVision || "—", wide: true },
-  ];
+export function TpBusinessSnapshot({
+  clientId,
+  snapshot,
+  capabilities,
+  limited = false,
+}: TpBusinessSnapshotProps) {
+  const gridItems = limited
+    ? [
+        { label: "Industry", value: snapshot.industry || "—" },
+        { label: "Employees", value: formatCount(snapshot.employeeCount) },
+        { label: "Locations", value: formatCount(snapshot.numberOfLocations) },
+        { label: "Business Goal", value: snapshot.primaryBusinessGoalLabel },
+      ]
+    : [
+        { label: "Industry", value: snapshot.industry || "—" },
+        { label: "Employees", value: formatCount(snapshot.employeeCount) },
+        { label: "Locations", value: formatCount(snapshot.numberOfLocations) },
+        { label: "Business Goal", value: snapshot.primaryBusinessGoalLabel },
+        { label: "IT Support", value: snapshot.itSupportModelLabel },
+        { label: "Environment", value: snapshot.environmentTypeLabel },
+        {
+          label: "Compliance",
+          value: snapshot.complianceFrameworkLabel,
+          subvalue: snapshot.complianceStatus,
+        },
+        { label: "Technology Vision", value: snapshot.technologyVision || "—", wide: true },
+      ];
 
   return (
     <Card className="stat-card">
@@ -67,7 +80,11 @@ export function TpBusinessSnapshot({ clientId, snapshot, capabilities }: TpBusin
           {gridItems.map((item) => (
             <div
               key={item.label}
-              className={item.wide ? "rounded-md border px-3 py-2 sm:col-span-2 lg:col-span-4" : "rounded-md border px-3 py-2"}
+              className={
+                "wide" in item && item.wide
+                  ? "rounded-md border px-3 py-2 sm:col-span-2 lg:col-span-4"
+                  : "rounded-md border px-3 py-2"
+              }
             >
               <dt className="text-xs text-muted-foreground">{item.label}</dt>
               <dd className="text-sm font-medium">{item.value}</dd>
@@ -78,25 +95,27 @@ export function TpBusinessSnapshot({ clientId, snapshot, capabilities }: TpBusin
           ))}
         </dl>
 
-        <div className="flex flex-col gap-2 rounded-md border border-border/60 bg-muted/20 px-4 py-3 text-sm sm:flex-row sm:items-center sm:gap-6">
-          <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{snapshot.primaryContactName}</span>
-            {snapshot.primaryContactTitle ? (
-              <span className="text-muted-foreground">· {snapshot.primaryContactTitle}</span>
+        {!limited ? (
+          <div className="flex flex-col gap-2 rounded-md border border-border/60 bg-muted/20 px-4 py-3 text-sm sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">{snapshot.primaryContactName}</span>
+              {snapshot.primaryContactTitle ? (
+                <span className="text-muted-foreground">· {snapshot.primaryContactTitle}</span>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Mail className="h-4 w-4" />
+              {snapshot.primaryContactEmail}
+            </div>
+            {snapshot.primaryContactPhone ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Phone className="h-4 w-4" />
+                {snapshot.primaryContactPhone}
+              </div>
             ) : null}
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Mail className="h-4 w-4" />
-            {snapshot.primaryContactEmail}
-          </div>
-          {snapshot.primaryContactPhone ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-4 w-4" />
-              {snapshot.primaryContactPhone}
-            </div>
-          ) : null}
-        </div>
+        ) : null}
       </CardContent>
     </Card>
   );

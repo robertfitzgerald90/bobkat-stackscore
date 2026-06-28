@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { prisma } from "@/lib/db";
 import { listTipPlans } from "@/lib/technology-improvement-plan";
 import { TipPlanList } from "@/components/technology-improvement-plan/tip-plan-list";
@@ -10,7 +11,7 @@ export default async function ImprovementPlanListPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(`/clients/${id}`);
+  if (session.user.role === "client") redirect(clientTechnologyProfilePath(id));
 
   const client = await prisma.client.findUnique({
     where: { id },

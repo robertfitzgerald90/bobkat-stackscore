@@ -23,20 +23,25 @@ type TechnologyProfileDetailViewProps = {
 };
 
 export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailViewProps) {
-  const { profile, scoreTrend, audience } = detail;
-  const showInternalSections = audience === "internal";
+  const { profile, scoreTrend, sections } = detail;
 
   return (
     <div className="space-y-8">
       <TpHeroSummary detail={detail} />
 
-      <TpBusinessSnapshot
-        clientId={profile.clientId}
-        snapshot={detail.businessSnapshot}
-        capabilities={detail.capabilities}
-      />
+      {sections.showBusinessSnapshot ? (
+        <TpBusinessSnapshot
+          clientId={profile.clientId}
+          snapshot={detail.businessSnapshot}
+          capabilities={detail.capabilities}
+          limited={sections.showBusinessSnapshotLimited}
+        />
+      ) : null}
 
-      <TpCategoryScores insights={detail.categoryInsights} />
+      <TpCategoryScores
+        insights={detail.categoryInsights}
+        showRecommendationCounts={sections.showRecommendationCounts}
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <TpTechnologyJourney journey={detail.journey} journeyScores={detail.journeyScores} />
@@ -58,27 +63,31 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
         </Card>
       </div>
 
-      {showInternalSections ? (
-        <>
-          <TpOpenOpportunities
-            clientId={profile.clientId}
-            recommendations={detail.openRecommendations}
-            capabilities={detail.capabilities}
-          />
+      {sections.showOpenOpportunities ? (
+        <TpOpenOpportunities
+          clientId={profile.clientId}
+          recommendations={detail.openRecommendations}
+          capabilities={detail.capabilities}
+        />
+      ) : null}
 
-          <div className="grid gap-6 lg:grid-cols-2">
+      {sections.showRecentProgress || sections.showRoadmapPreview ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {sections.showRecentProgress ? (
             <TpRecentProgress projects={detail.completedProjects} />
+          ) : null}
+          {sections.showRoadmapPreview ? (
             <TpRoadmapPreview
               clientId={profile.clientId}
               phases={detail.roadmapPreview}
               activeTip={detail.activeTip}
               canEditImprovementPlan={detail.capabilities.canEditImprovementPlan}
             />
-          </div>
-        </>
+          ) : null}
+        </div>
       ) : null}
 
-      {detail.activeProjects.length > 0 ? (
+      {sections.showActiveProjects && detail.activeProjects.length > 0 ? (
         <Card className="stat-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -116,9 +125,10 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
         clientId={profile.clientId}
         documents={detail.documents}
         activeTip={detail.activeTip}
+        showRoadmapBuilderLink={sections.showRoadmapBuilderLink}
       />
 
-      {profile.currentAssessmentId ? (
+      {sections.showAssessmentResultsLink && profile.currentAssessmentId ? (
         <div className="flex justify-end">
           <Link
             href={`/assessments/${profile.currentAssessmentId}/results`}

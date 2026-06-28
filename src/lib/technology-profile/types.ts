@@ -94,6 +94,22 @@ export type ProfileCapabilities = {
   canViewInternalDocuments: boolean;
 };
 
+export type ProfileSectionVisibility = {
+  showAssessmentForms: boolean;
+  showAdminActions: boolean;
+  showInternalQuickActions: boolean;
+  showBusinessSnapshot: boolean;
+  showBusinessSnapshotLimited: boolean;
+  showOpenOpportunities: boolean;
+  showRoadmapPreview: boolean;
+  showRecentProgress: boolean;
+  showActiveProjects: boolean;
+  showAssessmentResultsLink: boolean;
+  showRoadmapBuilderLink: boolean;
+  showNextActionCta: boolean;
+  showRecommendationCounts: boolean;
+};
+
 export type NextRecommendedAction = {
   label: string;
   description: string;
@@ -186,4 +202,5 @@ export type TechnologyProfileDetail = {
   documents: ProfileDocumentSummary[];
   activeTip: ProfileTipSummary | null;
   scoreDeltaSincePrevious: number | null;
+  sections: ProfileSectionVisibility;
 };

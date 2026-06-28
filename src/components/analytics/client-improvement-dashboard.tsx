@@ -9,6 +9,7 @@ import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ClientImprovementAnalytics } from "@/lib/analytics/types";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { RATING_BADGE_VARIANT } from "@/lib/scoring/rating-display";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -36,11 +37,11 @@ export function ClientImprovementDashboard({ analytics }: ClientImprovementDashb
           </p>
         </div>
         <Link
-          href={`/clients/${analytics.clientId}`}
+          href={clientTechnologyProfilePath(analytics.clientId)}
           className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Client
+          Back to Technology Profile
         </Link>
       </div>
 

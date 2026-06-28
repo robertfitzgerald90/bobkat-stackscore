@@ -39,6 +39,7 @@ import {
   formatProjectStatus,
 } from "@/lib/projects";
 import type { SerializedProject } from "@/lib/projects/serialize";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import type { Priority, ProjectStatus } from "@/generated/prisma/client";
 import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { cn } from "@/lib/utils";
@@ -488,7 +489,7 @@ export function ProjectsDashboard({
                     View Assessment
                   </Link>
                   <Link
-                    href={`/clients/${selectedProject.clientId}`}
+                    href={clientTechnologyProfilePath(selectedProject.clientId)}
                     className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
                   >
                     View Client

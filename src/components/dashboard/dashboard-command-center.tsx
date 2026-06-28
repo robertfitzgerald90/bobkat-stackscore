@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
 import {
   formatClientStatus,
@@ -407,7 +408,7 @@ export function DashboardCommandCenter({
                   >
                     <div>
                       <Link
-                        href={`/clients/${client.id}`}
+                        href={clientTechnologyProfilePath(client.id)}
                         className="font-medium text-link hover:text-link-hover hover:underline"
                       >
                         {client.companyName}
@@ -478,7 +479,7 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <Link
-            href={`/clients/${client.id}`}
+            href={clientTechnologyProfilePath(client.id)}
             className="font-medium text-link hover:text-link-hover hover:underline"
           >
             {client.companyName}
@@ -539,7 +540,7 @@ function ClientHealthCard({ client }: { client: ClientHealthRow }) {
           </Link>
         ) : null}
         <Link
-          href={`/clients/${client.id}`}
+          href={clientTechnologyProfilePath(client.id)}
           className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
         >
           <RefreshCw className="mr-1.5 h-3.5 w-3.5" />

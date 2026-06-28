@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ImprovementSummary } from "@/lib/assessments/reassessment";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
 import { getRating } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -41,10 +42,10 @@ export function ImprovementSummaryView({
             View Results
           </Link>
           <Link
-            href={`/clients/${clientId}`}
+            href={clientTechnologyProfilePath(clientId)}
             className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
           >
-            Back to Client
+            Back to Technology Profile
           </Link>
         </div>
       </div>

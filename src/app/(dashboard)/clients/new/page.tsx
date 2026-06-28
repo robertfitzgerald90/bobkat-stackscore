@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CLIENT_STATUS_LABELS } from "@/lib/display";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import {
   Select,
   SelectContent,
@@ -45,7 +46,7 @@ export default function NewClientPage() {
 
     if (response.ok) {
       const client = await response.json();
-      router.push(`/clients/${client.id}`);
+      router.push(clientTechnologyProfilePath(client.id));
     }
   }
 

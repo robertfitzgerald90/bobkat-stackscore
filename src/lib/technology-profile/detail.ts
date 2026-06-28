@@ -26,6 +26,10 @@ import type {
 } from "@/lib/technology-profile/types";
 import { resolveProfileAudience } from "@/lib/technology-profile/types";
 import {
+  resolveProfileSectionVisibility,
+  trimBusinessSnapshotForClient,
+} from "@/lib/technology-profile/visibility";
+import {
   computeTipDerivedState,
   parseWizardState,
   syncWizardStateAfterSelectionChange,
@@ -362,7 +366,9 @@ export async function getTechnologyProfileDetail(
           document.id.startsWith("assessment-report-"),
       );
 
-  return {
+  const sections = resolveProfileSectionVisibility(role, capabilities);
+
+  const baseDetail: TechnologyProfileDetail = {
     profile: {
       id: profileView.id,
       clientId: profileView.clientId,
@@ -403,5 +409,28 @@ export async function getTechnologyProfileDetail(
     documents: profileDocuments,
     activeTip: tipContext.activeTip,
     scoreDeltaSincePrevious,
+    sections,
   };
+
+  if (audience === "client") {
+    return {
+      ...baseDetail,
+      openRecommendations: [],
+      activeProjects: [],
+      completedProjects: [],
+      activeTip: null,
+      roadmapPreview: [],
+      businessSnapshot: trimBusinessSnapshotForClient(businessSnapshot),
+      profile: {
+        ...baseDetail.profile,
+        openRecommendationCount: 0,
+      },
+      categoryInsights: categoryInsights.map((insight) => ({
+        ...insight,
+        openRecommendationCount: 0,
+      })),
+    };
+  }
+
+  return baseDetail;
 }

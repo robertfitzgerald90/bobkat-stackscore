@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 type TpCategoryScoresProps = {
   insights: CategoryScoreInsight[];
+  showRecommendationCounts?: boolean;
 };
 
 function TrendIndicator({ delta }: { delta: number | null }) {
@@ -35,7 +36,10 @@ function TrendIndicator({ delta }: { delta: number | null }) {
   );
 }
 
-export function TpCategoryScores({ insights }: TpCategoryScoresProps) {
+export function TpCategoryScores({
+  insights,
+  showRecommendationCounts = true,
+}: TpCategoryScoresProps) {
   return (
     <Card className="stat-card">
       <CardHeader>
@@ -86,7 +90,7 @@ export function TpCategoryScores({ insights }: TpCategoryScoresProps) {
                   <p className="text-sm text-muted-foreground">Not assessed</p>
                 )}
 
-                {insight.openRecommendationCount > 0 ? (
+                {showRecommendationCounts && insight.openRecommendationCount > 0 ? (
                   <p className="mt-auto flex items-center gap-1 text-xs text-muted-foreground">
                     <Lightbulb className="h-3 w-3" />
                     {insight.openRecommendationCount} open{" "}

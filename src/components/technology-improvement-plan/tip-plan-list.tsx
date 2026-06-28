@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TipPlanSummary } from "@/lib/technology-improvement-plan/types";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { toast } from "sonner";
 
 type TipPlanListProps = {
@@ -47,11 +48,11 @@ export function TipPlanList({ clientId, clientName, initialPlans }: TipPlanListP
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
-            href={`/clients/${clientId}`}
+            href={clientTechnologyProfilePath(clientId)}
             className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Client
+            Back to Technology Profile
           </Link>
           <h2 className="page-title">Technology Improvement Plans</h2>
           <p className="page-description">{clientName}</p>

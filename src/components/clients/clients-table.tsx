@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { formatClientStatus } from "@/lib/display";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import {
   Table,
@@ -105,10 +106,10 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
                     </MobileDataRow>
                     <MobileDataRow label="Assessments">{client.assessmentCount}</MobileDataRow>
                     <Link
-                      href={`/clients/${client.id}`}
+                      href={clientTechnologyProfilePath(client.id)}
                       className={buttonVariants({ variant: "outline", size: "sm", className: "mt-2 w-full" })}
                     >
-                      View Client
+                      View Profile
                     </Link>
                   </MobileDataCard>
                 ))}
@@ -146,7 +147,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
                         <TableCell>{client.assessmentCount}</TableCell>
                         <TableCell>
                           <Link
-                            href={`/clients/${client.id}`}
+                            href={clientTechnologyProfilePath(client.id)}
                             className={buttonVariants({ variant: "link" })}
                           >
                             View
