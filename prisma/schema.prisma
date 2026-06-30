@@ -69,6 +69,11 @@ enum AssessmentStatus {
   archived
 }
 
+enum ScoringEngineVersion {
+  v1
+  v2
+}
+
 enum RiskLevel {
   low
   medium
@@ -303,12 +308,13 @@ model AnswerOption {
 }
 
 model Assessment {
-  id                  String           @id @default(uuid())
+  id                  String                @id @default(uuid())
   clientId            String
   assessorUserId      String
   assessmentName      String
   assessmentType      AssessmentType
-  status              AssessmentStatus @default(draft)
+  status              AssessmentStatus      @default(draft)
+  scoringEngineVersion ScoringEngineVersion @default(v2)
   assessmentDate      DateTime
   overallScore        Decimal?         @db.Decimal(5, 2)
   securityScore       Decimal?         @db.Decimal(5, 2)
@@ -530,6 +536,7 @@ model ClientScoreHistory {
   documentationScore  Decimal? @db.Decimal(5, 2)
   bcdrScore           Decimal? @db.Decimal(5, 2)
   strategicScore      Decimal? @db.Decimal(5, 2)
+  pillarScores        Json?
   notes               String?  @db.Text
   createdAt           DateTime @default(now())
 

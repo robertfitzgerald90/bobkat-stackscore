@@ -69,6 +69,7 @@ export async function GET(_request: Request, context: RouteContext) {
       id: category.id,
       code: category.code,
       name: category.name,
+      businessQuestion: category.description,
       maxPoints: category.maxPoints,
       questions: category.questions.map((question) => {
         const previous = previousByQuestion.get(question.id);

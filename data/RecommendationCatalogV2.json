@@ -1,0 +1,1528 @@
+{
+  "$schema": "stackscore/recommendation-catalog/v2",
+  "version": "2.0.0",
+  "description": "V2 recommendation library keyed to DOC-151 question IDs. Stub entries generated from assessment questions; refine per DOC-153.",
+  "templates": [
+    {
+      "id": "REC-IA-001",
+      "questionId": "IA-001",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Is user authentication managed through a centralized identity platform",
+      "description": "Address gaps identified during assessment of \"Is user authentication managed through a centralized identity platform?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Centralized identity simplifies security and lifecycle management.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-002",
+      "questionId": "IA-002",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Is Multi-Factor Authentication required for privileged accounts and business-critical systems",
+      "description": "Address gaps identified during assessment of \"Is Multi-Factor Authentication required for privileged accounts and business-critical systems?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "MFA greatly reduces account compromise.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-003",
+      "questionId": "IA-003",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Does every employee use an individual account rather than shared credentials",
+      "description": "Address gaps identified during assessment of \"Does every employee use an individual account rather than shared credentials?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Improves accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-004",
+      "questionId": "IA-004",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Do administrators use separate privileged accounts",
+      "description": "Address gaps identified during assessment of \"Do administrators use separate privileged accounts?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Reduces privileged risk.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-005",
+      "questionId": "IA-005",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Is there a documented joiner, mover, and leaver process",
+      "description": "Address gaps identified during assessment of \"Is there a documented joiner, mover, and leaver process?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Supports account lifecycle.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-006",
+      "questionId": "IA-006",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Are users granted only the access required for their jobs",
+      "description": "Address gaps identified during assessment of \"Are users granted only the access required for their jobs?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Supports least privilege.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-007",
+      "questionId": "IA-007",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Are password requirements centrally enforced using modern practices",
+      "description": "Address gaps identified during assessment of \"Are password requirements centrally enforced using modern practices?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Improves identity security.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-008",
+      "questionId": "IA-008",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Is remote access secured using strong authentication and encryption",
+      "description": "Address gaps identified during assessment of \"Is remote access secured using strong authentication and encryption?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Protects remote access.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-009",
+      "questionId": "IA-009",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Are user permissions reviewed periodically",
+      "description": "Address gaps identified during assessment of \"Are user permissions reviewed periodically?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Removes unnecessary access.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-IA-010",
+      "questionId": "IA-010",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "title": "Improve Identity & Access: Has responsibility for identity and access management been assigned",
+      "description": "Address gaps identified during assessment of \"Has responsibility for identity and access management been assigned?\" within the Identity & Access Technology Pillar.",
+      "businessImpact": "Creates accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-001",
+      "questionId": "EP-001",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Is there an accurate inventory of company-owned devices",
+      "description": "Address gaps identified during assessment of \"Is there an accurate inventory of company-owned devices?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Know what you own.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-002",
+      "questionId": "EP-002",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Is there a documented device lifecycle",
+      "description": "Address gaps identified during assessment of \"Is there a documented device lifecycle?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Supports planned refreshes.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-003",
+      "questionId": "EP-003",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Are operating systems and applications patched consistently",
+      "description": "Address gaps identified during assessment of \"Are operating systems and applications patched consistently?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Reduces vulnerabilities.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-004",
+      "questionId": "EP-004",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Are endpoints protected by centrally managed security software",
+      "description": "Address gaps identified during assessment of \"Are endpoints protected by centrally managed security software?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Improves protection.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-005",
+      "questionId": "EP-005",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Are portable devices encrypted",
+      "description": "Address gaps identified during assessment of \"Are portable devices encrypted?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Protects data.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-006",
+      "questionId": "EP-006",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Can devices be remotely managed",
+      "description": "Address gaps identified during assessment of \"Can devices be remotely managed?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Improves support.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-007",
+      "questionId": "EP-007",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Are standard device configurations used",
+      "description": "Address gaps identified during assessment of \"Are standard device configurations used?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Improves consistency.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-008",
+      "questionId": "EP-008",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Is hardware health monitored",
+      "description": "Address gaps identified during assessment of \"Is hardware health monitored?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Prevents downtime.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-009",
+      "questionId": "EP-009",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Are operating systems vendor supported",
+      "description": "Address gaps identified during assessment of \"Are operating systems vendor supported?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Ensures updates.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-EP-010",
+      "questionId": "EP-010",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "title": "Improve Endpoint Management: Has endpoint management ownership been assigned",
+      "description": "Address gaps identified during assessment of \"Has endpoint management ownership been assigned?\" within the Endpoint Management Technology Pillar.",
+      "businessImpact": "Creates accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-001",
+      "questionId": "NW-001",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is business-grade networking equipment used",
+      "description": "Address gaps identified during assessment of \"Is business-grade networking equipment used?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Improves reliability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-002",
+      "questionId": "NW-002",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is a properly configured firewall protecting the network",
+      "description": "Address gaps identified during assessment of \"Is a properly configured firewall protecting the network?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Primary defense.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-003",
+      "questionId": "NW-003",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is wireless reliable and secure",
+      "description": "Address gaps identified during assessment of \"Is wireless reliable and secure?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Supports productivity.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-004",
+      "questionId": "NW-004",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is the network segmented appropriately",
+      "description": "Address gaps identified during assessment of \"Is the network segmented appropriately?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Limits attack spread.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-005",
+      "questionId": "NW-005",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is remote connectivity secure",
+      "description": "Address gaps identified during assessment of \"Is remote connectivity secure?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Protects remote users.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-006",
+      "questionId": "NW-006",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is there an appropriate internet resilience strategy",
+      "description": "Address gaps identified during assessment of \"Is there an appropriate internet resilience strategy?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Supports continuity.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-007",
+      "questionId": "NW-007",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Are DNS, DHCP and core services maintained",
+      "description": "Address gaps identified during assessment of \"Are DNS, DHCP and core services maintained?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Critical infrastructure.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-008",
+      "questionId": "NW-008",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is the network monitored proactively",
+      "description": "Address gaps identified during assessment of \"Is the network monitored proactively?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Detects issues early.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-009",
+      "questionId": "NW-009",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is physical infrastructure maintained",
+      "description": "Address gaps identified during assessment of \"Is physical infrastructure maintained?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Supports stability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-NW-010",
+      "questionId": "NW-010",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "title": "Improve Network & Connectivity: Is network documentation current",
+      "description": "Address gaps identified during assessment of \"Is network documentation current?\" within the Network & Connectivity Technology Pillar.",
+      "businessImpact": "Improves support.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-001",
+      "questionId": "DP-001",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are all critical systems included in backups",
+      "description": "Address gaps identified during assessment of \"Are all critical systems included in backups?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Protection.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-002",
+      "questionId": "DP-002",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are backups monitored",
+      "description": "Address gaps identified during assessment of \"Are backups monitored?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Detect failures.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-003",
+      "questionId": "DP-003",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are restore tests performed regularly",
+      "description": "Address gaps identified during assessment of \"Are restore tests performed regularly?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Validates recovery.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-004",
+      "questionId": "DP-004",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Is there a disaster recovery plan",
+      "description": "Address gaps identified during assessment of \"Is there a disaster recovery plan?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Guides recovery.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-005",
+      "questionId": "DP-005",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Is there a business continuity plan",
+      "description": "Address gaps identified during assessment of \"Is there a business continuity plan?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Maintains operations.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-006",
+      "questionId": "DP-006",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are recovery objectives defined",
+      "description": "Address gaps identified during assessment of \"Are recovery objectives defined?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Aligns with business.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-007",
+      "questionId": "DP-007",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are backups protected from compromise",
+      "description": "Address gaps identified during assessment of \"Are backups protected from compromise?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Protects recovery.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-008",
+      "questionId": "DP-008",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Has critical data been identified",
+      "description": "Address gaps identified during assessment of \"Has critical data been identified?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Prioritizes recovery.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-009",
+      "questionId": "DP-009",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Are retention requirements documented",
+      "description": "Address gaps identified during assessment of \"Are retention requirements documented?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Governance.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DP-010",
+      "questionId": "DP-010",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "title": "Improve Data Protection & Recovery: Has recovery ownership been assigned",
+      "description": "Address gaps identified during assessment of \"Has recovery ownership been assigned?\" within the Data Protection & Recovery Technology Pillar.",
+      "businessImpact": "Accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-001",
+      "questionId": "PC-001",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Is a centralized productivity platform used",
+      "description": "Address gaps identified during assessment of \"Is a centralized productivity platform used?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Consistency.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-002",
+      "questionId": "PC-002",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Can employees securely access required files",
+      "description": "Address gaps identified during assessment of \"Can employees securely access required files?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Productivity.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-003",
+      "questionId": "PC-003",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Is document organization standardized",
+      "description": "Address gaps identified during assessment of \"Is document organization standardized?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Efficiency.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-004",
+      "questionId": "PC-004",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Are collaboration tools standardized",
+      "description": "Address gaps identified during assessment of \"Are collaboration tools standardized?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Teamwork.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-005",
+      "questionId": "PC-005",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Is secure mobile work supported",
+      "description": "Address gaps identified during assessment of \"Is secure mobile work supported?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Mobility.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-006",
+      "questionId": "PC-006",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Are business applications standardized",
+      "description": "Address gaps identified during assessment of \"Are business applications standardized?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Supportability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-007",
+      "questionId": "PC-007",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Are software licenses managed",
+      "description": "Address gaps identified during assessment of \"Are software licenses managed?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Cost control.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-008",
+      "questionId": "PC-008",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Have manual workflows been improved through technology",
+      "description": "Address gaps identified during assessment of \"Have manual workflows been improved through technology?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Automation.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-009",
+      "questionId": "PC-009",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Do employees have the technology needed to succeed",
+      "description": "Address gaps identified during assessment of \"Do employees have the technology needed to succeed?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "User success.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-PC-010",
+      "questionId": "PC-010",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "title": "Improve Productivity & Collaboration: Has responsibility for productivity improvements been assigned",
+      "description": "Address gaps identified during assessment of \"Has responsibility for productivity improvements been assigned?\" within the Productivity & Collaboration Technology Pillar.",
+      "businessImpact": "Accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-001",
+      "questionId": "SO-001",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are systems monitored for security events",
+      "description": "Address gaps identified during assessment of \"Are systems monitored for security events?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Detection.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-002",
+      "questionId": "SO-002",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are vulnerabilities assessed regularly",
+      "description": "Address gaps identified during assessment of \"Are vulnerabilities assessed regularly?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Risk reduction.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-003",
+      "questionId": "SO-003",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are security updates applied promptly",
+      "description": "Address gaps identified during assessment of \"Are security updates applied promptly?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Mitigation.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-004",
+      "questionId": "SO-004",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Do employees receive security awareness training",
+      "description": "Address gaps identified during assessment of \"Do employees receive security awareness training?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Human defense.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-005",
+      "questionId": "SO-005",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Is there an incident response process",
+      "description": "Address gaps identified during assessment of \"Is there an incident response process?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Preparedness.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-006",
+      "questionId": "SO-006",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are security logs retained",
+      "description": "Address gaps identified during assessment of \"Are security logs retained?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Investigations.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-007",
+      "questionId": "SO-007",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are technology risks reviewed periodically",
+      "description": "Address gaps identified during assessment of \"Are technology risks reviewed periodically?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Governance.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-008",
+      "questionId": "SO-008",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Is third-party risk considered",
+      "description": "Address gaps identified during assessment of \"Is third-party risk considered?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Supplier security.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-009",
+      "questionId": "SO-009",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Has security ownership been assigned",
+      "description": "Address gaps identified during assessment of \"Has security ownership been assigned?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-SO-010",
+      "questionId": "SO-010",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "title": "Improve Security Operations: Are security practices continuously improved",
+      "description": "Address gaps identified during assessment of \"Are security practices continuously improved?\" within the Security Operations Technology Pillar.",
+      "businessImpact": "Maturity.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-001",
+      "questionId": "DK-001",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Is the network documented",
+      "description": "Address gaps identified during assessment of \"Is the network documented?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Support.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-002",
+      "questionId": "DK-002",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Is there a current technology asset inventory",
+      "description": "Address gaps identified during assessment of \"Is there a current technology asset inventory?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Visibility.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-003",
+      "questionId": "DK-003",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Are credentials securely managed",
+      "description": "Address gaps identified during assessment of \"Are credentials securely managed?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Security.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-004",
+      "questionId": "DK-004",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Are vendors documented",
+      "description": "Address gaps identified during assessment of \"Are vendors documented?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Continuity.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-005",
+      "questionId": "DK-005",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Are SOPs documented",
+      "description": "Address gaps identified during assessment of \"Are SOPs documented?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Consistency.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-006",
+      "questionId": "DK-006",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Are configurations documented",
+      "description": "Address gaps identified during assessment of \"Are configurations documented?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Recovery.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-007",
+      "questionId": "DK-007",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Are licensing and warranty records maintained",
+      "description": "Address gaps identified during assessment of \"Are licensing and warranty records maintained?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Planning.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-008",
+      "questionId": "DK-008",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Could another IT professional support the environment",
+      "description": "Address gaps identified during assessment of \"Could another IT professional support the environment?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Knowledge transfer.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-009",
+      "questionId": "DK-009",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Is documentation maintained",
+      "description": "Address gaps identified during assessment of \"Is documentation maintained?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Accuracy.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-DK-010",
+      "questionId": "DK-010",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "title": "Improve Documentation & Knowledge: Has documentation ownership been assigned",
+      "description": "Address gaps identified during assessment of \"Has documentation ownership been assigned?\" within the Documentation & Knowledge Technology Pillar.",
+      "businessImpact": "Accountability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-001",
+      "questionId": "TS-001",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Is there a documented technology roadmap",
+      "description": "Address gaps identified during assessment of \"Is there a documented technology roadmap?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Planning.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-002",
+      "questionId": "TS-002",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Are technology decisions aligned with business goals",
+      "description": "Address gaps identified during assessment of \"Are technology decisions aligned with business goals?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Alignment.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-003",
+      "questionId": "TS-003",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Is there a planned technology budget",
+      "description": "Address gaps identified during assessment of \"Is there a planned technology budget?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Sustainability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-004",
+      "questionId": "TS-004",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Is hardware lifecycle planned",
+      "description": "Address gaps identified during assessment of \"Is hardware lifecycle planned?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Reliability.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-005",
+      "questionId": "TS-005",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Are business applications reviewed regularly",
+      "description": "Address gaps identified during assessment of \"Are business applications reviewed regularly?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Currency.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-006",
+      "questionId": "TS-006",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Are technology risks reviewed",
+      "description": "Address gaps identified during assessment of \"Are technology risks reviewed?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Prioritization.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "high",
+      "estimatedImpactPoints": 8,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-007",
+      "questionId": "TS-007",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Is continuous improvement practiced",
+      "description": "Address gaps identified during assessment of \"Is continuous improvement practiced?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Growth.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "critical",
+      "estimatedImpactPoints": 10,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-008",
+      "questionId": "TS-008",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Is there a technology vision",
+      "description": "Address gaps identified during assessment of \"Is there a technology vision?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Direction.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 4,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-009",
+      "questionId": "TS-009",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Are executive technology reviews performed",
+      "description": "Address gaps identified during assessment of \"Are executive technology reviews performed?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Governance.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "medium",
+      "estimatedImpactPoints": 6,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    },
+    {
+      "id": "REC-TS-010",
+      "questionId": "TS-010",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "title": "Improve Technology Strategy: Has technology leadership been assigned",
+      "description": "Address gaps identified during assessment of \"Has technology leadership been assigned?\" within the Technology Strategy Technology Pillar.",
+      "businessImpact": "Ownership.",
+      "suggestedService": "Technology Improvement Services",
+      "priority": "low",
+      "estimatedImpactPoints": 3,
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ],
+      "alsoTriggerOnPartial": true,
+      "consolidationGroupId": null,
+      "isStub": true
+    }
+  ],
+  "consolidationGroups": []
+}

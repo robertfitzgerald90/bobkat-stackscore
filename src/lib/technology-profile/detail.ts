@@ -344,9 +344,17 @@ export async function getTechnologyProfileDetail(
     openRecommendations: recommendationSummaries,
   });
 
+  const profileCategoryData = profileView.categoryScores as
+    | { pillarScores?: import("@/lib/scoring/v2").PillarScoreSnapshot[] }
+    | null
+    | undefined;
+
   const pillarInsights = buildPillarInsights({
     v1CategoryScores: profileView.v1CategoryScores,
-    scoreHistory,
+    pillarSnapshots: profileCategoryData?.pillarScores,
+    scoreHistory: scoreHistory.map((entry) => ({
+      pillarScores: entry.pillarScores,
+    })),
     openRecommendations: recommendationSummaries,
   });
 

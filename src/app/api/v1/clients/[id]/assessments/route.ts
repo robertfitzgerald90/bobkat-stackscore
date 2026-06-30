@@ -84,6 +84,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         assessmentType: body.assessmentType,
         assessmentDate: new Date(body.assessmentDate ?? new Date()),
         status: "draft",
+        scoringEngineVersion: "v2",
       },
     });
 

@@ -54,6 +54,7 @@ type Category = {
   id: string;
   code: string;
   name: string;
+  businessQuestion?: string | null;
   maxPoints: number;
   questions: Question[];
 };
@@ -480,9 +481,14 @@ export function AssessmentWizard({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <h3 className="text-lg font-semibold">{activeCategory.name}</h3>
+                    {activeCategory.businessQuestion ? (
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {activeCategory.businessQuestion}
+                      </p>
+                    ) : null}
                     <p className="text-sm text-muted-foreground">
-                      Question {currentFlatIndex + 1} of {flatQuestions.length} ·{" "}
-                      {activeCategory.maxPoints} max category points
+                      Question {currentFlatIndex + 1} of {flatQuestions.length} · Pillar{" "}
+                      {activeQuestionIndex + 1} of {activeCategory.questions.length}
                     </p>
                   </div>
                   <div className="flex gap-1">

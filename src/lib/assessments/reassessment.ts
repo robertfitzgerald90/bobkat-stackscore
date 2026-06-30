@@ -55,6 +55,7 @@ export async function createReassessment(input: CreateReassessmentInput) {
         assessmentType: input.assessmentType ?? "followup",
         assessmentDate: input.assessmentDate ?? new Date(),
         status: "draft",
+        scoringEngineVersion: "v2",
         sourceAssessmentId: sourceId,
       },
     });

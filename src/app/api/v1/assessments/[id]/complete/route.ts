@@ -9,6 +9,8 @@ import {
   unauthorized,
 } from "@/lib/api/helpers";
 
+import type { AssessmentRecommendation } from "@/generated/prisma/client";
+
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(_request: Request, context: RouteContext) {
@@ -21,9 +23,9 @@ export async function POST(_request: Request, context: RouteContext) {
     const result = await completeAssessment(id, user.id);
     if (!result) return notFound("Assessment not found");
 
-    const openRecommendations = result.recommendations ?? [];
+    const openRecommendations: AssessmentRecommendation[] = result.recommendations ?? [];
     const projectionImpact = calculateProjectionImpacts(
-      openRecommendations.map((rec) => ({
+      openRecommendations.map((rec: AssessmentRecommendation) => ({
         templateCode: rec.recommendationTemplateId ?? rec.id,
         consolidationGroupId: rec.consolidationGroupId,
         title: rec.title,

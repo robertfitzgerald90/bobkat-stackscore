@@ -8,10 +8,19 @@ import {
 } from "../src/lib/assessment-library/metadata";
 import { backfillTechnologyProfiles } from "../src/lib/technology-profile";
 import { CATEGORIES, QUESTIONS_BY_CATEGORY, type SeedAnswer } from "./seed-data";
+import { clearAllClientData, clearAssessmentData, deactivateV1Library, seedV2Library } from "./seed-v2";
 import { Priority } from "../src/generated/prisma/client";
 
 async function main() {
   console.log("Seeding BobKat StackScore...");
+
+  if (process.env.SEED_FULL_RESET === "true") {
+    console.log("Full reset (SEED_FULL_RESET=true): removing all clients and assessment data...");
+    await clearAllClientData(prisma);
+  } else if (process.env.SEED_RESET_ASSESSMENTS === "true") {
+    console.log("Resetting assessment data (SEED_RESET_ASSESSMENTS=true)...");
+    await clearAssessmentData(prisma);
+  }
 
   const categoryIdByCode = new Map<string, string>();
 
@@ -165,6 +174,8 @@ async function main() {
     },
   });
 
+  await deactivateV1Library(prisma);
+  await seedV2Library(prisma);
   await backfillTechnologyProfiles();
 
   console.log("Seed complete.");

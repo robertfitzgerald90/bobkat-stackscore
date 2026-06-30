@@ -1,4 +1,6 @@
 import type { CategoryScoreResult } from "@/lib/scoring";
+import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
+import { ASSESSMENT_INCOMPLETE_LABEL } from "@/lib/scoring/v2";
 import { SCORE_HISTORY_CATEGORY_FIELDS } from "@/lib/analytics/categories";
 
 export type TechnologyPillarCode =
@@ -91,17 +93,65 @@ export type PillarScoreInsight = {
   maturityTier: string | null;
   trendDelta: number | null;
   openRecommendationCount: number;
+  status: "complete" | "incomplete";
+  questionsAnswered: number;
+  questionsTotal: number;
 };
 
 type ScoreHistoryRow = Record<string, unknown>;
 
 function getMaturityTierLabel(score: number): string {
-  if (score >= 81) return "Optimized";
-  if (score >= 61) return "Mature";
-  if (score >= 41) return "Developing";
-  if (score >= 21) return "Foundational";
-  return "Nascent";
+  if (score >= 95) return "Optimized";
+  if (score >= 85) return "Mature";
+  if (score >= 70) return "Managed";
+  if (score >= 55) return "Developing";
+  if (score >= 40) return "Basic";
+  return "Initial";
 }
+
+function pillarTrendFromHistory(
+  pillarCode: TechnologyPillarCode,
+  scoreHistory?: ScoreHistoryRow[],
+): number | null {
+  if (!scoreHistory || scoreHistory.length < 2) return null;
+
+  const previous = scoreHistory.at(-2)?.pillarScores as PillarScoreSnapshot[] | undefined;
+  const current = scoreHistory.at(-1)?.pillarScores as PillarScoreSnapshot[] | undefined;
+  if (!previous || !current) return null;
+
+  const prevScore = previous.find((row) => row.pillarCode === pillarCode)?.percentScore ?? null;
+  const currScore = current.find((row) => row.pillarCode === pillarCode)?.percentScore ?? null;
+  if (prevScore === null || currScore === null) return null;
+  return Math.round(currScore - prevScore);
+}
+
+export function buildPillarInsightsFromSnapshots(input: {
+  pillarSnapshots: PillarScoreSnapshot[];
+  scoreHistory?: ScoreHistoryRow[];
+  openRecommendations: Array<{ categoryCode: string }>;
+}): PillarScoreInsight[] {
+  const recCounts = countRecommendationsByPillar(input.openRecommendations);
+
+  return input.pillarSnapshots.map((snapshot) => ({
+    pillarCode: snapshot.pillarCode,
+    pillarName: snapshot.pillarName,
+    businessQuestion: snapshot.businessQuestion,
+    percentScore: snapshot.percentScore,
+    maturityTier:
+      snapshot.status === "complete" && snapshot.percentScore !== null
+        ? snapshot.maturityLevelLabel ?? getMaturityTierLabel(snapshot.percentScore)
+        : snapshot.status === "incomplete"
+          ? ASSESSMENT_INCOMPLETE_LABEL
+          : null,
+    trendDelta: pillarTrendFromHistory(snapshot.pillarCode, input.scoreHistory),
+    openRecommendationCount: recCounts[snapshot.pillarCode] ?? 0,
+    status: snapshot.status,
+    questionsAnswered: snapshot.questionsAnswered,
+    questionsTotal: snapshot.questionsTotal,
+  }));
+}
+
+export { ASSESSMENT_INCOMPLETE_LABEL };
 
 function roundScore(value: unknown): number | null {
   if (value === null || value === undefined) return null;
@@ -181,9 +231,18 @@ export function getPillarDisplayForV1CategoryCode(categoryCode: string): {
 
 export function buildPillarInsights(input: {
   v1CategoryScores: CategoryScoreResult[];
+  pillarSnapshots?: PillarScoreSnapshot[];
   scoreHistory?: ScoreHistoryRow[];
   openRecommendations: Array<{ categoryCode: string }>;
 }): PillarScoreInsight[] {
+  if (input.pillarSnapshots && input.pillarSnapshots.length > 0) {
+    return buildPillarInsightsFromSnapshots({
+      pillarSnapshots: input.pillarSnapshots,
+      scoreHistory: input.scoreHistory,
+      openRecommendations: input.openRecommendations,
+    });
+  }
+
   const v1ByCode = new Map(input.v1CategoryScores.map((score) => [score.categoryCode, score]));
   const recCounts = countRecommendationsByPillar(input.openRecommendations);
 
@@ -215,10 +274,15 @@ export function buildPillarInsights(input: {
       maturityTier: percentScore !== null ? getMaturityTierLabel(percentScore) : null,
       trendDelta,
       openRecommendationCount: recCounts[pillar.code] ?? 0,
+      status: percentScore !== null ? "complete" : "incomplete",
+      questionsAnswered: percentScore !== null ? 1 : 0,
+      questionsTotal: pillar.v1CategoryCodes.length > 0 ? 1 : 0,
     };
   });
 }
 
 export function hasAnyPillarScore(insights: PillarScoreInsight[]): boolean {
-  return insights.some((insight) => insight.percentScore !== null);
+  return insights.some(
+    (insight) => insight.percentScore !== null || insight.questionsAnswered > 0,
+  );
 }

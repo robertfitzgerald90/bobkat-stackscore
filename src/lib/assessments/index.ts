@@ -8,9 +8,11 @@ import { syncClientRecommendations } from "@/lib/recommendations/sync";
 import {
   calculateScores,
   RATING_LABELS,
+  getRating,
   type CategoryScoreInput,
   type ScoringResult,
 } from "@/lib/scoring";
+import { completeAssessmentV2 } from "@/lib/assessments/complete-v2";
 import type { Prisma } from "@/generated/prisma/client";
 
 const CATEGORY_SCORE_FIELDS = {
@@ -24,6 +26,23 @@ const CATEGORY_SCORE_FIELDS = {
 } as const;
 
 export async function completeAssessment(assessmentId: string, userId: string) {
+  const assessmentMeta = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    select: { scoringEngineVersion: true },
+  });
+
+  if (!assessmentMeta) {
+    throw new Error("Assessment not found");
+  }
+
+  if (assessmentMeta.scoringEngineVersion === "v2") {
+    return completeAssessmentV2(assessmentId, userId);
+  }
+
+  return completeAssessmentV1(assessmentId, userId);
+}
+
+async function completeAssessmentV1(assessmentId: string, userId: string) {
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {
@@ -231,13 +250,107 @@ export async function getAssessmentPreview(
 
   if (!assessment) return null;
 
-  const categories = await prisma.assessmentCategory.findMany({
-    where: { isActive: true },
-    orderBy: { displayOrder: "asc" },
-  });
   const activeQuestions = await prisma.assessmentQuestion.findMany({
     where: { isActive: true },
     include: { category: true },
+  });
+
+  const answeredCount = assessment.responses.length;
+  const totalCount = activeQuestions.length;
+
+  if (assessment.scoringEngineVersion === "v2") {
+    const { calculateV2Scores } = await import("@/lib/scoring/v2");
+    const { evaluateV2Triggers, collectV2TriggeredResponses } = await import(
+      "@/lib/recommendations/v2-engine"
+    );
+    const { calculateProjectionImpacts } = await import("@/lib/recommendations");
+    const { calculateProjectedScore } = await import("@/lib/scoring");
+
+    const scoring = calculateV2Scores({
+      questions: activeQuestions.map((question) => ({
+        id: question.code,
+        pillarCode: question.category.code as import("@/lib/technology-maturity/pillars").TechnologyPillarCode,
+        weight: question.weight,
+      })),
+      responses: assessment.responses.map((response) => ({
+        questionId: response.question.code,
+        answerText: response.selectedAnswerOption.answerText,
+      })),
+    });
+
+    const hasCriticalExposure = assessment.responses.some(
+      (response) => response.selectedAnswerOption.triggersCriticalFlag,
+    );
+    const criticalFindingsCount = assessment.responses.filter(
+      (response) => response.selectedAnswerOption.triggersCriticalFlag,
+    ).length;
+
+    const triggered = collectV2TriggeredResponses(assessment.responses);
+    const v2Recommendations = evaluateV2Triggers(triggered);
+    const projectionImpact = calculateProjectionImpacts(v2Recommendations);
+    const projectedScore =
+      scoring.overallStackScore !== null
+        ? calculateProjectedScore(scoring.overallStackScore, [projectionImpact])
+        : null;
+
+    const categories = await prisma.assessmentCategory.findMany({
+      where: { isActive: true },
+      orderBy: { displayOrder: "asc" },
+    });
+
+    const responsesByQuestion = new Map(
+      assessment.responses.map((response) => [response.questionId, response]),
+    );
+
+    const categoryScores: CategoryPreview[] = categories.map((category) => {
+      const questions = activeQuestions.filter((q) => q.categoryId === category.id);
+      const answeredInCategory = questions.filter((q) => responsesByQuestion.has(q.id));
+      const pillar = scoring.pillarScores.find((row) => row.pillarCode === category.code);
+
+      return {
+        categoryId: category.id,
+        categoryCode: category.code,
+        categoryName: category.name,
+        answeredCount: answeredInCategory.length,
+        totalCount: questions.length,
+        percentScore: pillar?.percentScore ?? null,
+        rating: pillar?.percentScore != null ? getRating(pillar.percentScore) : null,
+      };
+    });
+
+    const topRisks: RiskPreview[] = [...categoryScores]
+      .filter((category) => category.percentScore !== null && category.rating !== null)
+      .sort((a, b) => (a.percentScore ?? 100) - (b.percentScore ?? 100))
+      .slice(0, 5)
+      .map((category) => ({
+        categoryName: category.categoryName,
+        percentScore: category.percentScore!,
+        rating: category.rating!,
+      }));
+
+    return {
+      overallScore: scoring.overallStackScore,
+      overallRating: scoring.overallStackScore !== null ? getRating(scoring.overallStackScore) : null,
+      projectedScore,
+      hasCriticalExposure,
+      criticalFindingsCount,
+      answeredCount,
+      totalCount,
+      openRecommendationsCount: v2Recommendations.length,
+      categoryScores,
+      recommendations: v2Recommendations.map((recommendation) => ({
+        title: recommendation.title,
+        priority: recommendation.priority,
+        estimatedImpactPoints: recommendation.estimatedImpactPoints,
+        categoryName: recommendation.categoryName,
+      })),
+      topRisks,
+    };
+  }
+
+  const categories = await prisma.assessmentCategory.findMany({
+    where: { isActive: true },
+    orderBy: { displayOrder: "asc" },
   });
 
   const responsesByQuestion = new Map(
@@ -269,9 +382,6 @@ export async function getAssessmentPreview(
   const criticalFindingsCount = assessment.responses.filter(
     (response) => response.selectedAnswerOption.triggersCriticalFlag,
   ).length;
-
-  const answeredCount = assessment.responses.length;
-  const totalCount = activeQuestions.length;
 
   const scoringInputs = categoryInputs.filter((category) => category.pointsPossible > 0);
   const scoring: ScoringResult | null =

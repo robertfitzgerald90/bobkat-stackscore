@@ -4,7 +4,7 @@ import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { TECHNOLOGY_PILLARS_LABEL } from "@/lib/technology-maturity/labels";
-import { hasAnyPillarScore, type PillarScoreInsight } from "@/lib/technology-maturity/pillars";
+import { ASSESSMENT_INCOMPLETE_LABEL, hasAnyPillarScore, type PillarScoreInsight } from "@/lib/technology-maturity/pillars";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +110,10 @@ export function TpCategoryScores({
                         />
                       </div>
                     </>
+                  ) : insight.status === "incomplete" && insight.questionsAnswered > 0 ? (
+                    <Badge variant="secondary" className="w-fit text-[10px]">
+                      {ASSESSMENT_INCOMPLETE_LABEL}
+                    </Badge>
                   ) : (
                     <p className="text-sm text-muted-foreground">Not assessed</p>
                   )}

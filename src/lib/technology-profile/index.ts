@@ -79,6 +79,18 @@ export async function backfillTechnologyProfiles() {
 }
 
 export async function syncProfileFromAssessment(assessmentId: string) {
+  const assessmentMeta = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    select: { scoringEngineVersion: true, status: true },
+  });
+
+  if (!assessmentMeta || assessmentMeta.status !== "completed") return null;
+
+  if (assessmentMeta.scoringEngineVersion === "v2") {
+    const { syncProfileFromAssessmentV2 } = await import("@/lib/assessments/complete-v2");
+    return syncProfileFromAssessmentV2(assessmentId);
+  }
+
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {

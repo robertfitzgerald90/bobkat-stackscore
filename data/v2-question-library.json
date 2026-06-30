@@ -1,0 +1,1345 @@
+{
+  "$schema": "stackscore/v2-question-library/1.0",
+  "version": "2.0.0",
+  "source": "DOC-151A-H",
+  "pillars": [
+    {
+      "code": "identity_access",
+      "name": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "displayOrder": 1,
+      "questionCount": 10
+    },
+    {
+      "code": "endpoint_management",
+      "name": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "displayOrder": 2,
+      "questionCount": 10
+    },
+    {
+      "code": "network_connectivity",
+      "name": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "displayOrder": 3,
+      "questionCount": 10
+    },
+    {
+      "code": "data_protection_recovery",
+      "name": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "displayOrder": 4,
+      "questionCount": 10
+    },
+    {
+      "code": "productivity_collaboration",
+      "name": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "displayOrder": 5,
+      "questionCount": 10
+    },
+    {
+      "code": "security_operations",
+      "name": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "displayOrder": 6,
+      "questionCount": 10
+    },
+    {
+      "code": "documentation_knowledge",
+      "name": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "displayOrder": 7,
+      "questionCount": 10
+    },
+    {
+      "code": "technology_strategy",
+      "name": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "displayOrder": 8,
+      "questionCount": 10
+    }
+  ],
+  "questions": [
+    {
+      "id": "IA-001",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Is user authentication managed through a centralized identity platform?",
+      "whyItMatters": "Centralized identity simplifies security and lifecycle management.",
+      "weight": 5,
+      "displayOrder": 1,
+      "capability": "IA-001",
+      "recommendationId": "REC-IA-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-002",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Is Multi-Factor Authentication required for privileged accounts and business-critical systems?",
+      "whyItMatters": "MFA greatly reduces account compromise.",
+      "weight": 5,
+      "displayOrder": 2,
+      "capability": "IA-002",
+      "recommendationId": "REC-IA-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-003",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Does every employee use an individual account rather than shared credentials?",
+      "whyItMatters": "Improves accountability.",
+      "weight": 3,
+      "displayOrder": 3,
+      "capability": "IA-003",
+      "recommendationId": "REC-IA-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-004",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Do administrators use separate privileged accounts?",
+      "whyItMatters": "Reduces privileged risk.",
+      "weight": 4,
+      "displayOrder": 4,
+      "capability": "IA-004",
+      "recommendationId": "REC-IA-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-005",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Is there a documented joiner, mover, and leaver process?",
+      "whyItMatters": "Supports account lifecycle.",
+      "weight": 4,
+      "displayOrder": 5,
+      "capability": "IA-005",
+      "recommendationId": "REC-IA-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-006",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Are users granted only the access required for their jobs?",
+      "whyItMatters": "Supports least privilege.",
+      "weight": 5,
+      "displayOrder": 6,
+      "capability": "IA-006",
+      "recommendationId": "REC-IA-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-007",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Are password requirements centrally enforced using modern practices?",
+      "whyItMatters": "Improves identity security.",
+      "weight": 3,
+      "displayOrder": 7,
+      "capability": "IA-007",
+      "recommendationId": "REC-IA-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-008",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Is remote access secured using strong authentication and encryption?",
+      "whyItMatters": "Protects remote access.",
+      "weight": 3,
+      "displayOrder": 8,
+      "capability": "IA-008",
+      "recommendationId": "REC-IA-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-009",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Are user permissions reviewed periodically?",
+      "whyItMatters": "Removes unnecessary access.",
+      "weight": 2,
+      "displayOrder": 9,
+      "capability": "IA-009",
+      "recommendationId": "REC-IA-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "IA-010",
+      "pillarCode": "identity_access",
+      "pillarName": "Identity & Access",
+      "businessQuestion": "Can we trust that only the right people have access to our systems and data?",
+      "questionText": "Has responsibility for identity and access management been assigned?",
+      "whyItMatters": "Creates accountability.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "IA-010",
+      "recommendationId": "REC-IA-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-001",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Is there an accurate inventory of company-owned devices?",
+      "whyItMatters": "Know what you own.",
+      "weight": 3,
+      "displayOrder": 1,
+      "capability": "EP-001",
+      "recommendationId": "REC-EP-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-002",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Is there a documented device lifecycle?",
+      "whyItMatters": "Supports planned refreshes.",
+      "weight": 3,
+      "displayOrder": 2,
+      "capability": "EP-002",
+      "recommendationId": "REC-EP-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-003",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Are operating systems and applications patched consistently?",
+      "whyItMatters": "Reduces vulnerabilities.",
+      "weight": 5,
+      "displayOrder": 3,
+      "capability": "EP-003",
+      "recommendationId": "REC-EP-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-004",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Are endpoints protected by centrally managed security software?",
+      "whyItMatters": "Improves protection.",
+      "weight": 5,
+      "displayOrder": 4,
+      "capability": "EP-004",
+      "recommendationId": "REC-EP-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-005",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Are portable devices encrypted?",
+      "whyItMatters": "Protects data.",
+      "weight": 4,
+      "displayOrder": 5,
+      "capability": "EP-005",
+      "recommendationId": "REC-EP-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-006",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Can devices be remotely managed?",
+      "whyItMatters": "Improves support.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "EP-006",
+      "recommendationId": "REC-EP-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-007",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Are standard device configurations used?",
+      "whyItMatters": "Improves consistency.",
+      "weight": 4,
+      "displayOrder": 7,
+      "capability": "EP-007",
+      "recommendationId": "REC-EP-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-008",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Is hardware health monitored?",
+      "whyItMatters": "Prevents downtime.",
+      "weight": 2,
+      "displayOrder": 8,
+      "capability": "EP-008",
+      "recommendationId": "REC-EP-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-009",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Are operating systems vendor supported?",
+      "whyItMatters": "Ensures updates.",
+      "weight": 5,
+      "displayOrder": 9,
+      "capability": "EP-009",
+      "recommendationId": "REC-EP-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "EP-010",
+      "pillarCode": "endpoint_management",
+      "pillarName": "Endpoint Management",
+      "businessQuestion": "Are company devices secure, standardized, and consistently managed?",
+      "questionText": "Has endpoint management ownership been assigned?",
+      "whyItMatters": "Creates accountability.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "EP-010",
+      "recommendationId": "REC-EP-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-001",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is business-grade networking equipment used?",
+      "whyItMatters": "Improves reliability.",
+      "weight": 3,
+      "displayOrder": 1,
+      "capability": "NW-001",
+      "recommendationId": "REC-NW-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-002",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is a properly configured firewall protecting the network?",
+      "whyItMatters": "Primary defense.",
+      "weight": 5,
+      "displayOrder": 2,
+      "capability": "NW-002",
+      "recommendationId": "REC-NW-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-003",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is wireless reliable and secure?",
+      "whyItMatters": "Supports productivity.",
+      "weight": 4,
+      "displayOrder": 3,
+      "capability": "NW-003",
+      "recommendationId": "REC-NW-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-004",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is the network segmented appropriately?",
+      "whyItMatters": "Limits attack spread.",
+      "weight": 5,
+      "displayOrder": 4,
+      "capability": "NW-004",
+      "recommendationId": "REC-NW-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-005",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is remote connectivity secure?",
+      "whyItMatters": "Protects remote users.",
+      "weight": 4,
+      "displayOrder": 5,
+      "capability": "NW-005",
+      "recommendationId": "REC-NW-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-006",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is there an appropriate internet resilience strategy?",
+      "whyItMatters": "Supports continuity.",
+      "weight": 3,
+      "displayOrder": 6,
+      "capability": "NW-006",
+      "recommendationId": "REC-NW-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-007",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Are DNS, DHCP and core services maintained?",
+      "whyItMatters": "Critical infrastructure.",
+      "weight": 4,
+      "displayOrder": 7,
+      "capability": "NW-007",
+      "recommendationId": "REC-NW-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-008",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is the network monitored proactively?",
+      "whyItMatters": "Detects issues early.",
+      "weight": 4,
+      "displayOrder": 8,
+      "capability": "NW-008",
+      "recommendationId": "REC-NW-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-009",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is physical infrastructure maintained?",
+      "whyItMatters": "Supports stability.",
+      "weight": 2,
+      "displayOrder": 9,
+      "capability": "NW-009",
+      "recommendationId": "REC-NW-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "NW-010",
+      "pillarCode": "network_connectivity",
+      "pillarName": "Network & Connectivity",
+      "businessQuestion": "Is the network secure, reliable, and built to support business operations?",
+      "questionText": "Is network documentation current?",
+      "whyItMatters": "Improves support.",
+      "weight": 2,
+      "displayOrder": 10,
+      "capability": "NW-010",
+      "recommendationId": "REC-NW-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-001",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are all critical systems included in backups?",
+      "whyItMatters": "Protection.",
+      "weight": 5,
+      "displayOrder": 1,
+      "capability": "DP-001",
+      "recommendationId": "REC-DP-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-002",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are backups monitored?",
+      "whyItMatters": "Detect failures.",
+      "weight": 3,
+      "displayOrder": 2,
+      "capability": "DP-002",
+      "recommendationId": "REC-DP-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-003",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are restore tests performed regularly?",
+      "whyItMatters": "Validates recovery.",
+      "weight": 5,
+      "displayOrder": 3,
+      "capability": "DP-003",
+      "recommendationId": "REC-DP-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-004",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Is there a disaster recovery plan?",
+      "whyItMatters": "Guides recovery.",
+      "weight": 5,
+      "displayOrder": 4,
+      "capability": "DP-004",
+      "recommendationId": "REC-DP-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-005",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Is there a business continuity plan?",
+      "whyItMatters": "Maintains operations.",
+      "weight": 4,
+      "displayOrder": 5,
+      "capability": "DP-005",
+      "recommendationId": "REC-DP-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-006",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are recovery objectives defined?",
+      "whyItMatters": "Aligns with business.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "DP-006",
+      "recommendationId": "REC-DP-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-007",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are backups protected from compromise?",
+      "whyItMatters": "Protects recovery.",
+      "weight": 4,
+      "displayOrder": 7,
+      "capability": "DP-007",
+      "recommendationId": "REC-DP-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-008",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Has critical data been identified?",
+      "whyItMatters": "Prioritizes recovery.",
+      "weight": 3,
+      "displayOrder": 8,
+      "capability": "DP-008",
+      "recommendationId": "REC-DP-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-009",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Are retention requirements documented?",
+      "whyItMatters": "Governance.",
+      "weight": 2,
+      "displayOrder": 9,
+      "capability": "DP-009",
+      "recommendationId": "REC-DP-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DP-010",
+      "pillarCode": "data_protection_recovery",
+      "pillarName": "Data Protection & Recovery",
+      "businessQuestion": "Could the business recover from data loss, ransomware, or a major outage?",
+      "questionText": "Has recovery ownership been assigned?",
+      "whyItMatters": "Accountability.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "DP-010",
+      "recommendationId": "REC-DP-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-001",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Is a centralized productivity platform used?",
+      "whyItMatters": "Consistency.",
+      "weight": 5,
+      "displayOrder": 1,
+      "capability": "PC-001",
+      "recommendationId": "REC-PC-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-002",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Can employees securely access required files?",
+      "whyItMatters": "Productivity.",
+      "weight": 5,
+      "displayOrder": 2,
+      "capability": "PC-002",
+      "recommendationId": "REC-PC-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-003",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Is document organization standardized?",
+      "whyItMatters": "Efficiency.",
+      "weight": 3,
+      "displayOrder": 3,
+      "capability": "PC-003",
+      "recommendationId": "REC-PC-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-004",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Are collaboration tools standardized?",
+      "whyItMatters": "Teamwork.",
+      "weight": 4,
+      "displayOrder": 4,
+      "capability": "PC-004",
+      "recommendationId": "REC-PC-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-005",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Is secure mobile work supported?",
+      "whyItMatters": "Mobility.",
+      "weight": 3,
+      "displayOrder": 5,
+      "capability": "PC-005",
+      "recommendationId": "REC-PC-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-006",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Are business applications standardized?",
+      "whyItMatters": "Supportability.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "PC-006",
+      "recommendationId": "REC-PC-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-007",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Are software licenses managed?",
+      "whyItMatters": "Cost control.",
+      "weight": 2,
+      "displayOrder": 7,
+      "capability": "PC-007",
+      "recommendationId": "REC-PC-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-008",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Have manual workflows been improved through technology?",
+      "whyItMatters": "Automation.",
+      "weight": 4,
+      "displayOrder": 8,
+      "capability": "PC-008",
+      "recommendationId": "REC-PC-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-009",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Do employees have the technology needed to succeed?",
+      "whyItMatters": "User success.",
+      "weight": 2,
+      "displayOrder": 9,
+      "capability": "PC-009",
+      "recommendationId": "REC-PC-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "PC-010",
+      "pillarCode": "productivity_collaboration",
+      "pillarName": "Productivity & Collaboration",
+      "businessQuestion": "Does technology enable employees to work efficiently and securely?",
+      "questionText": "Has responsibility for productivity improvements been assigned?",
+      "whyItMatters": "Accountability.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "PC-010",
+      "recommendationId": "REC-PC-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-001",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are systems monitored for security events?",
+      "whyItMatters": "Detection.",
+      "weight": 5,
+      "displayOrder": 1,
+      "capability": "SO-001",
+      "recommendationId": "REC-SO-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-002",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are vulnerabilities assessed regularly?",
+      "whyItMatters": "Risk reduction.",
+      "weight": 5,
+      "displayOrder": 2,
+      "capability": "SO-002",
+      "recommendationId": "REC-SO-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-003",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are security updates applied promptly?",
+      "whyItMatters": "Mitigation.",
+      "weight": 4,
+      "displayOrder": 3,
+      "capability": "SO-003",
+      "recommendationId": "REC-SO-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-004",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Do employees receive security awareness training?",
+      "whyItMatters": "Human defense.",
+      "weight": 4,
+      "displayOrder": 4,
+      "capability": "SO-004",
+      "recommendationId": "REC-SO-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-005",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Is there an incident response process?",
+      "whyItMatters": "Preparedness.",
+      "weight": 5,
+      "displayOrder": 5,
+      "capability": "SO-005",
+      "recommendationId": "REC-SO-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-006",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are security logs retained?",
+      "whyItMatters": "Investigations.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "SO-006",
+      "recommendationId": "REC-SO-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-007",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are technology risks reviewed periodically?",
+      "whyItMatters": "Governance.",
+      "weight": 3,
+      "displayOrder": 7,
+      "capability": "SO-007",
+      "recommendationId": "REC-SO-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-008",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Is third-party risk considered?",
+      "whyItMatters": "Supplier security.",
+      "weight": 2,
+      "displayOrder": 8,
+      "capability": "SO-008",
+      "recommendationId": "REC-SO-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-009",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Has security ownership been assigned?",
+      "whyItMatters": "Accountability.",
+      "weight": 2,
+      "displayOrder": 9,
+      "capability": "SO-009",
+      "recommendationId": "REC-SO-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "SO-010",
+      "pillarCode": "security_operations",
+      "pillarName": "Security Operations",
+      "businessQuestion": "Can the business detect, respond to, and reduce security risks?",
+      "questionText": "Are security practices continuously improved?",
+      "whyItMatters": "Maturity.",
+      "weight": 2,
+      "displayOrder": 10,
+      "capability": "SO-010",
+      "recommendationId": "REC-SO-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-001",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Is the network documented?",
+      "whyItMatters": "Support.",
+      "weight": 4,
+      "displayOrder": 1,
+      "capability": "DK-001",
+      "recommendationId": "REC-DK-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-002",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Is there a current technology asset inventory?",
+      "whyItMatters": "Visibility.",
+      "weight": 3,
+      "displayOrder": 2,
+      "capability": "DK-002",
+      "recommendationId": "REC-DK-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-003",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Are credentials securely managed?",
+      "whyItMatters": "Security.",
+      "weight": 5,
+      "displayOrder": 3,
+      "capability": "DK-003",
+      "recommendationId": "REC-DK-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-004",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Are vendors documented?",
+      "whyItMatters": "Continuity.",
+      "weight": 2,
+      "displayOrder": 4,
+      "capability": "DK-004",
+      "recommendationId": "REC-DK-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-005",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Are SOPs documented?",
+      "whyItMatters": "Consistency.",
+      "weight": 4,
+      "displayOrder": 5,
+      "capability": "DK-005",
+      "recommendationId": "REC-DK-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-006",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Are configurations documented?",
+      "whyItMatters": "Recovery.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "DK-006",
+      "recommendationId": "REC-DK-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-007",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Are licensing and warranty records maintained?",
+      "whyItMatters": "Planning.",
+      "weight": 2,
+      "displayOrder": 7,
+      "capability": "DK-007",
+      "recommendationId": "REC-DK-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-008",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Could another IT professional support the environment?",
+      "whyItMatters": "Knowledge transfer.",
+      "weight": 3,
+      "displayOrder": 8,
+      "capability": "DK-008",
+      "recommendationId": "REC-DK-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-009",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Is documentation maintained?",
+      "whyItMatters": "Accuracy.",
+      "weight": 3,
+      "displayOrder": 9,
+      "capability": "DK-009",
+      "recommendationId": "REC-DK-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "DK-010",
+      "pillarCode": "documentation_knowledge",
+      "pillarName": "Documentation & Knowledge",
+      "businessQuestion": "Could another trusted IT professional successfully support this environment tomorrow?",
+      "questionText": "Has documentation ownership been assigned?",
+      "whyItMatters": "Accountability.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "DK-010",
+      "recommendationId": "REC-DK-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-001",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Is there a documented technology roadmap?",
+      "whyItMatters": "Planning.",
+      "weight": 5,
+      "displayOrder": 1,
+      "capability": "TS-001",
+      "recommendationId": "REC-TS-001",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-002",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Are technology decisions aligned with business goals?",
+      "whyItMatters": "Alignment.",
+      "weight": 5,
+      "displayOrder": 2,
+      "capability": "TS-002",
+      "recommendationId": "REC-TS-002",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-003",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Is there a planned technology budget?",
+      "whyItMatters": "Sustainability.",
+      "weight": 4,
+      "displayOrder": 3,
+      "capability": "TS-003",
+      "recommendationId": "REC-TS-003",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-004",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Is hardware lifecycle planned?",
+      "whyItMatters": "Reliability.",
+      "weight": 3,
+      "displayOrder": 4,
+      "capability": "TS-004",
+      "recommendationId": "REC-TS-004",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-005",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Are business applications reviewed regularly?",
+      "whyItMatters": "Currency.",
+      "weight": 3,
+      "displayOrder": 5,
+      "capability": "TS-005",
+      "recommendationId": "REC-TS-005",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-006",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Are technology risks reviewed?",
+      "whyItMatters": "Prioritization.",
+      "weight": 4,
+      "displayOrder": 6,
+      "capability": "TS-006",
+      "recommendationId": "REC-TS-006",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-007",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Is continuous improvement practiced?",
+      "whyItMatters": "Growth.",
+      "weight": 5,
+      "displayOrder": 7,
+      "capability": "TS-007",
+      "recommendationId": "REC-TS-007",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-008",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Is there a technology vision?",
+      "whyItMatters": "Direction.",
+      "weight": 2,
+      "displayOrder": 8,
+      "capability": "TS-008",
+      "recommendationId": "REC-TS-008",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-009",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Are executive technology reviews performed?",
+      "whyItMatters": "Governance.",
+      "weight": 3,
+      "displayOrder": 9,
+      "capability": "TS-009",
+      "recommendationId": "REC-TS-009",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "id": "TS-010",
+      "pillarCode": "technology_strategy",
+      "pillarName": "Technology Strategy",
+      "businessQuestion": "Is technology helping the business grow while reducing long-term risk?",
+      "questionText": "Has technology leadership been assigned?",
+      "whyItMatters": "Ownership.",
+      "weight": 1,
+      "displayOrder": 10,
+      "capability": "TS-010",
+      "recommendationId": "REC-TS-010",
+      "triggerAnswers": [
+        "No",
+        "Partially"
+      ]
+    }
+  ]
+}
