@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { DashboardCommandCenter } from "@/components/dashboard/dashboard-command-center";
+import { countDashboardActiveProjects } from "@/lib/dashboard/count-active-projects";
 import { getRating } from "@/lib/scoring";
 import type { Rating } from "@/generated/prisma/client";
 
@@ -36,9 +37,7 @@ export default async function DashboardPage() {
     prisma.assessmentRecommendation.count({
       where: { status: { in: ["open", "accepted", "in_progress"] } },
     }),
-    prisma.project.count({
-      where: { status: { in: ["approved", "scheduled", "in_progress"] } },
-    }),
+    countDashboardActiveProjects(),
     prisma.assessment.findMany({
       where: { status: "completed", overallScore: { not: null } },
       orderBy: { completedAt: "desc" },

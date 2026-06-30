@@ -250,7 +250,7 @@ export function DashboardCommandCenter({
           className="xl:col-span-2"
           title="Active Projects"
           value={activeProjectsCount}
-          description="Approved, scheduled, or in progress"
+          description="Proposed, approved, scheduled, or in progress"
           icon={FolderKanban}
         />
       </section>
