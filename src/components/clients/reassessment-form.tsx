@@ -104,7 +104,7 @@ export function ReassessmentForm({
   }
 
   return (
-    <div className="w-full space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4 lg:max-w-sm">
+    <div className="w-full min-w-0 space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4 lg:max-w-sm">
       <div className="flex items-center gap-2 text-sm font-medium text-brand">
         <RefreshCw className="h-4 w-4" />
         Run Reassessment

@@ -109,8 +109,8 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
-        <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-          <div className="text-center lg:text-left">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[auto_1fr]">
+          <div className="min-w-0 text-center lg:text-left">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               StackScore
             </p>
@@ -126,7 +126,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid min-w-0 grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:grid-cols-3">
             {profile.maturityTierLabel ? (
               <PanelStat label="Maturity Tier" value={profile.maturityTierLabel} />
             ) : null}

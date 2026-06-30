@@ -62,7 +62,7 @@ export function ClientRecommendationsView({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="page-content space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
@@ -159,7 +159,7 @@ export function ClientRecommendationsView({
             recommendations.map((recommendation) => (
               <div
                 key={recommendation.id}
-                className="rounded-lg border border-border/60 p-4 text-sm"
+                className="min-w-0 rounded-lg border border-border/60 p-4 text-sm"
               >
                 <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-2">

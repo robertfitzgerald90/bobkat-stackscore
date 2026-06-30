@@ -64,12 +64,12 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
   const { sections } = detail;
 
   return (
-    <div className="space-y-6">
+    <div className="page-content space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
           <Link
             href="/clients"
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "-ml-2" })}
+            className={buttonClassName({ variant: "ghost", size: "sm", className: "shrink-0" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Clients
@@ -77,7 +77,7 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
           <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
         </div>
         {sections.showAssessmentForms && client.status !== "archived" ? (
-          <div className="w-full lg:max-w-2xl lg:shrink-0">
+          <div className="min-w-0 w-full lg:max-w-2xl lg:shrink-0">
             <ClientAssessmentForms
               clientId={client.id}
               completedAssessments={completedAssessments}

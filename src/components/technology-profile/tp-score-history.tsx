@@ -34,7 +34,7 @@ export function TpScoreHistory({
             }
           />
         ) : (
-          <div className="-mx-1 overflow-x-auto sm:mx-0">
+          <div className="overflow-safe-x">
             <ScoreTrendChart data={scoreTrend} />
           </div>
         )}

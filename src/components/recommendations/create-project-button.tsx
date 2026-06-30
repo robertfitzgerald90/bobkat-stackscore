@@ -26,7 +26,11 @@ export function CreateProjectFromRecommendationButton({
     return (
       <a
         href={`/projects?selected=${recommendation.project.id}`}
-        className={buttonClassName({ variant: "outline", size: "sm" })}
+        className={buttonClassName({
+          variant: "outline",
+          size: "sm",
+          className: "w-full shrink-0 sm:w-auto",
+        })}
       >
         <FolderKanban className="mr-2 h-4 w-4" />
         {formatProjectStatus(recommendation.project.status)}
@@ -80,7 +84,11 @@ export function CreateProjectFromRecommendationButton({
       type="button"
       onClick={handleCreate}
       disabled={loading}
-      className={buttonClassName({ variant: "default", size: "sm" })}
+      className={buttonClassName({
+        variant: "default",
+        size: "sm",
+        className: "w-full shrink-0 sm:w-auto",
+      })}
     >
       {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
       Create Project

@@ -91,10 +91,10 @@ export function TpOpenOpportunities({
           visible.map((recommendation) => (
             <div
               key={recommendation.id}
-              className="rounded-lg border border-border/60 p-4 text-sm"
+              className="min-w-0 rounded-lg border border-border/60 p-4 text-sm"
             >
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <p className="font-semibold">{recommendation.title}</p>
+                <p className="min-w-0 break-words font-semibold">{recommendation.title}</p>
                 <Badge variant={PRIORITY_BADGE[recommendation.priority]}>
                   {PRIORITY_LABELS[recommendation.priority]}
                 </Badge>

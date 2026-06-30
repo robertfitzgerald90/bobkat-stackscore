@@ -42,7 +42,7 @@ export function StartAssessmentForm({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="w-full space-y-3 rounded-lg border p-4 lg:max-w-sm">
+    <div className="w-full min-w-0 space-y-3 rounded-lg border p-4 lg:max-w-sm">
       <div className="space-y-2">
         <Label htmlFor={nameFieldId}>Assessment Name</Label>
         <Input

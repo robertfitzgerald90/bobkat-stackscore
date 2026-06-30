@@ -248,7 +248,7 @@ export function AssessmentResults({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="page-content min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{clientName}</p>
@@ -293,7 +293,7 @@ export function AssessmentResults({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -386,7 +386,7 @@ export function AssessmentResults({
         </Card>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -469,7 +469,7 @@ export function AssessmentResults({
             Technology maturity by StackScore Technology Pillar
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {pillarInsights.map((pillar) => (
             <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
               <div className="flex items-center justify-between gap-2">
@@ -534,11 +534,11 @@ export function AssessmentResults({
                 </div>
                 <div className="space-y-4">
                   {group.items.map((recommendation) => (
-                    <div key={recommendation.id} className="rounded-lg border p-4">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div key={recommendation.id} className="min-w-0 rounded-lg border p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
                         <div className="min-w-0 flex-1 space-y-3">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-medium">{recommendation.title}</p>
+                            <p className="min-w-0 break-words font-medium">{recommendation.title}</p>
                             <Badge variant={PRIORITY_BADGE_VARIANT[recommendation.priority]}>
                               {PRIORITY_LABELS[recommendation.priority]}
                             </Badge>
@@ -575,7 +575,7 @@ export function AssessmentResults({
                           </p>
                         </div>
 
-                        <div className="flex flex-col items-end gap-2">
+                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:items-end">
                           <Select
                             value={recommendation.status}
                             items={RECOMMENDATION_STATUS_LABELS}
@@ -586,7 +586,7 @@ export function AssessmentResults({
                               )
                             }
                           >
-                            <SelectTrigger className="w-[160px]">
+                            <SelectTrigger className="w-full sm:w-[160px]">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

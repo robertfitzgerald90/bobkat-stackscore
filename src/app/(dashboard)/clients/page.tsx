@@ -52,5 +52,9 @@ export default async function ClientsPage() {
     };
   });
 
-  return <ClientsTable clients={rows} isAdmin={isAdmin} />;
+  return (
+    <div className="page-shell">
+      <ClientsTable clients={rows} isAdmin={isAdmin} />
+    </div>
+  );
 }

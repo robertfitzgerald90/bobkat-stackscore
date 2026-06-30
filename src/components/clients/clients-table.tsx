@@ -47,7 +47,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
   const archivedCount = clients.filter((client) => client.status === "archived").length;
 
   return (
-    <div className="space-y-6">
+    <div className="page-content min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="page-title">Clients</h2>
@@ -74,7 +74,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
         </div>
       ) : null}
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>{showArchived ? "All Clients" : "Active Clients"}</CardTitle>
         </CardHeader>
@@ -115,7 +115,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
                 ))}
               </div>
 
-              <div className="table-desktop">
+              <div className="table-desktop min-w-0">
                 <Table>
                   <TableHeader>
                     <TableRow>

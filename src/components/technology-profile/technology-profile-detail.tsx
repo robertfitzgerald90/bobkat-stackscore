@@ -23,7 +23,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
   const { profile, scoreTrend, sections, journey } = detail;
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="page-content min-w-0 space-y-6 sm:space-y-8">
       <TpHeroSummary detail={detail} />
 
       {sections.showBusinessSnapshot ? (

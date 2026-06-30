@@ -30,7 +30,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           pageTitle={pageTitle}
           onMenuClick={() => setMobileNavOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-muted/40 p-4 sm:p-6 lg:p-8">
+        <main className="page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/40 p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

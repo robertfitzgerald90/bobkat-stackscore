@@ -41,7 +41,9 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {TECHNOLOGY_MATURITY_PROFILE_LABEL}
             </p>
-            <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{client.companyName}</h3>
+            <h3 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
+              {client.companyName}
+            </h3>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
               {TECHNOLOGY_MATURITY_PROFILE_SUBTITLE}
             </p>

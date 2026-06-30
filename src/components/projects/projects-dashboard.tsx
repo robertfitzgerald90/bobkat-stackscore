@@ -169,7 +169,7 @@ export function ProjectsDashboard({
   }
 
   return (
-    <div className="page-shell">
+    <div className="page-shell page-content min-w-0">
       <div className="page-header">
         <h2 className="page-title">Projects</h2>
         <p className="page-description">
@@ -351,7 +351,7 @@ export function ProjectsDashboard({
                 ))}
               </div>
 
-              <div className="table-desktop">
+              <div className="table-desktop min-w-0">
             <Table>
               <TableHeader>
                 <TableRow>

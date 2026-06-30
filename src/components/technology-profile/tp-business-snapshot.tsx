@@ -101,7 +101,7 @@ export function TpBusinessSnapshot({
             }
           />
         ) : (
-          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {gridItems.map((item) => (
               <div
                 key={item.label}
@@ -112,7 +112,7 @@ export function TpBusinessSnapshot({
                 }
               >
                 <dt className="text-xs text-muted-foreground">{item.label}</dt>
-                <dd className="text-sm font-medium">{item.value}</dd>
+                <dd className="break-words text-sm font-medium">{item.value}</dd>
                 {"subvalue" in item && item.subvalue ? (
                   <dd className="text-xs text-muted-foreground">{item.subvalue}</dd>
                 ) : null}

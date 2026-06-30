@@ -25,11 +25,11 @@ function ScoreLadderStep({ label, score, highlight }: LadderStep) {
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col items-center rounded-lg border px-2 py-3 text-center sm:px-3 sm:py-4",
+        "flex min-w-0 flex-col items-center rounded-lg border px-2 py-3 text-center sm:px-3 sm:py-4",
         highlight ? "border-primary/40 bg-primary/5" : "border-border/60",
       )}
     >
-      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs">
+      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs break-words">
         {label}
       </p>
       <p
@@ -92,7 +92,7 @@ export function TpTechnologyJourney({ clientId, journey, journeyScores }: TpTech
           />
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 sm:grid-cols-4">
               {steps.map((step) => (
                 <ScoreLadderStep key={step.label} {...step} />
               ))}

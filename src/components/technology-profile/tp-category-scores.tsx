@@ -69,7 +69,7 @@ export function TpCategoryScores({
             }
           />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {insights.map((insight) => {
               const hasScore = insight.percentScore !== null;
               const score = insight.percentScore ?? 0;
@@ -77,10 +77,12 @@ export function TpCategoryScores({
               return (
                 <div
                   key={insight.pillarCode}
-                  className="flex min-h-[220px] flex-col gap-3 rounded-lg border border-border/60 p-4"
+                  className="flex min-w-0 flex-col gap-3 rounded-lg border border-border/60 p-4"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold leading-tight">{insight.pillarName}</p>
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <p className="min-w-0 text-sm font-semibold leading-tight break-words">
+                      {insight.pillarName}
+                    </p>
                     <TrendIndicator delta={insight.trendDelta} />
                   </div>
 

@@ -371,8 +371,8 @@ export function AssessmentWizard({
             <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Category
             </p>
-            <div className="-mx-1 overflow-x-auto pb-1">
-              <div className="flex gap-2 px-1">
+            <div className="overflow-safe-x pb-1">
+              <div className="flex w-max max-w-full gap-2">
                 {categories.map((category) => {
                   const progress = getCategoryProgress(category);
                   const isActive = category.id === activeCategoryId;
