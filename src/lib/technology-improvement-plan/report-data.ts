@@ -16,12 +16,23 @@ export function buildTipReportData(
   );
 
   const categorySummaries =
+    plan.profile?.profile.pillarSnapshots?.map((pillar) => ({
+      name: pillar.pillarName,
+      score: pillar.percentScore !== null ? Math.round(pillar.percentScore) : 0,
+      ratingLabel:
+        pillar.maturityLevelLabel ??
+        (pillar.percentScore !== null
+          ? RATING_LABELS[getRating(pillar.percentScore)]
+          : "Not assessed"),
+      hasRecommendations: recommendationCategories.has(pillar.pillarName),
+    })) ??
     plan.profile?.profile.categoryScores.map((category) => ({
       name: category.categoryName,
       score: Math.round(category.percentScore),
       ratingLabel: RATING_LABELS[getRating(category.percentScore)],
       hasRecommendations: recommendationCategories.has(category.categoryName),
-    })) ?? [];
+    })) ??
+    [];
 
   const investment = plan.investmentInternal;
 

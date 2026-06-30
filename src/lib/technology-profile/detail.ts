@@ -344,14 +344,9 @@ export async function getTechnologyProfileDetail(
     openRecommendations: recommendationSummaries,
   });
 
-  const profileCategoryData = profileView.categoryScores as
-    | { pillarScores?: import("@/lib/scoring/v2").PillarScoreSnapshot[] }
-    | null
-    | undefined;
-
   const pillarInsights = buildPillarInsights({
     v1CategoryScores: profileView.v1CategoryScores,
-    pillarSnapshots: profileCategoryData?.pillarScores,
+    pillarSnapshots: profileView.pillarSnapshots ?? undefined,
     scoreHistory: scoreHistory.map((entry) => ({
       pillarScores: entry.pillarScores,
     })),
@@ -398,6 +393,8 @@ export async function getTechnologyProfileDetail(
       maturityTier: profileView.maturityTier,
       maturityTierLabel: profileView.maturityTierLabel,
       categoryScores: profileView.categoryScores,
+      pillarSnapshots: profileView.pillarSnapshots,
+      scoringEngineVersion: profileView.scoringEngineVersion,
       v1CategoryScores: profileView.v1CategoryScores,
       riskSummary: profileView.riskSummary,
       trendDirection: profileView.trendDirection,

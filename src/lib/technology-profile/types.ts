@@ -3,6 +3,7 @@ import type { UserRole } from "@/generated/prisma/client";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
 import type { V2CategoryScore } from "@/lib/assessment-library/category-mapping";
 import type { CategoryScoreResult } from "@/lib/scoring";
+import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
 import type { JourneyTimelineEvent } from "@/lib/technology-profile/timeline";
 import type {
   ComplianceFramework,
@@ -186,6 +187,8 @@ export type TechnologyProfileDetail = {
     maturityTier: MaturityTier | null;
     maturityTierLabel: string | null;
     categoryScores: V2CategoryScore[];
+    pillarSnapshots: PillarScoreSnapshot[] | null;
+    scoringEngineVersion: "v1" | "v2" | null;
     v1CategoryScores: CategoryScoreResult[];
     riskSummary: RiskSummary;
     trendDirection: TrendDirection | null;

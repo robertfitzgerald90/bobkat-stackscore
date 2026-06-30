@@ -18,6 +18,7 @@ import {
   V2_CATEGORY_DISPLAY_ORDER,
   V2_CATEGORY_LABELS,
 } from "@/lib/assessment-library/category-mapping";
+import { TECHNOLOGY_PILLARS } from "@/lib/technology-maturity/pillars";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getTechnologyProfile } from "@/lib/technology-profile";
 import { RATING_LABELS } from "@/lib/scoring";
@@ -64,6 +65,11 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
   const categoryMap = new Map(
     profile.categoryScores.map((category) => [category.categoryCode, category]),
   );
+  const pillarMap = new Map(
+    (profile.pillarSnapshots ?? []).map((pillar) => [pillar.pillarCode, pillar]),
+  );
+  const showPillarScores =
+    profile.scoringEngineVersion === "v2" && (profile.pillarSnapshots?.length ?? 0) > 0;
 
   return (
     <Card className="stat-card overflow-hidden">
@@ -170,7 +176,48 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
 
         <div className="space-y-3">
           <p className="text-sm font-medium">Technology Pillars</p>
-          {V2_CATEGORY_DISPLAY_ORDER.map((code) => {
+          {showPillarScores
+            ? TECHNOLOGY_PILLARS.map((pillar) => {
+                const snapshot = pillarMap.get(pillar.code);
+
+                if (!snapshot || snapshot.status === "incomplete") {
+                  return (
+                    <div key={pillar.code} className="space-y-1">
+                      <div className="flex items-center justify-between gap-2 text-sm">
+                        <span>{pillar.name}</span>
+                        <span className="text-xs text-muted-foreground">Not assessed</span>
+                      </div>
+                    </div>
+                  );
+                }
+
+                const score = snapshot.percentScore ?? 0;
+                const rating = getRating(score);
+
+                return (
+                  <div key={pillar.code} className="space-y-1">
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <span>{pillar.name}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px]">
+                          {snapshot.maturityLevelLabel ?? RATING_LABELS[rating]}
+                        </Badge>
+                        <span className="font-medium tabular-nums">{Math.round(score)}</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all",
+                          getScoreBarColorClass(score),
+                        )}
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            : V2_CATEGORY_DISPLAY_ORDER.map((code) => {
             const category = categoryMap.get(code);
             const label = V2_CATEGORY_LABELS[code] ?? code;
 

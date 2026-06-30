@@ -6,6 +6,8 @@ import {
 } from "@/lib/assessment-library/category-mapping";
 import type { CategoryScoreResult, ScoringResult } from "@/lib/scoring";
 import { getMaturityTier, MATURITY_TIER_LABELS } from "@/lib/scoring/maturity";
+import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
+import { parseStoredProfileCategoryScores } from "@/lib/technology-profile/category-scores";
 import type {
   MaturityTier,
   Prisma,
@@ -29,6 +31,8 @@ export type TechnologyProfileView = {
   maturityTier: MaturityTier | null;
   maturityTierLabel: string | null;
   categoryScores: V2CategoryScore[];
+  pillarSnapshots: PillarScoreSnapshot[] | null;
+  scoringEngineVersion: "v1" | "v2" | null;
   v1CategoryScores: CategoryScoreResult[];
   riskSummary: RiskSummary;
   trendDirection: TrendDirection | null;
@@ -279,9 +283,10 @@ export async function getTechnologyProfile(
       weightedContribution: 0,
     })) ?? [];
 
-  const categoryScores =
-    (profile.categoryScores as V2CategoryScore[] | null) ??
-    aggregateV2CategoryScores(v1CategoryScores);
+  const parsedCategoryScores = parseStoredProfileCategoryScores(
+    profile.categoryScores,
+    v1CategoryScores,
+  );
 
   const riskSummary = (profile.riskSummary as RiskSummary | null) ?? {
     critical: 0,
@@ -301,7 +306,9 @@ export async function getTechnologyProfile(
     maturityTierLabel: profile.maturityTier
       ? MATURITY_TIER_LABELS[profile.maturityTier]
       : null,
-    categoryScores,
+    categoryScores: parsedCategoryScores.categoryScores,
+    pillarSnapshots: parsedCategoryScores.pillarSnapshots,
+    scoringEngineVersion: parsedCategoryScores.scoringEngineVersion,
     v1CategoryScores,
     riskSummary,
     trendDirection: profile.trendDirection,
