@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.2
+**Version:** 2.3
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 30, 2026
@@ -29,7 +29,7 @@ DOC-000 (this index)
     ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-107)
     ├── Client Hub (DOC-108, DOC-113)
     ├── Technology Maturity Framework (DOC-150 — authoritative pillar model)
-    ├── Assessment Domain (DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
+    ├── Assessment Domain (DOC-109, DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
@@ -135,12 +135,13 @@ If documents conflict, resolve in this order:
 | **Status** | Draft |
 | **Purpose** | Authoritative framework for how StackScore evaluates technology environments — eight Technology Pillars, business questions, focus areas, assessment philosophy, scoring principles, and product design implications. |
 | **Depends on** | DOC-001, DOC-002, DOC-004 |
-| **Used by** | DOC-110, DOC-111, DOC-112, DOC-113, DOC-114, DOC-118, DOC-120, DOC-123, DOC-125, DOC-127, assessment libraries, reports, and planning features |
+| **Used by** | DOC-109, DOC-110, DOC-111, DOC-112, DOC-113, DOC-114, DOC-118, DOC-120, DOC-123, DOC-125, DOC-127, assessment libraries, reports, and planning features |
 
 ## Assessment & scoring
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
+| [DOC-109](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md) | Assessment Design Specification | Governing | v2 | Draft |
 | DOC-110 | StackScore Assessment Framework | Governing | v2 (weights pending revision) | Informal — pillar model superseded by DOC-150 |
 | DOC-111 | Scoring Engine Specification | **Governing (v2 target)** | v2 | Draft |
 | DOC-111A | Scoring Engine — Appendix A (v1 Implementation) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
@@ -157,6 +158,18 @@ If documents conflict, resolve in this order:
 | DOC-115 | Question Scoring Matrix (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-117 | Assessment Question Bank (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-118 | v1 to v2 Compatibility Reference | Governing (migration) | Both | Approved |
+
+### DOC-109 – Assessment Design Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-109 |
+| **Title** | Assessment Design Specification |
+| **Version** | 2.0 |
+| **Status** | Draft |
+| **Purpose** | Defines the consultant experience of conducting a Technology Maturity Assessment — workflow, response types, UX principles, and consultant guidance. Does not define scoring or question content. |
+| **Depends on** | DOC-006, DOC-108, DOC-150 |
+| **Used by** | DOC-123, DOC-127, assessment capture UX, consultant training |
 
 ## Domain architecture
 
@@ -376,6 +389,7 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-130 – Architecture Diagrams Specification](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
 * [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
 * [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-109 – Assessment Design Specification](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md)
 
 ---
 
@@ -396,3 +410,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.0 | 2026-06-26 | BobKat IT | Registered DOC-108 (Client hub) and DOC-130 (Architecture Diagrams) |
 | 2.1 | 2026-06-23 | BobKat IT | Registered DOC-150 (Technology Maturity Framework) as authoritative pillar model; updated hierarchy and DOC-110 disposition |
 | 2.2 | 2026-06-30 | BobKat IT | Registered DOC-006 (Product Constitution); updated conflict resolution hierarchy |
+| 2.3 | 2026-06-30 | BobKat IT | Registered DOC-109 (Assessment Design Specification v2.0); updated DOC-150 cross-references |
