@@ -5,6 +5,8 @@ export {
   COLORS,
 } from "./colors";
 export { PDF_TARGET_SCORE, getPdfLogoPath } from "./constants";
+export { PDF_LAYOUT, PDF_SPACING, pdfPageStyles } from "./layout";
+export { PdfFlowSection } from "./components/flow-section";
 export { registerPdfFonts } from "./fonts";
 export { pdfComponentStyles } from "./styles/components";
 export { PdfPageFooter } from "./components/page-footer";

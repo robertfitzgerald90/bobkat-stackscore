@@ -65,6 +65,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   gaugeCard: {
     flex: 1,
+    minHeight: 108,
     backgroundColor: COLORS.white,
     borderRadius: 6,
     padding: 14,
@@ -73,6 +74,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   gaugeCardAccent: {
     flex: 1,
+    minHeight: 108,
     backgroundColor: COLORS.navyLight,
     borderRadius: 6,
     padding: 14,

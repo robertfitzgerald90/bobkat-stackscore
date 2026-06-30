@@ -15,12 +15,13 @@ import {
   PDF_TARGET_SCORE as TARGET_SCORE,
   PdfBulletSection,
   PdfClosingHero,
+  PdfFlowSection,
   PdfMiniScoreBar,
   PdfPageFooter,
   PdfPriorityBadge,
   PdfScoreGauge,
-  PdfSectionTitle,
   getPdfLogoPath,
+  PDF_LAYOUT,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
 import {
@@ -42,9 +43,9 @@ registerPdfFonts();
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 52,
-    paddingBottom: 72,
-    paddingHorizontal: 54,
+    paddingTop: PDF_LAYOUT.paddingTop,
+    paddingBottom: PDF_LAYOUT.paddingBottom,
+    paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
     fontFamily: "Helvetica",
     fontSize: 10,
     color: COLORS.slate,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   coverPage: {
     paddingTop: 0,
-    paddingBottom: 72,
+    paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: 0,
     fontFamily: "Helvetica",
     fontSize: 10,
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
   },
   footerCenter: { fontSize: 8, color: COLORS.muted, textAlign: "center" },
-  sectionBlock: { marginBottom: 28 },
+  sectionBlock: { marginBottom: 22 },
   sectionTitleWrap: { marginBottom: 14, marginTop: 4 },
   sectionTitle: {
     fontSize: 14,
@@ -260,6 +261,7 @@ const styles = StyleSheet.create({
   },
   summaryStat: {
     width: "48%",
+    minHeight: 54,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -354,7 +356,6 @@ const styles = StyleSheet.create({
   categoryCard: {
     marginBottom: 12,
     padding: 14,
-    minHeight: 98,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 6,
@@ -500,6 +501,7 @@ const styles = StyleSheet.create({
   },
   closingStat: {
     width: "48%",
+    minHeight: 54,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 6,
@@ -574,8 +576,8 @@ function CategoryScoreCard({
   const fillWidth = `${Math.max(0, Math.min(100, roundedScore))}%`;
 
   return (
-    <View wrap={false} style={styles.categoryCard}>
-      <View style={styles.categoryTitleRow}>
+    <View style={styles.categoryCard}>
+      <View wrap={false} style={styles.categoryTitleRow}>
         <Text style={styles.categoryName}>{categoryName}</Text>
         <Text style={styles.categoryPercent}>{roundedScore}%</Text>
       </View>
@@ -612,8 +614,8 @@ function RecommendationCard({
   categoryName: string;
 }) {
   return (
-    <View wrap={false} style={styles.recommendationCard}>
-      <View style={styles.recommendationHeader}>
+    <View style={styles.recommendationCard}>
+      <View wrap={false} style={styles.recommendationHeader}>
         <Text style={styles.recommendationTitle}>{title}</Text>
         <PdfPriorityBadge priority={priority} />
       </View>
@@ -664,7 +666,7 @@ function RecommendationIndex({
             {group.map((recommendation) => {
               index += 1;
               return (
-                <View key={recommendation.id} wrap={false} style={styles.summaryListItem}>
+                <View key={recommendation.id} style={styles.summaryListItem}>
                   <Text style={styles.summaryListIndex}>{index}.</Text>
                   <Text style={styles.summaryListTitle}>{recommendation.title}</Text>
                   <Text style={styles.summaryListImpact}>
@@ -832,41 +834,38 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.sectionBlock}>
-          <View wrap={false}>
-            <PdfSectionTitle
-              title="Recommendation Summary"
-              subtitle="Prioritized remediation opportunities and projected StackScore impact"
+        <PdfFlowSection
+          title="Recommendation Summary"
+          subtitle="Prioritized remediation opportunities and projected StackScore impact"
+        >
+          <View wrap={false} style={styles.scoreRow}>
+            <PdfScoreGauge
+              score={summary.overallScore}
+              label="Current StackScore"
+              ratingLabel={summary.overallRatingLabel}
             />
-            <View style={styles.scoreRow}>
-              <PdfScoreGauge
-                score={summary.overallScore}
-                label="Current StackScore"
-                ratingLabel={summary.overallRatingLabel}
-              />
-              <PdfScoreGauge
-                score={summary.projectedScore}
-                label="Projected StackScore"
-                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-                variant="accent"
-              />
-            </View>
+            <PdfScoreGauge
+              score={summary.projectedScore}
+              label="Projected StackScore"
+              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+              variant="accent"
+            />
           </View>
 
-          <View wrap={false} style={styles.summaryGrid}>
-            <View style={styles.summaryStat}>
+          <View style={styles.summaryGrid}>
+            <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{clientRecommendations.length}</Text>
               <Text style={styles.summaryStatLabel}>Total Recommendations</Text>
             </View>
-            <View style={styles.summaryStat}>
+            <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{summary.openRecommendationsCount}</Text>
               <Text style={styles.summaryStatLabel}>Open Items</Text>
             </View>
-            <View style={styles.summaryStat}>
+            <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>+{totalImpact}</Text>
               <Text style={styles.summaryStatLabel}>Potential Points</Text>
             </View>
-            <View style={styles.summaryStat}>
+            <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{criticalCount + highCount}</Text>
               <Text style={styles.summaryStatLabel}>Critical + High</Text>
             </View>
@@ -886,24 +885,21 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           ) : (
             <Text style={styles.bodyText}>No recommendations at this time.</Text>
           )}
-        </View>
+        </PdfFlowSection>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.sectionBlock}>
-          <View wrap={false}>
-            <PdfSectionTitle
-              title="Technology Maturity Roadmap"
-              subtitle="Phased StackScore improvement path for executive planning"
-            />
-            <Text style={styles.bodyText}>
-              This roadmap shows how your StackScore can improve as recommendations are addressed
-              in priority order. Use it to sequence remediation, allocate budget, and align
-              technology projects with business risk reduction.
-            </Text>
-          </View>
+        <PdfFlowSection
+          title="Technology Maturity Roadmap"
+          subtitle="Phased StackScore improvement path for executive planning"
+        >
+          <Text style={styles.bodyText}>
+            This roadmap shows how your StackScore can improve as recommendations are addressed
+            in priority order. Use it to sequence remediation, allocate budget, and align
+            technology projects with business risk reduction.
+          </Text>
 
           {roadmapMilestones.map((milestone) => (
             <View
@@ -923,7 +919,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             </View>
           ))}
 
-          <View wrap={false} style={styles.panel}>
+          <View style={styles.panel}>
             <Text style={styles.panelTitle}>How to Use This Roadmap</Text>
             <Text style={[styles.bodyText, { marginBottom: 4 }]}>
               • Address Critical items first to reduce immediate business and security risk.
@@ -935,31 +931,28 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               • Medium and Low items complete the path toward the {TARGET_SCORE}+ maturity target.
             </Text>
           </View>
-        </View>
+        </PdfFlowSection>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.sectionBlock}>
-          <View wrap={false}>
-            <PdfSectionTitle
-              title="Executive Summary"
-              subtitle="Skimmable assessment highlights for leadership review"
+        <PdfFlowSection
+          title="Executive Summary"
+          subtitle="Skimmable assessment highlights for leadership review"
+        >
+          <View wrap={false} style={styles.scoreRow}>
+            <PdfScoreGauge
+              score={summary.overallScore}
+              label="Current StackScore"
+              ratingLabel={summary.overallRatingLabel}
             />
-            <View style={styles.scoreRow}>
-              <PdfScoreGauge
-                score={summary.overallScore}
-                label="Current StackScore"
-                ratingLabel={summary.overallRatingLabel}
-              />
-              <PdfScoreGauge
-                score={summary.projectedScore}
-                label="Projected StackScore"
-                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-                variant="accent"
-              />
-            </View>
+            <PdfScoreGauge
+              score={summary.projectedScore}
+              label="Projected StackScore"
+              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+              variant="accent"
+            />
           </View>
 
           {summary.hasCriticalExposure ? (
@@ -972,7 +965,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             </View>
           ) : null}
 
-          <View wrap={false} style={styles.panel}>
+          <View style={styles.panel}>
             <PdfBulletSection title="Overall Risk" items={overallRiskBullets} />
             <PdfBulletSection title="Top Strengths" items={strengthBullets} />
             <PdfBulletSection title="Top Risks" items={riskBullets} />
@@ -980,147 +973,126 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             <PdfBulletSection title="Projected Improvement" items={improvementBullets} />
             <PdfBulletSection title="Assessment Overview" items={overviewBullets} />
           </View>
-        </View>
+        </PdfFlowSection>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.sectionBlock}>
-          <View wrap={false}>
-            <PdfSectionTitle
-              title="Technology Pillars"
-              subtitle="Technology maturity performance across assessed domains"
-            />
-            {summary.categoryScores[0] ? (
+        <PdfFlowSection
+          title="Technology Pillars"
+          subtitle="Technology maturity performance across assessed domains"
+        >
+          {summary.categoryScores.length === 0 ? (
+            <Text style={styles.bodyText}>No category scores available.</Text>
+          ) : (
+            summary.categoryScores.map((category) => (
               <CategoryScoreCard
-                categoryName={summary.categoryScores[0].categoryName}
-                percentScore={summary.categoryScores[0].percentScore}
-                rating={summary.categoryScores[0].rating}
+                key={category.categoryId}
+                categoryName={category.categoryName}
+                percentScore={category.percentScore}
+                rating={category.rating}
               />
-            ) : null}
-          </View>
-
-          {summary.categoryScores.slice(1).map((category) => (
-            <CategoryScoreCard
-              key={category.categoryId}
-              categoryName={category.categoryName}
-              percentScore={category.percentScore}
-              rating={category.rating}
-            />
-          ))}
-        </View>
+            ))
+          )}
+        </PdfFlowSection>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <View style={styles.sectionBlock}>
-          <View wrap={false}>
-            <PdfSectionTitle
-              title="Detailed Recommendations"
-              subtitle="Prioritized remediation guidance with business impact and service alignment"
-            />
-            <Text style={styles.bodyText}>
-              Recommendations are organized by priority. Each card includes potential score
-              impact, recommended service, and business impact to support project planning.
-            </Text>
-          </View>
+        <PdfFlowSection
+          title="Detailed Recommendations"
+          subtitle="Prioritized remediation guidance with business impact and service alignment"
+        >
+          <Text style={styles.bodyText}>
+            Recommendations are organized by priority. Each card includes potential score
+            impact, recommended service, and business impact to support project planning.
+          </Text>
 
           {recommendationsByPriority.length === 0 ? (
             <Text style={styles.bodyText}>No recommendations at this time.</Text>
           ) : (
             recommendationsByPriority.map((group) => (
               <View key={group.priority} style={styles.priorityGroup}>
-                {group.items.map((recommendation, index) =>
-                  index === 0 ? (
-                    <View key={recommendation.id} wrap={false}>
-                      <Text style={styles.priorityGroupTitle}>
-                        {group.label} ({group.items.length})
-                      </Text>
-                      <RecommendationCard
-                        priority={recommendation.priority}
-                        title={recommendation.title}
-                        estimatedImpactPoints={recommendation.estimatedImpactPoints}
-                        suggestedService={recommendation.suggestedService}
-                        businessImpact={recommendation.businessImpact}
-                        categoryName={recommendation.categoryName}
-                      />
-                    </View>
-                  ) : (
-                    <RecommendationCard
-                      key={recommendation.id}
-                      priority={recommendation.priority}
-                      title={recommendation.title}
-                      estimatedImpactPoints={recommendation.estimatedImpactPoints}
-                      suggestedService={recommendation.suggestedService}
-                      businessImpact={recommendation.businessImpact}
-                      categoryName={recommendation.categoryName}
-                    />
-                  ),
-                )}
+                <View wrap={false}>
+                  <Text style={styles.priorityGroupTitle}>
+                    {group.label} ({group.items.length})
+                  </Text>
+                </View>
+                {group.items.map((recommendation) => (
+                  <RecommendationCard
+                    key={recommendation.id}
+                    priority={recommendation.priority}
+                    title={recommendation.title}
+                    estimatedImpactPoints={recommendation.estimatedImpactPoints}
+                    suggestedService={recommendation.suggestedService}
+                    businessImpact={recommendation.businessImpact}
+                    categoryName={recommendation.categoryName}
+                  />
+                ))}
               </View>
             ))
           )}
-        </View>
+        </PdfFlowSection>
       </Page>
 
-      <Page size="LETTER" style={styles.page} wrap={false}>
+      <Page size="LETTER" style={styles.page} wrap>
         <PdfPageFooter generatedDate={generatedDate} />
 
-        <PdfClosingHero
-          title="Technology Improvement Plan"
-          subtitle="A prioritized path from current maturity to your projected StackScore target"
-        />
-
-        <View wrap={false} style={styles.scoreRow}>
-          <PdfScoreGauge
-            score={summary.overallScore}
-            label="Current Score"
-            ratingLabel={summary.overallRatingLabel}
+        <View>
+          <PdfClosingHero
+            title="Technology Improvement Plan"
+            subtitle="A prioritized path from current maturity to your projected StackScore target"
           />
-          <PdfScoreGauge
-            score={summary.projectedScore}
-            label="Projected Score"
-            ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-            variant="accent"
-          />
-        </View>
 
-        <View wrap={false} style={styles.closingStatGrid}>
-          <View style={styles.closingStat}>
-            <Text style={styles.closingStatValue}>{criticalCount}</Text>
-            <Text style={styles.closingStatLabel}>Critical Projects</Text>
+          <View wrap={false} style={styles.scoreRow}>
+            <PdfScoreGauge
+              score={summary.overallScore}
+              label="Current Score"
+              ratingLabel={summary.overallRatingLabel}
+            />
+            <PdfScoreGauge
+              score={summary.projectedScore}
+              label="Projected Score"
+              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+              variant="accent"
+            />
           </View>
-          <View style={styles.closingStat}>
-            <Text style={styles.closingStatValue}>{highCount}</Text>
-            <Text style={styles.closingStatLabel}>High Priority Projects</Text>
+
+          <View style={styles.closingStatGrid}>
+            <View wrap={false} style={styles.closingStat}>
+              <Text style={styles.closingStatValue}>{criticalCount}</Text>
+              <Text style={styles.closingStatLabel}>Critical Projects</Text>
+            </View>
+            <View wrap={false} style={styles.closingStat}>
+              <Text style={styles.closingStatValue}>{highCount}</Text>
+              <Text style={styles.closingStatLabel}>High Priority Projects</Text>
+            </View>
+            <View wrap={false} style={styles.closingStat}>
+              <Text style={styles.closingStatValue}>+{estimatedImprovement}</Text>
+              <Text style={styles.closingStatLabel}>Estimated Improvement</Text>
+            </View>
+            <View wrap={false} style={styles.closingStat}>
+              <Text style={styles.closingStatValue}>{TARGET_SCORE}+</Text>
+              <Text style={styles.closingStatLabel}>Maturity Target</Text>
+            </View>
           </View>
-          <View style={styles.closingStat}>
-            <Text style={styles.closingStatValue}>
-              +{estimatedImprovement}
+
+          <View style={styles.ctaBox}>
+            <Text style={styles.ctaTitle}>Partner with {BRAND.companyName}</Text>
+            <Text style={[styles.bodyText, { marginBottom: 0 }]}>
+              Ready to turn these recommendations into measurable improvement? {BRAND.companyName}{" "}
+              can help you prioritize projects, implement remediation, and track StackScore progress
+              over time.
             </Text>
-            <Text style={styles.closingStatLabel}>Estimated Improvement</Text>
-          </View>
-          <View style={styles.closingStat}>
-            <Text style={styles.closingStatValue}>{TARGET_SCORE}+</Text>
-            <Text style={styles.closingStatLabel}>Maturity Target</Text>
-          </View>
-        </View>
-
-        <View wrap={false} style={styles.ctaBox}>
-          <Text style={styles.ctaTitle}>Partner with {BRAND.companyName}</Text>
-          <Text style={[styles.bodyText, { marginBottom: 0 }]}>
-            Ready to turn these recommendations into measurable improvement? {BRAND.companyName}{" "}
-            can help you prioritize projects, implement remediation, and track StackScore progress
-            over time.
-          </Text>
-          <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 10, lineHeight: 1.5 }}>
-            {BRAND.email}
-            {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
-          </Text>
-          <View style={styles.ctaButton}>
-            <Text style={styles.ctaButtonText}>Schedule a Remediation Planning Session</Text>
+            <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 10, lineHeight: 1.5 }}>
+              {BRAND.email}
+              {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
+            </Text>
+            <View wrap={false} style={styles.ctaButton}>
+              <Text style={styles.ctaButtonText}>Schedule a Remediation Planning Session</Text>
+            </View>
           </View>
         </View>
       </Page>
