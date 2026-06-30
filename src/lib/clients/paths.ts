@@ -2,3 +2,7 @@
 export function clientTechnologyProfilePath(clientId: string) {
   return `/clients/${clientId}/technology-profile`;
 }
+
+export function clientRecommendationsPath(clientId: string) {
+  return `/clients/${clientId}/recommendations`;
+}

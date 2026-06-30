@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowLeftRight, Building2, CalendarRange, History, TrendingUp } from "lucide-react";
+import { ArrowLeftRight, Building2, CalendarRange, History, Lightbulb, TrendingUp } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
+import { clientRecommendationsPath } from "@/lib/clients/paths";
 import type { ProfileSectionVisibility } from "@/lib/technology-profile/types";
 
 type TpQuickActionsProps = {
@@ -25,6 +26,15 @@ export function TpQuickActions({
         <Building2 className="mr-2 h-4 w-4" />
         Business Profile
       </Link>
+      {sections.showRecommendationsLink ? (
+        <Link
+          href={clientRecommendationsPath(clientId)}
+          className={buttonClassName({ variant: "outline", size: "sm", className: "w-full sm:w-auto" })}
+        >
+          <Lightbulb className="mr-2 h-4 w-4" />
+          Recommendations
+        </Link>
+      ) : null}
       {sections.showInternalQuickActions ? (
         <>
           <Link

@@ -11,22 +11,22 @@ import {
 import type { GeneratedRecommendation, TriggeredResponse } from "@/lib/recommendations";
 
 describe("recommendation dedupe", () => {
-  it("builds stable dedupe keys from template id", () => {
+  it("builds stable dedupe keys from catalog template code", () => {
     expect(
       buildDedupeKey({
         recommendationTemplateId: "tpl-123",
-        templateCode: "SEC-MFA-ALL",
+        templateCode: "REC-IA-001",
       }),
-    ).toBe("template:tpl-123");
+    ).toBe("template:REC-IA-001");
   });
 
-  it("falls back to category and template code when no template id", () => {
+  it("falls back to category when no template code", () => {
     expect(
       buildDedupeKey({
-        templateCode: "CONSOL-M365-SECURITY",
+        templateCode: "",
         categoryId: "cat-security",
       }),
-    ).toBe("category:cat-security:type:CONSOL-M365-SECURITY");
+    ).toBe("category:cat-security:type:unknown");
   });
 
   it("preserves accepted, in_progress, and deferred status on retrigger", () => {

@@ -4,6 +4,10 @@ import type { ScoreTrendPoint } from "@/lib/analytics/types";
 import { formatDisplayDate } from "@/lib/display";
 import { prisma } from "@/lib/db";
 import { OPEN_PROJECT_STATUSES } from "@/lib/projects";
+import {
+  getClientRecommendations,
+  mapToProfileRecommendationSummary,
+} from "@/lib/recommendations/client-list";
 import { ensureTechnologyProfile, getTechnologyProfile } from "@/lib/technology-profile/index";
 import { computeJourneyProgress } from "@/lib/technology-profile/journey";
 import {
@@ -144,7 +148,7 @@ export async function getTechnologyProfileDetail(
     client,
     profileView,
     scoreHistory,
-    openRecommendations,
+    openRecommendationRows,
     activeProjects,
     completedProjects,
     assessmentCount,
@@ -179,15 +183,7 @@ export async function getTechnologyProfileDetail(
       orderBy: { recordedDate: "asc" },
       include: { assessment: { select: { assessmentName: true } } },
     }),
-    prisma.assessmentRecommendation.findMany({
-      where: {
-        clientId,
-        status: { in: ["open", "accepted", "in_progress"] },
-      },
-      orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-      take: audience === "client" ? 10 : 25,
-      include: { category: { select: { name: true, code: true } } },
-    }),
+    getClientRecommendations(clientId),
     prisma.project.findMany({
       where: { clientId, status: { in: OPEN_PROJECT_STATUSES } },
       orderBy: { updatedAt: "desc" },
@@ -259,22 +255,11 @@ export async function getTechnologyProfileDetail(
     initialScore !== null && currentScore !== null ? currentScore - initialScore : null;
   const scoreDeltaSincePrevious = computeScoreDeltaSincePrevious(scoreTrend);
 
-  const recommendationSummaries: ProfileRecommendationSummary[] = openRecommendations.map(
-    (recommendation) => ({
-      id: recommendation.id,
-      title: recommendation.title,
-      priority: recommendation.priority,
-      status: recommendation.status,
-      estimatedImpactPoints: recommendation.estimatedImpactPoints,
-      businessImpact: recommendation.businessImpact,
-      categoryName: recommendation.category.name,
-      categoryCode: recommendation.category.code,
-      assessmentId: recommendation.assessmentId,
-      latestAssessmentId: recommendation.latestAssessmentId,
-      triggeredInLatestAssessment: recommendation.triggeredInLatestAssessment,
-      isRecurrence: recommendation.isRecurrence,
-    }),
-  );
+  const recommendationSummaries = openRecommendationRows.map(mapToProfileRecommendationSummary);
+  const visibleRecommendations =
+    audience === "client"
+      ? recommendationSummaries.slice(0, 10)
+      : recommendationSummaries.slice(0, 25);
 
   const mapProject = (project: (typeof activeProjects)[number]): ProfileProjectSummary =>
     filterProjectForAudience(
@@ -303,7 +288,16 @@ export async function getTechnologyProfileDetail(
 
   const tipContext = resolveActiveTipContext({
     tip: activeTipRecord,
-    openRecommendations,
+    openRecommendations: openRecommendationRows.map((recommendation) => ({
+      id: recommendation.id,
+      title: recommendation.title,
+      description: recommendation.description,
+      businessImpact: recommendation.businessImpact,
+      priority: recommendation.priority,
+      suggestedService: recommendation.suggestedService,
+      estimatedImpactPoints: recommendation.estimatedImpactPoints,
+      category: { name: recommendation.categoryName },
+    })),
     currentScore: currentScore,
   });
 
@@ -414,7 +408,7 @@ export async function getTechnologyProfileDetail(
       status: client.status,
     },
     scoreTrend,
-    openRecommendations: recommendationSummaries,
+    openRecommendations: visibleRecommendations,
     activeProjects: activeProjects.map(mapProject),
     completedProjects: completedProjects.map(mapProject),
     journey,

@@ -26,6 +26,7 @@ export function resolveProfileSectionVisibility(
     showNextActionCta: !isClient,
     showRecommendationCounts: !isClient,
     showJourneyTimeline: !isClient,
+    showRecommendationsLink: !isClient,
   };
 }
 

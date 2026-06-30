@@ -26,17 +26,17 @@ export type DedupeKeyInput = {
 };
 
 /**
- * Stable per-client dedupe key. Uses template id when available, otherwise
- * category + template code (catalog id or consolidation group id).
+ * Stable per-client dedupe key. Uses catalog template code (e.g. REC-IA-001) when
+ * available so keys are consistent across environments and DB migrations.
  */
 export function buildDedupeKey(input: DedupeKeyInput): string {
-  if (input.recommendationTemplateId) {
-    return `template:${input.recommendationTemplateId}`;
+  if (input.templateCode) {
+    return `template:${input.templateCode}`;
   }
   if (input.categoryId) {
-    return `category:${input.categoryId}:type:${input.templateCode}`;
+    return `category:${input.categoryId}:type:unknown`;
   }
-  return `type:${input.templateCode}`;
+  return "type:unknown";
 }
 
 export function shouldReopenDeclinedRecommendation(priority: Priority): boolean {

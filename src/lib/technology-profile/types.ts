@@ -49,16 +49,30 @@ export type TechnologyJourneyProgress = {
 export type ProfileRecommendationSummary = {
   id: string;
   title: string;
+  description: string;
   priority: Priority;
   status: RecommendationStatus;
   estimatedImpactPoints: number;
   businessImpact: string;
+  suggestedService: string | null;
   categoryName: string;
   categoryCode: string;
+  categoryId: string;
   assessmentId: string;
   latestAssessmentId: string;
+  latestAssessmentName: string | null;
+  latestTriggerReason: string | null;
   triggeredInLatestAssessment: boolean;
   isRecurrence: boolean;
+  recurrenceCount: number;
+  createdAt: string;
+  lastTriggeredAt: string;
+  templateCode: string | null;
+  project: {
+    id: string;
+    title: string;
+    status: ProjectStatus;
+  } | null;
 };
 
 export type ProfileProjectSummary = {
@@ -115,6 +129,7 @@ export type ProfileSectionVisibility = {
   showNextActionCta: boolean;
   showRecommendationCounts: boolean;
   showJourneyTimeline: boolean;
+  showRecommendationsLink: boolean;
 };
 
 export type NextRecommendedAction = {

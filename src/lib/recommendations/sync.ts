@@ -160,6 +160,31 @@ export async function syncClientRecommendations(
       continue;
     }
 
+    const completed = await tx.assessmentRecommendation.findFirst({
+      where: { clientId, dedupeKey, status: "completed" },
+      orderBy: { completedAt: "desc" },
+    });
+
+    if (completed) {
+      await tx.assessmentRecommendation.update({
+        where: { id: completed.id },
+        data: {
+          ...content,
+          dedupeKey,
+          latestAssessmentId: assessmentId,
+          lastTriggeredAt: now,
+          latestTriggerReason: triggerReason,
+          triggeredInLatestAssessment: true,
+          status: "open",
+          isRecurrence: true,
+          recurrenceCount: completed.recurrenceCount + 1,
+          completedAt: null,
+        },
+      });
+      await upsertAssessmentTrigger(tx, completed.id, assessmentId, now, triggerReason);
+      continue;
+    }
+
     const priorCount = await tx.assessmentRecommendation.count({
       where: { clientId, dedupeKey },
     });

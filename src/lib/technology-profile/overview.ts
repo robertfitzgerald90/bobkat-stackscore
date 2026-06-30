@@ -347,8 +347,8 @@ export function deriveNextRecommendedAction(context: NextActionContext): NextRec
   if (context.openRecommendations > 0) {
     return {
       label: "Review open opportunities",
-      description: "Prioritize recommendations and build a Technology Improvement Plan.",
-      href: `/clients/${clientId}/improvement-plan`,
+      description: "Prioritize recommendations and convert high-impact items into projects.",
+      href: `/clients/${clientId}/recommendations`,
       kind: "recommendations",
     };
   }

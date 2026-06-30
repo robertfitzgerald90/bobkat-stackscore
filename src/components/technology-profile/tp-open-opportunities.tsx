@@ -7,7 +7,8 @@ import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientRecommendationsPath, clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { formatProjectStatus } from "@/lib/projects";
 import { PRIORITY_LABELS } from "@/lib/display";
 import type {
   ProfileCapabilities,
@@ -108,6 +109,9 @@ export function TpOpenOpportunities({
               <p className="text-xs text-muted-foreground">
                 +{recommendation.estimatedImpactPoints} pts estimated maturity impact ·{" "}
                 {RECOMMENDATION_STATUS_LABELS[recommendation.status]}
+                {recommendation.project ? (
+                  <> · Project: {formatProjectStatus(recommendation.project.status)}</>
+                ) : null}
                 {!recommendation.triggeredInLatestAssessment ? (
                   <> · Not triggered in latest assessment</>
                 ) : null}
@@ -126,11 +130,21 @@ export function TpOpenOpportunities({
             </div>
           ))
         )}
-        {recommendations.length > MAX_OPPORTUNITIES ? (
-          <p className="text-xs text-muted-foreground">
-            Showing top {MAX_OPPORTUNITIES} of {recommendations.length} open opportunities.
-          </p>
-        ) : null}
+          {recommendations.length > MAX_OPPORTUNITIES ? (
+            <Link
+              href={clientRecommendationsPath(clientId)}
+              className={buttonClassName({ variant: "link", size: "sm", className: "h-auto p-0" })}
+            >
+              View all {recommendations.length} recommendations
+            </Link>
+          ) : recommendations.length > 0 ? (
+            <Link
+              href={clientRecommendationsPath(clientId)}
+              className={buttonClassName({ variant: "link", size: "sm", className: "h-auto p-0" })}
+            >
+              Open recommendations workspace
+            </Link>
+          ) : null}
       </CardContent>
     </Card>
   );
