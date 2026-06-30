@@ -173,7 +173,7 @@ function buildBusinessGoalProgress(goalLabel: string | null, scoreChange: number
     return "Document the primary business goal in the Business Profile to align future reviews with executive priorities.";
   }
   if (scoreChange !== null && scoreChange > 0) {
-    return `Progress this quarter supports "${goalLabel}" through measurable Technology Profile improvement.`;
+    return `Progress this quarter supports "${goalLabel}" through measurable Technology Maturity Profile improvement.`;
   }
   if (scoreChange !== null && scoreChange < 0) {
     return `"${goalLabel}" remains the guiding priority; renewed focus is recommended next quarter.`;

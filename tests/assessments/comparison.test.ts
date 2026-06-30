@@ -153,7 +153,7 @@ describe("assessment comparison", () => {
       recommendations: classifyRecommendationChanges([], []),
     });
 
-    expect(summary).toContain("improved its Technology Profile by 11 points");
+    expect(summary).toContain("improved its Technology Maturity Profile by 11 points");
     expect(summary).toContain("infrastructure");
     expect(summary).toContain("Mature");
   });

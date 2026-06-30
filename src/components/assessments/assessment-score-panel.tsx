@@ -124,7 +124,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
         <Separator />
 
         <div className="space-y-3">
-          <p className="text-sm font-medium">Category Scores</p>
+          <p className="text-sm font-medium">Technology Pillars</p>
           {preview.categoryScores.map((category) => (
             <div key={category.categoryId} className="space-y-1">
               <div className="flex items-center justify-between gap-2 text-sm">

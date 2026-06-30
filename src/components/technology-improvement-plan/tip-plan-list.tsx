@@ -52,7 +52,7 @@ export function TipPlanList({ clientId, clientName, initialPlans }: TipPlanListP
             className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Technology Profile
+            Back to Technology Maturity Profile
           </Link>
           <h2 className="page-title">Technology Improvement Plans</h2>
           <p className="page-description">{clientName}</p>

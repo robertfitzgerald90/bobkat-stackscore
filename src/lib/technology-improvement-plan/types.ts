@@ -19,7 +19,7 @@ export const TIP_WORKFLOW_STEPS: TipWorkflowStep[] = [
 ];
 
 export const TIP_STEP_LABELS: Record<TipWorkflowStep, string> = {
-  profile: "Technology Profile",
+  profile: "Technology Maturity Profile",
   recommendations: "Recommendations",
   playbooks: "Solution Playbooks",
   investment: "Investment Review",

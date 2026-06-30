@@ -3,14 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
-import { hasAnyCategoryScore } from "@/lib/technology-profile/display";
+import { TECHNOLOGY_PILLARS_LABEL } from "@/lib/technology-maturity/labels";
+import { hasAnyPillarScore, type PillarScoreInsight } from "@/lib/technology-maturity/pillars";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
-import type { CategoryScoreInsight } from "@/lib/technology-profile/types";
 import { cn } from "@/lib/utils";
 
 type TpCategoryScoresProps = {
   clientId: string;
-  insights: CategoryScoreInsight[];
+  insights: PillarScoreInsight[];
   assessmentsCompleted: number;
   showRecommendationCounts?: boolean;
 };
@@ -47,22 +47,22 @@ export function TpCategoryScores({
   assessmentsCompleted,
   showRecommendationCounts = true,
 }: TpCategoryScoresProps) {
-  const scored = hasAnyCategoryScore(insights);
+  const scored = hasAnyPillarScore(insights);
 
   return (
     <Card className="stat-card">
       <CardHeader>
-        <CardTitle>Category Maturity</CardTitle>
+        <CardTitle>{TECHNOLOGY_PILLARS_LABEL}</CardTitle>
         <CardDescription>
-          v2 technology categories with score trends and open opportunities
+          Maturity scores, trends, and open recommendations by Technology Pillar
         </CardDescription>
       </CardHeader>
       <CardContent>
         {!scored ? (
           <TpEmptyState
             icon={BarChart3}
-            title="Categories not assessed"
-            message="Category scores appear after the first completed assessment. Productivity and other v2 categories will populate as assessments cover those domains."
+            title="Technology Pillars not assessed"
+            message="Pillar maturity scores appear after the first completed assessment. Security Operations and Productivity & Collaboration pillars will populate as the assessment library expands."
             actionLabel={assessmentsCompleted === 0 ? "Start assessment" : undefined}
             actionHref={
               assessmentsCompleted === 0 ? clientTechnologyProfilePath(clientId) : undefined
@@ -76,13 +76,17 @@ export function TpCategoryScores({
 
               return (
                 <div
-                  key={insight.categoryCode}
-                  className="flex min-h-[140px] flex-col gap-3 rounded-lg border border-border/60 p-4"
+                  key={insight.pillarCode}
+                  className="flex min-h-[220px] flex-col gap-3 rounded-lg border border-border/60 p-4"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold leading-tight">{insight.categoryName}</p>
+                    <p className="text-sm font-semibold leading-tight">{insight.pillarName}</p>
                     <TrendIndicator delta={insight.trendDelta} />
                   </div>
+
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    {insight.businessQuestion}
+                  </p>
 
                   {hasScore ? (
                     <>
@@ -114,7 +118,7 @@ export function TpCategoryScores({
                     <p className="mt-auto flex items-center gap-1 text-xs text-muted-foreground">
                       <Lightbulb className="h-3 w-3" />
                       {insight.openRecommendationCount} open{" "}
-                      {insight.openRecommendationCount === 1 ? "opportunity" : "opportunities"}
+                      {insight.openRecommendationCount === 1 ? "recommendation" : "recommendations"}
                     </p>
                   ) : null}
                 </div>

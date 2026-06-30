@@ -1,10 +1,10 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.0
+**Version:** 2.2
 **Status:** Approved
 **Owner:** BobKat IT
-**Last Updated:** June 26, 2026
+**Last Updated:** June 30, 2026
 
 ---
 
@@ -21,11 +21,14 @@ This document is the master registry for all StackScore documentation. It define
 ```text
 DOC-129 (Engineering Constitution — governs all development)
     │
+DOC-006 (Product Constitution — governs product principles)
+    │
 DOC-000 (this index)
     │
-    ├── Business Governance (DOC-001 – DOC-005)
+    ├── Business Governance (DOC-001 – DOC-005, DOC-006)
     ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-107)
     ├── Client Hub (DOC-108, DOC-113)
+    ├── Technology Maturity Framework (DOC-150 — authoritative pillar model)
     ├── Assessment Domain (DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120 – DOC-124)
@@ -38,12 +41,13 @@ DOC-000 (this index)
 
 If documents conflict, resolve in this order:
 
-1. [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — source of truth hierarchy
-2. DOC-000 disposition table below
-3. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
-4. Higher authority tier wins within the same domain
-5. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
-6. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
+1. [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — engineering and implementation discipline
+2. [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) — product principles, UX, and feature acceptance
+3. DOC-000 disposition table below
+4. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+5. Higher authority tier wins within the same domain
+6. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
+7. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
 
 ---
 
@@ -66,6 +70,24 @@ If documents conflict, resolve in this order:
 | **Purpose** | Mandatory engineering rules for all contributors and AI assistants; documentation-driven development and source of truth hierarchy. |
 | **Depends on** | DOC-000 |
 | **Used by** | All development activity; DOC-300, DOC-302; AI-assisted and human contributors |
+
+## Product constitution
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-006](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | **Governing (constitution)** | v2 | Draft |
+
+### DOC-006 – StackScore Product Constitution
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-006 |
+| **Title** | StackScore Product Constitution |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Permanent product principles governing every feature, workflow, screen, report, and enhancement; takes precedence over lower-level specs for product and UX decisions. |
+| **Depends on** | DOC-001, DOC-002, DOC-003 |
+| **Used by** | DOC-004, DOC-005, DOC-108, DOC-113, DOC-120, DOC-123, DOC-127, DOC-150; all product and feature design |
 
 ## Business governance
 
@@ -97,11 +119,29 @@ If documents conflict, resolve in this order:
 | [DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Governing | v2 | Draft |
 | DOC-113 | Technology Profile Specification | Governing | v2 | Draft |
 
+## Technology Maturity Framework
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-150](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | StackScore Technology Maturity Framework | **Governing (framework)** | v2 | Draft |
+
+### DOC-150 – StackScore Technology Maturity Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-150 |
+| **Title** | StackScore Technology Maturity Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Authoritative framework for how StackScore evaluates technology environments — eight Technology Pillars, business questions, focus areas, assessment philosophy, scoring principles, and product design implications. |
+| **Depends on** | DOC-001, DOC-002, DOC-004 |
+| **Used by** | DOC-110, DOC-111, DOC-112, DOC-113, DOC-114, DOC-118, DOC-120, DOC-123, DOC-125, DOC-127, assessment libraries, reports, and planning features |
+
 ## Assessment & scoring
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| DOC-110 | StackScore Assessment Framework | Governing | v2 (weights pending revision) | Informal |
+| DOC-110 | StackScore Assessment Framework | Governing | v2 (weights pending revision) | Informal — pillar model superseded by DOC-150 |
 | DOC-111 | Scoring Engine Specification | **Governing (v2 target)** | v2 | Draft |
 | DOC-111A | Scoring Engine — Appendix A (v1 Implementation) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-111B | Scoring Methodology — Appendix B (Business Context) | Appendix — reference only | v1 | Partially superseded |
@@ -334,6 +374,8 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
 * [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
 * [DOC-130 – Architecture Diagrams Specification](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
+* [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
+* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
 
 ---
 
@@ -352,3 +394,5 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 1.8 | 2026-06-25 | BobKat IT | Registered DOC-128 (Integration Architecture tier) |
 | 1.9 | 2026-06-25 | BobKat IT | Registered DOC-129 (Engineering Constitution); conflict resolution and hierarchy updated |
 | 2.0 | 2026-06-26 | BobKat IT | Registered DOC-108 (Client hub) and DOC-130 (Architecture Diagrams) |
+| 2.1 | 2026-06-23 | BobKat IT | Registered DOC-150 (Technology Maturity Framework) as authoritative pillar model; updated hierarchy and DOC-110 disposition |
+| 2.2 | 2026-06-30 | BobKat IT | Registered DOC-006 (Product Constitution); updated conflict resolution hierarchy |

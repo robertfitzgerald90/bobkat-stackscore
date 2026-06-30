@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -27,6 +27,9 @@ import {
   type AssessmentResultsSummary,
   type RecommendationSummary,
 } from "@/lib/assessments/results-summary";
+import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
+import { TECHNOLOGY_PILLARS_LABEL } from "@/lib/technology-maturity/labels";
+import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { formatPriority, PRIORITY_LABELS } from "@/lib/display";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
@@ -34,7 +37,7 @@ import {
   getPriorityTimeline,
   groupRecommendationsByPriority,
 } from "@/lib/recommendations/display";
-import { calculateProjectedScore, RATING_LABELS } from "@/lib/scoring";
+import { calculateProjectedScore, getRating, RATING_LABELS } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
@@ -95,6 +98,26 @@ export function AssessmentResults({
 }: AssessmentResultsProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [exporting, setExporting] = useState(false);
+
+  const pillarInsights = useMemo(
+    () =>
+      buildPillarInsights({
+        v1CategoryScores: summary.categoryScores.map((category) => ({
+          categoryId: category.categoryId,
+          categoryCode: category.categoryCode,
+          categoryName: category.categoryName,
+          pointsEarned: category.percentScore,
+          pointsPossible: 100,
+          percentScore: category.percentScore,
+          rating: category.rating,
+          weightedContribution: 0,
+        })),
+        openRecommendations: summary.recommendations.map((recommendation) => ({
+          categoryCode: recommendation.categoryCode,
+        })),
+      }),
+    [summary.categoryScores, summary.recommendations],
+  );
 
   function recalculateSummary(recommendations: RecommendationSummary[]) {
     const overallScore = summary.overallScore;
@@ -441,26 +464,43 @@ export function AssessmentResults({
 
       <Card>
         <CardHeader>
-          <CardTitle>Category Scores</CardTitle>
+          <CardTitle>{TECHNOLOGY_PILLARS_LABEL}</CardTitle>
+          <CardDescription>
+            Technology maturity by StackScore Technology Pillar
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          {summary.categoryScores.map((category) => (
-            <div key={category.categoryId} className="space-y-2 rounded-md border p-4">
+        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {pillarInsights.map((pillar) => (
+            <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="font-medium">{category.categoryName}</p>
-                <Badge variant={RATING_VARIANT[category.rating]}>
-                  {RATING_LABELS[category.rating]}
-                </Badge>
+                <p className="font-medium">{pillar.pillarName}</p>
+                {pillar.percentScore !== null ? (
+                  <Badge variant={RATING_VARIANT[getRating(pillar.percentScore)]}>
+                    {RATING_LABELS[getRating(pillar.percentScore)]}
+                  </Badge>
+                ) : null}
               </div>
-              <p className="text-2xl font-semibold tabular-nums">
-                {Math.round(category.percentScore)}%
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {pillar.businessQuestion}
               </p>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className={cn("h-full rounded-full", getScoreBarColorClass(category.percentScore))}
-                  style={{ width: `${category.percentScore}%` }}
-                />
-              </div>
+              {pillar.percentScore !== null ? (
+                <>
+                  <p className="text-2xl font-semibold tabular-nums">
+                    {Math.round(pillar.percentScore)}
+                  </p>
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className={cn(
+                        "h-full rounded-full",
+                        getScoreBarColorClass(pillar.percentScore),
+                      )}
+                      style={{ width: `${pillar.percentScore}%` }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Not assessed</p>
+              )}
             </div>
           ))}
         </CardContent>
@@ -526,9 +566,12 @@ export function AssessmentResults({
                               {recommendation.suggestedService}
                             </p>
                           ) : null}
+                          <RecommendationPillarHint
+                            categoryCode={recommendation.categoryCode}
+                            className="space-y-1"
+                          />
                           <p className="text-xs text-muted-foreground">
-                            {recommendation.categoryName} · +
-                            {recommendation.estimatedImpactPoints} pts estimated improvement
+                            +{recommendation.estimatedImpactPoints} pts estimated maturity impact
                           </p>
                         </div>
 

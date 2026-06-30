@@ -295,6 +295,7 @@ export function projectScoreFromRecommendations(
     status: recommendation.status,
     estimatedImpactPoints: recommendation.estimatedImpactPoints,
     categoryId: recommendation.categoryCode,
+    categoryCode: recommendation.categoryCode,
     categoryName: recommendation.categoryName,
     consolidationGroupId: null,
     hasProject: false,
@@ -319,7 +320,7 @@ export function deriveNextRecommendedAction(context: NextActionContext): NextRec
   if (context.draftAssessmentId) {
     return {
       label: "Complete assessment",
-      description: "Finish the in-progress assessment to update this Technology Profile.",
+      description: "Finish the in-progress assessment to update this Technology Maturity Profile.",
       href: `/assessments/${context.draftAssessmentId}`,
       kind: "assessment",
     };

@@ -37,7 +37,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
 
       <TpCategoryScores
         clientId={profile.clientId}
-        insights={detail.categoryInsights}
+        insights={detail.pillarInsights}
         assessmentsCompleted={journey.assessmentsCompleted}
         showRecommendationCounts={sections.showRecommendationCounts}
       />

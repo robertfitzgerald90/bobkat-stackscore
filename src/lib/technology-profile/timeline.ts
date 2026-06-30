@@ -40,7 +40,7 @@ export const JOURNEY_TIMELINE_FILTER_LABELS: Record<JourneyTimelineFilter, strin
   projects: "Projects",
   reports: "Reports",
   reviews: "Reviews",
-  profile: "Technology Profile",
+  profile: "Technology Maturity Profile",
 };
 
 export const JOURNEY_TIMELINE_EVENT_LABELS: Record<JourneyTimelineEventType, string> = {
@@ -181,9 +181,9 @@ function snapshotTitle(triggerType: ProfileSnapshotTrigger): string {
     case "scheduled_review":
       return "Scheduled technology review";
     case "manual":
-      return "Technology Profile snapshot";
+      return "Technology Maturity Profile snapshot";
     default:
-      return "Technology Profile snapshot";
+      return "Technology Maturity Profile snapshot";
   }
 }
 
@@ -230,8 +230,8 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
     }),
     eventType: "profile_milestone",
     filterCategory: "profile",
-    title: "Technology Profile created",
-    description: "Client Technology Profile initialized in StackScore.",
+    title: "Technology Maturity Profile created",
+    description: "Client Technology Maturity Profile initialized in StackScore.",
     profileImpact:
       input.profileCreatedScore !== null
         ? `Baseline StackScore ${input.profileCreatedScore}`
@@ -263,7 +263,7 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
           ? delta !== null && delta !== 0
             ? `StackScore ${score} (${delta > 0 ? "+" : ""}${delta} since previous assessment)`
             : `StackScore updated to ${score}`
-          : "Assessment results recorded on the Technology Profile.",
+          : "Assessment results recorded on the Technology Maturity Profile.",
       href: `/assessments/${assessment.id}/results`,
       score,
     });
@@ -309,7 +309,7 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
         description: "Project approved for delivery.",
         profileImpact:
           project.estimatedImpactPoints !== null
-            ? `Estimated Technology Profile impact: +${project.estimatedImpactPoints} pts`
+            ? `Estimated Technology Maturity Profile impact: +${project.estimatedImpactPoints} pts`
             : "Approved improvement initiative added to the delivery plan.",
         href: `/projects?selected=${project.id}`,
         score: null,
@@ -334,7 +334,7 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
             ? `Realized impact: +${project.actualImpactPoints} pts`
             : project.estimatedImpactPoints !== null
               ? `Estimated impact delivered: +${project.estimatedImpactPoints} pts`
-              : "Completed work contributes to Technology Profile maturity.",
+              : "Completed work contributes to Technology Maturity Profile maturity.",
         href: `/projects?selected=${project.id}`,
         score: null,
       });
@@ -364,7 +364,7 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
       filterCategory,
       title: document.title,
       description: JOURNEY_TIMELINE_EVENT_LABELS[reportType],
-      profileImpact: "Report archived on the Technology Profile.",
+      profileImpact: "Report archived on the Technology Maturity Profile.",
       href: document.assessmentId
         ? `/api/v1/assessments/${document.assessmentId}/export/pdf`
         : document.tipId
@@ -391,7 +391,7 @@ export function buildJourneyTimelineEvents(input: BuildTimelineInput): JourneyTi
       eventType: "profile_milestone",
       filterCategory: snapshotFilterCategory(snapshot.triggerType),
       title: snapshotTitle(snapshot.triggerType),
-      description: "Technology Profile milestone captured for historical reference.",
+      description: "Technology Maturity Profile milestone captured for historical reference.",
       profileImpact:
         score !== null
           ? `StackScore snapshot: ${score} (${snapshot.maturityTier})`

@@ -25,12 +25,12 @@ export function buildQbrExecutiveSummary(data: Pick<
   const scorePhrase =
     data.scoreChange !== null && data.scoreAtPeriodEnd !== null
       ? data.scoreChange > 0
-        ? `Technology Profile improved by ${data.scoreChange} points to ${data.scoreAtPeriodEnd}.`
+        ? `Technology Maturity Profile improved by ${data.scoreChange} points to ${data.scoreAtPeriodEnd}.`
         : data.scoreChange < 0
-          ? `Technology Profile declined by ${Math.abs(data.scoreChange)} points to ${data.scoreAtPeriodEnd}.`
-          : `Technology Profile held steady at ${data.scoreAtPeriodEnd}.`
+          ? `Technology Maturity Profile declined by ${Math.abs(data.scoreChange)} points to ${data.scoreAtPeriodEnd}.`
+          : `Technology Maturity Profile held steady at ${data.scoreAtPeriodEnd}.`
       : data.scoreAtPeriodEnd !== null
-        ? `Current Technology Profile score is ${data.scoreAtPeriodEnd}.`
+        ? `Current Technology Maturity Profile score is ${data.scoreAtPeriodEnd}.`
         : "Technology progress was documented this quarter.";
 
   const deliveryParts: string[] = [];

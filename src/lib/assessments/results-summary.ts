@@ -8,6 +8,7 @@ import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/
 
 export type CategoryScoreSummary = {
   categoryId: string;
+  categoryCode: string;
   categoryName: string;
   percentScore: number;
   rating: Rating;
@@ -23,6 +24,7 @@ export type RecommendationSummary = {
   status: RecommendationStatus;
   estimatedImpactPoints: number;
   categoryId: string;
+  categoryCode: string;
   categoryName: string;
   consolidationGroupId: string | null;
   hasProject: boolean;
@@ -55,7 +57,7 @@ type RecommendationInput = {
   estimatedImpactPoints: number;
   consolidationGroupId: string | null;
   categoryId: string;
-  category: { name: string };
+  category: { name: string; code: string };
   project: { id: string } | null;
 };
 
@@ -67,7 +69,7 @@ export function buildAssessmentResultsSummary(
     categoryId: string;
     percentScore: unknown;
     rating: Rating;
-    category: { name: string };
+    category: { name: string; code: string };
   }>,
   recommendations: RecommendationInput[],
 ): AssessmentResultsSummary {
@@ -75,6 +77,7 @@ export function buildAssessmentResultsSummary(
 
   const categories: CategoryScoreSummary[] = categoryScores.map((score) => ({
     categoryId: score.categoryId,
+    categoryCode: score.category.code,
     categoryName: score.category.name,
     percentScore: Number(score.percentScore),
     rating: score.rating,
@@ -99,6 +102,7 @@ export function buildAssessmentResultsSummary(
       status: recommendation.status,
       estimatedImpactPoints: recommendation.estimatedImpactPoints,
       categoryId: recommendation.categoryId,
+      categoryCode: recommendation.category.code,
       categoryName: recommendation.category.name,
       consolidationGroupId: recommendation.consolidationGroupId,
       hasProject: !!recommendation.project,

@@ -40,7 +40,7 @@ export function ProgressReportPreview({ clientId, data }: ProgressReportPreviewP
         title="Technology Progress Report"
         description={data.reportPeriodLabel}
         backHref={clientTechnologyProfilePath(clientId)}
-        backLabel="Back to Technology Profile"
+        backLabel="Back to Technology Maturity Profile"
       />
 
       <ReportDocument>
@@ -66,7 +66,7 @@ export function ProgressReportPreview({ clientId, data }: ProgressReportPreviewP
           </ReportSection>
 
           <ReportSection
-            title="Technology Profile Movement"
+            title="Technology Maturity Movement"
             subtitle={
               data.lastAssessmentName
                 ? `Baseline from ${data.lastAssessmentName}${

@@ -20,10 +20,10 @@ export function buildCompletionExecutiveSummary(
   const scorePhrase =
     data.scoreChange !== null && data.scoreAfter !== null
       ? data.scoreChange > 0
-        ? ` Technology Profile improved by ${data.scoreChange} points to ${data.scoreAfter}.`
+        ? ` Technology Maturity Profile improved by ${data.scoreChange} points to ${data.scoreAfter}.`
         : data.scoreChange === 0
-          ? ` Technology Profile remains at ${data.scoreAfter}.`
-          : ` Technology Profile is ${data.scoreAfter} following this engagement.`
+          ? ` Technology Maturity Profile remains at ${data.scoreAfter}.`
+          : ` Technology Maturity Profile is ${data.scoreAfter} following this engagement.`
       : "";
 
   const variancePhrase =

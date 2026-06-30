@@ -41,7 +41,7 @@ export function CompletionReportPreview({ clientId, data }: CompletionReportPrev
         title="Technology Completion Report"
         description={data.projectTitle}
         backHref={clientTechnologyProfilePath(clientId)}
-        backLabel="Back to Technology Profile"
+        backLabel="Back to Technology Maturity Profile"
       />
 
       <ReportDocument>
@@ -77,7 +77,7 @@ export function CompletionReportPreview({ clientId, data }: CompletionReportPrev
             </ul>
           </ReportSection>
 
-          <ReportSection title="Technology Profile Comparison">
+          <ReportSection title="Technology Maturity Comparison">
             <ReportMetricGrid>
               <ReportMetricCard label="StackScore Before" value={data.scoreBefore ?? "—"} />
               <ReportMetricCard

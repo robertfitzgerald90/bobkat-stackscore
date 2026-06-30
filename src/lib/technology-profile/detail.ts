@@ -30,6 +30,7 @@ import {
   trimBusinessSnapshotForClient,
 } from "@/lib/technology-profile/visibility";
 import { getClientJourneyTimeline } from "@/lib/technology-profile/timeline-build";
+import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import {
   computeTipDerivedState,
   parseWizardState,
@@ -343,6 +344,12 @@ export async function getTechnologyProfileDetail(
     openRecommendations: recommendationSummaries,
   });
 
+  const pillarInsights = buildPillarInsights({
+    v1CategoryScores: profileView.v1CategoryScores,
+    scoreHistory,
+    openRecommendations: recommendationSummaries,
+  });
+
   const nextAction = deriveNextRecommendedAction({
     clientId,
     assessmentsCompleted: assessmentCount,
@@ -412,6 +419,7 @@ export async function getTechnologyProfileDetail(
     journeyScores,
     nextAction,
     categoryInsights,
+    pillarInsights,
     roadmapPreview: tipContext.roadmapPreview,
     documents: profileDocuments,
     activeTip: tipContext.activeTip,
@@ -434,6 +442,10 @@ export async function getTechnologyProfileDetail(
         openRecommendationCount: 0,
       },
       categoryInsights: categoryInsights.map((insight) => ({
+        ...insight,
+        openRecommendationCount: 0,
+      })),
+      pillarInsights: pillarInsights.map((insight) => ({
         ...insight,
         openRecommendationCount: 0,
       })),

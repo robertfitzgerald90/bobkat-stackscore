@@ -1,3 +1,4 @@
+import type { PillarScoreInsight } from "@/lib/technology-maturity/pillars";
 import type { UserRole } from "@/generated/prisma/client";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
 import type { V2CategoryScore } from "@/lib/assessment-library/category-mapping";
@@ -140,6 +141,8 @@ export type CategoryScoreInsight = {
   openRecommendationCount: number;
 };
 
+export type { PillarScoreInsight };
+
 export type RoadmapPhasePreview = {
   id: string;
   label: string;
@@ -204,6 +207,7 @@ export type TechnologyProfileDetail = {
   journeyScores: TechnologyJourneyScores;
   nextAction: NextRecommendedAction;
   categoryInsights: CategoryScoreInsight[];
+  pillarInsights: PillarScoreInsight[];
   roadmapPreview: RoadmapPhasePreview[];
   documents: ProfileDocumentSummary[];
   activeTip: ProfileTipSummary | null;

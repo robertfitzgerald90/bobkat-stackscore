@@ -48,7 +48,7 @@ export function AssessmentHistoryView({
           href={clientTechnologyProfilePath(clientId)}
           className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
-          Back to Technology Profile
+          Back to Technology Maturity Profile
         </Link>
       </div>
 

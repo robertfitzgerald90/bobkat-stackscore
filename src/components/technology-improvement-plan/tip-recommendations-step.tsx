@@ -99,7 +99,7 @@ export function TipRecommendationsStep({
     if (shouldConfirmExclusion(rec.priority)) {
       const label = rec.priority === "critical" ? "critical" : "high-priority";
       const confirmed = window.confirm(
-        `Exclude this ${label} recommendation from the plan?\n\n"${rec.title}"\n\nIt will remain open on the Technology Profile but will not appear in this TIP, investment, or projected score.`,
+        `Exclude this ${label} recommendation from the plan?\n\n"${rec.title}"\n\nIt will remain open on the Technology Maturity Profile but will not appear in this TIP, investment, or projected score.`,
       );
       if (!confirmed) return;
     }

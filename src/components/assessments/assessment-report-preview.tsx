@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { FileDown } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
@@ -23,11 +24,18 @@ import {
   ReportShell,
 } from "@/components/reports";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
+import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
+import {
+  TECHNOLOGY_MATURITY_PROFILE_SHORT,
+  TECHNOLOGY_MATURITY_SUMMARY_LABEL,
+  TECHNOLOGY_PILLARS_LABEL,
+} from "@/lib/technology-maturity/labels";
+import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import { buildAssessmentReportSections, getProjectedRatingLabel } from "@/lib/reports/assessment-content";
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
-import { RATING_LABELS } from "@/lib/scoring";
+import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
 type AssessmentReportPreviewProps = {
@@ -60,6 +68,25 @@ export function AssessmentReportPreview({
 }: AssessmentReportPreviewProps) {
   const sections = buildAssessmentReportSections(data);
   const generatedDate = formatAssessmentCompletionDate(data.completedAt);
+  const pillarInsights = useMemo(
+    () =>
+      buildPillarInsights({
+        v1CategoryScores: data.summary.categoryScores.map((category) => ({
+          categoryId: category.categoryId,
+          categoryCode: category.categoryCode,
+          categoryName: category.categoryName,
+          pointsEarned: category.percentScore,
+          pointsPossible: 100,
+          percentScore: category.percentScore,
+          rating: category.rating,
+          weightedContribution: 0,
+        })),
+        openRecommendations: data.summary.recommendations.map((recommendation) => ({
+          categoryCode: recommendation.categoryCode,
+        })),
+      }),
+    [data.summary.categoryScores, data.summary.recommendations],
+  );
 
   return (
     <ReportShell>
@@ -101,8 +128,8 @@ export function AssessmentReportPreview({
           />
 
           <ReportSection
-            title="Recommendation Summary"
-            subtitle="Prioritized remediation opportunities and projected StackScore impact"
+            title={TECHNOLOGY_MATURITY_SUMMARY_LABEL}
+            subtitle="Executive view of StackScore maturity and prioritized improvement"
           >
             <ReportMetricGrid columns={2}>
               <ReportMetricCard
@@ -171,26 +198,35 @@ export function AssessmentReportPreview({
           </ReportSection>
 
           <ReportSection
-            title="Category Profile"
-            subtitle="Technology maturity scores by assessment category"
+            title={TECHNOLOGY_PILLARS_LABEL}
+            subtitle="Technology maturity scores across the eight StackScore Technology Pillars"
           >
             <div className="grid gap-3 sm:grid-cols-2">
-              {data.summary.categoryScores.map((category) => (
-                <div key={category.categoryId} className="rounded-lg border p-4">
+              {pillarInsights.map((pillar) => (
+                <div key={pillar.pillarCode} className="rounded-lg border p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{category.categoryName}</p>
-                    <p
-                      className={cn(
-                        "text-lg font-bold",
-                        getScoreTextColorClass(Math.round(category.percentScore)),
-                      )}
-                    >
-                      {Math.round(category.percentScore)}%
-                    </p>
+                    <p className="font-medium">{pillar.pillarName}</p>
+                    {pillar.percentScore !== null ? (
+                      <p
+                        className={cn(
+                          "text-lg font-bold",
+                          getScoreTextColorClass(Math.round(pillar.percentScore)),
+                        )}
+                      >
+                        {Math.round(pillar.percentScore)}
+                      </p>
+                    ) : null}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {RATING_LABELS[category.rating]}
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    {pillar.businessQuestion}
                   </p>
+                  {pillar.percentScore !== null ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {RATING_LABELS[getRating(pillar.percentScore)]}
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-muted-foreground">Not assessed</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -219,7 +255,12 @@ export function AssessmentReportPreview({
                           </>
                         }
                         description={recommendation.businessImpact}
-                        meta={`${recommendation.categoryName} · +${recommendation.estimatedImpactPoints} impact points`}
+                        meta={
+                          <div className="space-y-2">
+                            <RecommendationPillarHint categoryCode={recommendation.categoryCode} />
+                            <p>+{recommendation.estimatedImpactPoints} impact points</p>
+                          </div>
+                        }
                       />
                     ))}
                   </div>
@@ -274,7 +315,7 @@ export function AssessmentReportPreview({
                 className: "report-no-print mt-4",
               })}
             >
-              Open Technology Profile
+              Open {TECHNOLOGY_MATURITY_PROFILE_SHORT}
             </Link>
           </ReportSection>
 

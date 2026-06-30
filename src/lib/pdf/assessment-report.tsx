@@ -989,7 +989,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
         <View style={styles.sectionBlock}>
           <View wrap={false}>
             <PdfSectionTitle
-              title="Category Scores"
+              title="Technology Pillars"
               subtitle="Technology maturity performance across assessed domains"
             />
             {summary.categoryScores[0] ? (

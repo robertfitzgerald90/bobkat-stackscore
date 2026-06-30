@@ -5,6 +5,10 @@ import { buttonClassName } from "@/components/ui/button";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { TREND_CONFIG } from "@/components/technology-profile/tp-constants";
 import { formatDisplayDate } from "@/lib/display";
+import {
+  TECHNOLOGY_MATURITY_PROFILE_LABEL,
+  TECHNOLOGY_MATURITY_PROFILE_SUBTITLE,
+} from "@/lib/technology-maturity/labels";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
@@ -35,9 +39,12 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
         <div className="min-w-0 space-y-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Technology Profile
+              {TECHNOLOGY_MATURITY_PROFILE_LABEL}
             </p>
             <h3 className="text-2xl font-bold tracking-tight sm:text-3xl">{client.companyName}</h3>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+              {TECHNOLOGY_MATURITY_PROFILE_SUBTITLE}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">

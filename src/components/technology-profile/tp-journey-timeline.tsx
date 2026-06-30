@@ -107,7 +107,7 @@ export function TpJourneyTimeline({
       <CardHeader>
         <CardTitle>Technology Journey</CardTitle>
         <CardDescription>
-          A chronological record of assessments, projects, reports, and Technology Profile
+          A chronological record of assessments, projects, reports, and Technology Maturity Profile
           milestones.
         </CardDescription>
       </CardHeader>

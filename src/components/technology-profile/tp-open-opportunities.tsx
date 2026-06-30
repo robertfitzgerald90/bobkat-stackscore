@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
+import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
@@ -100,8 +101,12 @@ export function TpOpenOpportunities({
               {recommendation.businessImpact ? (
                 <p className="mb-2 text-muted-foreground">{recommendation.businessImpact}</p>
               ) : null}
+              <RecommendationPillarHint
+                categoryCode={recommendation.categoryCode}
+                className="mb-2 space-y-1"
+              />
               <p className="text-xs text-muted-foreground">
-                {recommendation.categoryName} · +{recommendation.estimatedImpactPoints} pts ·{" "}
+                +{recommendation.estimatedImpactPoints} pts estimated maturity impact ·{" "}
                 {RECOMMENDATION_STATUS_LABELS[recommendation.status]}
                 {!recommendation.triggeredInLatestAssessment ? (
                   <> · Not triggered in latest assessment</>

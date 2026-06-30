@@ -29,6 +29,9 @@ import {
   TableRow,
 } from "@/components/reports";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import {
+  TECHNOLOGY_MATURITY_PROFILE_SHORT,
+} from "@/lib/technology-maturity/labels";
 import { formatDisplayDate } from "@/lib/display";
 import type { QbrReportData } from "@/lib/qbr/types";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
@@ -101,7 +104,7 @@ export function QbrReportView({
               { label: "Review Period", value: data.reviewPeriodLabel },
               { label: "Generated", value: data.generatedDateLabel },
               {
-                label: "Technology Profile",
+                label: TECHNOLOGY_MATURITY_PROFILE_SHORT,
                 value: data.scoreAtPeriodEnd ?? "—",
                 emphasis: true,
                 valueClassName: getScoreTextColorClass(data.scoreAtPeriodEnd),
@@ -118,7 +121,7 @@ export function QbrReportView({
             />
           </ReportSection>
 
-          <ReportSection title="Technology Profile">
+          <ReportSection title={TECHNOLOGY_MATURITY_PROFILE_SHORT}>
             <ReportMetricGrid>
               <ReportMetricCard
                 label="Score at Period Start"

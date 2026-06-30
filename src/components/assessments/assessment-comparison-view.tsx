@@ -23,6 +23,10 @@ import {
 import type { AssessmentComparison } from "@/lib/assessments/comparison";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import {
+  TECHNOLOGY_MATURITY_PROFILE_SHORT,
+  TECHNOLOGY_PILLARS_LABEL,
+} from "@/lib/technology-maturity/labels";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -76,7 +80,7 @@ export function AssessmentComparisonView({
         <ReportMetricCard
           label="Net Change"
           value={`${comparison.scoreChange > 0 ? "+" : ""}${comparison.scoreChange}`}
-          subtitle="Overall Technology Profile movement"
+          subtitle={`Overall ${TECHNOLOGY_MATURITY_PROFILE_SHORT} movement`}
           tone={
             comparison.scoreChange > 0
               ? "positive"
@@ -124,7 +128,7 @@ export function AssessmentComparisonView({
       <Card className="stat-card">
         <CardHeader>
           <CardTitle>Category Comparison</CardTitle>
-          <CardDescription>Technology Profile categories with score movement</CardDescription>
+          <CardDescription>{TECHNOLOGY_PILLARS_LABEL} with StackScore movement</CardDescription>
         </CardHeader>
         <CardContent>
           <ReportTable>

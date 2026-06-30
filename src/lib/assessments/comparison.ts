@@ -242,7 +242,7 @@ export function buildComparisonExecutiveSummary(
 
   const pointsPhrase =
     scoreChange > 0
-      ? `improved its Technology Profile by ${scoreChange} points`
+      ? `improved its Technology Maturity Profile by ${scoreChange} points`
       : scoreChange < 0
         ? `declined by ${Math.abs(scoreChange)} points`
         : "held steady with no net StackScore change";

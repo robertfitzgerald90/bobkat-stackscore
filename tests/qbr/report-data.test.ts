@@ -168,7 +168,7 @@ describe("buildQbrExecutiveSummary", () => {
       nextQuarterPriorities: ["Backup validation"],
     });
 
-    expect(summary).toContain("Technology Profile improved by 7 points");
+    expect(summary).toContain("Technology Maturity Profile improved by 7 points");
     expect(summary).toContain("BobKat IT delivered measurable progress");
     expect(summary).toContain("improve cybersecurity");
     expect(summary).toContain("Next priority: Backup validation");

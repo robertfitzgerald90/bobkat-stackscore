@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
+import { TECHNOLOGY_MATURITY_PROFILE_LABEL } from "@/lib/technology-maturity/labels";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { TREND_CONFIG } from "@/components/technology-profile/tp-constants";
 import {
@@ -37,16 +38,16 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
     return (
       <Card className="stat-card">
         <CardHeader>
-          <CardTitle>Technology Profile</CardTitle>
+          <CardTitle>{TECHNOLOGY_MATURITY_PROFILE_LABEL}</CardTitle>
           <CardDescription>
-            Complete an assessment to establish this client&apos;s Technology Profile.
+            Complete an assessment to establish this client&apos;s Technology Maturity Profile.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <TpEmptyState
             icon={ClipboardList}
             title="No profile yet"
-            message="Run an assessment to create the living Technology Profile for this client."
+            message="Run an assessment to create the living Technology Maturity Profile for this client."
             actionLabel="Open profile"
             actionHref={clientTechnologyProfilePath(clientId)}
           />
@@ -69,7 +70,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
       <CardHeader className="border-b bg-muted/30">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
           <div>
-            <CardTitle>Technology Profile</CardTitle>
+            <CardTitle>{TECHNOLOGY_MATURITY_PROFILE_LABEL}</CardTitle>
             <CardDescription>
               Living record of technology maturity — updated on every completed assessment.
             </CardDescription>
@@ -168,7 +169,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
         ) : null}
 
         <div className="space-y-3">
-          <p className="text-sm font-medium">Category Maturity</p>
+          <p className="text-sm font-medium">Technology Pillars</p>
           {V2_CATEGORY_DISPLAY_ORDER.map((code) => {
             const category = categoryMap.get(code);
             const label = V2_CATEGORY_LABELS[code] ?? code;

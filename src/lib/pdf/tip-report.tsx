@@ -633,13 +633,13 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         <View wrap={false} style={styles.scoreRow}>
           <PdfScoreGauge
             score={data.currentScore}
-            label="Technology Profile — Today"
+            label="Technology Maturity — Today"
             ratingLabel={RATING_LABELS[currentRating]}
             showTarget={false}
           />
           <PdfScoreGauge
             score={data.projectedScore}
-            label="Technology Profile — Projected"
+            label="Technology Maturity — Projected"
             ratingLabel={RATING_LABELS[projectedRating]}
             variant="accent"
             showTarget={false}
@@ -677,7 +677,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         {data.categorySummaries.length > 0 ? (
           <View style={styles.sectionBlock}>
             <PdfSectionTitle
-              title="Category Profile Summary"
+              title="Technology Pillars"
               subtitle="Current maturity by domain — highlighted categories include planned improvements"
             />
             {data.categorySummaries.map((category) => {

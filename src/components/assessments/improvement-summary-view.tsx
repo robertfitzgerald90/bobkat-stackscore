@@ -45,7 +45,7 @@ export function ImprovementSummaryView({
             href={clientTechnologyProfilePath(clientId)}
             className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
           >
-            Back to Technology Profile
+            Back to Technology Maturity Profile
           </Link>
         </div>
       </div>

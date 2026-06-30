@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Printer } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
+import { BACK_TO_TECHNOLOGY_MATURITY_PROFILE } from "@/lib/technology-maturity/labels";
 
 type ReportPrintActionsProps = {
   clientName?: string;
@@ -22,7 +23,7 @@ export function ReportPrintActions({
   description,
   printLabel = "Print Report",
   backHref,
-  backLabel = "Back to Technology Profile",
+  backLabel = BACK_TO_TECHNOLOGY_MATURITY_PROFILE,
   extraActions,
   onPrint,
 }: ReportPrintActionsProps) {

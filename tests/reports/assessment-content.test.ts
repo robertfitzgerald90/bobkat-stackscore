@@ -12,7 +12,7 @@ const baseSummary = buildAssessmentResultsSummary(
       categoryId: "cat-1",
       percentScore: 70,
       rating: "stable",
-      category: { name: "Security" },
+      category: { name: "Security", code: "security" },
     },
   ],
   [
@@ -27,7 +27,7 @@ const baseSummary = buildAssessmentResultsSummary(
       estimatedImpactPoints: 8,
       consolidationGroupId: null,
       categoryId: "cat-1",
-      category: { name: "Security" },
+      category: { name: "Security", code: "security" },
       project: null,
     },
   ],

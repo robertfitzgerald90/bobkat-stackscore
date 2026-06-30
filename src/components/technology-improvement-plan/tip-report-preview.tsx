@@ -87,13 +87,13 @@ export function TipReportPreview({
           />
           <ReportMetricGrid columns={2} className="mt-4">
             <ReportMetricCard
-              label="Technology Profile — Today"
+              label="Technology Maturity — Today"
               value={data.currentScore}
               valueClassName={getScoreTextColorClass(data.currentScore)}
               subtitle={RATING_LABELS[currentRating]}
             />
             <ReportMetricCard
-              label="Technology Profile — Projected"
+              label="Technology Maturity — Projected"
               value={data.projectedScore}
               valueClassName={getScoreTextColorClass(data.projectedScore)}
               subtitle={RATING_LABELS[projectedRating]}
@@ -137,7 +137,7 @@ export function TipReportPreview({
 
         {data.categorySummaries.length > 0 ? (
           <ReportSection
-            title="Category Profile Summary"
+            title="Technology Pillars"
             subtitle="Highlighted categories include planned improvements"
             variant="accent"
           >
