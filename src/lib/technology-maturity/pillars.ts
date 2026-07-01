@@ -85,6 +85,19 @@ const V1_TO_PILLAR = new Map<string, TechnologyPillarCode>(
   ),
 );
 
+const PILLAR_CODE_SET = new Set<TechnologyPillarCode>(
+  TECHNOLOGY_PILLARS.map((pillar) => pillar.code),
+);
+
+function pillarCodeForCategoryCode(categoryCode: string): TechnologyPillarCode | null {
+  const fromV1 = V1_TO_PILLAR.get(categoryCode);
+  if (fromV1) return fromV1;
+  if (PILLAR_CODE_SET.has(categoryCode as TechnologyPillarCode)) {
+    return categoryCode as TechnologyPillarCode;
+  }
+  return null;
+}
+
 export type PillarScoreInsight = {
   pillarCode: TechnologyPillarCode;
   pillarName: string;
@@ -171,6 +184,12 @@ function scoreForPillarFromV1Map(
   pillar: TechnologyPillarDefinition,
   v1ByCode: Map<string, CategoryScoreResult | number>,
 ): number | null {
+  const direct = v1ByCode.get(pillar.code);
+  if (direct !== undefined) {
+    if (typeof direct === "number") return direct;
+    return direct.percentScore;
+  }
+
   if (pillar.v1CategoryCodes.length === 0) return null;
 
   let earned = 0;
@@ -202,7 +221,7 @@ function countRecommendationsByPillar(
   ) as Record<TechnologyPillarCode, number>;
 
   for (const recommendation of recommendations) {
-    const pillarCode = V1_TO_PILLAR.get(recommendation.categoryCode);
+    const pillarCode = pillarCodeForCategoryCode(recommendation.categoryCode);
     if (pillarCode) counts[pillarCode] += 1;
   }
 

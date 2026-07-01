@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { getAssessmentPillarSnapshots } from "@/lib/assessments/pillar-snapshots";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentResults } from "@/components/assessments/assessment-results";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
@@ -26,7 +27,10 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
 
   if (!assessment || assessment.status !== "completed") notFound();
 
-  const recommendations = await getRecommendationsTriggeredByAssessment(id);
+  const [recommendations, pillarSnapshots] = await Promise.all([
+    getRecommendationsTriggeredByAssessment(id),
+    getAssessmentPillarSnapshots(id),
+  ]);
 
   const hasImprovementSummary = assessment.sourceAssessmentId !== null;
 
@@ -55,6 +59,7 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
         completedAt={assessment.completedAt?.toISOString() ?? null}
         executiveSummary={assessment.executiveSummary}
         summary={summary}
+        pillarSnapshots={pillarSnapshots}
         hasImprovementSummary={hasImprovementSummary}
       />
       {isAdmin ? (

@@ -29,7 +29,8 @@ import {
 } from "@/lib/assessments/results-summary";
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { TECHNOLOGY_PILLARS_LABEL } from "@/lib/technology-maturity/labels";
-import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
+import { buildPillarInsights, ASSESSMENT_INCOMPLETE_LABEL } from "@/lib/technology-maturity/pillars";
+import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { formatPriority, PRIORITY_LABELS } from "@/lib/display";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
@@ -83,6 +84,7 @@ type AssessmentResultsProps = {
   completedAt: string | null;
   executiveSummary: string | null;
   summary: AssessmentResultsSummary;
+  pillarSnapshots?: PillarScoreSnapshot[] | null;
   hasImprovementSummary?: boolean;
 };
 
@@ -94,6 +96,7 @@ export function AssessmentResults({
   completedAt,
   executiveSummary,
   summary: initialSummary,
+  pillarSnapshots = null,
   hasImprovementSummary = false,
 }: AssessmentResultsProps) {
   const [summary, setSummary] = useState(initialSummary);
@@ -112,11 +115,19 @@ export function AssessmentResults({
           rating: category.rating,
           weightedContribution: 0,
         })),
-        openRecommendations: summary.recommendations.map((recommendation) => ({
-          categoryCode: recommendation.categoryCode,
-        })),
+        pillarSnapshots: pillarSnapshots ?? undefined,
+        openRecommendations: summary.recommendations
+          .filter(
+            (recommendation) =>
+              recommendation.status === "open" ||
+              recommendation.status === "accepted" ||
+              recommendation.status === "in_progress",
+          )
+          .map((recommendation) => ({
+            categoryCode: recommendation.categoryCode,
+          })),
       }),
-    [summary.categoryScores, summary.recommendations],
+    [summary.categoryScores, summary.recommendations, pillarSnapshots],
   );
 
   function recalculateSummary(recommendations: RecommendationSummary[]) {
@@ -470,39 +481,58 @@ export function AssessmentResults({
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {pillarInsights.map((pillar) => (
-            <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-medium">{pillar.pillarName}</p>
-                {pillar.percentScore !== null ? (
-                  <Badge variant={RATING_VARIANT[getRating(pillar.percentScore)]}>
-                    {RATING_LABELS[getRating(pillar.percentScore)]}
+          {pillarInsights.map((pillar) => {
+            const hasScore = pillar.percentScore !== null;
+
+            return (
+              <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-medium">{pillar.pillarName}</p>
+                  {hasScore ? (
+                    <Badge variant={RATING_VARIANT[getRating(pillar.percentScore)]}>
+                      {pillar.maturityTier ?? RATING_LABELS[getRating(pillar.percentScore)]}
+                    </Badge>
+                  ) : null}
+                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {pillar.businessQuestion}
+                </p>
+                {hasScore ? (
+                  <>
+                    <p
+                      className={cn(
+                        "text-2xl font-semibold tabular-nums",
+                        getScoreTextColorClass(pillar.percentScore),
+                      )}
+                    >
+                      {Math.round(pillar.percentScore)}
+                    </p>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={cn(
+                          "h-full rounded-full",
+                          getScoreBarColorClass(pillar.percentScore),
+                        )}
+                        style={{ width: `${pillar.percentScore}%` }}
+                      />
+                    </div>
+                  </>
+                ) : pillar.status === "incomplete" && pillar.questionsAnswered > 0 ? (
+                  <Badge variant="secondary" className="w-fit text-xs">
+                    {ASSESSMENT_INCOMPLETE_LABEL}
                   </Badge>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Not assessed</p>
+                )}
+                {pillar.openRecommendationCount > 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    {pillar.openRecommendationCount} open{" "}
+                    {pillar.openRecommendationCount === 1 ? "recommendation" : "recommendations"}
+                  </p>
                 ) : null}
               </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                {pillar.businessQuestion}
-              </p>
-              {pillar.percentScore !== null ? (
-                <>
-                  <p className="text-2xl font-semibold tabular-nums">
-                    {Math.round(pillar.percentScore)}
-                  </p>
-                  <div className="h-2 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className={cn(
-                        "h-full rounded-full",
-                        getScoreBarColorClass(pillar.percentScore),
-                      )}
-                      style={{ width: `${pillar.percentScore}%` }}
-                    />
-                  </div>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">Not assessed</p>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </CardContent>
       </Card>
 
