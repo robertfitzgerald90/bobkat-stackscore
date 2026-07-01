@@ -482,38 +482,38 @@ export function AssessmentResults({
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {pillarInsights.map((pillar) => {
-            const hasScore = pillar.percentScore !== null;
+            const score = pillar.percentScore;
 
             return (
               <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-medium">{pillar.pillarName}</p>
-                  {hasScore ? (
-                    <Badge variant={RATING_VARIANT[getRating(pillar.percentScore)]}>
-                      {pillar.maturityTier ?? RATING_LABELS[getRating(pillar.percentScore)]}
+                  {score !== null ? (
+                    <Badge variant={RATING_VARIANT[getRating(score)]}>
+                      {pillar.maturityTier ?? RATING_LABELS[getRating(score)]}
                     </Badge>
                   ) : null}
                 </div>
                 <p className="text-xs leading-relaxed text-muted-foreground">
                   {pillar.businessQuestion}
                 </p>
-                {hasScore ? (
+                {score !== null ? (
                   <>
                     <p
                       className={cn(
                         "text-2xl font-semibold tabular-nums",
-                        getScoreTextColorClass(pillar.percentScore),
+                        getScoreTextColorClass(score),
                       )}
                     >
-                      {Math.round(pillar.percentScore)}
+                      {Math.round(score)}
                     </p>
                     <div className="h-2 overflow-hidden rounded-full bg-muted">
                       <div
                         className={cn(
                           "h-full rounded-full",
-                          getScoreBarColorClass(pillar.percentScore),
+                          getScoreBarColorClass(score),
                         )}
-                        style={{ width: `${pillar.percentScore}%` }}
+                        style={{ width: `${score}%` }}
                       />
                     </div>
                   </>
