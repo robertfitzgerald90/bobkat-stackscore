@@ -438,6 +438,7 @@ export async function getTechnologyProfileDetail(
     sections,
     journeyTimeline,
     workspace,
+    draftAssessmentId: draftAssessment?.id ?? null,
   };
 
   if (audience === "client") {

@@ -7,34 +7,59 @@ import { TpCategoryScores } from "@/components/technology-profile/tp-category-sc
 import { TpHeroSummary } from "@/components/technology-profile/tp-hero-summary";
 import { TpJourneyTimeline } from "@/components/technology-profile/tp-journey-timeline";
 import { TpOpenOpportunities } from "@/components/technology-profile/tp-open-opportunities";
+import { TpQuickActions } from "@/components/technology-profile/tp-quick-actions";
 import { TpRecentProgress } from "@/components/technology-profile/tp-recent-progress";
 import { TpReportsDocuments } from "@/components/technology-profile/tp-reports-documents";
 import { TpRoadmapPreview } from "@/components/technology-profile/tp-roadmap-preview";
 import { TpScoreHistory } from "@/components/technology-profile/tp-score-history";
 import { TpTechnologyJourney } from "@/components/technology-profile/tp-technology-journey";
+import { TpWorkspaceHeader } from "@/components/technology-profile/tp-workspace-header";
 import { TpWorkspaceSnapshot } from "@/components/technology-profile/tp-workspace-snapshot";
 import { ImmediateFocusAnchor } from "@/components/technology-profile/immediate-focus-anchor";
 import { buttonClassName } from "@/components/ui/button";
+import type { CompletedAssessmentForAuto } from "@/lib/assessments/auto-assessment";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
 
 type TechnologyProfileDetailViewProps = {
   detail: TechnologyProfileDetail;
+  completedAssessments?: CompletedAssessmentForAuto[];
 };
 
-export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailViewProps) {
+export function TechnologyProfileDetailView({
+  detail,
+  completedAssessments = [],
+}: TechnologyProfileDetailViewProps) {
   const { profile, scoreTrend, sections, journey } = detail;
+  const showAssessClient = sections.showAssessmentForms && detail.client.status !== "archived";
 
   return (
     <div className="page-content min-w-0 space-y-6 sm:space-y-8">
       <ImmediateFocusAnchor />
-      <TpWorkspaceSnapshot
+      <TpWorkspaceHeader
         clientId={profile.clientId}
         clientName={detail.client.companyName}
+        clientStatus={detail.client.status}
+        showAssessClient={showAssessClient}
+        completedAssessments={completedAssessments}
+        draftAssessmentId={detail.draftAssessmentId}
+        nextRecommendedAssessmentAt={profile.nextRecommendedAssessmentAt}
+      />
+      <TpWorkspaceSnapshot
+        clientId={profile.clientId}
         workspace={detail.workspace}
         nextAction={detail.nextAction}
         assessmentsCompleted={journey.assessmentsCompleted}
       />
       <TpHeroSummary detail={detail} />
+
+      <TpQuickActions
+        clientId={profile.clientId}
+        sections={sections}
+        showCompareAssessments={
+          sections.showAssessmentResultsLink && completedAssessments.length >= 2
+        }
+        showProgressReport={completedAssessments.length > 0}
+      />
 
       {sections.showBusinessSnapshot ? (
         <TpBusinessSnapshot

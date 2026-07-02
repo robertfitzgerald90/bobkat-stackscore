@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 
 type TpWorkspaceSnapshotProps = {
   clientId: string;
-  clientName: string;
   workspace: ClientWorkspaceSnapshot;
   nextAction: NextRecommendedAction;
   assessmentsCompleted: number;
@@ -76,7 +75,6 @@ function FocusItemRow({ item }: { item: ImmediateFocusItem }) {
 
 export function TpWorkspaceSnapshot({
   clientId,
-  clientName,
   workspace,
   nextAction,
   assessmentsCompleted,
@@ -85,13 +83,6 @@ export function TpWorkspaceSnapshot({
 
   return (
     <section className="space-y-4">
-      <div className="min-w-0">
-        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{clientName}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          What deserves your immediate focus?
-        </p>
-      </div>
-
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard label="StackScore" value={kpis.stackScore ?? "—"} emphasize />
         <KpiCard

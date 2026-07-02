@@ -234,4 +234,5 @@ export type TechnologyProfileDetail = {
   sections: ProfileSectionVisibility;
   journeyTimeline: JourneyTimelineEvent[];
   workspace: ClientWorkspaceSnapshot;
+  draftAssessmentId: string | null;
 };

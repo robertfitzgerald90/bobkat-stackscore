@@ -1,17 +1,10 @@
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ClientAdminActions } from "@/components/admin/client-admin-actions";
-import { ClientAssessmentForms } from "@/components/clients/client-assessment-forms";
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
-import { TpQuickActions } from "@/components/technology-profile/tp-quick-actions";
-import { buttonClassName } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
 import { sortCompletedAssessmentsNewestFirst } from "@/lib/assessments/display";
-import { formatClientStatus } from "@/lib/display";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -64,38 +57,11 @@ export default async function TechnologyProfilePage({ params }: PageProps) {
   const { sections } = detail;
 
   return (
-    <div className="page-content space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <Link
-            href="/clients"
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "shrink-0" })}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Clients
-          </Link>
-          <Badge variant="outline">{formatClientStatus(client.status)}</Badge>
-        </div>
-        {sections.showAssessmentForms && client.status !== "archived" ? (
-          <div className="min-w-0 w-full lg:max-w-2xl lg:shrink-0">
-            <ClientAssessmentForms
-              clientId={client.id}
-              completedAssessments={completedAssessments}
-            />
-          </div>
-        ) : null}
-      </div>
-
-      <TpQuickActions
-        clientId={id}
-        sections={sections}
-        showCompareAssessments={
-          sections.showAssessmentResultsLink && completedAssessments.length >= 2
-        }
-        showProgressReport={completedAssessments.length > 0}
+    <div className="space-y-6">
+      <TechnologyProfileDetailView
+        detail={detail}
+        completedAssessments={completedAssessments}
       />
-
-      <TechnologyProfileDetailView detail={detail} />
 
       {sections.showAdminActions ? (
         <ClientAdminActions
