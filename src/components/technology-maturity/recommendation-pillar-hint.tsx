@@ -1,4 +1,4 @@
-import { getPillarDisplayForV1CategoryCode } from "@/lib/technology-maturity/pillars";
+import { getPillarDisplayForCategoryCode } from "@/lib/technology-maturity/pillars";
 
 type RecommendationPillarHintProps = {
   categoryCode: string;
@@ -6,7 +6,7 @@ type RecommendationPillarHintProps = {
 };
 
 export function RecommendationPillarHint({ categoryCode, className }: RecommendationPillarHintProps) {
-  const pillar = getPillarDisplayForV1CategoryCode(categoryCode);
+  const pillar = getPillarDisplayForCategoryCode(categoryCode);
   if (!pillar) return null;
 
   return (

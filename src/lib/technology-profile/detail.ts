@@ -35,6 +35,7 @@ import {
 } from "@/lib/technology-profile/visibility";
 import { getClientJourneyTimeline } from "@/lib/technology-profile/timeline-build";
 import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
+import { buildClientWorkspaceSnapshot } from "@/lib/client-workspace";
 import {
   computeTipDerivedState,
   parseWizardState,
@@ -379,6 +380,17 @@ export async function getTechnologyProfileDetail(
   const sections = resolveProfileSectionVisibility(role, capabilities);
   const journeyTimeline = audience === "internal" ? await getClientJourneyTimeline(clientId) : [];
 
+  const workspace = buildClientWorkspaceSnapshot({
+    clientId,
+    stackScore: currentScore,
+    projectedScore,
+    openRecommendations: recommendationSummaries,
+    activeProjects: activeProjects.map(mapProject),
+    draftAssessmentId: draftAssessment?.id ?? null,
+    nextRecommendedAssessmentAt:
+      profileView.nextRecommendedAssessmentAt?.toISOString() ?? null,
+  });
+
   const baseDetail: TechnologyProfileDetail = {
     profile: {
       id: profileView.id,
@@ -425,6 +437,7 @@ export async function getTechnologyProfileDetail(
     scoreDeltaSincePrevious,
     sections,
     journeyTimeline,
+    workspace,
   };
 
   if (audience === "client") {
@@ -449,6 +462,16 @@ export async function getTechnologyProfileDetail(
         openRecommendationCount: 0,
       })),
       journeyTimeline: [],
+      workspace: {
+        kpis: {
+          stackScore: currentScore,
+          projectedScore,
+          openProjectsCount: 0,
+          criticalRecommendationsCount: 0,
+          immediateFocusCount: 0,
+        },
+        items: [],
+      },
     };
   }
 

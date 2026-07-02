@@ -248,6 +248,23 @@ export function getPillarDisplayForV1CategoryCode(categoryCode: string): {
   };
 }
 
+/** Resolves pillar display for v1 category codes and v2 pillar codes. */
+export function getPillarDisplayForCategoryCode(categoryCode: string): {
+  pillarName: string;
+  businessQuestion: string;
+} | null {
+  const fromV1 = getPillarDisplayForV1CategoryCode(categoryCode);
+  if (fromV1) return fromV1;
+
+  const direct = TECHNOLOGY_PILLARS.find((pillar) => pillar.code === categoryCode);
+  if (!direct) return null;
+
+  return {
+    pillarName: direct.name,
+    businessQuestion: direct.businessQuestion,
+  };
+}
+
 export function buildPillarInsights(input: {
   v1CategoryScores: CategoryScoreResult[];
   pillarSnapshots?: PillarScoreSnapshot[];

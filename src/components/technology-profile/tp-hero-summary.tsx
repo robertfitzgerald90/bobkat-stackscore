@@ -1,7 +1,5 @@
-import Link from "next/link";
-import { AlertTriangle, ArrowRight, Calendar, ClipboardList, Target } from "lucide-react";
+import { AlertTriangle, Calendar, ClipboardList, Target } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { buttonClassName } from "@/components/ui/button";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { TREND_CONFIG } from "@/components/technology-profile/tp-constants";
 import { formatDisplayDate } from "@/lib/display";
@@ -19,7 +17,7 @@ type TpHeroSummaryProps = {
 };
 
 export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
-  const { profile, client, businessSnapshot, journeyScores, nextAction, journey } = detail;
+  const { profile, businessSnapshot, journeyScores, journey } = detail;
   const score = profile.overallStackScore;
   const hasAssessment = journey.assessmentsCompleted > 0;
   const rating = score !== null ? getRating(score) : null;
@@ -41,8 +39,8 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {TECHNOLOGY_MATURITY_PROFILE_LABEL}
             </p>
-            <h3 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
-              {client.companyName}
+            <h3 className="break-words text-lg font-semibold tracking-tight sm:text-xl">
+              Technology Maturity Overview
             </h3>
             <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
               {TECHNOLOGY_MATURITY_PROFILE_SUBTITLE}
@@ -127,7 +125,7 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
         </div>
       </div>
 
-      {!hasAssessment && !detail.sections.showNextActionCta ? (
+      {!hasAssessment ? (
         <div className="border-t border-border/60 bg-muted/20 px-4 py-4 sm:px-6">
           <TpEmptyState
             icon={ClipboardList}
@@ -135,32 +133,6 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             message="Run the first assessment to populate scores, categories, and recommendations for this client."
             className="border-none bg-transparent py-4"
           />
-        </div>
-      ) : null}
-
-      {detail.sections.showNextActionCta ? (
-        <div
-          id="immediate-focus"
-          className="scroll-mt-24 flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
-        >
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Immediate Focus
-            </p>
-            <p className="text-sm font-semibold">{nextAction.label}</p>
-            <p className="text-sm text-muted-foreground">{nextAction.description}</p>
-          </div>
-          <Link
-            href={nextAction.href}
-            className={buttonClassName({
-              variant: "default",
-              size: "sm",
-              className: "w-full shrink-0 sm:w-auto",
-            })}
-          >
-            {nextAction.label}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
         </div>
       ) : null}
     </section>

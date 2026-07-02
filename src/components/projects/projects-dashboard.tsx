@@ -88,14 +88,21 @@ export function ProjectsDashboard({
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
+  const clientFromUrl = searchParams.get("client");
   const [projects, setProjects] = useState(initialProjects);
   const [view, setView] = useState<ViewFilter>("all");
-  const [clientFilter, setClientFilter] = useState<string>("all");
+  const [clientFilter, setClientFilter] = useState<string>(clientFromUrl ?? "all");
   const [showCancelled, setShowCancelled] = useState(false);
   const [selectedProject, setSelectedProject] = useState<SerializedProject | null>(null);
   const [editStatus, setEditStatus] = useState<ProjectStatus>("proposed");
   const [editNotes, setEditNotes] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (clientFromUrl) {
+      setClientFilter(clientFromUrl);
+    }
+  }, [clientFromUrl]);
 
   useEffect(() => {
     if (selectedId) {

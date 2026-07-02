@@ -11,3 +11,8 @@ export function clientImmediateFocusPath(clientId: string) {
 export function clientRecommendationsPath(clientId: string) {
   return `/clients/${clientId}/recommendations`;
 }
+
+/** Project Register filtered to a single client. */
+export function clientProjectsPath(clientId: string) {
+  return `/projects?client=${clientId}`;
+}

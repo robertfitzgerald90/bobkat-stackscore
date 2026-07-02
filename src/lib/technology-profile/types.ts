@@ -1,3 +1,4 @@
+import type { ClientWorkspaceSnapshot } from "@/lib/client-workspace";
 import type { PillarScoreInsight } from "@/lib/technology-maturity/pillars";
 import type { UserRole } from "@/generated/prisma/client";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
@@ -232,4 +233,5 @@ export type TechnologyProfileDetail = {
   scoreDeltaSincePrevious: number | null;
   sections: ProfileSectionVisibility;
   journeyTimeline: JourneyTimelineEvent[];
+  workspace: ClientWorkspaceSnapshot;
 };
