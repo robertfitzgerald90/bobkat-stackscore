@@ -139,8 +139,14 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
       ) : null}
 
       {detail.sections.showNextActionCta ? (
-        <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div
+          id="immediate-focus"
+          className="scroll-mt-24 flex flex-col gap-3 border-t border-border/60 bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+        >
           <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Immediate Focus
+            </p>
             <p className="text-sm font-semibold">{nextAction.label}</p>
             <p className="text-sm text-muted-foreground">{nextAction.description}</p>
           </div>

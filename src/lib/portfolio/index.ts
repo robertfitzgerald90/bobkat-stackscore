@@ -32,3 +32,8 @@ export {
 } from "@/lib/portfolio/build-card";
 
 export { getPortfolioSummary, type PortfolioSummaryOptions } from "@/lib/portfolio/summary";
+export {
+  sortPortfolioClients,
+  PORTFOLIO_SORT_OPTIONS,
+  type PortfolioSortMode,
+} from "@/lib/portfolio/sort-clients";

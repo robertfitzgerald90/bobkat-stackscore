@@ -1,4 +1,5 @@
 const ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
+  { pattern: /^\/portfolio$/, title: "Portfolio" },
   { pattern: /^\/dashboard$/, title: "Dashboard" },
   { pattern: /^\/clients\/new$/, title: "New Client" },
   { pattern: /^\/clients\/[^/]+\/improvement$/, title: "Improvement" },

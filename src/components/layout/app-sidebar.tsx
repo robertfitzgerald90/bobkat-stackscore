@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FolderKanban, Shield, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, Shield, BookOpen, LayoutGrid } from "lucide-react";
+import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import {
   Sheet,
@@ -12,6 +13,7 @@ import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+  { href: "/portfolio", label: "Portfolio", icon: LayoutGrid, portfolioOnly: true },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/projects", label: "Projects", icon: FolderKanban },
@@ -31,11 +33,15 @@ function SidebarNav({
   return (
     <>
       <div className="shrink-0 border-b border-sidebar-border px-5 py-5">
-        <BrandLogo href="/dashboard" size={44} variant="sidebar" />
+        <BrandLogo href={canAccessPortfolio(role) ? "/portfolio" : "/dashboard"} size={44} variant="sidebar" />
       </div>
       <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-4">
         {navItems
-          .filter((item) => !item.adminOnly || role === "admin")
+          .filter((item) => {
+            if (item.adminOnly && role !== "admin") return false;
+            if (item.portfolioOnly && !canAccessPortfolio(role)) return false;
+            return true;
+          })
           .map((item) => {
             const Icon = item.icon;
             const active = pathname.startsWith(item.href);

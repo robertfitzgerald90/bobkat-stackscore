@@ -39,7 +39,7 @@ export function LoginForm() {
         return;
       }
 
-      const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+      const callbackUrl = searchParams.get("callbackUrl") ?? "/";
       router.push(callbackUrl);
       router.refresh();
     } catch {

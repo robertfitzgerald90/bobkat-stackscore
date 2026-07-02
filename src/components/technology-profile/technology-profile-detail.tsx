@@ -12,6 +12,7 @@ import { TpReportsDocuments } from "@/components/technology-profile/tp-reports-d
 import { TpRoadmapPreview } from "@/components/technology-profile/tp-roadmap-preview";
 import { TpScoreHistory } from "@/components/technology-profile/tp-score-history";
 import { TpTechnologyJourney } from "@/components/technology-profile/tp-technology-journey";
+import { ImmediateFocusAnchor } from "@/components/technology-profile/immediate-focus-anchor";
 import { buttonClassName } from "@/components/ui/button";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
 
@@ -24,6 +25,7 @@ export function TechnologyProfileDetailView({ detail }: TechnologyProfileDetailV
 
   return (
     <div className="page-content min-w-0 space-y-6 sm:space-y-8">
+      <ImmediateFocusAnchor />
       <TpHeroSummary detail={detail} />
 
       {sections.showBusinessSnapshot ? (
