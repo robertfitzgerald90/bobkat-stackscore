@@ -1,7 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { PortfolioClientCardView } from "@/components/portfolio/portfolio-client-card";
+import { NewClientSheet } from "@/components/clients/new-client-sheet";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -21,12 +25,18 @@ type PortfolioViewProps = {
 };
 
 export function PortfolioView({ clients }: PortfolioViewProps) {
+  const router = useRouter();
   const [sortMode, setSortMode] = useState<PortfolioSortMode>("recommended");
+  const [newClientOpen, setNewClientOpen] = useState(false);
 
   const sortedClients = useMemo(
     () => sortPortfolioClients(clients, sortMode),
     [clients, sortMode],
   );
+
+  function handleClientCreated() {
+    router.refresh();
+  }
 
   return (
     <div className="page-content min-w-0 space-y-4">
@@ -37,28 +47,44 @@ export function PortfolioView({ clients }: PortfolioViewProps) {
             Which client deserves your attention?
           </p>
         </div>
-        <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:min-w-[220px]">
-          <label htmlFor="portfolio-sort" className="text-xs font-medium text-muted-foreground">
-            Sort
-          </label>
-          <Select
-            value={sortMode}
-            items={Object.fromEntries(PORTFOLIO_SORT_OPTIONS.map((o) => [o.value, o.label]))}
-            onValueChange={(value) => setSortMode((value ?? "recommended") as PortfolioSortMode)}
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-end sm:justify-end">
+          <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:min-w-[220px]">
+            <label htmlFor="portfolio-sort" className="text-xs font-medium text-muted-foreground">
+              Sort
+            </label>
+            <Select
+              value={sortMode}
+              items={Object.fromEntries(PORTFOLIO_SORT_OPTIONS.map((o) => [o.value, o.label]))}
+              onValueChange={(value) => setSortMode((value ?? "recommended") as PortfolioSortMode)}
+            >
+              <SelectTrigger id="portfolio-sort" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PORTFOLIO_SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            type="button"
+            className="w-full shrink-0 sm:w-auto"
+            onClick={() => setNewClientOpen(true)}
           >
-            <SelectTrigger id="portfolio-sort" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {PORTFOLIO_SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Plus className="mr-2 h-4 w-4" />
+            New Client
+          </Button>
         </div>
       </div>
+
+      <NewClientSheet
+        open={newClientOpen}
+        onOpenChange={setNewClientOpen}
+        onCreated={handleClientCreated}
+      />
 
       {sortedClients.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
@@ -66,6 +92,14 @@ export function PortfolioView({ clients }: PortfolioViewProps) {
           <p className="mt-1 text-sm text-muted-foreground">
             Add clients to begin prioritizing technology improvement work.
           </p>
+          <Button
+            type="button"
+            className="mt-4"
+            onClick={() => setNewClientOpen(true)}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            New Client
+          </Button>
         </div>
       ) : (
         <>
