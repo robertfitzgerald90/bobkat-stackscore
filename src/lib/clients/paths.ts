@@ -12,6 +12,14 @@ export function clientRecommendationsPath(clientId: string) {
   return `/clients/${clientId}/recommendations`;
 }
 
+export function clientRecommendationDetailPath(clientId: string, recommendationId: string) {
+  return `/clients/${clientId}/recommendations?selected=${recommendationId}`;
+}
+
+export function clientProjectDetailPath(clientId: string, projectId: string) {
+  return `${clientProjectsPath(clientId)}&selected=${projectId}`;
+}
+
 /** Project Register filtered to a single client. */
 export function clientProjectsPath(clientId: string) {
   return `/projects?client=${clientId}`;

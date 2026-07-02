@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import type { ClientRecommendationFilters, ClientRecommendationRow } from "@/lib/recommendations/client-list";
 import { TECHNOLOGY_PILLARS } from "@/lib/technology-maturity/pillars";
 import type { Priority, RecommendationStatus } from "@/generated/prisma/client";
+import { cn } from "@/lib/utils";
 
 const STATUS_OPTIONS: RecommendationStatus[] = [
   "open",
@@ -43,6 +45,17 @@ export function ClientRecommendationsView({
   filters,
 }: ClientRecommendationsViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedId = searchParams.get("selected");
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const target = document.getElementById(`rec-${selectedId}`);
+    if (!target) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [selectedId, recommendations]);
 
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams();
@@ -159,7 +172,11 @@ export function ClientRecommendationsView({
             recommendations.map((recommendation) => (
               <div
                 key={recommendation.id}
-                className="min-w-0 rounded-lg border border-border/60 p-4 text-sm"
+                id={`rec-${recommendation.id}`}
+                className={cn(
+                  "min-w-0 scroll-mt-24 rounded-lg border border-border/60 p-4 text-sm",
+                  selectedId === recommendation.id && "border-primary/40 bg-primary/5",
+                )}
               >
                 <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-2">

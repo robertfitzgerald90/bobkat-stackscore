@@ -8,6 +8,7 @@ import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { clientProjectsPath } from "@/lib/clients/paths";
 import { PRIORITY_LABELS } from "@/lib/display";
 import type { ClientWorkspaceSnapshot, ImmediateFocusItem } from "@/lib/client-workspace";
+import { formatFocusMetadataLine } from "@/lib/client-workspace";
 import type { NextRecommendedAction } from "@/lib/technology-profile/types";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
@@ -50,34 +51,25 @@ function FocusItemRow({ item }: { item: ImmediateFocusItem }) {
   return (
     <Link
       href={item.href}
-      className="flex min-w-0 flex-col gap-2 rounded-lg border border-border/60 p-3 transition-colors hover:border-primary/30 hover:bg-muted/30 sm:flex-row sm:items-center sm:justify-between"
+      className="group flex min-w-0 items-center gap-3 rounded-lg border border-border/60 px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-muted/30"
     >
-      <div className="min-w-0 space-y-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="min-w-0 truncate font-medium">{item.title}</p>
-          <Badge variant={PRIORITY_BADGE[item.priority]} className="text-[10px]">
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="min-w-0 truncate text-sm font-semibold leading-snug group-hover:text-primary">
+            {item.title}
+          </p>
+          <Badge
+            variant={PRIORITY_BADGE[item.priority]}
+            className="shrink-0 text-[10px] uppercase"
+          >
             {PRIORITY_LABELS[item.priority]}
           </Badge>
         </div>
-        <p className="text-xs text-muted-foreground">
-          {item.pillarName}
-          {item.estimatedImpactPoints !== null ? (
-            <span className="text-foreground"> · +{item.estimatedImpactPoints} pts</span>
-          ) : null}
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          {formatFocusMetadataLine(item)}
         </p>
-        <div className="flex flex-wrap gap-2 text-[11px] text-muted-foreground">
-          <span>{item.statusLabel}</span>
-          <span>·</span>
-          <span>{item.readinessLabel}</span>
-          {item.relatedLabel ? (
-            <>
-              <span>·</span>
-              <span>{item.relatedLabel}</span>
-            </>
-          ) : null}
-        </div>
       </div>
-      <ArrowRight className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" />
+      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
     </Link>
   );
 }

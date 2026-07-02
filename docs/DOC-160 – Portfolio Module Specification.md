@@ -8,6 +8,20 @@
 
 ---
 
+#Intention
+
+The Portfolio is not a dashboard.
+
+The Portfolio is the consultant's operational home.
+
+Its purpose is to help the consultant determine which client deserves attention without requiring analysis.
+
+The Portfolio should remain calm, compact, and intentionally boring.
+
+Complexity belongs inside the Client Workspace.
+
+---
+
 # 1. Purpose
 
 DOC-160 defines the StackScore **Portfolio** module — the default operational landing experience for consultants.

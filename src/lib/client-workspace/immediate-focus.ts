@@ -1,5 +1,8 @@
 import type { Priority, ProjectStatus, RecommendationStatus } from "@/generated/prisma/client";
-import { clientProjectsPath, clientRecommendationsPath } from "@/lib/clients/paths";
+import {
+  clientProjectDetailPath,
+  clientRecommendationDetailPath,
+} from "@/lib/clients/paths";
 import { countImmediateFocusItems } from "@/lib/portfolio/immediate-focus";
 import { PORTFOLIO_OPEN_RECOMMENDATION_STATUSES } from "@/lib/portfolio/constants";
 import { ACTIVE_PROJECT_STATUSES, OPEN_PROJECT_STATUSES } from "@/lib/projects";
@@ -7,6 +10,7 @@ import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary"
 import { formatProjectStatus } from "@/lib/projects";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
 import { getPillarDisplayForCategoryCode } from "@/lib/technology-maturity/pillars";
+import { conciseFocusTitle } from "@/lib/client-workspace/display";
 import type {
   ProfileProjectSummary,
   ProfileRecommendationSummary,
@@ -23,8 +27,8 @@ export type ImmediateFocusItem = {
   estimatedImpactPoints: number | null;
   statusLabel: string;
   readinessLabel: string;
+  sourceLabel: string;
   href: string;
-  relatedLabel: string | null;
 };
 
 export type ClientWorkspaceKpis = {
@@ -56,9 +60,9 @@ function projectReadinessLabel(status: ProjectStatus): string {
 function recommendationReadinessLabel(
   recommendation: ProfileRecommendationSummary,
 ): string {
-  if (!recommendation.project) return "Ready to start";
-  if (recommendation.project.status === "proposed") return "Blocked — project proposed";
-  if (ACTIVE_PROJECT_STATUSES.includes(recommendation.project.status)) return "In delivery";
+  if (!recommendation.project) return "Ready";
+  if (recommendation.project.status === "proposed") return "Blocked";
+  if (ACTIVE_PROJECT_STATUSES.includes(recommendation.project.status)) return "Ready";
   return formatProjectStatus(recommendation.project.status);
 }
 
@@ -118,6 +122,12 @@ export function buildClientWorkspaceSnapshot(input: {
       .filter((id): id is string => Boolean(id)),
   );
 
+  const recommendationByProjectId = new Map(
+    openRecommendations
+      .filter((recommendation) => recommendation.project?.id)
+      .map((recommendation) => [recommendation.project!.id, recommendation] as const),
+  );
+
   const projectCandidates: Array<ImmediateFocusItem & { sortScore: number }> = [];
 
   for (const project of openProjects) {
@@ -127,17 +137,24 @@ export function buildClientWorkspaceSnapshot(input: {
 
     if (!isHighValue) continue;
 
+    const linkedRecommendation = recommendationByProjectId.get(project.id);
+
     projectCandidates.push({
       id: project.id,
       kind: "project",
-      title: project.title,
-      pillarName: project.recommendationTitle ?? "Technology Improvement",
+      title: conciseFocusTitle(project.title),
+      pillarName: linkedRecommendation
+        ? pillarNameForCategory(
+            linkedRecommendation.categoryCode,
+            linkedRecommendation.categoryName,
+          )
+        : "Technology Improvement",
       priority: project.priority,
       estimatedImpactPoints: project.estimatedImpactPoints,
       statusLabel: formatProjectStatus(project.status),
       readinessLabel: projectReadinessLabel(project.status),
-      href: `${clientProjectsPath(input.clientId)}&selected=${project.id}`,
-      relatedLabel: project.recommendationTitle ? "From recommendation" : null,
+      sourceLabel: linkedRecommendation ? "From recommendation" : "Project",
+      href: clientProjectDetailPath(input.clientId, project.id),
       sortScore:
         priorityWeight(project.priority) * 100 +
         projectSortWeight(project.status) * 10 +
@@ -171,16 +188,16 @@ export function buildClientWorkspaceSnapshot(input: {
     recommendationCandidates.push({
       id: recommendation.id,
       kind: "recommendation",
-      title: recommendation.title,
+      title: conciseFocusTitle(recommendation.title),
       pillarName: pillarNameForCategory(recommendation.categoryCode, recommendation.categoryName),
       priority: recommendation.priority,
       estimatedImpactPoints: recommendation.estimatedImpactPoints,
       statusLabel: RECOMMENDATION_STATUS_LABELS[recommendation.status],
       readinessLabel: recommendationReadinessLabel(recommendation),
-      href: clientRecommendationsPath(input.clientId),
-      relatedLabel: recommendation.project
-        ? `Project: ${recommendation.project.title}`
-        : "Recommendation",
+      sourceLabel: recommendation.project ? "From recommendation" : "Recommendation",
+      href: recommendation.project
+        ? clientProjectDetailPath(input.clientId, recommendation.project.id)
+        : clientRecommendationDetailPath(input.clientId, recommendation.id),
       sortScore:
         priorityWeight(recommendation.priority) * 100 +
         (recommendation.estimatedImpactPoints ?? 0) +

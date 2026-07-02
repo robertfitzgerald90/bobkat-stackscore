@@ -6,3 +6,4 @@ export type {
 } from "@/lib/client-workspace/immediate-focus";
 
 export { buildClientWorkspaceSnapshot } from "@/lib/client-workspace/immediate-focus";
+export { conciseFocusTitle, formatFocusMetadataLine } from "@/lib/client-workspace/display";
