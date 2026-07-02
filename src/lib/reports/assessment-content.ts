@@ -35,6 +35,7 @@ export type AssessmentReportSections = {
   overviewBullets: string[];
 };
 
+/** Assembles executive-summary bullets, priority groupings, and roadmap milestones for PDF export. */
 export function buildAssessmentReportSections(
   data: AssessmentReportData,
 ): AssessmentReportSections {

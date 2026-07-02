@@ -108,6 +108,10 @@ export function evaluateTriggers(
   return sortByRecommendationPriority(recommendations);
 }
 
+/**
+ * Per-category max impact cap used for projected StackScore (DOC-152).
+ * Prevents summing duplicate pillar impacts when multiple recommendations share a category.
+ */
 export function calculateProjectionImpacts(
   recommendations: GeneratedRecommendation[],
 ): number {

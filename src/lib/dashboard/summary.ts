@@ -77,6 +77,10 @@ export type DashboardSummaryOptions = {
   now?: Date;
 };
 
+/**
+ * Read-only portfolio analytics for the Dashboard (DOC-127).
+ * Reuses Portfolio card builders for per-client health without operational actions.
+ */
 export async function getDashboardSummary(
   options: DashboardSummaryOptions = {},
 ): Promise<DashboardSummary> {

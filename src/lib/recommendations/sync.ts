@@ -72,8 +72,9 @@ async function upsertAssessmentTrigger(
 }
 
 /**
- * Upsert client-level recommendations on assessment completion.
- * One active row per (clientId, dedupeKey); preserves workflow status and createdAt.
+ * Upsert client-level recommendations on assessment completion (DOC-152).
+ * One active row per (clientId, dedupeKey). On retrigger: updates content, preserves workflow
+ * status when appropriate, reopens completed rows as recurrences, and records assessment triggers.
  */
 export async function syncClientRecommendations(
   tx: SyncTransaction,

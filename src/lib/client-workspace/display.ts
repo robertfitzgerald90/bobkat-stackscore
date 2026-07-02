@@ -1,6 +1,6 @@
 import type { ImmediateFocusItem } from "@/lib/client-workspace/immediate-focus";
 
-/** Prefer a short action title when the source includes an assessment question suffix. */
+/** Strips assessment-question suffixes from recommendation titles for compact workspace rows. */
 export function conciseFocusTitle(title: string): string {
   const colonIndex = title.indexOf(":");
   if (colonIndex <= 0) return title.trim();
@@ -16,6 +16,7 @@ export function conciseFocusTitle(title: string): string {
   return title.trim();
 }
 
+/** Builds the muted metadata line for Immediate Focus rows (DOC-160 §6). */
 export function formatFocusMetadataLine(item: ImmediateFocusItem): string {
   const parts: string[] = [item.pillarName];
 

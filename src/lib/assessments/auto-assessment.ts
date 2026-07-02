@@ -66,7 +66,10 @@ function resolveReassessmentType(
   return "followup";
 }
 
-/** Determines assessment kind, type, and display name without user input. */
+/**
+ * Chooses initial vs reassessment type and display name without user input (DOC-007).
+ * Uses elapsed time since last completion and overdue reassessment window.
+ */
 export function resolveAutoAssessmentParams(input: {
   completedAssessments: CompletedAssessmentForAuto[];
   nextRecommendedAssessmentAt?: string | null;

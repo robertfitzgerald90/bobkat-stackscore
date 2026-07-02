@@ -59,6 +59,7 @@ function openRecommendations(recommendations: PortfolioRecommendationRow[]) {
   );
 }
 
+/** Splits open recommendations by whether linked project work is actionable or blocked (proposed). */
 function countActionableAndBlockedRecommendations(recommendations: PortfolioRecommendationRow[]) {
   let actionableRecommendationsCount = 0;
   let blockedRecommendationsCount = 0;
@@ -82,6 +83,10 @@ function countActionableAndBlockedRecommendations(recommendations: PortfolioReco
   return { actionableRecommendationsCount, blockedRecommendationsCount };
 }
 
+/**
+ * Builds a Portfolio client card (DOC-160 §6): readiness, immediate focus count,
+ * projected score, sparkline trend, and recommended sort score inputs.
+ */
 export function buildPortfolioClientCard(input: BuildPortfolioCardInput): PortfolioClientCard {
   const now = input.now ?? new Date();
   const openRecs = openRecommendations(input.recommendations);

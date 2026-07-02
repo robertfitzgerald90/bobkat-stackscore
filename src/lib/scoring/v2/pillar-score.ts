@@ -13,6 +13,10 @@ function roundScore(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
+/**
+ * Weighted pillar percent score (DOC-119). N/A answers are excluded from the weight denominator.
+ * Incomplete pillars return status "incomplete" and do not contribute to overall StackScore.
+ */
 export function calculatePillarScore(
   pillarCode: TechnologyPillarCode,
   questions: V2QuestionInput[],
@@ -78,6 +82,7 @@ export function calculateOverallStackScore(
   return Math.round(sum / complete.length);
 }
 
+/** Runs DOC-119 pillar scoring for all technology pillars from v2 question/response inputs. */
 export function calculateV2Scores(input: {
   questions: V2QuestionInput[];
   responses: V2ResponseInput[];

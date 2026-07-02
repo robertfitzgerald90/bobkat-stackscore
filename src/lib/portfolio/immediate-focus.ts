@@ -15,7 +15,7 @@ export type ImmediateFocusInput = {
   isReassessmentOverdue: boolean;
 };
 
-/** Counts highest-priority actionable items for the Immediate Focus badge (DOC-160 / DOC-152). */
+/** Counts urgent portfolio signals: draft assessment, overdue reassessment, critical/high open recs (DOC-160). */
 export function countImmediateFocusItems(input: ImmediateFocusInput): number {
   let count = 0;
 

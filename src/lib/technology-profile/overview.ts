@@ -279,6 +279,7 @@ export function buildCategoryInsights(input: {
   });
 }
 
+/** Projected StackScore if all open recommendations were addressed (DOC-152 impact model). */
 export function projectScoreFromRecommendations(
   currentScore: number | null,
   recommendations: RecommendationForOverview[],
@@ -314,6 +315,7 @@ export function buildRoadmapPreview(phases: TipRoadmapPhaseView[]): RoadmapPhase
   }));
 }
 
+/** Picks the highest-priority next CTA for workspace empty states and profile guidance. */
 export function deriveNextRecommendedAction(context: NextActionContext): NextRecommendedAction {
   const { clientId } = context;
 

@@ -15,10 +15,12 @@ export type PortfolioReadinessInput = {
   isReassessmentOverdue: boolean;
 };
 
+/** Project statuses that allow consultant work to proceed (excludes proposed/waiting approval). */
 export function isActionableProjectStatus(status: ProjectStatus): boolean {
   return ACTIVE_PROJECT_STATUSES.includes(status);
 }
 
+/** Proposed projects block dependent recommendation work until approved (DOC-160 §7). */
 export function isBlockedProjectStatus(status: ProjectStatus): boolean {
   return status === "proposed";
 }

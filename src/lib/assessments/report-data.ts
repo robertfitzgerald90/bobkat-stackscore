@@ -2,6 +2,7 @@ import type { AssessmentResultsSummary } from "@/lib/assessments/results-summary
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import { formatReportDate } from "@/lib/pdf/types";
 
+/** Maps completed assessment results into PDF renderer input (immutable snapshot at generation time). */
 export function buildAssessmentReportData(input: {
   clientName: string;
   assessmentName: string;

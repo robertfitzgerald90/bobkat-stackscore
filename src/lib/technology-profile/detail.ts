@@ -136,6 +136,11 @@ function resolveActiveTipContext(input: {
   };
 }
 
+/**
+ * Primary aggregation entry for Client Workspace / Technology Profile (DOC-113, DOC-160).
+ * Loads profile, recommendations, projects, TIP context, workspace snapshot, and applies
+ * role-based audience trimming for client portal users.
+ */
 export async function getTechnologyProfileDetail(
   clientId: string,
   role: UserRole,

@@ -60,6 +60,7 @@ function projectReadinessLabel(status: ProjectStatus): string {
 function recommendationReadinessLabel(
   recommendation: ProfileRecommendationSummary,
 ): string {
+  // Blocked when a linked project is still awaiting approval (DOC-160 readiness).
   if (!recommendation.project) return "Ready";
   if (recommendation.project.status === "proposed") return "Blocked";
   if (ACTIVE_PROJECT_STATUSES.includes(recommendation.project.status)) return "Ready";
@@ -83,6 +84,11 @@ function priorityWeight(priority: Priority): number {
   return order.length - order.indexOf(priority);
 }
 
+/**
+ * Ranks top workspace focus items for a single client (DOC-160 Client Workspace).
+ * Merges open projects and actionable recommendations, dedupes project-linked recs,
+ * and returns up to five items by priority, status, and estimated impact.
+ */
 export function buildClientWorkspaceSnapshot(input: {
   clientId: string;
   stackScore: number | null;

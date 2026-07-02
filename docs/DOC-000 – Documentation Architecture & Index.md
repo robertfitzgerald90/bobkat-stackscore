@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.4
+**Version:** 2.5
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 30, 2026
@@ -34,7 +34,8 @@ DOC-000 (this index)
     ├── Domain Architecture (DOC-120 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
     ├── Reporting Architecture (DOC-125 – DOC-126)
-    ├── Experience Architecture (DOC-007, DOC-127, DOC-160)
+    ├── Experience Architecture (DOC-007, DOC-127)
+    ├── Portfolio & Operations (DOC-160, DOC-161, DOC-162, DOC-163)
     ├── Integration Architecture (DOC-128)
     └── Technical Layer (DOC-300 – DOC-303)
 ```
@@ -288,12 +289,11 @@ Cross-cutting reporting engine standards governing report types, audiences, data
 
 ## Experience architecture
 
-Application experience standards for role-based dashboards, widgets, and actionable home screens.
+Application experience standards for role-based dashboards and read-only analytics.
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
 | [DOC-127](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Dashboard Specification | 1.0 | Governing (experience) | v2 | Draft |
-| [DOC-160](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio Module Specification | 1.0 | Governing (experience) | v2 | Draft |
 
 ### DOC-127 – Dashboard Specification
 
@@ -303,9 +303,20 @@ Application experience standards for role-based dashboards, widgets, and actiona
 | **Title** | Dashboard Specification |
 | **Version** | 1.0 |
 | **Status** | Draft |
-| **Purpose** | Defines dashboard architecture, layouts, widgets, KPIs, quick actions, and role-based UX including Today's Focus action card. |
+| **Purpose** | Defines dashboard architecture, layouts, widgets, KPIs, and read-only portfolio analytics. |
 | **Depends on** | DOC-005, DOC-113, DOC-122, DOC-123, DOC-124 |
 | **Used by** | DOC-005, DOC-124 (Dashboard Service), DOC-300 |
+
+## Portfolio & Operations
+
+Consultant operational surfaces — portfolio prioritization, client workspace, decision ranking, and immediate focus intelligence.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-160](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio Module Specification | 1.0 | Governing (experience) | v2 | Draft |
+| [DOC-161](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md) | Client Workspace Specification | 1.0 | Governing (experience) | v2 | Approved |
+| [DOC-162](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md) | Portfolio Decision Engine | 1.0 | Governing (operations) | v2 | Approved |
+| [DOC-163](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md) | Immediate Focus Engine | 1.0 | Governing (operations) | v2 | Approved |
 
 ### DOC-160 – Portfolio Module Specification
 
@@ -317,7 +328,43 @@ Application experience standards for role-based dashboards, widgets, and actiona
 | **Status** | Draft |
 | **Purpose** | Defines the Portfolio module as the default consultant landing page — compact client cards, readiness states, sort modes, and navigation to Client Workspace Immediate Focus. |
 | **Depends on** | DOC-006, DOC-007, DOC-113, DOC-119, DOC-122, DOC-127, DOC-150, DOC-152 |
-| **Used by** | DOC-123, DOC-124 (Portfolio Service), DOC-127, DOC-300 |
+| **Used by** | DOC-123, DOC-124 (Portfolio Service), DOC-127, DOC-161, DOC-162, DOC-163, DOC-300 |
+
+### DOC-161 – Client Workspace Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-161 |
+| **Title** | Client Workspace Specification |
+| **Version** | 1.0 |
+| **Status** | Approved |
+| **Purpose** | Defines the Client Workspace as the operational center for a single client — compact header, KPI dashboard, Immediate Focus, assessment entry, and navigation hierarchy. |
+| **Depends on** | DOC-006, DOC-007, DOC-109, DOC-113, DOC-119, DOC-160, DOC-163 |
+| **Used by** | DOC-123, DOC-124, DOC-162, DOC-163, DOC-300 |
+
+### DOC-162 – Portfolio Decision Engine
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-162 |
+| **Title** | Portfolio Decision Engine |
+| **Version** | 1.0 |
+| **Status** | Approved |
+| **Purpose** | Defines how StackScore determines portfolio priority — readiness evaluation, card field semantics, sort modes, and recommended ranking philosophy. |
+| **Depends on** | DOC-006, DOC-007, DOC-113, DOC-119, DOC-150, DOC-152, DOC-160, DOC-163 |
+| **Used by** | DOC-124 (Portfolio Service), DOC-160, DOC-161, DOC-300 |
+
+### DOC-163 – Immediate Focus Engine
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-163 |
+| **Title** | Immediate Focus Engine |
+| **Version** | 1.0 |
+| **Status** | Approved |
+| **Purpose** | Defines how StackScore determines and presents immediate focus — ranked work items, focus counts, selection rules, and navigation for Portfolio and Client Workspace. |
+| **Depends on** | DOC-006, DOC-007, DOC-113, DOC-119, DOC-150, DOC-152, DOC-160, DOC-161 |
+| **Used by** | DOC-124, DOC-160, DOC-161, DOC-162, DOC-300 |
 
 ## Integration architecture
 
@@ -397,6 +444,9 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
 * [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
 * [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
+* [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
+* [DOC-162 – Portfolio Decision Engine](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md)
+* [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)
 * [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
 * [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
 * [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
@@ -426,3 +476,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.2 | 2026-06-30 | BobKat IT | Registered DOC-006 (Product Constitution); updated conflict resolution hierarchy |
 | 2.3 | 2026-06-30 | BobKat IT | Registered DOC-109 (Assessment Design Specification v2.0); updated DOC-150 cross-references |
 | 2.4 | 2026-06-30 | BobKat IT | Registered DOC-160 (Portfolio Module Specification v1.0); updated Experience Architecture tier |
+| 2.5 | 2026-06-30 | BobKat IT | Added Portfolio & Operations tier; registered DOC-161 (Client Workspace), DOC-162 (Portfolio Decision Engine), and DOC-163 (Immediate Focus Engine) |

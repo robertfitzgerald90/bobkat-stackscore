@@ -10,6 +10,7 @@ export type CreateReassessmentInput = {
   sourceAssessmentId?: string;
 };
 
+/** Resolves the completed assessment used as a reassessment baseline (latest when omitted). */
 export async function resolveSourceAssessmentId(
   clientId: string,
   sourceAssessmentId?: string,
@@ -35,6 +36,10 @@ export async function resolveSourceAssessmentId(
   return latest?.id ?? null;
 }
 
+/**
+ * Creates a new draft reassessment linked to a completed baseline.
+ * Copies prior responses for pre-fill; prior assessments remain immutable snapshots.
+ */
 export async function createReassessment(input: CreateReassessmentInput) {
   const sourceId = await resolveSourceAssessmentId(input.clientId, input.sourceAssessmentId);
 

@@ -13,6 +13,10 @@ export function getRecommendationCatalogV2() {
   return catalog;
 }
 
+/**
+ * Evaluates RecommendationCatalogV2 trigger rules (DOC-151A-H, DOC-152).
+ * Returns generated recommendations for answers that match triggerAnswers or partial-score rules.
+ */
 export function evaluateV2Triggers(
   responses: V2TriggeredResponse[],
 ): GeneratedRecommendation[] {
@@ -60,6 +64,7 @@ export function evaluateV2Triggers(
   return sortByRecommendationPriority(recommendations);
 }
 
+/** Collects assessment responses that reference a recommendation template for v2 trigger evaluation. */
 export function collectV2TriggeredResponses(
   responses: Array<{
     question: { code: string; weight: number; category: { code: string; name: string } };

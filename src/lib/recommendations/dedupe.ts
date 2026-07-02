@@ -26,8 +26,8 @@ export type DedupeKeyInput = {
 };
 
 /**
- * Stable per-client dedupe key. Uses catalog template code (e.g. REC-IA-001) when
- * available so keys are consistent across environments and DB migrations.
+ * Stable per-client dedupe key (DOC-152). Client-level recommendations are deduplicated
+ * across reassessments so one capability maps to one active row per client.
  */
 export function buildDedupeKey(input: DedupeKeyInput): string {
   if (input.templateCode) {
@@ -39,6 +39,7 @@ export function buildDedupeKey(input: DedupeKeyInput): string {
   return "type:unknown";
 }
 
+/** Reopens declined recommendations only when critical/high priority retriggers (DOC-152). */
 export function shouldReopenDeclinedRecommendation(priority: Priority): boolean {
   return HIGH_PRIORITY_REOPEN.includes(priority);
 }
@@ -47,6 +48,7 @@ export function shouldPreserveStatus(status: RecommendationStatus): boolean {
   return PRESERVED_RECOMMENDATION_STATUSES.includes(status);
 }
 
+/** Keeps accepted/in_progress/deferred workflow state when the same capability retriggers on reassessment. */
 export function resolveStatusOnRetrigger(
   currentStatus: RecommendationStatus,
 ): RecommendationStatus {
@@ -86,6 +88,7 @@ function memberTemplateCodes(recommendation: GeneratedRecommendation): string[] 
   return group?.memberTemplateIds ?? [recommendation.templateCode];
 }
 
+/** Maps each generated recommendation to assessment evidence for audit and client-facing context. */
 export function buildTriggerReasonMap(
   generated: GeneratedRecommendation[],
   triggeredResponses: TriggeredResponse[],

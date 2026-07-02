@@ -15,6 +15,7 @@ import {
 import type { Prisma, Rating } from "@/generated/prisma/client";
 import { RATING_LABELS } from "@/lib/scoring";
 
+/** Maps StackScore to profile maturity tier bands (DOC-113). Distinct from per-pillar DOC-119 maturity levels. */
 function mapV2MaturityToProfileTier(
   score: number | null,
 ): import("@/generated/prisma/client").MaturityTier | null {
@@ -26,6 +27,11 @@ function mapV2MaturityToProfileTier(
   return "nascent";
 }
 
+/**
+ * Completes a draft v2 assessment: scores pillars (DOC-119), evaluates triggers (DOC-152),
+ * syncs client-level recommendations, records score history, and updates the Technology Profile.
+ * Preserves prior completed assessments as immutable snapshots.
+ */
 export async function completeAssessmentV2(assessmentId: string, userId: string) {
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
@@ -191,6 +197,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
   return { ...completed, recommendations };
 }
 
+/** Refreshes Technology Profile KPIs, trend, and snapshot after assessment completion. */
 export async function syncProfileFromAssessmentV2(assessmentId: string) {
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },

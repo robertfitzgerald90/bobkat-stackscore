@@ -32,6 +32,7 @@ function lastAssessmentTime(card: PortfolioClientCard): number {
   return new Date(card.lastAssessmentDate).getTime();
 }
 
+/** Applies Portfolio sort modes from DOC-160 §8; ties break on client name ascending. */
 export function sortPortfolioClients(
   clients: PortfolioClientCard[],
   mode: PortfolioSortMode,

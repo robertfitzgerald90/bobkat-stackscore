@@ -47,6 +47,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
   );
 }
 
+/**
+ * Creates a project from a recommendation (1:1). New projects start as `proposed`;
+ * the source recommendation moves to `accepted` to reflect consultant commitment.
+ */
 export async function POST(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();

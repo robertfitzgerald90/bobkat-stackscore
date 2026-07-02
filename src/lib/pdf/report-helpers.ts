@@ -30,6 +30,7 @@ function toProjectionRecommendation(recommendation: RecommendationSummary) {
   };
 }
 
+/** Open recommendations included in PDF roadmap and projection calculations. */
 function actionableRecommendations(recommendations: RecommendationSummary[]) {
   return recommendations.filter(
     (recommendation) =>
@@ -37,6 +38,10 @@ function actionableRecommendations(recommendations: RecommendationSummary[]) {
   );
 }
 
+/**
+ * Milestone StackScores for assessment PDF roadmap (critical → critical+high → all open recs).
+ * Uses the same per-category impact cap as live projected score (DOC-152).
+ */
 export function computeRoadmapScores(
   overallScore: number,
   recommendations: RecommendationSummary[],

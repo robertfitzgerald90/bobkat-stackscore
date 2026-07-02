@@ -3,6 +3,7 @@ import type { ProjectStatus } from "@/generated/prisma/client";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import type { UpdateProjectInput } from "@/lib/projects/schemas";
 
+/** Keeps linked recommendation status in sync when a project completes or reopens. */
 export async function updateProjectWithWorkflow(
   projectId: string,
   input: UpdateProjectInput,
