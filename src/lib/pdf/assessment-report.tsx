@@ -798,6 +798,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
         <View style={styles.coverBody}>
           <View style={styles.coverBrandRow}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image src={getPdfLogoPath()} style={styles.coverBrandLogo} />
             <View>
               <Text style={styles.coverPreparedBy}>{BRAND.companyName}</Text>

@@ -255,7 +255,7 @@ export async function getDashboardSummary(
     const card = buildPortfolioClientCard({
       clientId: client.id,
       companyName: client.companyName,
-      overallStackScore: profile?.overallStackScore ?? null,
+      overallStackScore: roundScore(profile?.overallStackScore),
       maturityTier: profile?.maturityTier ?? null,
       lastAssessedAt: profile?.lastAssessedAt ?? null,
       nextRecommendedAssessmentAt: profile?.nextRecommendedAssessmentAt ?? null,
