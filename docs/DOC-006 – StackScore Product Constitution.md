@@ -255,6 +255,30 @@ Users should never have to relearn the interface.
 
 ---
 
+## Principle 12 — Backend Intelligence, Frontend Simplicity
+
+StackScore may use complex backend logic, scoring, relationships, prioritization, and decision rules, but the user interface must remain calm, focused, and easy to understand.
+
+The backend should perform the heavy lifting.
+
+The frontend should present clear conclusions.
+
+The user should not need to understand every calculation, dependency, score, or rule in order to know what matters.
+
+StackScore should translate complex technology data into:
+
+- clear priorities
+- concise summaries
+- visible trends
+- recommended next actions
+- business outcomes
+
+The interface should avoid exposing raw complexity unless the user intentionally drills into details.
+
+Complexity belongs in the engine.
+
+Clarity belongs in the experience.
+
 # Product Acceptance Test
 
 Before implementing any feature, answer:
@@ -267,6 +291,8 @@ Before implementing any feature, answer:
 6. Can a user understand its purpose within five seconds?
 7. Does it make StackScore feel simpler rather than heavier?
 8. Would I confidently demonstrate this feature during a client meeting?
+9. Does the backend absorb complexity so the frontend can remain simple?
+10. Does this feature present a clear conclusion instead of forcing the user to interpret raw data?
 
 If most answers are **No**, redesign or reject the feature.
 

@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.3
+**Version:** 2.4
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** June 30, 2026
@@ -34,7 +34,7 @@ DOC-000 (this index)
     ├── Domain Architecture (DOC-120 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
     ├── Reporting Architecture (DOC-125 – DOC-126)
-    ├── Experience Architecture (DOC-127)
+    ├── Experience Architecture (DOC-007, DOC-127, DOC-160)
     ├── Integration Architecture (DOC-128)
     └── Technical Layer (DOC-300 – DOC-303)
 ```
@@ -293,6 +293,7 @@ Application experience standards for role-based dashboards, widgets, and actiona
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
 | [DOC-127](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Dashboard Specification | 1.0 | Governing (experience) | v2 | Draft |
+| [DOC-160](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio Module Specification | 1.0 | Governing (experience) | v2 | Draft |
 
 ### DOC-127 – Dashboard Specification
 
@@ -305,6 +306,18 @@ Application experience standards for role-based dashboards, widgets, and actiona
 | **Purpose** | Defines dashboard architecture, layouts, widgets, KPIs, quick actions, and role-based UX including Today's Focus action card. |
 | **Depends on** | DOC-005, DOC-113, DOC-122, DOC-123, DOC-124 |
 | **Used by** | DOC-005, DOC-124 (Dashboard Service), DOC-300 |
+
+### DOC-160 – Portfolio Module Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-160 |
+| **Title** | Portfolio Module Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines the Portfolio module as the default consultant landing page — compact client cards, readiness states, sort modes, and navigation to Client Workspace Immediate Focus. |
+| **Depends on** | DOC-006, DOC-007, DOC-113, DOC-119, DOC-122, DOC-127, DOC-150, DOC-152 |
+| **Used by** | DOC-123, DOC-124 (Portfolio Service), DOC-127, DOC-300 |
 
 ## Integration architecture
 
@@ -383,6 +396,7 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
 * [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
 * [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
 * [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
 * [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
 * [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
@@ -411,3 +425,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.1 | 2026-06-23 | BobKat IT | Registered DOC-150 (Technology Maturity Framework) as authoritative pillar model; updated hierarchy and DOC-110 disposition |
 | 2.2 | 2026-06-30 | BobKat IT | Registered DOC-006 (Product Constitution); updated conflict resolution hierarchy |
 | 2.3 | 2026-06-30 | BobKat IT | Registered DOC-109 (Assessment Design Specification v2.0); updated DOC-150 cross-references |
+| 2.4 | 2026-06-30 | BobKat IT | Registered DOC-160 (Portfolio Module Specification v1.0); updated Experience Architecture tier |
