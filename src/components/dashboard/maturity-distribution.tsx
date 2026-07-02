@@ -26,7 +26,7 @@ export function MaturityDistribution({ distribution }: MaturityDistributionProps
   if (total === 0) {
     return (
       <p className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 text-center text-sm text-muted-foreground">
-        No assessed clients yet. Complete assessments to see maturity distribution.
+        No assessed clients yet. Distribution appears after assessments are completed.
       </p>
     );
   }
