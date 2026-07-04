@@ -57,8 +57,9 @@ export function isClientWorkspaceSection(value: string): value is ClientWorkspac
 }
 
 /**
- * Interim hrefs for sections that already have live routes (Commit 2).
+ * Hrefs for DOC-201 sections.
  * Returns null when the section page is not available yet (render disabled).
+ * Commit 4 wires existing modules; Commit 5–6 add stubs and Journey.
  */
 export function resolveClientWorkspaceNavHref(
   clientId: string,
@@ -67,20 +68,16 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
-    case "recommendations":
-      return `/clients/${clientId}/recommendations`;
     case "roadmap":
-      return `/clients/${clientId}/improvement-plan`;
-    case "assessments":
-      return `/clients/${clientId}/assessments/history`;
-    case "contacts":
-      return `/clients/${clientId}/business-profile`;
-    case "executive-reports":
-      return `/clients/${clientId}/quarterly-review`;
-    case "journey":
     case "projects":
-    case "assets":
+    case "assessments":
+    case "recommendations":
     case "documents":
+    case "contacts":
+    case "executive-reports":
+      return `/clients/${clientId}/${section}`;
+    case "journey":
+    case "assets":
     case "billing":
     case "risks":
     case "activity":
@@ -102,9 +99,14 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
     return "overview";
   }
   if (rest.startsWith("/recommendations")) return "recommendations";
-  if (rest.startsWith("/improvement-plan")) return "roadmap";
-  if (rest.startsWith("/business-profile")) return "contacts";
+  if (rest.startsWith("/roadmap") || rest.startsWith("/improvement-plan")) {
+    return "roadmap";
+  }
+  if (rest.startsWith("/contacts") || rest.startsWith("/business-profile")) {
+    return "contacts";
+  }
   if (
+    rest.startsWith("/executive-reports") ||
     rest.startsWith("/quarterly-review") ||
     rest.startsWith("/progress-report") ||
     rest.startsWith("/improvement")
@@ -112,6 +114,8 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
     return "executive-reports";
   }
   if (rest.startsWith("/assessments")) return "assessments";
+  if (rest.startsWith("/projects")) return "projects";
+  if (rest.startsWith("/documents")) return "documents";
 
   for (const section of CLIENT_WORKSPACE_SECTIONS) {
     if (section === "overview") continue;

@@ -3,21 +3,27 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, FileText, Loader2, Plus } from "lucide-react";
+import { FileText, Loader2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TipPlanSummary } from "@/lib/technology-improvement-plan/types";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { toast } from "sonner";
 
 type TipPlanListProps = {
   clientId: string;
   clientName: string;
   initialPlans: TipPlanSummary[];
+  /** When true, omit page title chrome (workspace section supplies it). */
+  embedded?: boolean;
 };
 
-export function TipPlanList({ clientId, clientName, initialPlans }: TipPlanListProps) {
+export function TipPlanList({
+  clientId,
+  clientName,
+  initialPlans,
+  embedded = false,
+}: TipPlanListProps) {
   const router = useRouter();
   const [plans] = useState(initialPlans);
   const [creating, setCreating] = useState(false);
@@ -46,17 +52,14 @@ export function TipPlanList({ clientId, clientName, initialPlans }: TipPlanListP
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Link
-            href={clientTechnologyProfilePath(clientId)}
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Technology Maturity Profile
-          </Link>
-          <h2 className="page-title">Technology Improvement Plans</h2>
-          <p className="page-description">{clientName}</p>
-        </div>
+        {embedded ? (
+          <div className="min-w-0" />
+        ) : (
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Technology Improvement Plans</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{clientName}</p>
+          </div>
+        )}
         <Button type="button" onClick={startPlan} disabled={creating}>
           {creating ? (
             <>

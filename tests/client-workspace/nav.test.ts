@@ -6,55 +6,66 @@ import {
 } from "@/lib/client-workspace";
 
 describe("resolveClientWorkspaceNavHref", () => {
-  it("maps live interim routes for available sections", () => {
+  it("maps wired DOC-201 sections to workspace routes", () => {
     expect(resolveClientWorkspaceNavHref("c1", "overview")).toBe(
       "/clients/c1/technology-profile",
     );
     expect(resolveClientWorkspaceNavHref("c1", "recommendations")).toBe(
       "/clients/c1/recommendations",
     );
-    expect(resolveClientWorkspaceNavHref("c1", "roadmap")).toBe(
-      "/clients/c1/improvement-plan",
-    );
+    expect(resolveClientWorkspaceNavHref("c1", "roadmap")).toBe("/clients/c1/roadmap");
     expect(resolveClientWorkspaceNavHref("c1", "assessments")).toBe(
-      "/clients/c1/assessments/history",
+      "/clients/c1/assessments",
     );
-    expect(resolveClientWorkspaceNavHref("c1", "contacts")).toBe(
-      "/clients/c1/business-profile",
+    expect(resolveClientWorkspaceNavHref("c1", "projects")).toBe("/clients/c1/projects");
+    expect(resolveClientWorkspaceNavHref("c1", "documents")).toBe(
+      "/clients/c1/documents",
     );
+    expect(resolveClientWorkspaceNavHref("c1", "contacts")).toBe("/clients/c1/contacts");
     expect(resolveClientWorkspaceNavHref("c1", "executive-reports")).toBe(
-      "/clients/c1/quarterly-review",
+      "/clients/c1/executive-reports",
     );
   });
 
   it("returns null for sections not yet routed", () => {
     expect(resolveClientWorkspaceNavHref("c1", "journey")).toBeNull();
-    expect(resolveClientWorkspaceNavHref("c1", "projects")).toBeNull();
     expect(resolveClientWorkspaceNavHref("c1", "assets")).toBeNull();
+    expect(resolveClientWorkspaceNavHref("c1", "billing")).toBeNull();
+    expect(resolveClientWorkspaceNavHref("c1", "risks")).toBeNull();
     expect(resolveClientWorkspaceNavHref("c1", "activity")).toBeNull();
   });
 });
 
 describe("resolveActiveWorkspaceSection", () => {
-  it("detects overview and interim module routes", () => {
+  it("detects overview and wired module routes", () => {
     expect(resolveActiveWorkspaceSection("/clients/c1/technology-profile")).toBe(
       "overview",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/recommendations")).toBe(
       "recommendations",
     );
+    expect(resolveActiveWorkspaceSection("/clients/c1/roadmap")).toBe("roadmap");
     expect(resolveActiveWorkspaceSection("/clients/c1/improvement-plan/tip-1")).toBe(
       "roadmap",
     );
+    expect(resolveActiveWorkspaceSection("/clients/c1/contacts")).toBe("contacts");
     expect(resolveActiveWorkspaceSection("/clients/c1/business-profile")).toBe(
       "contacts",
+    );
+    expect(resolveActiveWorkspaceSection("/clients/c1/executive-reports")).toBe(
+      "executive-reports",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/quarterly-review")).toBe(
       "executive-reports",
     );
+    expect(resolveActiveWorkspaceSection("/clients/c1/assessments")).toBe(
+      "assessments",
+    );
     expect(resolveActiveWorkspaceSection("/clients/c1/assessments/history")).toBe(
       "assessments",
     );
+    expect(resolveActiveWorkspaceSection("/clients/c1/projects")).toBe("projects");
+    expect(resolveActiveWorkspaceSection("/clients/c1/documents")).toBe("documents");
   });
 });
 
