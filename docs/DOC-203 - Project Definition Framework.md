@@ -86,27 +86,21 @@ Projects should automatically generate documentation, reports, and measurable be
 
 # Project Hierarchy
 
+```text
 Client
+  └── Technology Program
+        └── Technology Investment Roadmap
+              └── Projects (scheduled in phases; backlog allowed)
+                    └── Recommendations (many per project via ProjectRecommendation)
+```
 
-↓
+**ProjectTask / Tasks** are **deferred** (DOC-120A, DEV-002). Do not implement task-level entities in Phases 1–7.
 
-Technology Program
+**Deliverables** in this document are **Document** types (and completion reports) — not a separate Deliverable entity.
 
-↓
+Canonical vocabulary: [DOC-200 § Canonical Glossary](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md#canonical-glossary).
 
-Roadmap
-
-↓
-
-Projects
-
-↓
-
-Recommendations
-
-↓
-
-Tasks
+**Project–Recommendation cardinality:** Current implementation is 1:1 (`recommendationId`). Future is 1:N via ProjectRecommendation (DOC-120A §7, DEV-002 Phase 3).
 
 ---
 
@@ -432,6 +426,19 @@ Projects exist to transform technology assessments into structured business init
 The Project object serves as the bridge between assessment findings, strategic planning, technology investment, implementation, executive reporting, and continuous improvement.
 
 Projects are the primary mechanism through which consultants deliver measurable value to their clients.
+
+---
+
+# Related Documents
+
+* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md) (current 1:1 generation)
+* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
+* [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
+* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
+* [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
+* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
 
 ---
 

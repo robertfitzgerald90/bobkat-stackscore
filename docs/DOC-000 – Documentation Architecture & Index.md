@@ -1,7 +1,7 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.6
+**Version:** 2.8
 **Status:** Approved
 **Owner:** BobKat IT
 **Last Updated:** July 4, 2026
@@ -34,12 +34,13 @@ DOC-000 (this index)
     ├── Assessment Libraries v2 (DOC-151A–H)
     ├── Decision Intelligence (DOC-152, DOC-153)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
-    ├── Domain Architecture (DOC-120 – DOC-124)
+    ├── Domain Architecture (DOC-120, DOC-120A, DOC-121 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
     ├── Reporting Architecture (DOC-125 – DOC-126)
     ├── Experience Architecture (DOC-007, DOC-127)
     ├── Portfolio & Operations (DOC-160 – DOC-163) — current operational experience
     ├── Client Lifecycle Architecture (DOC-200 – DOC-206) — strategic program model
+    ├── Engineering & Migration (DEV-001, DEV-002)
     ├── Future Intelligence (DOC-180 — deferred)
     ├── Integration Architecture (DOC-128)
     ├── Environment & Deployment (DOC-021)
@@ -52,12 +53,15 @@ If documents conflict, resolve in this order:
 2. [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) — product principles, UX, and feature acceptance
 3. [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) — experience principles
 4. DOC-000 disposition table below
-5. [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) — long-term program model (strategic target)
-6. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
-7. Higher authority tier wins within the same domain
-8. **Strategic vs operational:** DOC-200–206 define the long-term Technology Program Management vision. DOC-160–163 govern current Portfolio and Client Workspace operational experience until lifecycle modules are implemented. Commercial specs (DOC-103–107) remain authoritative for TIP/roadmap/project generation until superseded by DOC-203–205 implementations.
-9. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
-10. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
+5. [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) — long-term program model and **canonical glossary**
+6. [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) — future entity/relationship contract
+7. [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) — **implementation sequencing** (phase order)
+8. [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md) — comments, refactoring, docs-as-deliverable (supplements DOC-129)
+9. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+10. Higher authority tier wins within the same domain
+11. **Strategic vs operational:** DOC-200–206 = product intent. DOC-120A = entities/relationships. DEV-002 = build order. DOC-160–163 = current Portfolio/Workspace until a phase replaces them. DOC-103–105 = TIP/roadmap/project generation until Phases 3–4 supersede them. DOC-120 = currently implemented domain behavior.
+12. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
+13. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
 
 ---
 
@@ -224,6 +228,7 @@ Authoritative specifications that translate business architecture into software 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
 | [DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | 1.0 | Governing (domain) | v2 | Draft |
+| [DOC-120A](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) | Next Generation Domain Model Addendum | 1.0 | Governing (domain — strategic) | v2 strategic | Draft |
 | [DOC-121](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) | Database Schema Specification | 1.0 | Governing (database) | v2 | Draft |
 | [DOC-122](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Roles & Permissions Specification | 1.0 | Governing (security) | v2 | Draft |
 | [DOC-123](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | 1.0 | Governing (workflow) | v2 | Draft |
@@ -239,7 +244,20 @@ Authoritative specifications that translate business architecture into software 
 | **Status** | Draft |
 | **Purpose** | Defines StackScore core business objects, ownership model, relationships, lifecycle rules, and domain boundaries. |
 | **Depends on** | DOC-001, DOC-003, DOC-100–107, DOC-110–114, DOC-118 |
-| **Used by** | DOC-121, DOC-122, DOC-123, DOC-124, DOC-301 |
+| **Used by** | DOC-120A, DOC-121, DOC-122, DOC-123, DOC-124, DOC-301 |
+
+### DOC-120A – Next Generation Domain Model Addendum
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-120A |
+| **Title** | Next Generation Domain Model Addendum |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines future domain entities and relationships for the 200-series Technology Program Management architecture — TechnologyProgram, Roadmap, ProjectRecommendation, JourneyMilestone, PlanningWorkshop, EBR, and supporting objects — before schema or application changes. |
+| **Depends on** | DOC-120, DOC-200–206, DOC-103–105 |
+| **Used by** | DOC-121, DOC-301 (when implementation phases begin), DOC-123, DOC-124, DOC-300 |
+| **Authority** | Governs future program-management structure; DOC-120 remains authoritative for currently implemented behavior until each migration phase ships. Phase order must match DEV-002. |
 
 ### DOC-121 – Database Schema Specification
 
@@ -277,7 +295,7 @@ Authoritative specifications that translate business architecture into software 
 | **Depends on** | DOC-120, DOC-121, DOC-122, DOC-123 |
 | **Used by** | DOC-300, DOC-302 |
 
-Domain architecture tier (DOC-120 – DOC-124) is fully specified at Draft v1.0.
+Domain architecture tier (DOC-120 – DOC-124) is fully specified at Draft v1.0. DOC-120A extends DOC-120 for the next-generation Client Lifecycle domain model.
 
 ## Architecture diagrams
 
@@ -433,9 +451,9 @@ Strategic program-management model. StackScore is a **Technology Program Managem
 | **Title** | Client Lifecycle Architecture |
 | **Version** | 1.0 |
 | **Status** | Draft |
-| **Purpose** | Defines the end-to-end client consulting lifecycle — Prospect through Continuous Improvement — and primary objects (Technology Program, Assessment, Recommendation, Project, Technology Journey). |
+| **Purpose** | Defines the end-to-end client consulting lifecycle — Prospect through Continuous Improvement — primary objects, and the **canonical glossary** for program-management vocabulary. |
 | **Depends on** | DOC-006, DOC-007 |
-| **Used by** | DOC-201–206, DOC-120, DOC-123, DOC-124, DOC-300 |
+| **Used by** | DOC-201–206, DOC-120A, DEV-002, DOC-123, DOC-124, DOC-300 |
 
 ### DOC-201 – Client Workspace Framework
 
@@ -513,6 +531,39 @@ Strategic program-management model. StackScore is a **Technology Program Managem
 | **Depends on** | DOC-200, DOC-202, DOC-203, DOC-204 |
 | **Used by** | DOC-125, DOC-201 |
 | **Relationship to QBR** | Current Quarterly Business Review is an early implementation. DOC-206 defines the strategic EBR as the primary recurring executive meeting. |
+
+## Engineering & Migration
+
+Implementation standards and next-generation migration sequencing. Not product specifications.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DEV-001](DEV-001%20-%20Engineering%20Standards.md) | Engineering Standards | 1.1 | Governing (engineering practice) | Operational | Active |
+| [DEV-002](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) | Next Generation Migration Plan | 1.1 | Governing (implementation sequencing) | Operational | Active |
+
+### DEV-001 – Engineering Standards
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DEV-001 |
+| **Title** | Engineering Standards |
+| **Version** | 1.1 |
+| **Status** | Active |
+| **Purpose** | Intent-based comments, refactoring, and documentation-as-deliverable standards. Supplements DOC-129. |
+| **Depends on** | DOC-129, DEV-002, DOC-200 |
+| **Used by** | All implementation work; DEV-002 Definition of Done |
+
+### DEV-002 – Next Generation Migration Plan
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DEV-002 |
+| **Title** | Next Generation Migration Plan |
+| **Version** | 1.1 |
+| **Status** | Active |
+| **Purpose** | Phased implementation roadmap from assessment-centric StackScore to Technology Program Management Platform. Single source of truth for build order. |
+| **Depends on** | DOC-200–206, DOC-120A, DOC-160–163, DEV-001 |
+| **Used by** | All next-generation implementation; DOC-120A §10 must match DEV-002 phases |
 
 ## Future intelligence (deferred)
 
@@ -621,6 +672,9 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
 * [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
+* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md)
+* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
 * [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
@@ -674,3 +728,5 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.4 | 2026-06-30 | BobKat IT | Registered DOC-160 (Portfolio Module Specification v1.0); updated Experience Architecture tier |
 | 2.5 | 2026-06-30 | BobKat IT | Added Portfolio & Operations tier; registered DOC-161 (Client Workspace), DOC-162 (Portfolio Decision Engine), and DOC-163 (Immediate Focus Engine) |
 | 2.6 | 2026-07-04 | BobKat IT | Registered Client Lifecycle Architecture (DOC-200–206); DOC-007, DOC-119, DOC-151A–H, DOC-152, DOC-153, DOC-180, DOC-021; clarified strategic vs operational authority |
+| 2.7 | 2026-07-04 | BobKat IT | Registered DOC-120A (Next Generation Domain Model Addendum) for 200-series entities and Project 1:N transition |
+| 2.8 | 2026-07-04 | BobKat IT | Consistency resolution — registered DEV-001/DEV-002; authority split (intent / entities / sequencing); DOC-200 glossary |

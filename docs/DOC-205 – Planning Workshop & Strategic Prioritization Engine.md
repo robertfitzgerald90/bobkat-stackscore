@@ -207,16 +207,20 @@ Future versions may calculate a Strategic Priority Score.
 
 # Planning Outputs
 
-The Planning Workshop produces:
+The Planning Workshop **configures** the existing Technology Program (created at first assessment) and **creates** the Technology Investment Roadmap.
 
-- Technology Program
-- Technology Investment Roadmap
+Outputs:
+
+- Configured Technology Program (goals, direction)
+- Technology Investment Roadmap (versioned)
 - Project Phases
-- Immediate Focus
+- Immediate priorities
 - Strategic Priorities
 - Estimated Investment Timeline
 
 The consultant retains final approval.
+
+**Primary planning path** for new work. **TIP (DOC-103)** remains a legacy coexistence path during migration (DOC-120A §6). Do not auto-create projects from TIP phase labels.
 
 ---
 
@@ -406,11 +410,15 @@ This methodology should become one of the defining characteristics of StackScore
 
 # Related Documents
 
-- DOC-200 – Client Lifecycle Architecture
-- DOC-201 – Client Workspace Framework
-- DOC-202 – Technology Journey Framework
-- DOC-203 – Project Definition Framework
-- DOC-206 – Executive Business Review Framework
+* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md) (legacy coexistence)
+* [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
+* [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
+* [DOC-203 – Project Definition Framework](DOC-203%20-%20Project%20Definition%20Framework.md)
+* [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
+* [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
+* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
 
 ---
 

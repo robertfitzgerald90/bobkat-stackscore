@@ -1,10 +1,10 @@
 # DOC-120 – Domain Model Specification
 
 **Document ID:** DOC-120
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft
 **Owner:** BobKat IT
-**Last Updated:** June 25, 2026
+**Last Updated:** July 4, 2026
 
 ---
 
@@ -922,6 +922,8 @@ No Prisma schema, migration, or application code is defined by this document.
 * [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 * [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md)
+* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) — future Technology Program entities (DOC-200–206); does not change current implemented behavior
+* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
 
 ---
 
@@ -930,3 +932,4 @@ No Prisma schema, migration, or application code is defined by this document.
 | Version | Date | Author | Changes |
 | ------- | ---- | ------ | ------- |
 | 1.0 | 2026-06-25 | BobKat IT | Initial domain model — root/primary objects, entity map, lifecycle rules, twenty core objects, and technical translation guidance |
+| 1.1 | 2026-07-04 | BobKat IT | Linked DOC-120A (Next Generation Domain Model Addendum) for 200-series program entities |
