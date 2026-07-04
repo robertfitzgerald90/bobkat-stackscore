@@ -1,10 +1,10 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.5
+**Version:** 2.6
 **Status:** Approved
 **Owner:** BobKat IT
-**Last Updated:** June 30, 2026
+**Last Updated:** July 4, 2026
 
 ---
 
@@ -22,21 +22,27 @@ This document is the master registry for all StackScore documentation. It define
 DOC-129 (Engineering Constitution — governs all development)
     │
 DOC-006 (Product Constitution — governs product principles)
+DOC-007 (UX Constitution — governs experience principles)
     │
 DOC-000 (this index)
     │
-    ├── Business Governance (DOC-001 – DOC-005, DOC-006)
+    ├── Business Governance (DOC-001 – DOC-005)
     ├── Commercial Domain (DOC-100 – DOC-102, DOC-103 – DOC-107)
     ├── Client Hub (DOC-108, DOC-113)
     ├── Technology Maturity Framework (DOC-150 — authoritative pillar model)
-    ├── Assessment Domain (DOC-109, DOC-110, DOC-111, DOC-112, DOC-114, DOC-114A–G)
+    ├── Assessment Domain (DOC-109 – DOC-112, DOC-114, DOC-114A–G, DOC-119)
+    ├── Assessment Libraries v2 (DOC-151A–H)
+    ├── Decision Intelligence (DOC-152, DOC-153)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
     ├── Reporting Architecture (DOC-125 – DOC-126)
     ├── Experience Architecture (DOC-007, DOC-127)
-    ├── Portfolio & Operations (DOC-160, DOC-161, DOC-162, DOC-163)
+    ├── Portfolio & Operations (DOC-160 – DOC-163) — current operational experience
+    ├── Client Lifecycle Architecture (DOC-200 – DOC-206) — strategic program model
+    ├── Future Intelligence (DOC-180 — deferred)
     ├── Integration Architecture (DOC-128)
+    ├── Environment & Deployment (DOC-021)
     └── Technical Layer (DOC-300 – DOC-303)
 ```
 
@@ -44,11 +50,14 @@ If documents conflict, resolve in this order:
 
 1. [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — engineering and implementation discipline
 2. [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) — product principles, UX, and feature acceptance
-3. DOC-000 disposition table below
-4. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
-5. Higher authority tier wins within the same domain
-6. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
-7. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
+3. [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) — experience principles
+4. DOC-000 disposition table below
+5. [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) — long-term program model (strategic target)
+6. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+7. Higher authority tier wins within the same domain
+8. **Strategic vs operational:** DOC-200–206 define the long-term Technology Program Management vision. DOC-160–163 govern current Portfolio and Client Workspace operational experience until lifecycle modules are implemented. Commercial specs (DOC-103–107) remain authoritative for TIP/roadmap/project generation until superseded by DOC-203–205 implementations.
+9. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
+10. **Documentation over code** — implementation must not override approved specs without a documented revision (DOC-129)
 
 ---
 
@@ -77,6 +86,7 @@ If documents conflict, resolve in this order:
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
 | [DOC-006](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | **Governing (constitution)** | v2 | Draft |
+| [DOC-007](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | StackScore User Experience Constitution | **Governing (constitution)** | v2 | Draft |
 
 ### DOC-006 – StackScore Product Constitution
 
@@ -88,7 +98,19 @@ If documents conflict, resolve in this order:
 | **Status** | Draft |
 | **Purpose** | Permanent product principles governing every feature, workflow, screen, report, and enhancement; takes precedence over lower-level specs for product and UX decisions. |
 | **Depends on** | DOC-001, DOC-002, DOC-003 |
-| **Used by** | DOC-004, DOC-005, DOC-108, DOC-113, DOC-120, DOC-123, DOC-127, DOC-150; all product and feature design |
+| **Used by** | DOC-004, DOC-005, DOC-007, DOC-108, DOC-113, DOC-120, DOC-123, DOC-127, DOC-150, DOC-160–163, DOC-200–206; all product and feature design |
+
+### DOC-007 – StackScore User Experience Constitution
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-007 |
+| **Title** | StackScore User Experience Constitution |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Permanent UX principles — one purpose per screen, intelligent defaults, cards before tables, Portfolio and Client Workspace philosophy. |
+| **Depends on** | DOC-006 |
+| **Used by** | DOC-127, DOC-160–163, DOC-200–206; all experience design |
 
 ## Business governance
 
@@ -159,6 +181,29 @@ If documents conflict, resolve in this order:
 | DOC-115 | Question Scoring Matrix (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-117 | Assessment Question Bank (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-118 | v1 to v2 Compatibility Reference | Governing (migration) | Both | Approved |
+| [DOC-119](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | Technology Maturity Scoring Engine | Governing (scoring) | v2 | Draft |
+
+## Assessment libraries (v2 pillars)
+
+Pillar-specific assessment content aligned to DOC-150 Technology Pillars.
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-151A](DOC-151A%20-%20Identity%20%26%20Access.md) | Identity & Access | Governing (library) | v2 | Draft |
+| [DOC-151B](DOC-151B%20-%20Endpoint%20Management.md) | Endpoint Management | Governing (library) | v2 | Draft |
+| [DOC-151C](DOC-151C%20-%20Network%20%26%20Connectivity.md) | Network & Connectivity | Governing (library) | v2 | Draft |
+| [DOC-151D](DOC-151D%20-%20Data%20Protection%20%26%20Recovery.md) | Data Protection & Recovery | Governing (library) | v2 | Draft |
+| [DOC-151E](DOC-151E%20-%20Productivity%20%26%20Collaboration.md) | Productivity & Collaboration | Governing (library) | v2 | Draft |
+| [DOC-151F](DOC-151F%20-%20Security%20Operations.md) | Security Operations | Governing (library) | v2 | Draft |
+| [DOC-151G](DOC-151G%20-%20Documentation%20%26%20Knowledge.md) | Documentation & Knowledge | Governing (library) | v2 | Draft |
+| [DOC-151H](DOC-151H%20-%20Technology%20Strategy.md) | Technology Strategy | Governing (library) | v2 | Draft |
+
+## Decision intelligence
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-152](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Decision Intelligence Engine | Governing (intelligence) | v2 | Draft |
+| [DOC-153](DOC-153%20-%20Recommendation%20Library%20Version.md) | Recommendation Library | Governing (catalog) | v2 | Draft |
 
 ### DOC-109 – Assessment Design Specification
 
@@ -366,6 +411,145 @@ Consultant operational surfaces — portfolio prioritization, client workspace, 
 | **Depends on** | DOC-006, DOC-007, DOC-113, DOC-119, DOC-150, DOC-152, DOC-160, DOC-161 |
 | **Used by** | DOC-124, DOC-160, DOC-161, DOC-162, DOC-300 |
 
+## Client Lifecycle Architecture
+
+Strategic program-management model. StackScore is a **Technology Program Management Platform** — not an assessment-only product. DOC-200–206 define the long-term consulting lifecycle; DOC-160–163 remain authoritative for current Portfolio and Client Workspace operational experience until lifecycle modules ship.
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-200](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) | Client Lifecycle Architecture | 1.0 | **Governing (lifecycle)** | v2 strategic | Draft |
+| [DOC-201](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md) | Client Workspace Framework | 1.0 | Governing (lifecycle experience) | v2 strategic | Draft |
+| [DOC-202](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md) | Technology Journey Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-203](DOC-203%20-%20Project%20Definition%20Framework.md) | Project Definition Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-204](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md) | Technology Investment Roadmap Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-205](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md) | Planning Workshop & Strategic Prioritization Engine | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-206](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md) | Executive Business Review Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+
+### DOC-200 – Client Lifecycle Architecture
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-200 |
+| **Title** | Client Lifecycle Architecture |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Defines the end-to-end client consulting lifecycle — Prospect through Continuous Improvement — and primary objects (Technology Program, Assessment, Recommendation, Project, Technology Journey). |
+| **Depends on** | DOC-006, DOC-007 |
+| **Used by** | DOC-201–206, DOC-120, DOC-123, DOC-124, DOC-300 |
+
+### DOC-201 – Client Workspace Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-201 |
+| **Title** | Client Workspace Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Strategic Client Workspace as Technology Program headquarters — Overview, Journey, Roadmap, Projects, Assessments, Recommendations, Assets, Documents, Contacts, Billing, Executive Reports, Risks, Activity. |
+| **Depends on** | DOC-200, DOC-006, DOC-007 |
+| **Used by** | DOC-161 (operational subset), DOC-202–206, DOC-300 |
+| **Relationship to DOC-161** | DOC-161 governs the current operational Client Workspace (Immediate Focus, KPIs, Assess Client). DOC-201 is the long-term navigation and module framework. |
+
+### DOC-202 – Technology Journey Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-202 |
+| **Title** | Technology Journey Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Living historical record of organizational technology evolution — milestones, business outcomes, investment story. |
+| **Depends on** | DOC-200, DOC-201 |
+| **Used by** | DOC-203, DOC-206, DOC-125 |
+
+### DOC-203 – Project Definition Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-203 |
+| **Title** | Project Definition Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Projects as primary units of value delivery — one Project may contain many Recommendations; executive overview, planning, scope, financials, success metrics, reporting. |
+| **Depends on** | DOC-200, DOC-204 |
+| **Used by** | DOC-105 (until superseded), DOC-201, DOC-204, DOC-206 |
+| **Relationship to DOC-105** | DOC-105 governs current project generation (1:1 recommendation). DOC-203 is the strategic multi-recommendation project model. |
+
+### DOC-204 – Technology Investment Roadmap Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-204 |
+| **Title** | Technology Investment Roadmap Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Multi-phase investment roadmap organizing **Projects** (not recommendations) into strategic phases. |
+| **Depends on** | DOC-200, DOC-203, DOC-205 |
+| **Used by** | DOC-104 (until superseded), DOC-201, DOC-206 |
+| **Relationship to DOC-104** | DOC-104 governs current TIP-oriented roadmap. DOC-204 is the strategic project-phased investment roadmap. |
+
+### DOC-205 – Planning Workshop & Strategic Prioritization Engine
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-205 |
+| **Title** | Planning Workshop & Strategic Prioritization Engine |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Transforms assessment findings into a Technology Program — business discovery, prioritization, phased roadmap creation. |
+| **Depends on** | DOC-200, DOC-203, DOC-204 |
+| **Used by** | DOC-103 (until superseded), DOC-201 |
+| **Relationship to DOC-103** | DOC-103 governs current TIP workflow. DOC-205 is the strategic Planning Workshop that produces the Technology Program and Roadmap. |
+
+### DOC-206 – Executive Business Review Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-206 |
+| **Title** | Executive Business Review Framework |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Recurring executive review of the Technology Program — progress, investment value, journey, and next priorities. |
+| **Depends on** | DOC-200, DOC-202, DOC-203, DOC-204 |
+| **Used by** | DOC-125, DOC-201 |
+| **Relationship to QBR** | Current Quarterly Business Review is an early implementation. DOC-206 defines the strategic EBR as the primary recurring executive meeting. |
+
+## Future intelligence (deferred)
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-180](DOC-180%20-%20Benchmark%20Intelligence%20Framework.md) | Benchmark Intelligence Framework | 0.1 | Future (deferred) | Long-term | Draft — implementation deferred |
+
+### DOC-180 – Benchmark Intelligence Framework
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-180 |
+| **Title** | Benchmark Intelligence Framework |
+| **Version** | 0.1 |
+| **Status** | Future (Deferred) |
+| **Purpose** | Long-term vision for industry benchmarks, maturity baselines, and predictive analytics from anonymized assessment data. |
+| **Depends on** | DOC-150, DOC-119, DOC-152 |
+| **Used by** | Future intelligence features — not in current implementation scope |
+
+## Environment & deployment
+
+| ID | Title | Version | Authority | Version lane | Status |
+| -- | ----- | ------- | --------- | ------------ | ------ |
+| [DOC-021](DOC-021%20%E2%80%93%20Environment%20%26%20Deployment%20Strategy.md) | Environment & Deployment Strategy | 0.1 | Governing (infrastructure) | Operational | Planned |
+
+### DOC-021 – Environment & Deployment Strategy
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-021 |
+| **Title** | Environment & Deployment Strategy |
+| **Version** | 0.1 |
+| **Status** | Planned |
+| **Purpose** | Development, preview, and production environment separation, database connections, and deployment risk controls. |
+| **Depends on** | DOC-129, DOC-300 |
+| **Used by** | Operations, CI/CD, DOC-300 |
+
 ## Integration architecture
 
 External platform connectivity standards — vendor-neutral connectors, sync rules, and security boundaries.
@@ -443,10 +627,22 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 * [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
 * [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
 * [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
 * [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
 * [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
 * [DOC-162 – Portfolio Decision Engine](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md)
 * [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)
+* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
+* [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
+* [DOC-203 – Project Definition Framework](DOC-203%20-%20Project%20Definition%20Framework.md)
+* [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
+* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
+* [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
+* [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
+* [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
+* [DOC-180 – Benchmark Intelligence Framework](DOC-180%20-%20Benchmark%20Intelligence%20Framework.md)
+* [DOC-021 – Environment & Deployment Strategy](DOC-021%20%E2%80%93%20Environment%20%26%20Deployment%20Strategy.md)
 * [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
 * [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
 * [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
@@ -477,3 +673,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.3 | 2026-06-30 | BobKat IT | Registered DOC-109 (Assessment Design Specification v2.0); updated DOC-150 cross-references |
 | 2.4 | 2026-06-30 | BobKat IT | Registered DOC-160 (Portfolio Module Specification v1.0); updated Experience Architecture tier |
 | 2.5 | 2026-06-30 | BobKat IT | Added Portfolio & Operations tier; registered DOC-161 (Client Workspace), DOC-162 (Portfolio Decision Engine), and DOC-163 (Immediate Focus Engine) |
+| 2.6 | 2026-07-04 | BobKat IT | Registered Client Lifecycle Architecture (DOC-200–206); DOC-007, DOC-119, DOC-151A–H, DOC-152, DOC-153, DOC-180, DOC-021; clarified strategic vs operational authority |

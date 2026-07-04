@@ -145,10 +145,14 @@ export function buildClientWorkspaceSnapshot(input: {
 
     const linkedRecommendation = recommendationByProjectId.get(project.id);
 
+    // Prefer specific recommendation/finding text over a generic project or pillar title.
+    const displayTitle =
+      linkedRecommendation?.title ?? project.recommendationTitle ?? project.title;
+
     projectCandidates.push({
       id: project.id,
       kind: "project",
-      title: conciseFocusTitle(project.title),
+      title: conciseFocusTitle(displayTitle),
       pillarName: linkedRecommendation
         ? pillarNameForCategory(
             linkedRecommendation.categoryCode,

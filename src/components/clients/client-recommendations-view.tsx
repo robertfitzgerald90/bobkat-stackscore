@@ -11,6 +11,7 @@ import { CreateProjectFromRecommendationButton } from "@/components/recommendati
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
+import { conciseFocusTitle } from "@/lib/client-workspace";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import type { ClientRecommendationFilters, ClientRecommendationRow } from "@/lib/recommendations/client-list";
@@ -181,7 +182,9 @@ export function ClientRecommendationsView({
                 <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold">{recommendation.title}</p>
+                      <p className="font-semibold">
+                        {conciseFocusTitle(recommendation.title)}
+                      </p>
                       <Badge variant={PRIORITY_BADGE[recommendation.priority]}>
                         {PRIORITY_LABELS[recommendation.priority]}
                       </Badge>
