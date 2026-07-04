@@ -22,6 +22,10 @@ BobKat StackScore exists to help organizations understand, improve, and continuo
 
 Rather than simply identifying technical issues, StackScore transforms technology assessments into measurable Technology Profiles, strategic roadmaps, and actionable improvement plans that help organizations become more secure, resilient, and efficient over time.
 
+StackScore does not measure technology maturity.
+
+StackScore manages the entire technology lifecycle of an organization—from initial assessment, through strategic planning, phased investment, implementation, measurement, and continuous improvement.
+
 ---
 
 # Vision
