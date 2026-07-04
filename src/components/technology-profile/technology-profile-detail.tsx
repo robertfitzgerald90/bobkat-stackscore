@@ -13,7 +13,6 @@ import { TpReportsDocuments } from "@/components/technology-profile/tp-reports-d
 import { TpRoadmapPreview } from "@/components/technology-profile/tp-roadmap-preview";
 import { TpScoreHistory } from "@/components/technology-profile/tp-score-history";
 import { TpTechnologyJourney } from "@/components/technology-profile/tp-technology-journey";
-import { TpWorkspaceHeader } from "@/components/technology-profile/tp-workspace-header";
 import { TpWorkspaceSnapshot } from "@/components/technology-profile/tp-workspace-snapshot";
 import { ImmediateFocusAnchor } from "@/components/technology-profile/immediate-focus-anchor";
 import { buttonClassName } from "@/components/ui/button";
@@ -30,20 +29,10 @@ export function TechnologyProfileDetailView({
   completedAssessments = [],
 }: TechnologyProfileDetailViewProps) {
   const { profile, scoreTrend, sections, journey } = detail;
-  const showAssessClient = sections.showAssessmentForms && detail.client.status !== "archived";
 
   return (
-    <div className="page-content min-w-0 space-y-6 sm:space-y-8">
+    <div className="min-w-0 space-y-6 sm:space-y-8">
       <ImmediateFocusAnchor />
-      <TpWorkspaceHeader
-        clientId={profile.clientId}
-        clientName={detail.client.companyName}
-        clientStatus={detail.client.status}
-        showAssessClient={showAssessClient}
-        completedAssessments={completedAssessments}
-        draftAssessmentId={detail.draftAssessmentId}
-        nextRecommendedAssessmentAt={profile.nextRecommendedAssessmentAt}
-      />
       <TpWorkspaceSnapshot
         clientId={profile.clientId}
         workspace={detail.workspace}

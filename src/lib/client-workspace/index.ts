@@ -16,5 +16,8 @@ export type {
 export {
   CLIENT_WORKSPACE_NAV,
   CLIENT_WORKSPACE_SECTIONS,
+  getVisibleWorkspaceNav,
   isClientWorkspaceSection,
+  resolveActiveWorkspaceSection,
+  resolveClientWorkspaceNavHref,
 } from "@/lib/client-workspace/nav";
