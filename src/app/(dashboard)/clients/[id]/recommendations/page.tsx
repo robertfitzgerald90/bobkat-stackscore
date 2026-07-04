@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { ClientRecommendationsView } from "@/components/clients/client-recommendations-view";
 import type { ClientRecommendationFilters } from "@/lib/recommendations/client-list";
 import { getClientRecommendations } from "@/lib/recommendations/client-list";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import type { Priority, RecommendationStatus } from "@/generated/prisma/client";
 
 type PageProps = {
@@ -38,7 +39,7 @@ export default async function ClientRecommendationsPage({ params, searchParams }
   const { id: clientId } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(`/clients/${clientId}/technology-profile`);
+  if (session.user.role === "client") redirect(clientTechnologyProfilePath(clientId));
 
   const resolvedSearchParams = await searchParams;
   const filters = parseFilters(resolvedSearchParams);

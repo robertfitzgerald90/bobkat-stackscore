@@ -22,8 +22,9 @@ import {
 } from "@/components/reports";
 import type { AssessmentComparison } from "@/lib/assessments/comparison";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceAssessmentsPath } from "@/lib/clients/paths";
 import {
+  BACK_TO_ASSESSMENTS,
   TECHNOLOGY_MATURITY_PROFILE_SHORT,
   TECHNOLOGY_PILLARS_LABEL,
 } from "@/lib/technology-maturity/labels";
@@ -50,7 +51,8 @@ export function AssessmentComparisonView({
         title="Assessment Comparison"
         description={`${comparison.previous.assessmentName} → ${comparison.current.assessmentName}`}
         printLabel="Export Comparison Report"
-        backHref={clientTechnologyProfilePath(clientId)}
+        backHref={clientWorkspaceAssessmentsPath(clientId)}
+        backLabel={BACK_TO_ASSESSMENTS}
         extraActions={
           <Link
             href={`/clients/${clientId}/assessments/compare`}

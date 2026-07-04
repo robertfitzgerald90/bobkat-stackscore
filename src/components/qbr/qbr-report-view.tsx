@@ -28,7 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/reports";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
+import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
 import {
   TECHNOLOGY_MATURITY_PROFILE_SHORT,
 } from "@/lib/technology-maturity/labels";
@@ -90,7 +91,8 @@ export function QbrReportView({
           clientName={data.clientName}
           title="Quarterly Business Review"
           description={data.reviewPeriodLabel}
-          backHref={clientTechnologyProfilePath(clientId)}
+          backHref={clientWorkspaceExecutiveReportsPath(clientId)}
+          backLabel={BACK_TO_EXECUTIVE_REPORTS}
         />
       ) : null}
 

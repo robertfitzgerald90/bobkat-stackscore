@@ -27,6 +27,7 @@ import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { formatDisplayDate } from "@/lib/display";
 import type { CompletionReportData } from "@/lib/reports/completion/types";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { BACK_TO_CLIENT_WORKSPACE_OVERVIEW } from "@/lib/technology-maturity/labels";
 
 type CompletionReportPreviewProps = {
   clientId: string;
@@ -41,7 +42,7 @@ export function CompletionReportPreview({ clientId, data }: CompletionReportPrev
         title="Technology Completion Report"
         description={data.projectTitle}
         backHref={clientTechnologyProfilePath(clientId)}
-        backLabel="Back to Technology Maturity Profile"
+        backLabel={BACK_TO_CLIENT_WORKSPACE_OVERVIEW}
       />
 
       <ReportDocument>

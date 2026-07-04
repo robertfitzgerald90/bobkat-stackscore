@@ -6,6 +6,8 @@ import { Plus } from "lucide-react";
 import { PortfolioClientCardView } from "@/components/portfolio/portfolio-client-card";
 import { NewClientSheet } from "@/components/clients/new-client-sheet";
 import { Button } from "@/components/ui/button";
+import type { CreatedClient } from "@/lib/clients/create-client";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import {
   Select,
   SelectContent,
@@ -34,7 +36,8 @@ export function PortfolioView({ clients }: PortfolioViewProps) {
     [clients, sortMode],
   );
 
-  function handleClientCreated() {
+  function handleClientCreated(client: CreatedClient) {
+    router.push(clientTechnologyProfilePath(client.id));
     router.refresh();
   }
 

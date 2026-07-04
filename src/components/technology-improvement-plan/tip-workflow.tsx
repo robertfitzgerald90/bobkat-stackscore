@@ -437,7 +437,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
                     Download PDF
                   </a>
                   <Link
-                    href={`/clients/${clientId}/improvement-plan`}
+                    href={`/clients/${clientId}/roadmap`}
                     className={buttonClassName({ variant: "outline" })}
                   >
                     View Plan History

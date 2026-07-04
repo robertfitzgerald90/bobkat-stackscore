@@ -26,6 +26,7 @@ import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { formatDisplayDate } from "@/lib/display";
 import type { ProgressReportData } from "@/lib/reports/progress/types";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { BACK_TO_CLIENT_WORKSPACE_OVERVIEW } from "@/lib/technology-maturity/labels";
 
 type ProgressReportPreviewProps = {
   clientId: string;
@@ -40,7 +41,7 @@ export function ProgressReportPreview({ clientId, data }: ProgressReportPreviewP
         title="Technology Progress Report"
         description={data.reportPeriodLabel}
         backHref={clientTechnologyProfilePath(clientId)}
-        backLabel="Back to Technology Maturity Profile"
+        backLabel={BACK_TO_CLIENT_WORKSPACE_OVERVIEW}
       />
 
       <ReportDocument>

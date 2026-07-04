@@ -3,16 +3,15 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Lightbulb } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateProjectFromRecommendationButton } from "@/components/recommendations/create-project-button";
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
+import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
 import { conciseFocusTitle } from "@/lib/client-workspace";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import type { ClientRecommendationFilters, ClientRecommendationRow } from "@/lib/recommendations/client-list";
 import { TECHNOLOGY_PILLARS } from "@/lib/technology-maturity/pillars";
@@ -77,21 +76,10 @@ export function ClientRecommendationsView({
 
   return (
     <div className="page-content space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <Link
-            href={clientTechnologyProfilePath(clientId)}
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "-ml-2 mb-2" })}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Technology Profile
-          </Link>
-          <h2 className="page-title">Recommendations</h2>
-          <p className="page-description">
-            {clientName} — client-level improvement opportunities across assessments
-          </p>
-        </div>
-      </div>
+      <WorkspaceSectionHeader
+        title="Recommendations"
+        description={`${clientName} — client-level improvement opportunities across assessments`}
+      />
 
       <Card>
         <CardHeader>

@@ -12,7 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { AssessmentHistoryEntry } from "@/lib/assessments/reassessment";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceAssessmentsPath } from "@/lib/clients/paths";
+import {
+  BACK_TO_ASSESSMENTS,
+} from "@/lib/technology-maturity/labels";
 import {
   formatAssessmentCompletionDate,
   formatAssessmentStatus,
@@ -45,10 +48,10 @@ export function AssessmentHistoryView({
           </p>
         </div>
         <Link
-          href={clientTechnologyProfilePath(clientId)}
+          href={clientWorkspaceAssessmentsPath(clientId)}
           className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
-          Back to Technology Maturity Profile
+          {BACK_TO_ASSESSMENTS}
         </Link>
       </div>
 

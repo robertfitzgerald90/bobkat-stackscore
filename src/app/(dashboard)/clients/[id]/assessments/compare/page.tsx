@@ -5,8 +5,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { buildAssessmentComparison } from "@/lib/assessments/comparison-build";
 import { sortCompletedAssessmentsNewestFirst } from "@/lib/assessments/display";
-import { BACK_TO_TECHNOLOGY_MATURITY_PROFILE } from "@/lib/technology-maturity/labels";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import {
+  BACK_TO_ASSESSMENTS,
+} from "@/lib/technology-maturity/labels";
+import { clientTechnologyProfilePath, clientWorkspaceAssessmentsPath } from "@/lib/clients/paths";
 import { AssessmentComparisonForm } from "@/components/assessments/assessment-comparison-form";
 import { AssessmentComparisonView } from "@/components/assessments/assessment-comparison-view";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
@@ -65,11 +67,11 @@ export default async function AssessmentComparisonPage({ params, searchParams }:
       <div className="page-shell space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href={clientTechnologyProfilePath(clientId)}
+            href={clientWorkspaceAssessmentsPath(clientId)}
             className={buttonClassName({ variant: "ghost", size: "sm", className: "-ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Technology Maturity Profile
+            {BACK_TO_ASSESSMENTS}
           </Link>
         </div>
         <div className="page-header">
@@ -79,8 +81,8 @@ export default async function AssessmentComparisonPage({ params, searchParams }:
         <TpEmptyState
           title="Need at least two completed assessments"
           message="Complete a second assessment for this client to compare progress over time."
-          actionLabel="Back to Technology Maturity Profile"
-          actionHref={clientTechnologyProfilePath(clientId)}
+          actionLabel={BACK_TO_ASSESSMENTS}
+          actionHref={clientWorkspaceAssessmentsPath(clientId)}
         />
       </div>
     );
@@ -101,11 +103,11 @@ export default async function AssessmentComparisonPage({ params, searchParams }:
     <div className="page-shell space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Link
-          href={clientTechnologyProfilePath(clientId)}
+          href={clientWorkspaceAssessmentsPath(clientId)}
           className={buttonClassName({ variant: "ghost", size: "sm", className: "-ml-2" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          {BACK_TO_TECHNOLOGY_MATURITY_PROFILE}
+          {BACK_TO_ASSESSMENTS}
         </Link>
       </div>
       <div className="page-header">

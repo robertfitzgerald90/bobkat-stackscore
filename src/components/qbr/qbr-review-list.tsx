@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QbrSummary } from "@/lib/qbr/types";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
+import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
 import { formatDisplayDate } from "@/lib/display";
 import { toast } from "sonner";
 
@@ -53,11 +54,11 @@ export function QbrReviewList({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
-            href={clientTechnologyProfilePath(clientId)}
+            href={clientWorkspaceExecutiveReportsPath(clientId)}
             className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Technology Maturity Profile
+            {BACK_TO_EXECUTIVE_REPORTS}
           </Link>
           <h2 className="page-title">Quarterly Business Reviews</h2>
           <p className="page-description">{clientName}</p>

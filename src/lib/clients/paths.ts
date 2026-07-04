@@ -38,6 +38,22 @@ export function clientImmediateFocusPath(clientId: string) {
   return `${clientWorkspacePath(clientId)}#immediate-focus`;
 }
 
+export function clientWorkspaceAssessmentsPath(clientId: string) {
+  return clientWorkspaceSectionPath(clientId, "assessments");
+}
+
+export function clientWorkspaceExecutiveReportsPath(clientId: string) {
+  return clientWorkspaceSectionPath(clientId, "executive-reports");
+}
+
+export function clientWorkspaceRoadmapPath(clientId: string) {
+  return clientWorkspaceSectionPath(clientId, "roadmap");
+}
+
+export function clientWorkspaceContactsPath(clientId: string) {
+  return clientWorkspaceSectionPath(clientId, "contacts");
+}
+
 export function clientRecommendationsPath(clientId: string) {
   return clientWorkspaceSectionPath(clientId, "recommendations");
 }

@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ImprovementSummary } from "@/lib/assessments/reassessment";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceAssessmentsPath } from "@/lib/clients/paths";
+import { BACK_TO_ASSESSMENTS } from "@/lib/technology-maturity/labels";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
 import { getRating } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -42,10 +43,10 @@ export function ImprovementSummaryView({
             View Results
           </Link>
           <Link
-            href={clientTechnologyProfilePath(clientId)}
+            href={clientWorkspaceAssessmentsPath(clientId)}
             className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
           >
-            Back to Technology Maturity Profile
+            {BACK_TO_ASSESSMENTS}
           </Link>
         </div>
       </div>

@@ -15,6 +15,10 @@ import {
   clientWorkspacePath,
   clientWorkspaceProjectsPath,
   clientWorkspaceSectionPath,
+  clientWorkspaceAssessmentsPath,
+  clientWorkspaceContactsPath,
+  clientWorkspaceExecutiveReportsPath,
+  clientWorkspaceRoadmapPath,
 } from "@/lib/clients/paths";
 
 describe("CLIENT_WORKSPACE_NAV", () => {
@@ -102,6 +106,15 @@ describe("client workspace paths", () => {
     expect(clientProjectDetailPath(clientId, "p1")).toBe(
       "/projects?client=client-1&selected=p1",
     );
+  });
+
+  it("builds section shortcuts for workspace navigation", () => {
+    expect(clientWorkspaceAssessmentsPath(clientId)).toBe("/clients/client-1/assessments");
+    expect(clientWorkspaceExecutiveReportsPath(clientId)).toBe(
+      "/clients/client-1/executive-reports",
+    );
+    expect(clientWorkspaceRoadmapPath(clientId)).toBe("/clients/client-1/roadmap");
+    expect(clientWorkspaceContactsPath(clientId)).toBe("/clients/client-1/contacts");
   });
 });
 

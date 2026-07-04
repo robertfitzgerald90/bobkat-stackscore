@@ -9,7 +9,8 @@ import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ClientImprovementAnalytics } from "@/lib/analytics/types";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
+import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { RATING_BADGE_VARIANT } from "@/lib/scoring/rating-display";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -37,11 +38,11 @@ export function ClientImprovementDashboard({ analytics }: ClientImprovementDashb
           </p>
         </div>
         <Link
-          href={clientTechnologyProfilePath(analytics.clientId)}
+          href={clientWorkspaceExecutiveReportsPath(analytics.clientId)}
           className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Technology Maturity Profile
+          {BACK_TO_EXECUTIVE_REPORTS}
         </Link>
       </div>
 

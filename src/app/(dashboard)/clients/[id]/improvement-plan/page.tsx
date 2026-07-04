@@ -1,27 +1,14 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
-import { prisma } from "@/lib/db";
-import { listTipPlans } from "@/lib/technology-improvement-plan";
-import { TipPlanList } from "@/components/technology-improvement-plan/tip-plan-list";
+import { clientWorkspaceSectionPath } from "@/lib/clients/paths";
 
 type PageProps = { params: Promise<{ id: string }> };
 
+/** Legacy route — redirects to the Roadmap workspace section. */
 export default async function ImprovementPlanListPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(clientTechnologyProfilePath(id));
 
-  const client = await prisma.client.findUnique({
-    where: { id },
-    select: { id: true, companyName: true },
-  });
-  if (!client) notFound();
-
-  const plans = await listTipPlans(id);
-
-  return (
-    <TipPlanList clientId={client.id} clientName={client.companyName} initialPlans={plans} />
-  );
+  redirect(clientWorkspaceSectionPath(id, "roadmap"));
 }
