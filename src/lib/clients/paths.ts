@@ -71,8 +71,7 @@ export function clientWorkspaceProjectsPath(clientId: string) {
 }
 
 /**
- * Project deep link. Uses the global Project Register until the workspace
- * Projects section ships (Phase 1 Commit 4).
+ * Project deep link. Uses the global Project Register for detail views.
  */
 export function clientProjectDetailPath(clientId: string, projectId: string) {
   return `${clientProjectsPath(clientId)}&selected=${projectId}`;

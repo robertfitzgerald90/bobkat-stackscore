@@ -45,12 +45,16 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "activity", label: "Activity" },
 ] as const;
 
-/** Sections visible to client-portal users during Phase 1. */
-const CLIENT_ROLE_SECTIONS: readonly ClientWorkspaceSection[] = [
+/** Sections visible to client-portal users during Phase 1 (mirrors ProfileSectionVisibility). */
+export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
   "documents",
   "contacts",
 ];
+
+export function isClientVisibleWorkspaceSection(section: ClientWorkspaceSection): boolean {
+  return CLIENT_VISIBLE_WORKSPACE_SECTIONS.includes(section);
+}
 
 export function isClientWorkspaceSection(value: string): value is ClientWorkspaceSection {
   return (CLIENT_WORKSPACE_SECTIONS as readonly string[]).includes(value);
@@ -130,7 +134,7 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
 export function getVisibleWorkspaceNav(role: string): ClientWorkspaceNavItem[] {
   if (role === "client") {
     return CLIENT_WORKSPACE_NAV.filter((item) =>
-      CLIENT_ROLE_SECTIONS.includes(item.section),
+      isClientVisibleWorkspaceSection(item.section),
     );
   }
   return [...CLIENT_WORKSPACE_NAV];

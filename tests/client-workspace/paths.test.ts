@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   CLIENT_WORKSPACE_NAV,
   CLIENT_WORKSPACE_SECTIONS,
+  CLIENT_VISIBLE_WORKSPACE_SECTIONS,
+  isClientVisibleWorkspaceSection,
   isClientWorkspaceSection,
   resolveClientWorkspaceNavHref,
 } from "@/lib/client-workspace";
@@ -147,5 +149,23 @@ describe("resolveClientWorkspaceNavHref", () => {
     expect(resolveClientWorkspaceNavHref(clientId, "activity")).toBe(
       "/clients/client-1/activity",
     );
+  });
+});
+
+describe("client workspace access", () => {
+  it("limits client-portal nav to overview, documents, and contacts", () => {
+    expect(CLIENT_VISIBLE_WORKSPACE_SECTIONS).toEqual(["overview", "documents", "contacts"]);
+    expect(isClientVisibleWorkspaceSection("overview")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("documents")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("contacts")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("journey")).toBe(false);
+    expect(isClientVisibleWorkspaceSection("recommendations")).toBe(false);
+  });
+
+  it("shows only client-visible items in nav for client role", () => {
+    const labels = CLIENT_WORKSPACE_NAV.filter((item) =>
+      isClientVisibleWorkspaceSection(item.section),
+    ).map((item) => item.label);
+    expect(labels).toEqual(["Overview", "Documents", "Contacts"]);
   });
 });

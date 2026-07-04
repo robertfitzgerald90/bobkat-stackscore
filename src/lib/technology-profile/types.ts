@@ -118,7 +118,6 @@ export type ProfileCapabilities = {
 export type ProfileSectionVisibility = {
   showAssessmentForms: boolean;
   showAdminActions: boolean;
-  showInternalQuickActions: boolean;
   showBusinessSnapshot: boolean;
   showBusinessSnapshotLimited: boolean;
   showOpenOpportunities: boolean;

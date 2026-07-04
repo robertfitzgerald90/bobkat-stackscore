@@ -14,7 +14,6 @@ export function resolveProfileSectionVisibility(
   return {
     showAssessmentForms: !isClient,
     showAdminActions: role === "admin",
-    showInternalQuickActions: capabilities.canEditImprovementPlan,
     showBusinessSnapshot: true,
     showBusinessSnapshotLimited: isClient,
     showOpenOpportunities: !isClient,

@@ -12,7 +12,6 @@ describe("technology profile visibility", () => {
 
     expect(sections.showAssessmentForms).toBe(true);
     expect(sections.showAdminActions).toBe(true);
-    expect(sections.showInternalQuickActions).toBe(true);
     expect(sections.showOpenOpportunities).toBe(true);
     expect(sections.showRoadmapPreview).toBe(true);
     expect(sections.showNextActionCta).toBe(true);
@@ -27,7 +26,6 @@ describe("technology profile visibility", () => {
 
     expect(sections.showAssessmentForms).toBe(false);
     expect(sections.showAdminActions).toBe(false);
-    expect(sections.showInternalQuickActions).toBe(false);
     expect(sections.showOpenOpportunities).toBe(false);
     expect(sections.showRoadmapPreview).toBe(false);
     expect(sections.showActiveProjects).toBe(false);
@@ -45,7 +43,6 @@ describe("technology profile visibility", () => {
 
     expect(capabilities.canViewPricing).toBe(false);
     expect(sections.showOpenOpportunities).toBe(true);
-    expect(sections.showInternalQuickActions).toBe(true);
     expect(sections.showAdminActions).toBe(false);
   });
 

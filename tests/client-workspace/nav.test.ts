@@ -27,12 +27,12 @@ describe("resolveClientWorkspaceNavHref", () => {
     );
   });
 
-  it("returns null for sections not yet routed", () => {
-    expect(resolveClientWorkspaceNavHref("c1", "journey")).toBeNull();
-    expect(resolveClientWorkspaceNavHref("c1", "assets")).toBeNull();
-    expect(resolveClientWorkspaceNavHref("c1", "billing")).toBeNull();
-    expect(resolveClientWorkspaceNavHref("c1", "risks")).toBeNull();
-    expect(resolveClientWorkspaceNavHref("c1", "activity")).toBeNull();
+  it("maps all DOC-201 sections to workspace routes", () => {
+    expect(resolveClientWorkspaceNavHref("c1", "journey")).toBe("/clients/c1/journey");
+    expect(resolveClientWorkspaceNavHref("c1", "assets")).toBe("/clients/c1/assets");
+    expect(resolveClientWorkspaceNavHref("c1", "billing")).toBe("/clients/c1/billing");
+    expect(resolveClientWorkspaceNavHref("c1", "risks")).toBe("/clients/c1/risks");
+    expect(resolveClientWorkspaceNavHref("c1", "activity")).toBe("/clients/c1/activity");
   });
 });
 
@@ -66,6 +66,8 @@ describe("resolveActiveWorkspaceSection", () => {
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/projects")).toBe("projects");
     expect(resolveActiveWorkspaceSection("/clients/c1/documents")).toBe("documents");
+    expect(resolveActiveWorkspaceSection("/clients/c1/journey")).toBe("journey");
+    expect(resolveActiveWorkspaceSection("/clients/c1/assets")).toBe("assets");
   });
 });
 

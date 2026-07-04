@@ -1,4 +1,9 @@
 import type { NextAuthConfig } from "next-auth";
+import {
+  isClientVisibleWorkspaceSection,
+  resolveActiveWorkspaceSection,
+} from "@/lib/client-workspace/nav";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 
 export const authConfig = {
   pages: {
@@ -24,7 +29,21 @@ export const authConfig = {
       }
 
       if (isPublic) return true;
-      return isLoggedIn;
+      if (!isLoggedIn) return false;
+
+      if (auth.user?.role === "client") {
+        const clientMatch = pathname.match(/^\/clients\/([^/]+)/);
+        if (clientMatch && clientMatch[1] !== "new") {
+          const section = resolveActiveWorkspaceSection(pathname);
+          if (!isClientVisibleWorkspaceSection(section)) {
+            return Response.redirect(
+              new URL(clientTechnologyProfilePath(clientMatch[1]), request.nextUrl),
+            );
+          }
+        }
+      }
+
+      return true;
     },
   },
   trustHost: true,
