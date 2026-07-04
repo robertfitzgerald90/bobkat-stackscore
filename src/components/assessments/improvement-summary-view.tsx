@@ -26,7 +26,7 @@ export function ImprovementSummaryView({
   const previousRating = getRating(summary.previousOverallScore);
 
   return (
-    <div className="page-shell">
+    <div className="page-shell min-w-0">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="page-header">
           <p className="text-sm text-muted-foreground">{clientName}</p>

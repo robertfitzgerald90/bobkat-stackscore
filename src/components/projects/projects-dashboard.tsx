@@ -176,7 +176,7 @@ export function ProjectsDashboard({
   }
 
   return (
-    <div className="page-shell page-content min-w-0">
+    <div className="page-shell min-w-0">
       <div className="page-header">
         <h2 className="page-title">Projects</h2>
         <p className="page-description">
@@ -412,7 +412,7 @@ export function ProjectsDashboard({
       </Card>
 
       <Sheet open={!!selectedProject} onOpenChange={(open) => !open && closeProject()}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+        <SheetContent className="w-full max-w-[100vw] overflow-y-auto sm:max-w-lg">
           {selectedProject ? (
             <>
               <SheetHeader>
@@ -423,14 +423,16 @@ export function ProjectsDashboard({
               </SheetHeader>
 
               <div className="mt-6 space-y-6 px-1">
-                <div className="grid gap-3 rounded-lg border border-border/60 bg-muted/15 p-4 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">Source Recommendation</span>
-                    <span className="text-right font-medium">{selectedProject.recommendationTitle}</span>
+                <div className="grid min-w-0 gap-3 rounded-lg border border-border/60 bg-muted/15 p-4 text-sm">
+                  <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
+                    <span className="shrink-0 text-muted-foreground">Source Recommendation</span>
+                    <span className="min-w-0 break-words text-left font-medium sm:text-right">
+                      {selectedProject.recommendationTitle}
+                    </span>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">Estimated Score Impact</span>
-                    <span className="font-medium tabular-nums">
+                  <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
+                    <span className="shrink-0 text-muted-foreground">Estimated Score Impact</span>
+                    <span className="font-medium tabular-nums sm:text-right">
                       {selectedProject.estimatedImpactPoints !== null
                         ? `+${selectedProject.estimatedImpactPoints} pts`
                         : "—"}

@@ -50,12 +50,12 @@ export function QbrReviewList({
   };
 
   return (
-    <div className="page-shell space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+    <div className="page-shell min-w-0 space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
           <Link
             href={clientWorkspaceExecutiveReportsPath(clientId)}
-            className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
+            className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2 w-full sm:w-auto" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {BACK_TO_EXECUTIVE_REPORTS}

@@ -36,8 +36,8 @@ export function ReportPrintActions({
   }
 
   return (
-    <div className="report-no-print flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="page-header">
+    <div className="report-no-print flex min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="page-header min-w-0 flex-1">
         {clientName ? <p className="text-sm text-muted-foreground">{clientName}</p> : null}
         <h2 className="page-title">{title}</h2>
         {description ? <p className="page-description">{description}</p> : null}

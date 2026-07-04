@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-clip">
       <body className={`${inter.variable} min-w-0 overflow-x-hidden font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>

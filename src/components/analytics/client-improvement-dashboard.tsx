@@ -28,9 +28,9 @@ export function ClientImprovementDashboard({ analytics }: ClientImprovementDashb
     analytics.initialScore !== null ? getRating(analytics.initialScore) : null;
 
   return (
-    <div className="page-shell">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="page-header">
+    <div className="page-shell min-w-0">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="page-header min-w-0 flex-1">
           <p className="text-sm text-muted-foreground">{analytics.clientName}</p>
           <h2 className="page-title">Client Improvement Dashboard</h2>
           <p className="page-description">
@@ -39,7 +39,10 @@ export function ClientImprovementDashboard({ analytics }: ClientImprovementDashb
         </div>
         <Link
           href={clientWorkspaceExecutiveReportsPath(analytics.clientId)}
-          className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
+          className={buttonClassName({
+            variant: "outline",
+            className: "w-full shrink-0 sm:w-auto",
+          })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {BACK_TO_EXECUTIVE_REPORTS}

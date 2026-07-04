@@ -184,12 +184,12 @@ function TimelineEventRow({
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium leading-snug">{event.title}</p>
+            <p className="min-w-0 break-words font-medium leading-snug">{event.title}</p>
             <Badge variant="outline" className="text-xs">
               {JOURNEY_TIMELINE_EVENT_LABELS[event.eventType]}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">{event.description}</p>
+          <p className="break-words text-sm text-muted-foreground">{event.description}</p>
           {event.profileImpact ? (
             <p className="text-sm text-foreground/90">
               <span className="font-medium">Profile impact:</span> {event.profileImpact}

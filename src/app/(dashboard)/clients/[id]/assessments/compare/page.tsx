@@ -64,7 +64,7 @@ export default async function AssessmentComparisonPage({ params, searchParams }:
 
   if (completedAssessments.length < 2) {
     return (
-      <div className="page-shell space-y-6">
+      <div className="page-shell min-w-0 space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={clientWorkspaceAssessmentsPath(clientId)}
@@ -93,14 +93,14 @@ export default async function AssessmentComparisonPage({ params, searchParams }:
     if (!comparison) notFound();
 
     return (
-      <div className="page-shell">
+      <div className="page-shell min-w-0">
         <AssessmentComparisonView clientId={clientId} comparison={comparison} />
       </div>
     );
   }
 
   return (
-    <div className="page-shell space-y-6">
+    <div className="page-shell min-w-0 space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href={clientWorkspaceAssessmentsPath(clientId)}

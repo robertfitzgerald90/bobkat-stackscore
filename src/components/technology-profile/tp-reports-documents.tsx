@@ -76,7 +76,7 @@ export function TpReportsDocuments({
                     <DocumentIcon type={document.documentType} />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium">{document.title}</p>
+                    <p className="break-words font-medium">{document.title}</p>
                     <p className="text-xs text-muted-foreground">
                       {DOCUMENT_TYPE_LABELS[document.documentType]} ·{" "}
                       {formatDisplayDate(document.createdAt)}

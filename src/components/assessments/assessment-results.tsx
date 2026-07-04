@@ -259,7 +259,7 @@ export function AssessmentResults({
   }
 
   return (
-    <div className="page-content min-w-0 space-y-6">
+    <div className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{clientName}</p>

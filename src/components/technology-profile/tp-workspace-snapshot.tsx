@@ -64,7 +64,7 @@ function FocusItemRow({ item }: { item: ImmediateFocusItem }) {
             {PRIORITY_LABELS[item.priority]}
           </Badge>
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground break-words">
           {formatFocusMetadataLine(item)}
         </p>
       </div>

@@ -85,7 +85,7 @@ export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflow
   };
 
   return (
-    <div className="page-shell space-y-6">
+    <div className="page-shell min-w-0 space-y-6">
       <div className="flex flex-col gap-4 print:hidden sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link

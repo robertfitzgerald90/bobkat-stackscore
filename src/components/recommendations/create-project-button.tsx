@@ -7,17 +7,20 @@ import { FolderKanban, Loader2 } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
 import { formatProjectStatus } from "@/lib/projects";
 import type { ClientRecommendationRow } from "@/lib/recommendations/client-list";
+import { cn } from "@/lib/utils";
 
 type CreateProjectFromRecommendationButtonProps = {
   clientId: string;
   recommendation: ClientRecommendationRow;
   onCreated?: (projectId: string) => void;
+  className?: string;
 };
 
 export function CreateProjectFromRecommendationButton({
   clientId,
   recommendation,
   onCreated,
+  className,
 }: CreateProjectFromRecommendationButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -29,7 +32,7 @@ export function CreateProjectFromRecommendationButton({
         className={buttonClassName({
           variant: "outline",
           size: "sm",
-          className: "w-full shrink-0 sm:w-auto",
+          className: cn("w-full shrink-0 sm:w-auto", className),
         })}
       >
         <FolderKanban className="mr-2 h-4 w-4" />
@@ -87,7 +90,7 @@ export function CreateProjectFromRecommendationButton({
       className={buttonClassName({
         variant: "default",
         size: "sm",
-        className: "w-full shrink-0 sm:w-auto",
+        className: cn("w-full shrink-0 sm:w-auto", className),
       })}
     >
       {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

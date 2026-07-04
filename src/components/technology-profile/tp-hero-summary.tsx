@@ -89,7 +89,7 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             </p>
             <p
               className={cn(
-                "text-5xl font-bold tabular-nums sm:text-6xl",
+                "text-4xl font-bold tabular-nums sm:text-5xl lg:text-6xl",
                 getScoreTextColorClass(score),
               )}
             >

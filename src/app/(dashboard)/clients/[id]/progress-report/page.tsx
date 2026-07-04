@@ -21,7 +21,7 @@ export default async function ProgressReportPage({ params }: PageProps) {
   if (!report) notFound();
 
   return (
-    <div className="page-shell">
+    <div className="page-shell min-w-0">
       <ProgressReportPreview clientId={clientId} data={report} />
     </div>
   );

@@ -16,7 +16,7 @@ type ReportTableProps = {
 
 export function ReportTable({ children, className }: ReportTableProps) {
   return (
-    <div className={cn("overflow-x-auto rounded-lg border", className)}>
+    <div className={cn("overflow-x-auto rounded-lg border max-w-full min-w-0", className)}>
       <Table>{children}</Table>
     </div>
   );

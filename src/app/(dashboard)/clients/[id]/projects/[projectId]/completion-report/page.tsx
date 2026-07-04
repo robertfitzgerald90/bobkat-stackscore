@@ -21,7 +21,7 @@ export default async function CompletionReportPage({ params }: PageProps) {
   if (!report) notFound();
 
   return (
-    <div className="page-shell">
+    <div className="page-shell min-w-0">
       <CompletionReportPreview clientId={clientId} data={report} />
     </div>
   );

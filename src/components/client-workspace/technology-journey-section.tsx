@@ -23,7 +23,7 @@ export function TechnologyJourneySection({
   journeyTimeline,
 }: TechnologyJourneySectionProps) {
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
       <TpTechnologyJourney
         clientId={clientId}
         journey={journey}

@@ -164,7 +164,7 @@ function ClientAnalyticsRow({ client }: { client: DashboardClientRow }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground sm:justify-end">
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:justify-end">
         <span className="inline-flex items-center gap-1.5">
           <span className="font-medium text-foreground">Score</span>
           <span
@@ -199,7 +199,7 @@ export function DashboardView({ summary }: DashboardViewProps) {
   const { kpis, clients, scoreDistribution } = summary;
 
   return (
-    <div className="page-content min-w-0 space-y-4">
+    <div className="min-w-0 space-y-4">
       <header className="min-w-0">
         <h2 className="page-title">Dashboard</h2>
         <p className="mt-1 text-sm text-muted-foreground">

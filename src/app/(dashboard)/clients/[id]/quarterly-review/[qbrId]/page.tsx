@@ -23,7 +23,7 @@ export default async function QuarterlyReviewDetailPage({ params }: PageProps) {
 
   if (session.user.role === "client") {
     return (
-      <div className="page-shell">
+      <div className="page-shell min-w-0">
         <QbrReportView clientId={clientId} data={review.report} showActions />
       </div>
     );

@@ -25,8 +25,8 @@ export function WorkspaceHubLinks({ links }: WorkspaceHubLinksProps) {
           )}
         >
           <div className="min-w-0">
-            <p className="text-sm font-semibold group-hover:text-primary">{link.title}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{link.description}</p>
+            <p className="break-words text-sm font-semibold group-hover:text-primary">{link.title}</p>
+            <p className="mt-0.5 break-words text-xs text-muted-foreground">{link.description}</p>
           </div>
           <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
         </Link>

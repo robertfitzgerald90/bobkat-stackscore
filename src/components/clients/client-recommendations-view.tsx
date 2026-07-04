@@ -75,7 +75,7 @@ export function ClientRecommendationsView({
   }
 
   return (
-    <div className="page-content space-y-6">
+    <div className="min-w-0 space-y-6">
       <WorkspaceSectionHeader
         title="Recommendations"
         description={`${clientName} — client-level improvement opportunities across assessments`}
@@ -170,7 +170,7 @@ export function ClientRecommendationsView({
                 <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold">
+                      <p className="min-w-0 break-words font-semibold">
                         {conciseFocusTitle(recommendation.title)}
                       </p>
                       <Badge variant={PRIORITY_BADGE[recommendation.priority]}>
@@ -196,6 +196,7 @@ export function ClientRecommendationsView({
                   <CreateProjectFromRecommendationButton
                     clientId={clientId}
                     recommendation={recommendation}
+                    className="w-full shrink-0 sm:w-auto sm:max-w-xs"
                   />
                 </div>
 

@@ -29,7 +29,7 @@ export function NewClientSheet({ open, onOpenChange, onCreated }: NewClientSheet
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+      <SheetContent className="w-full max-w-[100vw] overflow-y-auto sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>New Client</SheetTitle>
           <SheetDescription>Add a business to assess</SheetDescription>

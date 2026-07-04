@@ -49,7 +49,7 @@ export function ClientWorkspaceNav({ clientId, role }: ClientWorkspaceNavProps) 
             if (href) router.push(href);
           }}
         >
-          <SelectTrigger id="workspace-section-nav" className="w-full">
+      <SelectTrigger id="workspace-section-nav" className="w-full min-w-0 max-w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

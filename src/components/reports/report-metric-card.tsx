@@ -62,5 +62,5 @@ export function ReportMetricGrid({ children, columns = 3, className }: ReportMet
         ? "sm:grid-cols-2 xl:grid-cols-4"
         : "sm:grid-cols-3";
 
-  return <div className={cn("grid gap-4", columnClass, className)}>{children}</div>;
+  return <div className={cn("grid grid-cols-1 gap-4", columnClass, className)}>{children}</div>;
 }

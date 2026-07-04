@@ -129,6 +129,9 @@
 }
 
 @layer base {
+  html {
+    overflow-x: clip;
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -160,16 +163,16 @@
     @apply min-w-0 w-full max-w-full;
   }
   .page-header {
-    @apply space-y-1;
+    @apply min-w-0 max-w-full space-y-1;
   }
   .page-title {
-    @apply text-xl font-semibold tracking-tight text-primary sm:text-2xl;
+    @apply break-words text-xl font-semibold tracking-tight text-primary sm:text-2xl;
   }
   .dark .page-title {
     @apply text-foreground;
   }
   .page-description {
-    @apply text-sm text-muted-foreground;
+    @apply break-words text-sm text-muted-foreground;
   }
   .stat-card {
     @apply min-w-0 max-w-full shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md;
@@ -187,7 +190,7 @@
     @apply flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center;
   }
   .table-desktop {
-    @apply hidden md:block;
+    @apply hidden min-w-0 max-w-full md:block;
   }
   .table-mobile {
     @apply space-y-3 md:hidden;

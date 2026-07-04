@@ -42,7 +42,7 @@ export function PortfolioView({ clients }: PortfolioViewProps) {
   }
 
   return (
-    <div className="page-content min-w-0 space-y-4">
+    <div className="min-w-0 space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <h2 className="page-title">Portfolio</h2>

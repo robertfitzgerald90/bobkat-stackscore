@@ -9,7 +9,7 @@ type ReportShellProps = {
 
 export function ReportShell({ children, className }: ReportShellProps) {
   return (
-    <div className={cn(REPORT_PRINT_ROOT_CLASS, "space-y-6 print:space-y-4", className)}>
+    <div className={cn(REPORT_PRINT_ROOT_CLASS, "min-w-0 max-w-full space-y-6 print:space-y-4", className)}>
       {children}
     </div>
   );

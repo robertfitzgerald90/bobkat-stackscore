@@ -53,7 +53,7 @@ export default async function ClientsPage() {
   });
 
   return (
-    <div className="page-shell">
+    <div className="page-shell min-w-0">
       <ClientsTable clients={rows} isAdmin={isAdmin} />
     </div>
   );

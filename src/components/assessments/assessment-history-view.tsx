@@ -37,9 +37,9 @@ export function AssessmentHistoryView({
   history,
 }: AssessmentHistoryViewProps) {
   return (
-    <div className="page-shell">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="page-header">
+    <div className="page-shell min-w-0">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="page-header min-w-0 flex-1">
           <p className="text-sm text-muted-foreground">{clientName}</p>
           <h2 className="page-title">Assessment History</h2>
           <p className="page-description">
@@ -49,7 +49,10 @@ export function AssessmentHistoryView({
         </div>
         <Link
           href={clientWorkspaceAssessmentsPath(clientId)}
-          className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
+          className={buttonClassName({
+            variant: "outline",
+            className: "w-full shrink-0 sm:w-auto",
+          })}
         >
           {BACK_TO_ASSESSMENTS}
         </Link>
