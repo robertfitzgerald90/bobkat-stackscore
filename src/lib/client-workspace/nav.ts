@@ -59,7 +59,7 @@ export function isClientWorkspaceSection(value: string): value is ClientWorkspac
 /**
  * Hrefs for DOC-201 sections.
  * Returns null when the section page is not available yet (render disabled).
- * Commit 4 wires existing modules; Commit 5–6 add stubs and Journey.
+ * Commit 6 adds the Technology Journey section page.
  */
 export function resolveClientWorkspaceNavHref(
   clientId: string,
@@ -72,15 +72,15 @@ export function resolveClientWorkspaceNavHref(
     case "projects":
     case "assessments":
     case "recommendations":
+    case "assets":
     case "documents":
     case "contacts":
-    case "executive-reports":
-      return `/clients/${clientId}/${section}`;
-    case "journey":
-    case "assets":
     case "billing":
+    case "executive-reports":
     case "risks":
     case "activity":
+      return `/clients/${clientId}/${section}`;
+    case "journey":
       return null;
     default:
       return null;

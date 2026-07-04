@@ -3,6 +3,7 @@ import {
   CLIENT_WORKSPACE_NAV,
   CLIENT_WORKSPACE_SECTIONS,
   isClientWorkspaceSection,
+  resolveClientWorkspaceNavHref,
 } from "@/lib/client-workspace";
 import {
   clientImmediateFocusPath,
@@ -100,6 +101,49 @@ describe("client workspace paths", () => {
     expect(clientProjectsPath(clientId)).toBe("/projects?client=client-1");
     expect(clientProjectDetailPath(clientId, "p1")).toBe(
       "/projects?client=client-1&selected=p1",
+    );
+  });
+});
+
+describe("resolveClientWorkspaceNavHref", () => {
+  const clientId = "client-1";
+
+  it("links all wired and stub sections except Journey", () => {
+    const linked = CLIENT_WORKSPACE_SECTIONS.filter(
+      (section) => resolveClientWorkspaceNavHref(clientId, section) !== null,
+    );
+    expect(linked).toEqual([
+      "overview",
+      "roadmap",
+      "projects",
+      "assessments",
+      "recommendations",
+      "assets",
+      "documents",
+      "contacts",
+      "billing",
+      "executive-reports",
+      "risks",
+      "activity",
+    ]);
+  });
+
+  it("keeps Journey disabled until its section page ships", () => {
+    expect(resolveClientWorkspaceNavHref(clientId, "journey")).toBeNull();
+  });
+
+  it("returns section routes for Phase 1 stub modules", () => {
+    expect(resolveClientWorkspaceNavHref(clientId, "assets")).toBe(
+      "/clients/client-1/assets",
+    );
+    expect(resolveClientWorkspaceNavHref(clientId, "billing")).toBe(
+      "/clients/client-1/billing",
+    );
+    expect(resolveClientWorkspaceNavHref(clientId, "risks")).toBe(
+      "/clients/client-1/risks",
+    );
+    expect(resolveClientWorkspaceNavHref(clientId, "activity")).toBe(
+      "/clients/client-1/activity",
     );
   });
 });
