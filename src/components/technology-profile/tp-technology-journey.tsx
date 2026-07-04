@@ -13,6 +13,8 @@ type TpTechnologyJourneyProps = {
   clientId: string;
   journey: TechnologyJourneyProgress;
   journeyScores: TechnologyJourneyScores;
+  /** When true, omits card chrome for workspace section embedding. */
+  embedded?: boolean;
 };
 
 type LadderStep = {
@@ -50,7 +52,12 @@ function JourneyStat({ label, value }: { label: string; value: number }) {
   );
 }
 
-export function TpTechnologyJourney({ clientId, journey, journeyScores }: TpTechnologyJourneyProps) {
+export function TpTechnologyJourney({
+  clientId,
+  journey,
+  journeyScores,
+  embedded = false,
+}: TpTechnologyJourneyProps) {
   const hasAssessment = journey.assessmentsCompleted > 0;
   const steps: LadderStep[] = [
     { label: "Initial", score: journeyScores.initialScore },
@@ -61,14 +68,16 @@ export function TpTechnologyJourney({ clientId, journey, journeyScores }: TpTech
 
   return (
     <Card className="stat-card h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Route className="h-4 w-4 text-primary" />
-          Technology Journey
-        </CardTitle>
-        <CardDescription>Score progression across the BTIL lifecycle</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
+      {!embedded ? (
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Route className="h-4 w-4 text-primary" />
+            Technology Journey
+          </CardTitle>
+          <CardDescription>Score progression across the BTIL lifecycle</CardDescription>
+        </CardHeader>
+      ) : null}
+      <CardContent className={cn("space-y-5", embedded && "pt-(--card-spacing)")}>
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="text-sm font-semibold">{journey.phaseLabel}</p>

@@ -59,7 +59,6 @@ export function isClientWorkspaceSection(value: string): value is ClientWorkspac
 /**
  * Hrefs for DOC-201 sections.
  * Returns null when the section page is not available yet (render disabled).
- * Commit 6 adds the Technology Journey section page.
  */
 export function resolveClientWorkspaceNavHref(
   clientId: string,
@@ -68,6 +67,7 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
+    case "journey":
     case "roadmap":
     case "projects":
     case "assessments":
@@ -80,8 +80,6 @@ export function resolveClientWorkspaceNavHref(
     case "risks":
     case "activity":
       return `/clients/${clientId}/${section}`;
-    case "journey":
-      return null;
     default:
       return null;
   }
@@ -98,6 +96,7 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   if (rest.startsWith("/technology-profile") || rest.startsWith("/overview")) {
     return "overview";
   }
+  if (rest.startsWith("/journey")) return "journey";
   if (rest.startsWith("/recommendations")) return "recommendations";
   if (rest.startsWith("/roadmap") || rest.startsWith("/improvement-plan")) {
     return "roadmap";

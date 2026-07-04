@@ -89,12 +89,15 @@ type TpJourneyTimelineProps = {
   clientId: string;
   events: JourneyTimelineEvent[];
   assessmentsCompleted: number;
+  /** When true, omits card chrome for workspace section embedding. */
+  embedded?: boolean;
 };
 
 export function TpJourneyTimeline({
   clientId,
   events,
   assessmentsCompleted,
+  embedded = false,
 }: TpJourneyTimelineProps) {
   const [filter, setFilter] = useState<JourneyTimelineFilter>("all");
   const visibleEvents = useMemo(
@@ -104,14 +107,21 @@ export function TpJourneyTimeline({
 
   return (
     <Card className="stat-card">
-      <CardHeader>
-        <CardTitle>Technology Journey</CardTitle>
-        <CardDescription>
-          A chronological record of assessments, projects, reports, and Technology Maturity Profile
-          milestones.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
+      {!embedded ? (
+        <CardHeader>
+          <CardTitle>Technology Journey</CardTitle>
+          <CardDescription>
+            A chronological record of assessments, projects, reports, and Technology Maturity Profile
+            milestones.
+          </CardDescription>
+        </CardHeader>
+      ) : null}
+      <CardContent className={cn("space-y-5", embedded && "pt-(--card-spacing)")}>
+        {embedded ? (
+          <p className="text-sm text-muted-foreground">
+            Chronological record of assessments, projects, reports, and profile milestones.
+          </p>
+        ) : null}
         <div className="flex flex-wrap gap-2">
           {FILTERS.map((option) => (
             <button

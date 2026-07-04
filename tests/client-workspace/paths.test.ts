@@ -108,28 +108,17 @@ describe("client workspace paths", () => {
 describe("resolveClientWorkspaceNavHref", () => {
   const clientId = "client-1";
 
-  it("links all wired and stub sections except Journey", () => {
+  it("links all DOC-201 sections", () => {
     const linked = CLIENT_WORKSPACE_SECTIONS.filter(
       (section) => resolveClientWorkspaceNavHref(clientId, section) !== null,
     );
-    expect(linked).toEqual([
-      "overview",
-      "roadmap",
-      "projects",
-      "assessments",
-      "recommendations",
-      "assets",
-      "documents",
-      "contacts",
-      "billing",
-      "executive-reports",
-      "risks",
-      "activity",
-    ]);
+    expect(linked).toEqual([...CLIENT_WORKSPACE_SECTIONS]);
   });
 
-  it("keeps Journey disabled until its section page ships", () => {
-    expect(resolveClientWorkspaceNavHref(clientId, "journey")).toBeNull();
+  it("returns the journey section route", () => {
+    expect(resolveClientWorkspaceNavHref(clientId, "journey")).toBe(
+      "/clients/client-1/journey",
+    );
   });
 
   it("returns section routes for Phase 1 stub modules", () => {
