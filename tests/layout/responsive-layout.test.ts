@@ -26,4 +26,24 @@ describe("responsive layout utilities", () => {
     expect(globalsCss).toMatch(/\.table-desktop\s*\{[^}]*min-w-0[^}]*max-w-full/s);
     expect(globalsCss).toMatch(/\.overflow-safe-x\s*\{[^}]*overflow-x-auto/s);
   });
+
+  it("keeps assessment recommendation actions stacked until large screens", () => {
+    const assessmentResults = readFileSync(
+      resolve(process.cwd(), "src/components/assessments/assessment-results.tsx"),
+      "utf8",
+    );
+
+    const recommendationsSection = assessmentResults.slice(
+      assessmentResults.indexOf("<CardTitle>Recommendations</CardTitle>"),
+    );
+
+    expect(recommendationsSection).toContain(
+      "flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between",
+    );
+    expect(recommendationsSection).not.toContain(
+      "sm:flex-row sm:flex-wrap sm:items-start sm:justify-between",
+    );
+    expect(recommendationsSection).toContain("!w-full min-w-0 max-w-full lg:!w-[160px]");
+    expect(recommendationsSection).toContain("break-words text-sm leading-relaxed");
+  });
 });

@@ -489,19 +489,19 @@ function ExcludedRow({
   const badge = STATUS_BADGE[status];
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border bg-muted/20 p-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-md border bg-muted/20 p-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-medium">{rec.title}</p>
+          <p className="min-w-0 break-words font-medium">{rec.title}</p>
           <Badge variant="outline">{formatPriority(rec.priority)}</Badge>
           <span className={cn("rounded border px-2 py-0.5 text-[10px] font-bold uppercase", badge.className)}>
             {badge.label}
           </span>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">{rec.businessImpact}</p>
+        <p className="mt-1 break-words text-sm text-muted-foreground">{rec.businessImpact}</p>
       </div>
       {isEditable ? (
-        <Button type="button" variant="default" size="sm" onClick={onInclude}>
+        <Button type="button" variant="default" size="sm" className="w-full lg:w-auto" onClick={onInclude}>
           <Plus className="mr-1 h-4 w-4" />
           Include in plan
         </Button>

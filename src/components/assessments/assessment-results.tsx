@@ -407,8 +407,11 @@ export function AssessmentResults({
           </CardHeader>
           <CardContent className="space-y-3">
             {summary.topStrengths.map((category) => (
-              <div key={category.categoryId} className="flex items-center justify-between gap-2">
-                <span className="text-sm">{category.categoryName}</span>
+              <div
+                key={category.categoryId}
+                className="flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1"
+              >
+                <span className="min-w-0 break-words text-sm">{category.categoryName}</span>
                 <div className="flex items-center gap-2">
                   <Badge variant={RATING_VARIANT[category.rating]} className="text-xs">
                     {RATING_LABELS[category.rating]}
@@ -431,8 +434,11 @@ export function AssessmentResults({
           </CardHeader>
           <CardContent className="space-y-3">
             {summary.topRisks.map((category) => (
-              <div key={category.categoryId} className="flex items-center justify-between gap-2">
-                <span className="text-sm">{category.categoryName}</span>
+              <div
+                key={category.categoryId}
+                className="flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1"
+              >
+                <span className="min-w-0 break-words text-sm">{category.categoryName}</span>
                 <div className="flex items-center gap-2">
                   <Badge variant={RATING_VARIANT[category.rating]} className="text-xs">
                     {RATING_LABELS[category.rating]}
@@ -465,7 +471,7 @@ export function AssessmentResults({
                       {formatPriority(action.priority)}
                     </Badge>
                   </div>
-                  <p className="leading-snug">{action.title}</p>
+                  <p className="break-words leading-snug">{action.title}</p>
                 </div>
               ))
             )}
@@ -485,16 +491,16 @@ export function AssessmentResults({
             const score = pillar.percentScore;
 
             return (
-              <div key={pillar.pillarCode} className="space-y-2 rounded-md border p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-medium">{pillar.pillarName}</p>
+              <div key={pillar.pillarCode} className="min-w-0 space-y-2 rounded-md border p-4">
+                <div className="flex min-w-0 items-start justify-between gap-2">
+                  <p className="min-w-0 break-words font-medium">{pillar.pillarName}</p>
                   {score !== null ? (
                     <Badge variant={RATING_VARIANT[getRating(score)]}>
                       {pillar.maturityTier ?? RATING_LABELS[getRating(score)]}
                     </Badge>
                   ) : null}
                 </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">
+                <p className="break-words text-xs leading-relaxed text-muted-foreground">
                   {pillar.businessQuestion}
                 </p>
                 {score !== null ? (
@@ -544,7 +550,7 @@ export function AssessmentResults({
             estimated score improvements. No pricing included.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8">
+        <CardContent className="min-w-0 space-y-8">
           {summary.recommendations.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               No recommendations were triggered. This assessment did not surface actionable gaps
@@ -565,7 +571,7 @@ export function AssessmentResults({
                 <div className="space-y-4">
                   {group.items.map((recommendation) => (
                     <div key={recommendation.id} className="min-w-0 rounded-lg border p-4">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="min-w-0 flex-1 space-y-3">
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="min-w-0 break-words font-medium">{recommendation.title}</p>
@@ -580,18 +586,20 @@ export function AssessmentResults({
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                               Recommended Action
                             </p>
-                            <p className="text-sm leading-relaxed">{recommendation.description}</p>
+                            <p className="break-words text-sm leading-relaxed">
+                              {recommendation.description}
+                            </p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                               Business Impact
                             </p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="break-words text-sm leading-relaxed text-muted-foreground">
                               {recommendation.businessImpact}
                             </p>
                           </div>
                           {recommendation.suggestedService ? (
-                            <p className="text-sm">
+                            <p className="break-words text-sm">
                               <span className="text-muted-foreground">Suggested service:</span>{" "}
                               {recommendation.suggestedService}
                             </p>
@@ -605,7 +613,7 @@ export function AssessmentResults({
                           </p>
                         </div>
 
-                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:items-end">
+                        <div className="flex w-full min-w-0 flex-col gap-2 border-t border-border/60 pt-4 lg:w-auto lg:shrink-0 lg:border-0 lg:pt-0 lg:items-end">
                           <Select
                             value={recommendation.status}
                             items={RECOMMENDATION_STATUS_LABELS}
@@ -616,7 +624,7 @@ export function AssessmentResults({
                               )
                             }
                           >
-                            <SelectTrigger className="w-full sm:w-[160px]">
+                            <SelectTrigger className="!w-full min-w-0 max-w-full lg:!w-[160px]">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -631,7 +639,11 @@ export function AssessmentResults({
                           {recommendation.hasProject && recommendation.projectId ? (
                             <Link
                               href={`/projects?selected=${recommendation.projectId}`}
-                              className={buttonVariants({ variant: "outline", size: "sm" })}
+                              className={buttonVariants({
+                                variant: "outline",
+                                size: "sm",
+                                className: "w-full lg:w-auto",
+                              })}
                             >
                               <FolderKanban className="mr-2 h-4 w-4" />
                               View Project
@@ -640,6 +652,7 @@ export function AssessmentResults({
                             <Button
                               variant="outline"
                               size="sm"
+                              className="w-full lg:w-auto"
                               onClick={() => convertToProject(recommendation)}
                               disabled={
                                 recommendation.status === "completed" ||

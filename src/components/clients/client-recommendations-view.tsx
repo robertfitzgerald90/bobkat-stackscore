@@ -167,7 +167,7 @@ export function ClientRecommendationsView({
                   selectedId === recommendation.id && "border-primary/40 bg-primary/5",
                 )}
               >
-                <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="mb-2 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="min-w-0 break-words font-semibold">
@@ -196,12 +196,14 @@ export function ClientRecommendationsView({
                   <CreateProjectFromRecommendationButton
                     clientId={clientId}
                     recommendation={recommendation}
-                    className="w-full shrink-0 sm:w-auto sm:max-w-xs"
+                    className="w-full shrink-0 lg:w-auto lg:max-w-xs"
                   />
                 </div>
 
                 {recommendation.businessImpact ? (
-                  <p className="mb-3 text-muted-foreground">{recommendation.businessImpact}</p>
+                  <p className="mb-3 break-words text-muted-foreground">
+                    {recommendation.businessImpact}
+                  </p>
                 ) : null}
 
                 <dl className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">

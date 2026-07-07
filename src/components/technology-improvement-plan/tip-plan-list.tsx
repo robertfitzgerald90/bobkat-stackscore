@@ -92,12 +92,12 @@ export function TipPlanList({
             plans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-col gap-3 rounded-md border p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-md border p-4 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <p className="font-medium">{plan.title}</p>
+                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <p className="min-w-0 break-words font-medium">{plan.title}</p>
                     <Badge variant={plan.status === "generated" ? "success" : "outline"}>
                       {plan.status}
                     </Badge>
