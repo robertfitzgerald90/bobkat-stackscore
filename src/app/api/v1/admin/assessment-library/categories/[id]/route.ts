@@ -7,6 +7,11 @@ import {
   requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import {
+  isLegacyModeRequest,
+  LEGACY_MODE_REQUIRED_MESSAGE,
+  requiresLegacyModeForCategoryActivation,
+} from "@/lib/assessment-library/legacy-guards";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -29,6 +34,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   if (Object.keys(data).length === 0) {
     return badRequest("No valid fields to update");
+  }
+
+  if (
+    body.isActive !== undefined &&
+    requiresLegacyModeForCategoryActivation(existing.code, Boolean(body.isActive)) &&
+    !isLegacyModeRequest(body)
+  ) {
+    return badRequest(LEGACY_MODE_REQUIRED_MESSAGE, "LEGACY_MODE_REQUIRED");
   }
 
   const category = await prisma.assessmentCategory.update({

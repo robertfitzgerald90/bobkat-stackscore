@@ -7,6 +7,11 @@ import {
   requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import {
+  isLegacyModeRequest,
+  LEGACY_MODE_REQUIRED_MESSAGE,
+  requiresLegacyModeForQuestionActivation,
+} from "@/lib/assessment-library/legacy-guards";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -42,7 +47,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   const body = await request.json();
 
-  const existing = await prisma.assessmentQuestion.findUnique({ where: { id } });
+  const existing = await prisma.assessmentQuestion.findUnique({
+    where: { id },
+    include: { category: { select: { code: true } } },
+  });
   if (!existing) return notFound("Question not found");
 
   const allowedFields = [
@@ -67,6 +75,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   if (Object.keys(data).length === 0) {
     return badRequest("No valid fields to update");
+  }
+
+  if (
+    body.isActive !== undefined &&
+    requiresLegacyModeForQuestionActivation(
+      existing.category.code,
+      existing.code,
+      Boolean(body.isActive),
+    ) &&
+    !isLegacyModeRequest(body)
+  ) {
+    return badRequest(LEGACY_MODE_REQUIRED_MESSAGE, "LEGACY_MODE_REQUIRED");
   }
 
   const question = await prisma.assessmentQuestion.update({

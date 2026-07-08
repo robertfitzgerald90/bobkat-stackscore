@@ -9,6 +9,7 @@ import {
 import { backfillTechnologyProfiles } from "../src/lib/technology-profile";
 import { CATEGORIES, QUESTIONS_BY_CATEGORY, type SeedAnswer } from "./seed-data";
 import { clearAllClientData, clearAssessmentData, deactivateV1Library, seedV2Library } from "./seed-v2";
+import { backfillV2QuestionMetadata } from "../src/lib/assessment-library/backfill-v2-metadata";
 import { Priority } from "../src/generated/prisma/client";
 
 async function main() {
@@ -176,6 +177,10 @@ async function main() {
 
   await deactivateV1Library(prisma);
   await seedV2Library(prisma);
+  const backfillResult = await backfillV2QuestionMetadata(prisma);
+  console.log(
+    `V2 metadata backfill: ${backfillResult.updated} updated, ${backfillResult.skipped} already complete (${backfillResult.scanned} scanned).`,
+  );
   await backfillTechnologyProfiles();
 
   console.log("Seed complete.");

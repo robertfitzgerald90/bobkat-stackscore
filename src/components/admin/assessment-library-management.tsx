@@ -158,7 +158,7 @@ export function AssessmentLibraryManagement() {
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({ ...editForm, legacyMode: showLegacy }),
       },
     );
     setSaving(false);
@@ -168,7 +168,8 @@ export function AssessmentLibraryManagement() {
       setEditQuestion(null);
       await loadLibrary();
     } else {
-      toast.error("Failed to save question");
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      toast.error(payload?.error ?? "Failed to save question");
     }
   }
 
@@ -178,14 +179,15 @@ export function AssessmentLibraryManagement() {
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: !category.isActive }),
+        body: JSON.stringify({ isActive: !category.isActive, legacyMode: true }),
       },
     );
     if (response.ok) {
       toast.success(category.isActive ? "Category deactivated" : "Category activated");
       await loadLibrary();
     } else {
-      toast.error("Failed to update category");
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      toast.error(payload?.error ?? "Failed to update category");
     }
   }
 
@@ -467,12 +469,18 @@ export function AssessmentLibraryManagement() {
                 <input
                   type="checkbox"
                   checked={editForm.isActive}
+                  disabled={!showLegacy && !editQuestion.isActive && /^Q\d{2}$/.test(editQuestion.code)}
                   onChange={(e) =>
                     setEditForm((f) => ({ ...f, isActive: e.target.checked }))
                   }
                 />
                 Active in assessment bank
               </label>
+              {!showLegacy && /^Q\d{2}$/.test(editQuestion.code) ? (
+                <p className="text-xs text-muted-foreground">
+                  Archived v1 questions can only be reactivated in legacy mode.
+                </p>
+              ) : null}
               {editQuestion.answerOptions?.length ? (
                 <div className="space-y-2 rounded-md border p-3">
                   <p className="text-sm font-medium">Answer Options</p>

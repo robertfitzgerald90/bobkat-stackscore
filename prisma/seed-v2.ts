@@ -1,5 +1,10 @@
 import questionLibrary from "../data/v2-question-library.json";
 import recommendationCatalog from "../data/RecommendationCatalogV2.json";
+import { getV2QuestionDoc114Metadata } from "../src/lib/assessment-library/backfill-v2-metadata";
+import {
+  V1_CATEGORY_CODES,
+  V1_QUESTION_CODES,
+} from "../src/lib/assessment-library/v1-library";
 import type { PrismaClient, Priority, RiskLevel } from "../src/generated/prisma/client";
 
 export const V2_PILLARS = questionLibrary.pillars;
@@ -78,32 +83,51 @@ export async function clearAllClientData(prisma: PrismaClient) {
 }
 
 export async function deactivateV1Library(prisma: PrismaClient) {
-  await prisma.answerOption.updateMany({
-    where: { question: { category: { code: { in: ["security", "backup", "infrastructure", "endpoint", "documentation", "bcdr", "strategic"] } } } },
-    data: { triggersRecommendation: false },
-  });
-  await prisma.assessmentQuestion.updateMany({
-    where: {
-      category: {
-        code: { in: ["security", "backup", "infrastructure", "endpoint", "documentation", "bcdr", "strategic"] },
+  const v1CategoryCodes = [...V1_CATEGORY_CODES];
+  const v1QuestionCodes = [...V1_QUESTION_CODES];
+
+  const categoryScope = { code: { in: v1CategoryCodes } };
+  const archivedQuestionScope = {
+    OR: [{ category: categoryScope }, { code: { in: v1QuestionCodes } }],
+  };
+
+  const [answerOptions, questions, categories, templates] = await Promise.all([
+    prisma.answerOption.updateMany({
+      where: {
+        triggersRecommendation: true,
+        question: archivedQuestionScope,
       },
-    },
-    data: { isActive: false },
-  });
-  await prisma.assessmentCategory.updateMany({
-    where: {
-      code: { in: ["security", "backup", "infrastructure", "endpoint", "documentation", "bcdr", "strategic"] },
-    },
-    data: { isActive: false },
-  });
-  await prisma.recommendationTemplate.updateMany({
-    where: {
-      category: {
-        code: { in: ["security", "backup", "infrastructure", "endpoint", "documentation", "bcdr", "strategic"] },
+      data: { triggersRecommendation: false },
+    }),
+    prisma.assessmentQuestion.updateMany({
+      where: {
+        isActive: true,
+        ...archivedQuestionScope,
       },
-    },
-    data: { isActive: false },
-  });
+      data: { isActive: false },
+    }),
+    prisma.assessmentCategory.updateMany({
+      where: {
+        isActive: true,
+        ...categoryScope,
+      },
+      data: { isActive: false },
+    }),
+    prisma.recommendationTemplate.updateMany({
+      where: {
+        isActive: true,
+        category: categoryScope,
+      },
+      data: { isActive: false },
+    }),
+  ]);
+
+  return {
+    answerOptionsUpdated: answerOptions.count,
+    questionsArchived: questions.count,
+    categoriesArchived: categories.count,
+    templatesArchived: templates.count,
+  };
 }
 
 export async function seedV2Library(prisma: PrismaClient) {
@@ -174,6 +198,7 @@ export async function seedV2Library(prisma: PrismaClient) {
 
     const templateCode = question.recommendationId;
     const templateId = templateIdByCode.get(templateCode);
+    const doc114Metadata = getV2QuestionDoc114Metadata(question);
 
     const record = await prisma.assessmentQuestion.upsert({
       where: { code: question.id },
@@ -198,6 +223,10 @@ export async function seedV2Library(prisma: PrismaClient) {
         helpText: question.whyItMatters,
         purpose: question.whyItMatters,
         capability: question.capability,
+        evidenceRequired: doc114Metadata.evidenceRequired,
+        relatedService: doc114Metadata.relatedService,
+        relatedPlaybook: doc114Metadata.relatedPlaybook,
+        adminNotes: doc114Metadata.adminNotes,
         responseType: "maturity",
         weight: question.weight,
         displayOrder: question.displayOrder,
