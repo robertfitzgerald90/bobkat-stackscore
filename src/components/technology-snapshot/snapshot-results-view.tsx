@@ -11,7 +11,8 @@ import type { SnapshotClassification } from "@/lib/technology-snapshot/types";
 import { cn } from "@/lib/utils";
 
 const PURCHASE_URL =
-  process.env.NEXT_PUBLIC_ASSESSMENT_PURCHASE_URL ?? `https://${BRAND.website}`;
+  process.env.NEXT_PUBLIC_ASSESSMENT_PURCHASE_URL ??
+  "https://bobkatit.com/technology-assessment";
 
 const CLASSIFICATION_VARIANT: Record<
   SnapshotClassification,
