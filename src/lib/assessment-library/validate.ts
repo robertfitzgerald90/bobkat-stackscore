@@ -1,6 +1,10 @@
-import { QUESTION_LIBRARY_METADATA } from "@/lib/assessment-library/metadata";
-
-const EXPECTED_QUESTION_COUNT = 50;
+import {
+  EXPECTED_V2_PILLAR_COUNT,
+  EXPECTED_V2_QUESTION_COUNT,
+  V2_CATALOG_BY_ID,
+  V2_PILLAR_CODES,
+  V2_QUESTIONS_PER_PILLAR,
+} from "@/lib/assessment-library/v2-catalog";
 
 export type LibraryValidationResult = {
   valid: boolean;
@@ -8,47 +12,87 @@ export type LibraryValidationResult = {
   warnings: string[];
 };
 
-/** Validates runtime question bank alignment with DOC-114 metadata catalog. */
+export type LibraryQuestionInput = {
+  code: string;
+  v2QuestionId: string | null;
+  categoryCode?: string;
+  capability: string | null;
+  isActive: boolean;
+};
+
+/** Validates the active DOC-151 pillar question bank (80 questions, 8 pillars). */
 export function validateQuestionLibrary(
-  questions: Array<{
-    code: string;
-    v2QuestionId: string | null;
-    capability: string | null;
-    isActive: boolean;
-  }>,
+  questions: LibraryQuestionInput[],
 ): LibraryValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const activeQuestions = questions.filter((q) => q.isActive);
-  if (activeQuestions.length !== EXPECTED_QUESTION_COUNT) {
+  const activeQuestions = questions.filter((question) => question.isActive);
+
+  if (activeQuestions.length !== EXPECTED_V2_QUESTION_COUNT) {
     errors.push(
-      `Expected ${EXPECTED_QUESTION_COUNT} active questions, found ${activeQuestions.length}`,
+      `Expected ${EXPECTED_V2_QUESTION_COUNT} active pillar questions, found ${activeQuestions.length}`,
     );
   }
 
-  const metadataByCode = new Map(QUESTION_LIBRARY_METADATA.map((m) => [m.code, m]));
+  const activeByCode = new Map(activeQuestions.map((question) => [question.code, question]));
+  const activeByPillar = new Map<string, number>();
+
+  for (const pillarCode of V2_PILLAR_CODES) {
+    activeByPillar.set(pillarCode, 0);
+  }
 
   for (const question of activeQuestions) {
-    const metadata = metadataByCode.get(question.code);
-    if (!metadata) {
-      errors.push(`Question ${question.code} has no DOC-114 metadata entry`);
+    const catalogEntry = V2_CATALOG_BY_ID.get(question.code);
+
+    if (!catalogEntry) {
+      errors.push(`Question ${question.code} is not in the DOC-151 pillar catalog`);
       continue;
     }
-    if (question.v2QuestionId !== metadata.v2QuestionId) {
+
+    if (question.v2QuestionId !== catalogEntry.id) {
       errors.push(
-        `${question.code}: v2QuestionId mismatch (expected ${metadata.v2QuestionId}, got ${question.v2QuestionId ?? "null"})`,
+        `${question.code}: question id mismatch (expected ${catalogEntry.id}, got ${question.v2QuestionId ?? "null"})`,
       );
     }
+
+    if (question.categoryCode && question.categoryCode !== catalogEntry.pillarCode) {
+      errors.push(
+        `${question.code}: pillar mismatch (expected ${catalogEntry.pillarCode}, got ${question.categoryCode})`,
+      );
+    }
+
     if (!question.capability) {
       warnings.push(`${question.code}: capability field is empty`);
     }
+
+    activeByPillar.set(
+      catalogEntry.pillarCode,
+      (activeByPillar.get(catalogEntry.pillarCode) ?? 0) + 1,
+    );
   }
 
-  for (const metadata of QUESTION_LIBRARY_METADATA) {
-    if (!activeQuestions.some((q) => q.code === metadata.code)) {
-      errors.push(`DOC-114 metadata ${metadata.code} (${metadata.v2QuestionId}) missing from active bank`);
+  for (const catalogEntry of V2_CATALOG_BY_ID.values()) {
+    if (!activeByCode.has(catalogEntry.id)) {
+      errors.push(
+        `DOC-151 question ${catalogEntry.id} (${catalogEntry.pillarName}) missing from active bank`,
+      );
     }
+  }
+
+  for (const pillarCode of V2_PILLAR_CODES) {
+    const count = activeByPillar.get(pillarCode) ?? 0;
+    if (count !== V2_QUESTIONS_PER_PILLAR) {
+      errors.push(
+        `Pillar ${pillarCode}: expected ${V2_QUESTIONS_PER_PILLAR} active questions, found ${count}`,
+      );
+    }
+  }
+
+  if (V2_PILLAR_CODES.length !== EXPECTED_V2_PILLAR_COUNT) {
+    errors.push(
+      `Expected ${EXPECTED_V2_PILLAR_COUNT} pillars in catalog, found ${V2_PILLAR_CODES.length}`,
+    );
   }
 
   return { valid: errors.length === 0, errors, warnings };

@@ -1,4 +1,4 @@
-﻿# DOC-112 – Recommendation Engine Specification
+# DOC-112 – Recommendation Engine Specification
 
 **Document ID:** DOC-112
 **Version:** 1.0

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   AlertTriangle,
+  Archive,
   BookOpen,
   CheckCircle2,
   ChevronDown,
@@ -58,9 +59,17 @@ type QuestionRow = {
 };
 
 type LibraryData = {
+  includeArchived?: boolean;
   categories: CategoryRow[];
   questions: QuestionRow[];
-  stats: { activeCategories: number; activeQuestions: number; activeTemplates: number };
+  stats: {
+    activeCategories: number;
+    activeQuestions: number;
+    expectedActiveQuestions: number;
+    activeTemplates: number;
+    archivedCategories: number;
+    archivedQuestions: number;
+  };
   validation: LibraryValidationResult;
 };
 
@@ -83,6 +92,7 @@ type QuestionDetail = QuestionRow & {
 export function AssessmentLibraryManagement() {
   const [data, setData] = useState<LibraryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLegacy, setShowLegacy] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [editQuestion, setEditQuestion] = useState<QuestionDetail | null>(null);
   const [saving, setSaving] = useState(false);
@@ -98,14 +108,15 @@ export function AssessmentLibraryManagement() {
 
   const loadLibrary = useCallback(async () => {
     setLoading(true);
-    const response = await fetch("/api/v1/admin/assessment-library");
+    const query = showLegacy ? "?includeArchived=true" : "";
+    const response = await fetch(`/api/v1/admin/assessment-library${query}`);
     if (response.ok) {
       setData(await response.json());
     } else {
       toast.error("Failed to load assessment library");
     }
     setLoading(false);
-  }, []);
+  }, [showLegacy]);
 
   useEffect(() => {
     loadLibrary();
@@ -196,15 +207,39 @@ export function AssessmentLibraryManagement() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">{data.stats.activeQuestions} active questions</Badge>
-          <Badge variant="secondary">{data.stats.activeCategories} categories</Badge>
+          <Badge variant="secondary">
+            {data.stats.activeQuestions} / {data.stats.expectedActiveQuestions} pillar questions
+          </Badge>
+          <Badge variant="secondary">{data.stats.activeCategories} active pillars</Badge>
           <Badge variant="secondary">{data.stats.activeTemplates} recommendation templates</Badge>
+          {showLegacy ? (
+            <Badge variant="outline">
+              {data.stats.archivedQuestions} archived v1 questions
+            </Badge>
+          ) : null}
         </div>
-        <Button variant="outline" size="sm" onClick={loadLibrary}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={showLegacy ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setShowLegacy((value) => !value)}
+          >
+            <Archive className="mr-2 h-4 w-4" />
+            {showLegacy ? "Hide archived v1" : "Show archived v1"}
+          </Button>
+          <Button variant="outline" size="sm" onClick={loadLibrary}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
       </div>
+
+      {showLegacy ? (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-muted-foreground">
+          Legacy mode: viewing archived v1 categories and questions for historical assessments only.
+          Customer assessments use the active DOC-151 pillar bank.
+        </div>
+      ) : null}
 
       <Card
         className={cn(
@@ -220,12 +255,12 @@ export function AssessmentLibraryManagement() {
             ) : (
               <AlertTriangle className="h-5 w-5 text-destructive" />
             )}
-            DOC-114 Alignment
+            Pillar Library Validation
           </CardTitle>
           <CardDescription>
             {data.validation.valid
-              ? "All 50 questions match the DOC-114 metadata catalog."
-              : `${data.validation.errors.length} alignment issue(s) detected.`}
+              ? `All ${data.stats.expectedActiveQuestions} DOC-151 pillar questions are active and aligned with the catalog.`
+              : `${data.validation.errors.length} pillar library issue(s) detected.`}
           </CardDescription>
         </CardHeader>
         {!data.validation.valid && (
@@ -246,7 +281,9 @@ export function AssessmentLibraryManagement() {
             Categories & Questions
           </CardTitle>
           <CardDescription>
-            v1 scoring categories with v2 DOC-114 display mapping. Question IDs are immutable.
+            {showLegacy
+              ? "Active DOC-151 pillars plus archived v1 categories. Question IDs are immutable."
+              : "Eight technology pillars (DOC-151) power customer assessments. Question IDs are immutable."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -269,23 +306,28 @@ export function AssessmentLibraryManagement() {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">{category.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {category.code} · {category.maxPoints} pts · v2:{" "}
-                      {category.v2DisplayName ?? "—"}
+                      {category.code} · {category.maxPoints} pts
+                      {category.v2DisplayName ? ` · ${category.v2DisplayName}` : ""}
                     </p>
                   </div>
                   <Badge variant={category.isActive ? "secondary" : "outline"}>
-                    {categoryQuestions.filter((q) => q.isActive).length} questions
+                    {category.questionCount} questions
                   </Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCategoryActive(category);
-                    }}
-                  >
-                    {category.isActive ? "Deactivate" : "Activate"}
-                  </Button>
+                  {!category.isActive ? (
+                    <Badge variant="outline">Archived</Badge>
+                  ) : null}
+                  {showLegacy ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCategoryActive(category);
+                      }}
+                    >
+                      {category.isActive ? "Deactivate" : "Activate"}
+                    </Button>
+                  ) : null}
                 </button>
 
                 {expanded ? (
@@ -294,8 +336,7 @@ export function AssessmentLibraryManagement() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>v2 ID</TableHead>
+                            <TableHead>Question ID</TableHead>
                             <TableHead>Capability</TableHead>
                             <TableHead>Question</TableHead>
                             <TableHead className="text-right">Pts</TableHead>
@@ -306,9 +347,6 @@ export function AssessmentLibraryManagement() {
                           {categoryQuestions.map((question) => (
                             <TableRow key={question.id}>
                               <TableCell className="font-mono text-xs">{question.code}</TableCell>
-                              <TableCell className="font-mono text-xs">
-                                {question.v2QuestionId ?? "—"}
-                              </TableCell>
                               <TableCell className="max-w-[140px] truncate text-sm">
                                 {question.capability ?? "—"}
                               </TableCell>
@@ -333,8 +371,7 @@ export function AssessmentLibraryManagement() {
                     <div className="space-y-2 p-2 md:hidden">
                       {categoryQuestions.map((question) => (
                         <MobileDataCard key={question.id}>
-                          <MobileDataRow label="ID">{question.code}</MobileDataRow>
-                          <MobileDataRow label="v2">{question.v2QuestionId ?? "—"}</MobileDataRow>
+                          <MobileDataRow label="Question ID">{question.code}</MobileDataRow>
                           <MobileDataRow label="Capability">
                             {question.capability ?? "—"}
                           </MobileDataRow>
@@ -361,9 +398,7 @@ export function AssessmentLibraryManagement() {
       <Sheet open={!!editQuestion} onOpenChange={(open) => !open && setEditQuestion(null)}>
         <SheetContent className="overflow-y-auto sm:max-w-lg">
           <SheetHeader>
-            <SheetTitle>
-              {editQuestion?.code} · {editQuestion?.v2QuestionId}
-            </SheetTitle>
+            <SheetTitle>{editQuestion?.code}</SheetTitle>
             <SheetDescription>
               {editQuestion?.categoryName} — administrative edits do not affect completed assessments.
             </SheetDescription>

@@ -4,7 +4,6 @@ import {
   calculateV2OverallScore,
 } from "@/lib/assessment-library/category-mapping";
 import { QUESTION_LIBRARY_METADATA } from "@/lib/assessment-library/metadata";
-import { validateQuestionLibrary } from "@/lib/assessment-library/validate";
 import {
   calculateCategoryScores,
   calculateOverallScore,
@@ -159,22 +158,10 @@ describe("v2 category mapping (DOC-118)", () => {
   });
 });
 
-describe("DOC-114 question library", () => {
-  it("defines metadata for all 50 questions", () => {
+describe("DOC-114 v1 question metadata (archived)", () => {
+  it("defines metadata for all 50 legacy questions", () => {
     expect(QUESTION_LIBRARY_METADATA).toHaveLength(50);
     const codes = new Set(QUESTION_LIBRARY_METADATA.map((q) => q.code));
     expect(codes.size).toBe(50);
-  });
-
-  it("validates a complete aligned question bank", () => {
-    const questions = QUESTION_LIBRARY_METADATA.map((m) => ({
-      code: m.code,
-      v2QuestionId: m.v2QuestionId,
-      capability: m.capability,
-      isActive: true,
-    }));
-    const result = validateQuestionLibrary(questions);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
   });
 });

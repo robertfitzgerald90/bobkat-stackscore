@@ -13,7 +13,7 @@ export default async function AssessmentLibraryAdminPage() {
       <div>
         <h2 className="page-title">Assessment Library</h2>
         <p className="text-muted-foreground">
-          Manage categories, questions, and DOC-114 alignment for the assessment engine.
+          Manage the active DOC-151 pillar question bank used for customer assessments.
         </p>
       </div>
       <AssessmentLibraryManagement />
