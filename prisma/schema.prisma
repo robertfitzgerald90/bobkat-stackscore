@@ -621,3 +621,42 @@ model Note {
   project    Project?    @relation(fields: [projectId], references: [id])
   user       User        @relation(fields: [userId], references: [id])
 }
+
+enum TechnologySnapshotLeadStatus {
+  new
+  contacted
+  assessment_interested
+  assessment_purchased
+  not_interested
+  converted
+}
+
+enum SnapshotItManagementModel {
+  in_house
+  outsourced
+  part_time_internal
+  none
+  unsure
+}
+
+model TechnologySnapshotLead {
+  id                String                        @id @default(uuid())
+  contactName       String
+  companyName       String
+  email             String
+  phone             String?
+  industry          String
+  companySize       String?
+  itManagementModel SnapshotItManagementModel
+  answers           Json
+  totalScore        Int
+  classification    String
+  lowestPillars     Json
+  status            TechnologySnapshotLeadStatus  @default(new)
+  createdAt         DateTime                      @default(now())
+  updatedAt         DateTime                      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}

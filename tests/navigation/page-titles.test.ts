@@ -6,6 +6,7 @@ describe("getPageTitle", () => {
     expect(getPageTitle("/portfolio")).toBe("Portfolio");
     expect(getPageTitle("/dashboard")).toBe("Dashboard");
     expect(getPageTitle("/projects")).toBe("Projects");
+    expect(getPageTitle("/snapshot-leads")).toBe("Snapshot Leads");
   });
 
   it("returns Client Workspace for overview routes", () => {

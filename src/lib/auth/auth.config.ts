@@ -21,8 +21,10 @@ export const authConfig = {
       const { pathname } = request.nextUrl;
       const isPublic =
         pathname.startsWith("/login") ||
+        pathname.startsWith("/technology-snapshot") ||
         pathname.startsWith("/api/auth") ||
-        pathname.startsWith("/api/v1/health");
+        pathname.startsWith("/api/v1/health") ||
+        pathname.startsWith("/api/v1/public/technology-snapshot");
 
       if (pathname === "/login" && isLoggedIn) {
         return Response.redirect(new URL("/dashboard", request.nextUrl));
