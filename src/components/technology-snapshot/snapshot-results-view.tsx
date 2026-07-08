@@ -11,8 +11,7 @@ import type { SnapshotClassification } from "@/lib/technology-snapshot/types";
 import { cn } from "@/lib/utils";
 
 const PURCHASE_URL =
-  process.env.NEXT_PUBLIC_ASSESSMENT_PURCHASE_URL ??
-  "https://bobkatit.com/technology-assessment";
+  process.env.NEXT_PUBLIC_ASSESSMENT_PURCHASE_URL ?? "/assessment-offer";
 
 const CLASSIFICATION_VARIANT: Record<
   SnapshotClassification,
@@ -97,17 +96,15 @@ export function SnapshotResultsView({
           </ul>
 
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-            <a
+            <Link
               href={PURCHASE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
               className={buttonVariants({
                 className: cn("w-full sm:w-auto"),
               })}
             >
               Purchase Full Technology Assessment
               <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
+            </Link>
             {onRestart ? (
               <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onRestart}>
                 Start another snapshot
