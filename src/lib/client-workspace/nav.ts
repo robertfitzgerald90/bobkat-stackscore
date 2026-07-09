@@ -45,14 +45,11 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "activity", label: "Activity" },
 ] as const;
 
-/** Sections visible to customer portal users. */
+/** Sections reachable by customer portal users (matches sidebar). */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
   "recommendations",
-  "roadmap",
   "executive-reports",
-  "documents",
-  "contacts",
 ];
 
 export function isClientVisibleWorkspaceSection(section: ClientWorkspaceSection): boolean {

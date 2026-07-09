@@ -41,6 +41,37 @@ export const authConfig = {
       if (!isLoggedIn) return false;
 
       if (auth.user?.role === "client") {
+        const customerAllowedExact = new Set([
+          "/dashboard",
+          "/account",
+          "/support",
+          "/assessment/start",
+          "/onboarding",
+        ]);
+
+        if (customerAllowedExact.has(pathname)) {
+          return true;
+        }
+
+        if (
+          pathname === "/clients" ||
+          pathname === "/clients/new" ||
+          pathname === "/projects" ||
+          pathname === "/portfolio" ||
+          pathname === "/assessments" ||
+          pathname.startsWith("/admin/") ||
+          pathname.startsWith("/technology-catalog") ||
+          pathname.startsWith("/playbooks") ||
+          pathname.startsWith("/settings") ||
+          pathname.startsWith("/snapshot-leads")
+        ) {
+          return Response.redirect(new URL("/dashboard", request.nextUrl));
+        }
+
+        if (/^\/assessments\/[^/]+(\/report)?$/.test(pathname)) {
+          return true;
+        }
+
         const clientMatch = pathname.match(/^\/clients\/([^/]+)/);
         if (clientMatch && clientMatch[1] !== "new") {
           const section = resolveActiveWorkspaceSection(pathname);
@@ -49,6 +80,11 @@ export const authConfig = {
               new URL(clientTechnologyProfilePath(clientMatch[1]), request.nextUrl),
             );
           }
+          return true;
+        }
+
+        if (pathname.startsWith("/clients")) {
+          return Response.redirect(new URL("/dashboard", request.nextUrl));
         }
       }
 

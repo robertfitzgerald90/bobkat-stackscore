@@ -5,9 +5,10 @@ import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary
 import { getAssessmentPillarSnapshots } from "@/lib/assessments/pillar-snapshots";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentResults } from "@/components/assessments/assessment-results";
+import { AssessmentConsultantReview } from "@/components/assessments/assessment-consultant-review";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
-import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { isCustomerMode, isConsultantMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -31,6 +32,7 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
     where: { id },
     include: {
       client: true,
+      assessor: { select: { role: true } },
       categoryScores: {
         include: { category: true },
         orderBy: { category: { displayOrder: "asc" } },
@@ -62,8 +64,19 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
     recommendations,
   );
 
+  const customerSelfAssessment = assessment.assessor.role === "client";
+  const showConsultantReview =
+    session?.user?.role && isConsultantMode(session.user.role);
+
   return (
     <div className="min-w-0 space-y-6">
+      {showConsultantReview ? (
+        <AssessmentConsultantReview
+          assessmentId={assessment.id}
+          userRole={session!.user!.role}
+          customerSelfAssessment={customerSelfAssessment}
+        />
+      ) : null}
       <AssessmentResults
         assessmentId={assessment.id}
         clientId={assessment.clientId}

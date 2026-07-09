@@ -66,6 +66,8 @@ type AssessmentWizardProps = {
   assessmentName: string;
   clientName: string;
   mode?: PortalMode;
+  /** True when the purchaser/client completed the assessment (notes field = customer notes). */
+  customerSelfAssessment?: boolean;
 };
 
 export function AssessmentWizard({
@@ -73,6 +75,7 @@ export function AssessmentWizard({
   assessmentName,
   clientName,
   mode = "consultant",
+  customerSelfAssessment = false,
 }: AssessmentWizardProps) {
   const isCustomerMode = mode === "customer";
   const router = useRouter();
@@ -670,6 +673,15 @@ export function AssessmentWizard({
                       </div>
                     ) : (
                       <>
+                        {customerSelfAssessment && activeQuestion.response?.notes ? (
+                          <div className="space-y-2">
+                            <Label>Customer Notes</Label>
+                            <p className="whitespace-pre-wrap rounded-md border border-border/60 bg-muted/20 px-3 py-2 text-sm">
+                              {activeQuestion.response.notes}
+                            </p>
+                          </div>
+                        ) : null}
+
                         <div className="space-y-2">
                           <Label htmlFor={`notes-${activeQuestion.id}`}>Consultant Notes</Label>
                           <textarea
@@ -680,46 +692,58 @@ export function AssessmentWizard({
                                 ? "Internal observations, context, or follow-up items..."
                                 : "Select an answer first to add notes"
                             }
-                            value={activeQuestion.response?.notes ?? ""}
+                            value={
+                              customerSelfAssessment
+                                ? (activeQuestion.response?.evidence ?? "")
+                                : (activeQuestion.response?.notes ?? "")
+                            }
                             disabled={!activeQuestion.response}
                             onChange={(event) =>
-                              handleNotesChange(
-                                activeQuestion.id,
-                                activeCategory.id,
-                                event.target.value,
-                              )
+                              customerSelfAssessment
+                                ? handleEvidenceChange(
+                                    activeQuestion.id,
+                                    activeCategory.id,
+                                    event.target.value,
+                                  )
+                                : handleNotesChange(
+                                    activeQuestion.id,
+                                    activeCategory.id,
+                                    event.target.value,
+                                  )
                             }
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor={`evidence-${activeQuestion.id}`}>
-                            Evidence
-                            {activeQuestion.evidenceRequired ? (
-                              <span className="ml-1 font-normal text-muted-foreground">
-                                — {activeQuestion.evidenceRequired}
-                              </span>
-                            ) : null}
-                          </Label>
-                          <textarea
-                            id={`evidence-${activeQuestion.id}`}
-                            className="flex min-h-[72px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder={
-                              activeQuestion.response
-                                ? "Document verification source, screenshot reference, or system report..."
-                                : "Select an answer first to add evidence"
-                            }
-                            value={activeQuestion.response?.evidence ?? ""}
-                            disabled={!activeQuestion.response}
-                            onChange={(event) =>
-                              handleEvidenceChange(
-                                activeQuestion.id,
-                                activeCategory.id,
-                                event.target.value,
-                              )
-                            }
-                          />
-                        </div>
+                        {!customerSelfAssessment ? (
+                          <div className="space-y-2">
+                            <Label htmlFor={`evidence-${activeQuestion.id}`}>
+                              Evidence
+                              {activeQuestion.evidenceRequired ? (
+                                <span className="ml-1 font-normal text-muted-foreground">
+                                  — {activeQuestion.evidenceRequired}
+                                </span>
+                              ) : null}
+                            </Label>
+                            <textarea
+                              id={`evidence-${activeQuestion.id}`}
+                              className="flex min-h-[72px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder={
+                                activeQuestion.response
+                                  ? "Document verification source, screenshot reference, or system report..."
+                                  : "Select an answer first to add evidence"
+                              }
+                              value={activeQuestion.response?.evidence ?? ""}
+                              disabled={!activeQuestion.response}
+                              onChange={(event) =>
+                                handleEvidenceChange(
+                                  activeQuestion.id,
+                                  activeCategory.id,
+                                  event.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                        ) : null}
                       </>
                     )}
 

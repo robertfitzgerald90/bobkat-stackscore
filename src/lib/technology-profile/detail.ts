@@ -447,9 +447,14 @@ export async function getTechnologyProfileDetail(
   };
 
   if (audience === "client") {
+    const clientRecommendations = visibleRecommendations;
+    const criticalRecCount = clientRecommendations.filter(
+      (r) => r.priority === "critical",
+    ).length;
+
     return {
       ...baseDetail,
-      openRecommendations: [],
+      openRecommendations: clientRecommendations,
       activeProjects: [],
       completedProjects: [],
       activeTip: null,
@@ -457,7 +462,7 @@ export async function getTechnologyProfileDetail(
       businessSnapshot: trimBusinessSnapshotForClient(businessSnapshot),
       profile: {
         ...baseDetail.profile,
-        openRecommendationCount: 0,
+        openRecommendationCount: clientRecommendations.length,
       },
       categoryInsights: categoryInsights.map((insight) => ({
         ...insight,
@@ -473,8 +478,8 @@ export async function getTechnologyProfileDetail(
           stackScore: currentScore,
           projectedScore,
           openProjectsCount: 0,
-          criticalRecommendationsCount: 0,
-          immediateFocusCount: 0,
+          criticalRecommendationsCount: criticalRecCount,
+          immediateFocusCount: Math.min(clientRecommendations.length, 5),
         },
         items: [],
       },

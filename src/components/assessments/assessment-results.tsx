@@ -542,7 +542,7 @@ export function AssessmentResults({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="assessment-recommendations">
         <CardHeader>
           <CardTitle>Recommendations</CardTitle>
           <CardDescription>

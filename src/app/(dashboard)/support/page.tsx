@@ -1,14 +1,17 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Calendar, Mail, MessageCircle } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { SupportAssessmentHelp } from "@/components/support/support-assessment-help";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
-import { BRAND } from "@/lib/branding";
+import { getBookingUrl, getSupportEmail } from "@/lib/support/config";
 
 export default async function SupportPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  const bookingUrl = getBookingUrl();
+  const supportEmail = getSupportEmail();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -31,12 +34,24 @@ export default async function SupportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <a
-            href={`mailto:${BRAND.email}?subject=StackScore Strategy Session`}
-            className={buttonClassName({})}
-          >
-            Request a Session
-          </a>
+          {bookingUrl ? (
+            <a
+              href={bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClassName({})}
+            >
+              Request a Session
+            </a>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Online booking is not configured. Please email{" "}
+              <a href={`mailto:${supportEmail}`} className="text-primary hover:underline">
+                {supportEmail}
+              </a>{" "}
+              to schedule your session.
+            </p>
+          )}
         </CardContent>
       </Card>
 
@@ -50,10 +65,10 @@ export default async function SupportPage() {
         </CardHeader>
         <CardContent>
           <a
-            href={`mailto:${BRAND.email}`}
+            href={`mailto:${supportEmail}`}
             className="text-sm font-medium text-primary hover:underline"
           >
-            {BRAND.email}
+            {supportEmail}
           </a>
         </CardContent>
       </Card>
@@ -65,13 +80,11 @@ export default async function SupportPage() {
             Assessment Help
           </CardTitle>
           <CardDescription>
-            Need to resume or have questions while completing your assessment?
+            Resume your in-progress assessment or review your completed executive report.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/assessment/start" className={buttonClassName({ variant: "outline" })}>
-            Continue Assessment
-          </Link>
+          <SupportAssessmentHelp />
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,17 +7,14 @@ import { RecommendationPillarHint } from "@/components/technology-maturity/recom
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
 import { conciseFocusTitle } from "@/lib/client-workspace";
 import { PRIORITY_LABELS } from "@/lib/display";
+import { sortRecommendationsByPriority } from "@/lib/recommendations/sort";
 import type { ClientRecommendationRow } from "@/lib/recommendations/client-list";
 
 type CustomerRecommendationsViewProps = {
   recommendations: ClientRecommendationRow[];
 };
 
-const PRIORITY_ORDER = { critical: 0, high: 1, medium: 2, low: 3 } as const;
-
 function RecommendationCard({ recommendation }: { recommendation: ClientRecommendationRow }) {
-  const [expanded, setExpanded] = useState(false);
-
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
@@ -33,6 +29,15 @@ function RecommendationCard({ recommendation }: { recommendation: ClientRecommen
         <RecommendationPillarHint categoryCode={recommendation.categoryCode} className="mt-2" />
       </CardHeader>
       <CardContent className="space-y-4">
+        {recommendation.description ? (
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Business Explanation
+            </p>
+            <p className="mt-1 text-sm leading-relaxed">{recommendation.description}</p>
+          </div>
+        ) : null}
+
         {recommendation.businessImpact ? (
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -41,28 +46,15 @@ function RecommendationCard({ recommendation }: { recommendation: ClientRecommen
             <p className="mt-1 text-sm leading-relaxed">{recommendation.businessImpact}</p>
           </div>
         ) : null}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/40 px-4 py-3">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Estimated Maturity Improvement
-            </p>
-            <p className="mt-0.5 text-sm font-semibold">
-              +{recommendation.estimatedImpactPoints} StackScore points
-            </p>
-          </div>
-          {recommendation.description ? (
-            <button
-              type="button"
-              className="text-sm font-medium text-primary hover:underline"
-              onClick={() => setExpanded((value) => !value)}
-            >
-              {expanded ? "Show Less" : "Learn More"}
-            </button>
-          ) : null}
+
+        <div className="rounded-lg bg-muted/40 px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Estimated Score Improvement
+          </p>
+          <p className="mt-0.5 text-sm font-semibold">
+            +{recommendation.estimatedImpactPoints} StackScore points
+          </p>
         </div>
-        {expanded && recommendation.description ? (
-          <p className="text-sm leading-relaxed text-muted-foreground">{recommendation.description}</p>
-        ) : null}
       </CardContent>
     </Card>
   );
@@ -71,14 +63,13 @@ function RecommendationCard({ recommendation }: { recommendation: ClientRecommen
 export function CustomerRecommendationsView({
   recommendations,
 }: CustomerRecommendationsViewProps) {
-  const topRecommendations = [...recommendations]
-    .filter((r) => r.status === "open" || r.status === "accepted")
-    .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
-    .slice(0, 8);
+  const visibleRecommendations = sortRecommendationsByPriority(
+    recommendations.filter(
+      (r) => r.status === "open" || r.status === "accepted" || r.status === "in_progress",
+    ),
+  );
 
-  const totalOpportunities = recommendations.filter(
-    (r) => r.status === "open" || r.status === "accepted" || r.status === "in_progress",
-  ).length;
+  const totalOpportunities = visibleRecommendations.length;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -90,7 +81,7 @@ export function CustomerRecommendationsView({
         </p>
       </header>
 
-      {topRecommendations.length === 0 ? (
+      {visibleRecommendations.length === 0 ? (
         <Card className="shadow-sm">
           <CardContent className="py-12 text-center">
             <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
@@ -102,7 +93,7 @@ export function CustomerRecommendationsView({
         </Card>
       ) : (
         <div className="space-y-4">
-          {topRecommendations.map((recommendation) => (
+          {visibleRecommendations.map((recommendation) => (
             <RecommendationCard key={recommendation.id} recommendation={recommendation} />
           ))}
         </div>

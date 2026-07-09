@@ -19,6 +19,8 @@ import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
+import { takeTopRecommendations } from "@/lib/recommendations/sort";
+import { conciseFocusTitle } from "@/lib/client-workspace";
 import { cn } from "@/lib/utils";
 
 type CustomerExecutiveDashboardProps = {
@@ -74,9 +76,9 @@ export function CustomerExecutiveDashboard({
     .sort((a, b) => (a.percentScore ?? 0) - (b.percentScore ?? 0))
     .slice(0, 3);
 
-  const priorities = openRecommendations
-    .filter((r) => r.priority === "critical" || r.priority === "high")
-    .slice(0, 5);
+  const priorities = takeTopRecommendations(openRecommendations, 5);
+  const hasRecommendations = openRecommendations.length > 0;
+  const recommendationsHref = `/clients/${profile.clientId}/recommendations`;
 
   const reportHref = profile.currentAssessmentId
     ? `/assessments/${profile.currentAssessmentId}/report`
@@ -247,6 +249,78 @@ export function CustomerExecutiveDashboard({
         </section>
       ) : null}
 
+      <section className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Immediate Priorities</h2>
+            <p className="text-sm text-muted-foreground">
+              The highest-impact opportunities identified in your assessment.
+            </p>
+          </div>
+          {hasRecommendations ? (
+            <Link href={recommendationsHref} className={buttonClassName({ variant: "outline", size: "sm" })}>
+              View All Recommendations
+            </Link>
+          ) : null}
+        </div>
+        {!hasCompletedAssessment ? (
+          <TpEmptyState
+            icon={TrendingUp}
+            title="Complete your assessment"
+            message="Finish your assessment to see personalized priorities for your organization."
+            actionLabel="Continue Assessment"
+            actionHref="/assessment/start"
+          />
+        ) : priorities.length === 0 ? (
+          <TpEmptyState
+            icon={TrendingUp}
+            title="No priorities identified"
+            message="Your assessment did not surface active recommendations at this time."
+            positive
+          />
+        ) : (
+          <div className="space-y-3">
+            {priorities.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-start gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm"
+              >
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-medium">{conciseFocusTitle(item.title)}</p>
+                    <Badge variant={PRIORITY_BADGE[item.priority]} className="text-xs">
+                      {PRIORITY_LABELS[item.priority]}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {item.businessImpact || item.description}
+                  </p>
+                  <p className="text-xs font-medium text-foreground">
+                    +{item.estimatedImpactPoints} StackScore points estimated improvement
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {journeyScores.projectedScore !== null && score !== null ? (
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              Projected Improvement
+            </CardTitle>
+            <CardDescription>
+              Implementing recommended actions could improve your StackScore from {score} to{" "}
+              {journeyScores.projectedScore} points.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      ) : null}
+
       {pillarInsights.length > 0 ? (
         <section className="space-y-4">
           <div>
@@ -279,73 +353,6 @@ export function CustomerExecutiveDashboard({
             ))}
           </div>
         </section>
-      ) : null}
-
-      <section className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold">Immediate Priorities</h2>
-            <p className="text-sm text-muted-foreground">
-              The highest-impact opportunities identified in your assessment.
-            </p>
-          </div>
-          {hasCompletedAssessment ? (
-            <Link
-              href={`/clients/${profile.clientId}/recommendations`}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              View all
-            </Link>
-          ) : null}
-        </div>
-        {priorities.length === 0 ? (
-          <TpEmptyState
-            icon={TrendingUp}
-            title={hasCompletedAssessment ? "No critical priorities" : "Complete your assessment"}
-            message={
-              hasCompletedAssessment
-                ? "Your technology environment shows no critical or high-priority gaps at this time."
-                : "Finish your assessment to see personalized priorities for your organization."
-            }
-          />
-        ) : (
-          <div className="space-y-3">
-            {priorities.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm"
-              >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium">{item.title}</p>
-                    <Badge variant={PRIORITY_BADGE[item.priority]} className="text-xs">
-                      {PRIORITY_LABELS[item.priority]}
-                    </Badge>
-                  </div>
-                  {item.businessImpact ? (
-                    <p className="mt-1 text-sm text-muted-foreground">{item.businessImpact}</p>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {journeyScores.projectedScore !== null && score !== null ? (
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              Projected Improvement
-            </CardTitle>
-            <CardDescription>
-              Implementing recommended actions could improve your StackScore from {score} to{" "}
-              {journeyScores.projectedScore} points.
-            </CardDescription>
-          </CardHeader>
-        </Card>
       ) : null}
     </div>
   );

@@ -17,7 +17,10 @@ export default async function AssessmentPage({ params }: PageProps) {
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
-    include: { client: true },
+    include: {
+      client: true,
+      assessor: { select: { role: true } },
+    },
   });
 
   if (!assessment) notFound();
@@ -47,6 +50,7 @@ export default async function AssessmentPage({ params }: PageProps) {
         assessmentName={assessment.assessmentName}
         clientName={assessment.client.companyName}
         mode={portalMode}
+        customerSelfAssessment={assessment.assessor.role === "client"}
       />
       {isAdmin ? (
         <AssessmentAdminActions

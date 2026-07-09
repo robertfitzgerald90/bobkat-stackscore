@@ -36,7 +36,11 @@ function customerHref(clientId: string | null, path: string): string {
 
 export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[] {
   return [
-    { href: clientId ? `/clients/${clientId}/technology-profile` : "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    {
+      href: clientId ? `/clients/${clientId}/technology-profile` : "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    },
     { href: "/assessment/start", label: "Assessment", icon: ClipboardList },
     {
       href: customerHref(clientId, "recommendations"),
@@ -44,15 +48,14 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       icon: Lightbulb,
       requiresClient: true,
     },
-    { href: customerHref(clientId, "roadmap"), label: "Roadmap", icon: Map, requiresClient: true },
     {
       href: customerHref(clientId, "executive-reports"),
       label: "Reports",
       icon: FileText,
       requiresClient: true,
     },
-    { href: "/account", label: "Account", icon: UserCircle },
     { href: "/support", label: "Support", icon: HelpCircle },
+    { href: "/account", label: "Account", icon: UserCircle },
   ];
 }
 
