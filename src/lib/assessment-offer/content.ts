@@ -20,62 +20,93 @@ export type OfferTimelineStep = {
   description: string;
 };
 
-export type OfferShowcaseItem = {
-  id: string;
-  caption: string;
-  description: string;
-  imageSrc: string;
-  imageWidth: number;
-  imageHeight: number;
-  /** Browser chrome for app UI; document frame for report cover */
-  frame?: "browser" | "document";
+export type OfferShowcaseScreenshot = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
 };
 
-export const OFFER_SHOWCASE_ITEMS: OfferShowcaseItem[] = [
-  {
-    id: "executive-dashboard",
-    caption: "Executive Dashboard",
-    description: "Your technology health at a glance — scores, strengths, and risks in one view.",
-    imageSrc: "/images/executive-dashboard.png",
-    imageWidth: 1287,
-    imageHeight: 933,
-    frame: "browser",
+export type OfferShowcaseHero = {
+  title: string;
+  description: string;
+  image: OfferShowcaseScreenshot;
+};
+
+export type OfferShowcaseFeature = {
+  id: string;
+  title: string;
+  description: string;
+  image: OfferShowcaseScreenshot;
+};
+
+export const OFFER_SHOWCASE_JOURNEY = [
+  "Complete Assessment",
+  "Review Executive Dashboard",
+  "Prioritize Recommendations",
+  "Receive Executive Report",
+] as const;
+
+export const OFFER_SHOWCASE_HERO: OfferShowcaseHero = {
+  title: "Executive Dashboard",
+  description:
+    "See your StackScore, projected improvement, and top strengths and risks the moment your assessment is complete.",
+  image: {
+    src: "/images/executive-dashboard.png",
+    width: 1287,
+    height: 933,
+    alt: "StackScore executive dashboard with overall score, strengths, and risks",
   },
+};
+
+export const OFFER_SHOWCASE_FEATURES: OfferShowcaseFeature[] = [
   {
     id: "assessment-experience",
-    caption: "Assessment Experience",
-    description: "Structured scoring across your environment with clear current and projected outcomes.",
-    imageSrc: "/images/recommendation-summary-report.png",
-    imageWidth: 807,
-    imageHeight: 576,
-    frame: "browser",
+    title: "Assessment Experience",
+    description:
+      "Work through a structured questionnaire at your pace. StackScore translates your answers into a clear maturity score.",
+    image: {
+      src: "/images/recommendation-summary-report.png",
+      width: 807,
+      height: 576,
+      alt: "StackScore assessment results showing current and projected scores",
+    },
   },
   {
-    id: "technology-maturity-dashboard",
-    caption: "Technology Maturity Dashboard",
-    description: "Maturity scores across all eight StackScore pillars, with tier and risk context.",
-    imageSrc: "/images/technology-pillars.png",
-    imageWidth: 1296,
-    imageHeight: 439,
-    frame: "browser",
+    id: "technology-maturity",
+    title: "Executive Dashboard",
+    description:
+      "Drill into pillar-level maturity scores and tiers across your technology environment from one centralized view.",
+    image: {
+      src: "/images/technology-pillars.png",
+      width: 1296,
+      height: 439,
+      alt: "StackScore technology pillars with maturity scores",
+    },
   },
   {
     id: "recommendations",
-    caption: "Customer Recommendations",
-    description: "Prioritized improvements with business impact and estimated StackScore gains.",
-    imageSrc: "/images/immediate-priorities.png",
-    imageWidth: 1295,
-    imageHeight: 874,
-    frame: "browser",
+    title: "Customer Recommendations",
+    description:
+      "Focus on the highest-impact improvements first — each with priority, business context, and estimated score gains.",
+    image: {
+      src: "/images/immediate-priorities.png",
+      width: 1295,
+      height: 874,
+      alt: "StackScore immediate priorities and recommendations",
+    },
   },
   {
     id: "executive-report",
-    caption: "Executive Report",
-    description: "A polished, shareable deliverable ready for leadership and board conversations.",
-    imageSrc: "/images/report-cover.png",
-    imageWidth: 809,
-    imageHeight: 785,
-    frame: "document",
+    title: "Executive Report",
+    description:
+      "Download a polished, board-ready deliverable you can share with leadership and use to plan next steps.",
+    image: {
+      src: "/images/report-cover.png",
+      width: 809,
+      height: 785,
+      alt: "StackScore executive report cover page",
+    },
   },
 ];
 

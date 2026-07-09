@@ -1,4 +1,7 @@
-import { OFFER_SHOWCASE_ITEMS } from "@/lib/assessment-offer/content";
+import {
+  OFFER_SHOWCASE_FEATURES,
+  OFFER_SHOWCASE_HERO,
+} from "@/lib/assessment-offer/content";
 import { OfferFeatures } from "./offer-features";
 import { OfferFinalCta } from "./offer-final-cta";
 import { OfferHero } from "./offer-hero";
@@ -13,8 +16,8 @@ export function AssessmentOfferLanding() {
       <OfferNav />
       <main>
         <OfferHero />
-        <div className="py-16 sm:py-20 md:py-24">
-          <OfferScreenshotGallery items={OFFER_SHOWCASE_ITEMS} />
+        <div className="py-12 sm:py-16">
+          <OfferScreenshotGallery hero={OFFER_SHOWCASE_HERO} features={OFFER_SHOWCASE_FEATURES} />
         </div>
         <OfferFeatures />
         <OfferTimeline />
