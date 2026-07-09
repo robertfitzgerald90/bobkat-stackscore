@@ -21,14 +21,19 @@ export const authConfig = {
       const { pathname } = request.nextUrl;
       const isPublic =
         pathname.startsWith("/login") ||
+        pathname.startsWith("/activate-account") ||
         pathname.startsWith("/technology-snapshot") ||
         pathname.startsWith("/assessment-offer") ||
         pathname.startsWith("/purchase/success") ||
         pathname.startsWith("/api/auth") ||
         pathname.startsWith("/api/v1/health") ||
-        pathname.startsWith("/api/v1/public/technology-snapshot");
+        pathname.startsWith("/api/v1/public/technology-snapshot") ||
+        pathname.startsWith("/api/v1/public/activate-account");
 
       if (pathname === "/login" && isLoggedIn) {
+        if (auth.user?.role === "client") {
+          return Response.redirect(new URL("/assessment/start", request.nextUrl));
+        }
         return Response.redirect(new URL("/dashboard", request.nextUrl));
       }
 

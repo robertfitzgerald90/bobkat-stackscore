@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Mail } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,22 +29,29 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
             </div>
             <CardTitle className="text-2xl">Payment received</CardTitle>
             <CardDescription className="text-base leading-relaxed">
-              Thank you for purchasing the {BRAND.reportTitle}. The {BRAND.companyName} team will
-              follow up with next steps shortly.
+              Thank you for purchasing the {BRAND.reportTitle}. Check your email for activation
+              instructions to access your assessment workspace.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex items-start gap-3 rounded-lg border bg-muted/30 p-4 text-left text-sm">
+              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <p>
+                We sent an activation link to the email address used at checkout. After activating
+                your account, you can begin the 80-question Technology Assessment in StackScore.
+              </p>
+            </div>
             {sessionId ? (
               <p className="break-all text-xs text-muted-foreground">
                 Reference: {sessionId}
               </p>
             ) : null}
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link href="/technology-snapshot" className={buttonVariants({ variant: "outline" })}>
-                Take a Technology Snapshot
-              </Link>
               <Link href="/login" className={buttonVariants()}>
                 Sign in to StackScore
+              </Link>
+              <Link href="/assessment-offer" className={buttonVariants({ variant: "outline" })}>
+                Back to offer page
               </Link>
             </div>
           </CardContent>

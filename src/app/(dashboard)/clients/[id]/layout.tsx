@@ -16,6 +16,16 @@ export default async function ClientWorkspaceLayout({ children, params }: Layout
 
   const role = session.user.role;
 
+  if (role === "client") {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId && clientUser.clientId !== clientId) {
+      redirect(`/clients/${clientUser.clientId}/technology-profile`);
+    }
+  }
+
   const [client, draftAssessment] = await Promise.all([
     prisma.client.findUnique({
       where: { id: clientId },

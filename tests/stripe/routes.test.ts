@@ -14,7 +14,8 @@ describe("Stripe integration routes", () => {
     );
 
     expect(checkout).toContain("checkout.sessions.create");
-    expect(checkout).toContain("getStripeConfig");
+    expect(checkout).toContain("productType");
+    expect(checkout).toContain("TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE");
 
     const config = readFileSync(
       resolve(process.cwd(), "src/lib/stripe/config.ts"),
@@ -32,6 +33,7 @@ describe("Stripe integration routes", () => {
     );
 
     expect(authConfig).toContain('pathname.startsWith("/assessment-offer")');
+    expect(authConfig).toContain('pathname.startsWith("/activate-account")');
     expect(authConfig).toContain('pathname.startsWith("/purchase/success")');
   });
 });

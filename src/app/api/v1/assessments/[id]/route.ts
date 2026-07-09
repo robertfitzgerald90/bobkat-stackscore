@@ -3,21 +3,28 @@ import { prisma } from "@/lib/db";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import {
   conflict,
-  getSessionUser,
+  forbidden,
   notFound,
   requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import {
+  getSessionUserWithClient,
+  isStaffRole,
+  requireAssessmentAccess,
+} from "@/lib/api/access";
 import { deleteAssessmentPermanently } from "@/lib/records";
 import { parseDeleteConfirmation } from "@/lib/records/validate";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
+  const access = await requireAssessmentAccess(user, id);
+  if ("response" in access) return access.response;
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
@@ -60,8 +67,11 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
+  if (!isStaffRole(user.role)) {
+    return forbidden();
+  }
 
   const { id } = await context.params;
   const body = await request.json();
@@ -85,7 +95,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const denied = requireAdmin(user);

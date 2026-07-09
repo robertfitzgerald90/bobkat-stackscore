@@ -194,9 +194,13 @@ model User {
   passwordHash String
   role         UserRole @default(technician)
   isActive     Boolean  @default(true)
+  clientId     String?  @unique
+  invitedAt    DateTime?
+  onboardingCompletedAt DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  client                 Client?                  @relation(fields: [clientId], references: [id])
   assessments            Assessment[]             @relation("AssessorAssessments")
   recommendationsCreated AssessmentRecommendation[] @relation("RecommendationCreator")
   projectsAssigned       Project[]                @relation("ProjectAssignee")
@@ -204,6 +208,8 @@ model User {
   notes                  Note[]
   improvementPlansCreated TechnologyImprovementPlan[]
   quarterlyBusinessReviewsCreated QuarterlyBusinessReview[]
+  purchases              AssessmentPurchase[]
+  activationTokens       AccountActivationToken[]
 }
 
 model Client {
@@ -241,6 +247,8 @@ model Client {
   profileSnapshots   TechnologyProfileSnapshot[]
   improvementPlans   TechnologyImprovementPlan[]
   quarterlyBusinessReviews QuarterlyBusinessReview[]
+  users              User[]
+  purchases          AssessmentPurchase[]
 }
 
 model AssessmentCategory {
@@ -347,6 +355,7 @@ model Assessment {
   currentForProfiles     TechnologyProfile[]        @relation("ProfileCurrentAssessment")
   profileSnapshots       TechnologyProfileSnapshot[]
   improvementPlans       TechnologyImprovementPlan[]
+  purchase               AssessmentPurchase?
 }
 
 model TechnologyProfile {
@@ -622,6 +631,14 @@ model Note {
   user       User        @relation(fields: [userId], references: [id])
 }
 
+enum PurchaseStatus {
+  pending
+  fulfilled
+  failed
+  manual_review
+  refunded
+}
+
 enum TechnologySnapshotLeadStatus {
   new
   contacted
@@ -637,6 +654,41 @@ enum SnapshotItManagementModel {
   part_time_internal
   none
   unsure
+}
+
+model AssessmentPurchase {
+  id                    String         @id @default(uuid())
+  stripeSessionId       String         @unique
+  stripeCustomerId      String?
+  stripePaymentIntentId String?
+  productType           String
+  status                PurchaseStatus @default(pending)
+  paymentStatus         String
+  amountTotal           Int?
+  currency              String?
+  purchaserEmail        String
+  failureReason         String?        @db.Text
+  clientId              String?
+  userId                String?
+  assessmentId          String?        @unique
+  fulfilledAt           DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  client     Client?     @relation(fields: [clientId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
+  assessment Assessment? @relation(fields: [assessmentId], references: [id])
+}
+
+model AccountActivationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TechnologySnapshotLead {

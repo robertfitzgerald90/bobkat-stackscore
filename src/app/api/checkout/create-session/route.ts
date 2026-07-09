@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAppUrl } from "@/lib/stripe/app-url";
 import { getStripe } from "@/lib/stripe/client";
 import { getStripeConfig } from "@/lib/stripe/config";
+import { TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE } from "@/lib/stripe/products";
 
 export async function POST() {
   try {
@@ -20,7 +21,7 @@ export async function POST() {
       success_url: `${appUrl}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/assessment-offer`,
       metadata: {
-        product: "technology_assessment",
+        productType: TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE,
       },
     });
 

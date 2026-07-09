@@ -18,6 +18,20 @@ export default async function AssessmentPage({ params }: PageProps) {
 
   if (!assessment) notFound();
   if (assessment.status === "archived") notFound();
+
+  if (session?.user?.role === "client") {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true, onboardingCompletedAt: true },
+    });
+    if (!clientUser?.onboardingCompletedAt) {
+      redirect("/onboarding");
+    }
+    if (clientUser.clientId !== assessment.clientId) {
+      notFound();
+    }
+  }
+
   if (assessment.status === "completed") {
     redirect(`/assessments/${id}/results`);
   }

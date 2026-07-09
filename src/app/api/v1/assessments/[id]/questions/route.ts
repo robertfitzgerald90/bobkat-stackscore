@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getAssessmentPreview } from "@/lib/assessments";
-import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
+import {
+  getSessionUserWithClient,
+  requireAssessmentAccess,
+} from "@/lib/api/access";
+import { unauthorized } from "@/lib/api/helpers";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
+  const access = await requireAssessmentAccess(user, id);
+  if ("response" in access) return access.response;
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },

@@ -4,22 +4,27 @@ import { getAssessmentPreview } from "@/lib/assessments";
 import {
   badRequest,
   conflict,
-  getSessionUser,
   notFound,
   unauthorized,
 } from "@/lib/api/helpers";
+import {
+  getSessionUserWithClient,
+  requireAssessmentAccess,
+} from "@/lib/api/access";
 
 type RouteContext = { params: Promise<{ id: string; questionId: string }> };
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id, questionId } = await context.params;
+  const access = await requireAssessmentAccess(user, id);
+  if ("response" in access) return access.response;
+
+  const assessment = access.assessment;
   const body = await request.json();
 
-  const assessment = await prisma.assessment.findUnique({ where: { id } });
-  if (!assessment) return notFound("Assessment not found");
   if (assessment.status !== "draft") {
     return conflict("Cannot modify a completed assessment");
   }

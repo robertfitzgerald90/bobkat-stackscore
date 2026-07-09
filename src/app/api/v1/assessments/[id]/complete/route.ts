@@ -4,20 +4,29 @@ import { calculateProjectionImpacts } from "@/lib/recommendations";
 import { calculateProjectedScore } from "@/lib/scoring";
 import {
   conflict,
-  getSessionUser,
+  forbidden,
   notFound,
   unauthorized,
 } from "@/lib/api/helpers";
+import {
+  getSessionUserWithClient,
+  requireAssessmentAccess,
+} from "@/lib/api/access";
 
 import type { AssessmentRecommendation } from "@/generated/prisma/client";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(_request: Request, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
+  const access = await requireAssessmentAccess(user, id);
+  if ("response" in access) return access.response;
+  if (access.assessment.status !== "draft") {
+    return conflict("Assessment is already completed");
+  }
 
   try {
     const result = await completeAssessment(id, user.id);
