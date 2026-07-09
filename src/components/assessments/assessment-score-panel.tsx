@@ -23,9 +23,11 @@ const RATING_VARIANT: Record<
 type AssessmentScorePanelProps = {
   preview: AssessmentPreview | null;
   saving?: boolean;
+  /** Customer mode — simpler progress panel without internal workflow metrics. */
+  compact?: boolean;
 };
 
-export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelProps) {
+export function AssessmentScorePanel({ preview, saving, compact }: AssessmentScorePanelProps) {
   if (!preview) {
     return (
       <Card>
@@ -96,6 +98,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
           <span className="text-muted-foreground"> of {preview.totalCount} answered</span>
         </div>
 
+        {!compact ? (
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-md border px-3 py-2 text-center">
             <p className="text-2xl font-bold tabular-nums text-destructive">
@@ -108,8 +111,9 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
             <p className="text-xs text-muted-foreground">Open Recommendations</p>
           </div>
         </div>
+        ) : null}
 
-        {preview.hasCriticalExposure ? (
+        {!compact && preview.hasCriticalExposure ? (
           <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
             <div>
@@ -124,7 +128,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
         <Separator />
 
         <div className="space-y-3">
-          <p className="text-sm font-medium">Technology Pillars</p>
+          <p className="text-sm font-medium">{compact ? "Your Progress" : "Technology Pillars"}</p>
           {preview.categoryScores.map((category) => (
             <div key={category.categoryId} className="space-y-1">
               <div className="flex items-center justify-between gap-2 text-sm">
@@ -156,7 +160,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
           ))}
         </div>
 
-        {preview.topRisks.length > 0 ? (
+        {!compact && preview.topRisks.length > 0 ? (
           <>
             <Separator />
             <div className="space-y-2">
@@ -186,7 +190,7 @@ export function AssessmentScorePanel({ preview, saving }: AssessmentScorePanelPr
           </>
         ) : null}
 
-        {preview.recommendations.length > 0 ? (
+        {!compact && preview.recommendations.length > 0 ? (
           <>
             <Separator />
             <div className="space-y-2">

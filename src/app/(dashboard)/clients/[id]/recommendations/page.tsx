@@ -2,9 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { ClientRecommendationsView } from "@/components/clients/client-recommendations-view";
+import { CustomerRecommendationsView } from "@/components/customer-portal/customer-recommendations-view";
 import type { ClientRecommendationFilters } from "@/lib/recommendations/client-list";
 import { getClientRecommendations } from "@/lib/recommendations/client-list";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import type { Priority, RecommendationStatus } from "@/generated/prisma/client";
 
 type PageProps = {
@@ -23,15 +24,10 @@ function parseFilters(
   return {
     pillarCode: typeof pillar === "string" && pillar ? pillar : undefined,
     priority:
-      typeof priority === "string" && priority
-        ? (priority as Priority)
-        : undefined,
+      typeof priority === "string" && priority ? (priority as Priority) : undefined,
     status:
-      typeof status === "string" && status
-        ? (status as RecommendationStatus)
-        : undefined,
-    hasProject:
-      project === "yes" || project === "no" ? project : undefined,
+      typeof status === "string" && status ? (status as RecommendationStatus) : undefined,
+    hasProject: project === "yes" || project === "no" ? project : undefined,
   };
 }
 
@@ -39,7 +35,14 @@ export default async function ClientRecommendationsPage({ params, searchParams }
   const { id: clientId } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(clientTechnologyProfilePath(clientId));
+
+  if (isCustomerMode(session.user.role)) {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId !== clientId) notFound();
+  }
 
   const resolvedSearchParams = await searchParams;
   const filters = parseFilters(resolvedSearchParams);
@@ -52,6 +55,10 @@ export default async function ClientRecommendationsPage({ params, searchParams }
   if (!client) notFound();
 
   const recommendations = await getClientRecommendations(clientId, filters);
+
+  if (isCustomerMode(session.user.role)) {
+    return <CustomerRecommendationsView recommendations={recommendations} />;
+  }
 
   return (
     <ClientRecommendationsView

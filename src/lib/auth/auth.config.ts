@@ -32,7 +32,7 @@ export const authConfig = {
 
       if (pathname === "/login" && isLoggedIn) {
         if (auth.user?.role === "client") {
-          return Response.redirect(new URL("/assessment/start", request.nextUrl));
+          return Response.redirect(new URL("/dashboard", request.nextUrl));
         }
         return Response.redirect(new URL("/dashboard", request.nextUrl));
       }

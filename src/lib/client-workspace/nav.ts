@@ -45,9 +45,12 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "activity", label: "Activity" },
 ] as const;
 
-/** Sections visible to client-portal users during Phase 1 (mirrors ProfileSectionVisibility). */
+/** Sections visible to customer portal users. */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
+  "recommendations",
+  "roadmap",
+  "executive-reports",
   "documents",
   "contacts",
 ];

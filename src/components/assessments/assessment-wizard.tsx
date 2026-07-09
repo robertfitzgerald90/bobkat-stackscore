@@ -59,17 +59,22 @@ type Category = {
   questions: Question[];
 };
 
+import type { PortalMode } from "@/lib/navigation/portal-mode";
+
 type AssessmentWizardProps = {
   assessmentId: string;
   assessmentName: string;
   clientName: string;
+  mode?: PortalMode;
 };
 
 export function AssessmentWizard({
   assessmentId,
   assessmentName,
   clientName,
+  mode = "consultant",
 }: AssessmentWizardProps) {
+  const isCustomerMode = mode === "customer";
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<string>("");
@@ -304,11 +309,15 @@ export function AssessmentWizard({
           ? `Assessment completed — ${count} recommendation${count === 1 ? "" : "s"} generated`
           : "Assessment completed",
       );
-      router.push(
-        reassessmentInfo
-          ? `/assessments/${assessmentId}/improvement`
-          : `/assessments/${assessmentId}/results`,
-      );
+      if (isCustomerMode) {
+        router.push("/dashboard");
+      } else {
+        router.push(
+          reassessmentInfo
+            ? `/assessments/${assessmentId}/improvement`
+            : `/assessments/${assessmentId}/results`,
+        );
+      }
       router.refresh();
       return;
     }
@@ -352,7 +361,9 @@ export function AssessmentWizard({
             {answeredCount} of {totalCount} questions answered
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            In progress — auto-saves after each answer. Close and return anytime to resume.
+            {isCustomerMode
+              ? "Your progress saves automatically. You can close and return anytime."
+              : "In progress — auto-saves after each answer. Close and return anytime to resume."}
           </p>
         </div>
         <Button
@@ -523,21 +534,18 @@ export function AssessmentWizard({
                   <CardHeader className="pb-3">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="outline" className="font-mono text-xs">
-                        {activeQuestion.code}
+                        Question {activeQuestion.v2QuestionId ?? activeQuestion.code}
                       </Badge>
-                      {activeQuestion.v2QuestionId ? (
-                        <Badge variant="secondary" className="font-mono text-xs">
-                          {activeQuestion.v2QuestionId}
-                        </Badge>
-                      ) : null}
-                      {activeQuestion.capability ? (
+                      {!isCustomerMode && activeQuestion.capability ? (
                         <Badge variant="secondary" className="text-xs">
                           {activeQuestion.capability}
                         </Badge>
                       ) : null}
-                      <Badge variant="outline" className="ml-auto shrink-0">
-                        {activeQuestion.weight} pts
-                      </Badge>
+                      {!isCustomerMode ? (
+                        <Badge variant="outline" className="ml-auto shrink-0">
+                          {activeQuestion.weight} pts
+                        </Badge>
+                      ) : null}
                     </div>
                     <CardTitle className="text-base leading-snug pt-2">
                       {activeQuestion.questionText}
@@ -595,74 +603,125 @@ export function AssessmentWizard({
                           >
                             <span className="flex w-full items-center justify-between gap-2">
                               <span>{option.answerText}</span>
-                              <span className="flex shrink-0 gap-1">
-                                {option.triggersRecommendation ? (
-                                  <Badge variant="secondary" className="text-xs">
-                                    Rec
-                                  </Badge>
-                                ) : null}
-                                {option.triggersCriticalFlag ? (
-                                  <Badge variant="destructive" className="text-xs">
-                                    Critical
-                                  </Badge>
-                                ) : null}
-                              </span>
+                              {!isCustomerMode ? (
+                                <span className="flex shrink-0 gap-1">
+                                  {option.triggersRecommendation ? (
+                                    <Badge variant="secondary" className="text-xs">
+                                      Rec
+                                    </Badge>
+                                  ) : null}
+                                  {option.triggersCriticalFlag ? (
+                                    <Badge variant="destructive" className="text-xs">
+                                      Critical
+                                    </Badge>
+                                  ) : null}
+                                </span>
+                              ) : null}
                             </span>
                           </Button>
                         );
                       })}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor={`notes-${activeQuestion.id}`}>Assessor Notes</Label>
-                      <textarea
-                        id={`notes-${activeQuestion.id}`}
-                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder={
-                          activeQuestion.response
-                            ? "Add observations, context, or discussion points..."
-                            : "Select an answer first to add notes"
-                        }
-                        value={activeQuestion.response?.notes ?? ""}
-                        disabled={!activeQuestion.response}
-                        onChange={(event) =>
-                          handleNotesChange(
-                            activeQuestion.id,
-                            activeCategory.id,
-                            event.target.value,
-                          )
-                        }
-                      />
-                    </div>
+                    {!isCustomerMode && activeQuestion.response ? (
+                      <div className="rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-sm">
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          Customer Response
+                        </p>
+                        <p className="mt-1">
+                          {
+                            activeQuestion.answerOptions.find(
+                              (option) =>
+                                option.id === activeQuestion.response?.selectedAnswerOptionId,
+                            )?.answerText
+                          }
+                        </p>
+                      </div>
+                    ) : null}
 
-                    <div className="space-y-2">
-                      <Label htmlFor={`evidence-${activeQuestion.id}`}>
-                        Evidence
-                        {activeQuestion.evidenceRequired ? (
-                          <span className="ml-1 font-normal text-muted-foreground">
-                            — {activeQuestion.evidenceRequired}
-                          </span>
-                        ) : null}
-                      </Label>
-                      <textarea
-                        id={`evidence-${activeQuestion.id}`}
-                        className="flex min-h-[72px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder={
-                          activeQuestion.response
-                            ? "Document verification source, screenshot reference, or system report..."
-                            : "Select an answer first to add evidence"
-                        }
-                        value={activeQuestion.response?.evidence ?? ""}
-                        disabled={!activeQuestion.response}
-                        onChange={(event) =>
-                          handleEvidenceChange(
-                            activeQuestion.id,
-                            activeCategory.id,
-                            event.target.value,
-                          )
-                        }
-                      />
-                    </div>
+                    {isCustomerMode ? (
+                      <div className="space-y-2">
+                        <Label htmlFor={`notes-${activeQuestion.id}`}>
+                          Additional Notes{" "}
+                          <span className="font-normal text-muted-foreground">(Optional)</span>
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Tell us anything about your environment that may help us better understand
+                          your answer.
+                        </p>
+                        <textarea
+                          id={`notes-${activeQuestion.id}`}
+                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder={
+                            activeQuestion.response
+                              ? "Share context about your environment..."
+                              : "Select an answer first to add notes"
+                          }
+                          value={activeQuestion.response?.notes ?? ""}
+                          disabled={!activeQuestion.response}
+                          onChange={(event) =>
+                            handleNotesChange(
+                              activeQuestion.id,
+                              activeCategory.id,
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor={`notes-${activeQuestion.id}`}>Consultant Notes</Label>
+                          <textarea
+                            id={`notes-${activeQuestion.id}`}
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder={
+                              activeQuestion.response
+                                ? "Internal observations, context, or follow-up items..."
+                                : "Select an answer first to add notes"
+                            }
+                            value={activeQuestion.response?.notes ?? ""}
+                            disabled={!activeQuestion.response}
+                            onChange={(event) =>
+                              handleNotesChange(
+                                activeQuestion.id,
+                                activeCategory.id,
+                                event.target.value,
+                              )
+                            }
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`evidence-${activeQuestion.id}`}>
+                            Evidence
+                            {activeQuestion.evidenceRequired ? (
+                              <span className="ml-1 font-normal text-muted-foreground">
+                                — {activeQuestion.evidenceRequired}
+                              </span>
+                            ) : null}
+                          </Label>
+                          <textarea
+                            id={`evidence-${activeQuestion.id}`}
+                            className="flex min-h-[72px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder={
+                              activeQuestion.response
+                                ? "Document verification source, screenshot reference, or system report..."
+                                : "Select an answer first to add evidence"
+                            }
+                            value={activeQuestion.response?.evidence ?? ""}
+                            disabled={!activeQuestion.response}
+                            onChange={(event) =>
+                              handleEvidenceChange(
+                                activeQuestion.id,
+                                activeCategory.id,
+                                event.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      </>
+                    )}
 
                     {activeQuestion.response ? (
                       <div className="flex justify-end">
@@ -687,7 +746,11 @@ export function AssessmentWizard({
         </div>
 
         <aside className="order-1 min-w-0 xl:order-2">
-          <AssessmentScorePanel preview={preview} saving={saving} />
+          <AssessmentScorePanel
+            preview={preview}
+            saving={saving}
+            compact={isCustomerMode}
+          />
         </aside>
       </div>
     </div>

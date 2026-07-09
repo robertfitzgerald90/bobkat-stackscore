@@ -6,6 +6,12 @@ import {
 const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/portfolio$/, title: "Portfolio" },
   { pattern: /^\/dashboard$/, title: "Dashboard" },
+  { pattern: /^\/account$/, title: "Account" },
+  { pattern: /^\/support$/, title: "Support" },
+  { pattern: /^\/settings$/, title: "Settings" },
+  { pattern: /^\/technology-catalog$/, title: "Technology Catalog" },
+  { pattern: /^\/playbooks$/, title: "Playbooks" },
+  { pattern: /^\/assessments$/, title: "Assessments" },
   { pattern: /^\/clients\/new$/, title: "New Client" },
   { pattern: /^\/clients$/, title: "Clients" },
   { pattern: /^\/assessments\/[^/]+\/results$/, title: "Results" },

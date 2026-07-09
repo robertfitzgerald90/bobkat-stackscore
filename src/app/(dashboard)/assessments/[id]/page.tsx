@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { AssessmentWizard } from "@/components/assessments/assessment-wizard";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
+import { resolvePortalMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -10,6 +11,9 @@ export default async function AssessmentPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth();
   const isAdmin = session?.user?.role === "admin";
+  const portalMode = session?.user?.role
+    ? resolvePortalMode(session.user.role)
+    : "consultant";
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
@@ -42,6 +46,7 @@ export default async function AssessmentPage({ params }: PageProps) {
         assessmentId={assessment.id}
         assessmentName={assessment.assessmentName}
         clientName={assessment.client.companyName}
+        mode={portalMode}
       />
       {isAdmin ? (
         <AssessmentAdminActions

@@ -7,7 +7,7 @@ import { AppSidebar, MobileSidebar } from "@/components/layout/app-sidebar";
 import { getPageTitle } from "@/lib/navigation/page-titles";
 
 type DashboardShellProps = {
-  user: { name: string; email: string; role: string };
+  user: { name: string; email: string; role: string; clientId?: string | null };
   children: React.ReactNode;
 };
 
@@ -18,9 +18,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
 
   return (
     <div className="flex h-screen min-h-screen overflow-hidden bg-background">
-      <AppSidebar role={user.role} />
+      <AppSidebar role={user.role} clientId={user.clientId} />
       <MobileSidebar
         role={user.role}
+        clientId={user.clientId}
         open={mobileNavOpen}
         onOpenChange={setMobileNavOpen}
       />

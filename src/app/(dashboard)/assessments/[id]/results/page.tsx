@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
@@ -6,6 +6,8 @@ import { getAssessmentPillarSnapshots } from "@/lib/assessments/pillar-snapshots
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentResults } from "@/components/assessments/assessment-results";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -13,6 +15,17 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth();
   const isAdmin = session?.user?.role === "admin";
+
+  if (session?.user && isCustomerMode(session.user.role)) {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId) {
+      redirect(clientTechnologyProfilePath(clientUser.clientId));
+    }
+    redirect("/dashboard");
+  }
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },

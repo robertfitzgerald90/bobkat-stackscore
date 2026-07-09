@@ -1,20 +1,25 @@
 import { redirect } from "next/navigation";
-import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { auth } from "@/lib/auth";
+import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { prisma } from "@/lib/db";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (session?.user?.role === "client") {
+  if (session?.user && isCustomerMode(session.user.role)) {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { onboardingCompletedAt: true },
+      select: { onboardingCompletedAt: true, clientId: true },
     });
     if (!user?.onboardingCompletedAt) {
       redirect("/onboarding");
     }
-    redirect("/assessment/start");
+    if (user.clientId) {
+      redirect(clientTechnologyProfilePath(user.clientId));
+    }
+    redirect("/onboarding");
   }
 
   const summary = await getDashboardSummary();

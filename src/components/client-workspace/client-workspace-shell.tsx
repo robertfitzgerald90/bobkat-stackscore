@@ -25,18 +25,24 @@ export function ClientWorkspaceShell({
   nextRecommendedAssessmentAt,
   children,
 }: ClientWorkspaceShellProps) {
+  const isCustomer = role === "client";
+
   return (
-    <div className="page-content min-w-0 space-y-4">
-      <TpWorkspaceHeader
-        clientId={clientId}
-        clientName={clientName}
-        clientStatus={clientStatus}
-        showAssessClient={showAssessClient}
-        completedAssessments={completedAssessments}
-        draftAssessmentId={draftAssessmentId}
-        nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
-      />
-      <ClientWorkspaceNav clientId={clientId} role={role} />
+    <div className="page-content min-w-0 space-y-6">
+      {!isCustomer ? (
+        <>
+          <TpWorkspaceHeader
+            clientId={clientId}
+            clientName={clientName}
+            clientStatus={clientStatus}
+            showAssessClient={showAssessClient}
+            completedAssessments={completedAssessments}
+            draftAssessmentId={draftAssessmentId}
+            nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
+          />
+          <ClientWorkspaceNav clientId={clientId} role={role} />
+        </>
+      ) : null}
       <div className="min-w-0">{children}</div>
     </div>
   );

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Toaster } from "@/components/ui/sonner";
+import { prisma } from "@/lib/db";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 export default async function DashboardLayout({
   children,
@@ -20,10 +22,20 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  let clientId: string | null = null;
+  if (isCustomerMode(session.user.role)) {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    clientId = clientUser?.clientId ?? null;
+  }
+
   const user = {
     name: session.user.name ?? "User",
     email: session.user.email ?? "",
     role: session.user.role,
+    clientId,
   };
 
   return (
