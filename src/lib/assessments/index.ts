@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/db";
-import {
-  buildExecutiveSummary,
-} from "@/lib/recommendations";
+import { buildAssessmentExecutiveSummary } from "@/lib/assessments/executive-summary";
 import { generateRecommendations, collectTriggeredResponses } from "@/lib/recommendations/generate";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { syncClientRecommendations } from "@/lib/recommendations/sync";
@@ -118,21 +116,25 @@ async function completeAssessmentV1(assessmentId: string, userId: string) {
 
   const strengths = [...scoring.categoryScores]
     .sort((a, b) => b.percentScore - a.percentScore)
-    .slice(0, 2)
+    .slice(0, 3)
     .map((category) => category.categoryName);
 
   const risks = [...scoring.categoryScores]
     .sort((a, b) => a.percentScore - b.percentScore)
-    .slice(0, 2)
+    .slice(0, 3)
     .map((category) => category.categoryName);
 
-  const executiveSummary = buildExecutiveSummary({
+  const executiveSummary = buildAssessmentExecutiveSummary({
+    clientName: assessment.client.companyName,
     overallScore: scoring.overallScore,
-    overallRating: RATING_LABELS[scoring.overallRating],
+    overallRatingLabel: RATING_LABELS[scoring.overallRating],
     hasCriticalExposure,
     strengths,
     risks,
-    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => rec.title),
+    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => ({
+      title: rec.title,
+      priority: rec.priority,
+    })),
     projectedScore,
   });
 

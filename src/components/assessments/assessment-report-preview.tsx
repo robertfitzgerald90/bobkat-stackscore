@@ -115,10 +115,13 @@ export function AssessmentReportPreview({
 
   const priorityRecommendations = takeTopRecommendations(sections.clientRecommendations, 5);
 
-  const executiveParagraph =
-    data.executiveSummary?.trim() ||
-    sections.overviewBullets.join(" ") ||
-    `${data.clientName} completed a technology maturity assessment to establish a baseline StackScore and identify prioritized improvement opportunities.`;
+  const executiveParagraphs = data.executiveSummary?.trim()
+    ? data.executiveSummary.trim().split(/\n\n+/).filter(Boolean)
+    : sections.overviewBullets.length > 0
+      ? sections.overviewBullets
+      : [
+          `${data.clientName} completed a technology maturity assessment to establish a baseline StackScore and identify prioritized improvement opportunities.`,
+        ];
 
   const backHref = isCustomerView
     ? `/clients/${clientId}/technology-profile`
@@ -147,7 +150,13 @@ export function AssessmentReportPreview({
             title="Executive Summary"
             subtitle="What this assessment means for your organization"
           >
-            <p className="report-prose">{executiveParagraph}</p>
+            <div className="report-prose-stack">
+              {executiveParagraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 48)} className="report-prose">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
             <div className="report-executive-grid">
               <ReportHighlightCard>
                 <p className="report-highlight-label">Overall maturity</p>

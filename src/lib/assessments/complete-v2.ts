@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
-import { buildExecutiveSummary } from "@/lib/recommendations";
+import { buildAssessmentExecutiveSummary } from "@/lib/assessments/executive-summary";
+import { MATURITY_TIER_LABELS } from "@/lib/scoring/maturity";
 import {
   collectV2TriggeredResponses,
   evaluateV2Triggers,
@@ -91,7 +92,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
   const completePillars = scoring.pillarScores.filter((p) => p.status === "complete");
   const strengths = [...completePillars]
     .sort((a, b) => (b.percentScore ?? 0) - (a.percentScore ?? 0))
-    .slice(0, 2)
+    .slice(0, 3)
     .map((pillar) => {
       const meta = pillarSnapshots.find((row) => row.pillarCode === pillar.pillarCode);
       return meta?.pillarName ?? pillar.pillarCode;
@@ -99,21 +100,30 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
 
   const risks = [...completePillars]
     .sort((a, b) => (a.percentScore ?? 0) - (b.percentScore ?? 0))
-    .slice(0, 2)
+    .slice(0, 3)
     .map((pillar) => {
       const meta = pillarSnapshots.find((row) => row.pillarCode === pillar.pillarCode);
       return meta?.pillarName ?? pillar.pillarCode;
     });
 
   const overallRating = scoring.overallStackScore !== null ? getRating(scoring.overallStackScore) : "critical";
+  const overallScore = scoring.overallStackScore ?? 0;
+  const profileMaturityTier = mapV2MaturityToProfileTier(overallScore);
 
-  const executiveSummary = buildExecutiveSummary({
-    overallScore: scoring.overallStackScore ?? 0,
-    overallRating: RATING_LABELS[overallRating],
+  const executiveSummary = buildAssessmentExecutiveSummary({
+    clientName: assessment.client.companyName,
+    overallScore,
+    overallRatingLabel: RATING_LABELS[overallRating],
+    maturityTierLabel: profileMaturityTier
+      ? MATURITY_TIER_LABELS[profileMaturityTier]
+      : undefined,
     hasCriticalExposure,
     strengths,
     risks,
-    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => rec.title),
+    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => ({
+      title: rec.title,
+      priority: rec.priority,
+    })),
     projectedScore: projectedScore ?? 0,
   });
 
