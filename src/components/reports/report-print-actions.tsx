@@ -36,13 +36,13 @@ export function ReportPrintActions({
   }
 
   return (
-    <div className="report-no-print flex min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="page-header min-w-0 flex-1">
+    <div className="report-no-print report-toolbar-legacy flex w-full max-w-full flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="min-w-[12rem] flex-1 basis-0">
         {clientName ? <p className="text-sm text-muted-foreground">{clientName}</p> : null}
-        <h2 className="page-title">{title}</h2>
-        {description ? <p className="page-description">{description}</p> : null}
+        <h2 className="text-xl font-semibold tracking-tight text-primary sm:text-2xl">{title}</h2>
+        {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
       </div>
-      <div className="action-bar">
+      <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
         {extraActions}
         <button
           type="button"

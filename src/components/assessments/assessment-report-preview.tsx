@@ -2,39 +2,28 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { FileDown } from "lucide-react";
-import { buttonClassName } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Calendar, Download, FileText } from "lucide-react";
+import { AssessmentReportHero } from "@/components/assessments/assessment-report-hero";
+import { AssessmentReportToolbar } from "@/components/assessments/assessment-report-toolbar";
 import {
   ReportBody,
-  ReportCover,
   ReportDataCard,
   ReportDocument,
   ReportEmptyState,
-  ReportExecutiveSummary,
   ReportFooter,
-  ReportHeader,
   ReportHighlightCard,
-  ReportMetaGrid,
-  ReportMetricCard,
-  ReportMetricGrid,
-  ReportPrintActions,
   ReportPriorityBadge,
   ReportSection,
   ReportShell,
 } from "@/components/reports";
-import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
-import {
-  TECHNOLOGY_MATURITY_PROFILE_SHORT,
-  TECHNOLOGY_MATURITY_SUMMARY_LABEL,
-  TECHNOLOGY_PILLARS_LABEL,
-} from "@/lib/technology-maturity/labels";
 import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
-import { buildAssessmentReportSections, getProjectedRatingLabel } from "@/lib/reports/assessment-content";
+import { buildAssessmentReportSections } from "@/lib/reports/assessment-content";
+import { takeTopRecommendations } from "@/lib/recommendations/sort";
+import { getBookingUrl } from "@/lib/support/config";
 import type { AssessmentReportData } from "@/lib/pdf/types";
-import { PRIORITY_LABELS } from "@/lib/display";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { buttonClassName } from "@/components/ui/button";
+import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -42,20 +31,44 @@ type AssessmentReportPreviewProps = {
   assessmentId: string;
   clientId: string;
   data: AssessmentReportData;
+  isCustomerView?: boolean;
 };
 
-function BulletList({ items }: { items: string[] }) {
-  if (items.length === 0) {
-    return <ReportEmptyState>No items to display.</ReportEmptyState>;
-  }
-
+function SnapshotCard({
+  label,
+  value,
+  subtitle,
+  emphasize = false,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  emphasize?: boolean;
+}) {
   return (
-    <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground">
+    <div className="report-snapshot-card">
+      <p className="report-snapshot-label">{label}</p>
+      <p
+        className={cn(
+          "report-snapshot-value",
+          emphasize && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
+        )}
+      >
+        {value}
+      </p>
+      {subtitle ? <p className="report-snapshot-subtitle">{subtitle}</p> : null}
+    </div>
+  );
+}
+
+function InsightList({ items, emptyMessage }: { items: string[]; emptyMessage: string }) {
+  if (items.length === 0) {
+    return <ReportEmptyState>{emptyMessage}</ReportEmptyState>;
+  }
+  return (
+    <ul className="report-insight-list">
       {items.map((item) => (
-        <li key={item} className="flex gap-2">
-          <span className="text-primary">•</span>
-          <span>{item}</span>
-        </li>
+        <li key={item}>{item}</li>
       ))}
     </ul>
   );
@@ -65,9 +78,11 @@ export function AssessmentReportPreview({
   assessmentId,
   clientId,
   data,
+  isCustomerView = false,
 }: AssessmentReportPreviewProps) {
   const sections = buildAssessmentReportSections(data);
-  const generatedDate = formatAssessmentCompletionDate(data.completedAt);
+  const bookingUrl = getBookingUrl();
+
   const pillarInsights = useMemo(
     () =>
       buildPillarInsights({
@@ -88,235 +103,292 @@ export function AssessmentReportPreview({
     [data.summary.categoryScores, data.summary.recommendations],
   );
 
+  const topStrengths = [...pillarInsights]
+    .filter((p) => p.percentScore !== null)
+    .sort((a, b) => (b.percentScore ?? 0) - (a.percentScore ?? 0))
+    .slice(0, 3);
+
+  const topRisks = [...pillarInsights]
+    .filter((p) => p.percentScore !== null)
+    .sort((a, b) => (a.percentScore ?? 0) - (b.percentScore ?? 0))
+    .slice(0, 3);
+
+  const priorityRecommendations = takeTopRecommendations(sections.clientRecommendations, 5);
+
+  const executiveParagraph =
+    data.executiveSummary?.trim() ||
+    sections.overviewBullets.join(" ") ||
+    `${data.clientName} completed a technology maturity assessment to establish a baseline StackScore and identify prioritized improvement opportunities.`;
+
+  const backHref = isCustomerView
+    ? `/clients/${clientId}/technology-profile`
+    : `/assessments/${assessmentId}/results`;
+  const backLabel = isCustomerView ? "Back to Dashboard" : "Back to Results";
+
   return (
-    <ReportShell>
-      <ReportPrintActions
-        clientName={data.clientName}
-        title="Assessment Report"
-        description={`${data.assessmentName} · ${sections.assessmentTypeLabel}`}
-        printLabel="Print Report"
-        backHref={`/assessments/${assessmentId}/results`}
-        backLabel="Back to Results"
-        extraActions={
-          <a
-            href={`/api/v1/assessments/${assessmentId}/export/pdf`}
-            className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Download PDF
-          </a>
-        }
+    <ReportShell className="assessment-executive-report">
+      <AssessmentReportToolbar
+        backHref={backHref}
+        backLabel={backLabel}
+        downloadHref={`/api/v1/assessments/${assessmentId}/export/pdf`}
       />
 
-      <ReportDocument>
-        <ReportCover reportType="assessment" />
+      <ReportDocument className="report-document-executive">
+        <AssessmentReportHero
+          clientName={data.clientName}
+          assessmentDate={data.assessmentDate}
+          overallScore={data.summary.overallScore}
+          overallRatingLabel={data.summary.overallRatingLabel}
+          projectedScore={data.summary.projectedScore}
+        />
 
-        <ReportBody>
-          <ReportMetaGrid
-            items={[
-              { label: "Client", value: data.clientName },
-              { label: "Assessment", value: data.assessmentName },
-              { label: "Type", value: sections.assessmentTypeLabel },
-              { label: "Assessment Date", value: data.assessmentDate },
-            ]}
-          />
-
-          <ReportHeader
-            reportTitle="Technology Maturity Assessment"
-            clientName={data.clientName}
-            dateLabel={generatedDate ?? data.assessmentDate}
-          />
-
+        <ReportBody className="report-body-executive">
           <ReportSection
-            title={TECHNOLOGY_MATURITY_SUMMARY_LABEL}
-            subtitle="Executive view of StackScore maturity and prioritized improvement"
+            title="Executive Summary"
+            subtitle="What this assessment means for your organization"
           >
-            <ReportMetricGrid columns={2}>
-              <ReportMetricCard
-                label="Current StackScore"
+            <p className="report-prose">{executiveParagraph}</p>
+            <div className="report-executive-grid">
+              <ReportHighlightCard>
+                <p className="report-highlight-label">Overall maturity</p>
+                <p className="report-highlight-value">
+                  {data.summary.overallScore} — {data.summary.overallRatingLabel}
+                </p>
+              </ReportHighlightCard>
+              <ReportHighlightCard>
+                <p className="report-highlight-label">Primary risks</p>
+                <InsightList
+                  items={sections.riskBullets.slice(0, 3)}
+                  emptyMessage="No significant risk areas were identified."
+                />
+              </ReportHighlightCard>
+              <ReportHighlightCard>
+                <p className="report-highlight-label">Top opportunities</p>
+                <InsightList
+                  items={sections.priorityBullets.slice(0, 3)}
+                  emptyMessage="Complete remediation planning during your strategy session."
+                />
+              </ReportHighlightCard>
+              <ReportHighlightCard>
+                <p className="report-highlight-label">Recommended next step</p>
+                <p className="report-prose-sm">
+                  Review this report with BobKat IT to prioritize actions, align investment, and
+                  build your technology roadmap.
+                </p>
+              </ReportHighlightCard>
+            </div>
+          </ReportSection>
+
+          <ReportSection title="Score Snapshot" subtitle="At-a-glance assessment metrics">
+            <div className="report-snapshot-grid">
+              <SnapshotCard
+                label="Overall StackScore"
                 value={data.summary.overallScore}
                 subtitle={data.summary.overallRatingLabel}
-                valueClassName={getScoreTextColorClass(data.summary.overallScore)}
+                emphasize
               />
-              <ReportMetricCard
-                label="Projected StackScore"
+              <SnapshotCard
+                label="Projected Improvement"
                 value={data.summary.projectedScore}
-                subtitle={getProjectedRatingLabel(data.summary.projectedScore)}
-                valueClassName={getScoreTextColorClass(data.summary.projectedScore)}
-                highlight
+                subtitle={`+${sections.estimatedImprovement} points potential`}
+                emphasize
               />
-            </ReportMetricGrid>
-
-            <ReportMetricGrid columns={4} className="mt-4">
-              <ReportMetricCard
-                label="Total Recommendations"
-                value={sections.clientRecommendations.length}
+              <SnapshotCard
+                label="Critical Findings"
+                value={data.summary.criticalFindingsCount}
+                subtitle={
+                  data.summary.hasCriticalExposure
+                    ? "Items requiring immediate attention"
+                    : "No critical exposure flagged"
+                }
               />
-              <ReportMetricCard
-                label="Open Items"
+              <SnapshotCard
+                label="Open Recommendations"
                 value={data.summary.openRecommendationsCount}
+                subtitle="Active improvement opportunities"
               />
-              <ReportMetricCard label="Potential Points" value={`+${sections.totalImpact}`} />
-              <ReportMetricCard
-                label="Critical + High"
-                value={sections.criticalCount + sections.highCount}
-              />
-            </ReportMetricGrid>
-          </ReportSection>
-
-          <ReportSection title="Executive Summary">
-            <ReportExecutiveSummary
-              value={data.executiveSummary ?? ""}
-              fallback={sections.overviewBullets.join(" ")}
-              className="text-foreground/90"
-            />
-          </ReportSection>
-
-          <ReportSection title="Assessment Overview">
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ReportHighlightCard>
-                <p className="text-sm font-semibold text-primary">Overall Risk</p>
-                <BulletList items={sections.overallRiskBullets} />
-              </ReportHighlightCard>
-              <ReportHighlightCard>
-                <p className="text-sm font-semibold text-primary">Projected Improvement</p>
-                <BulletList items={sections.improvementBullets} />
-              </ReportHighlightCard>
-              <ReportHighlightCard>
-                <p className="text-sm font-semibold text-primary">Top Strengths</p>
-                <BulletList items={sections.strengthBullets} />
-              </ReportHighlightCard>
-              <ReportHighlightCard>
-                <p className="text-sm font-semibold text-primary">Top Risks</p>
-                <BulletList items={sections.riskBullets} />
-              </ReportHighlightCard>
-              <ReportHighlightCard className="lg:col-span-2">
-                <p className="text-sm font-semibold text-primary">Immediate Priorities</p>
-                <BulletList items={sections.priorityBullets} />
-              </ReportHighlightCard>
             </div>
           </ReportSection>
 
           <ReportSection
-            title={TECHNOLOGY_PILLARS_LABEL}
-            subtitle="Technology maturity scores across the eight StackScore Technology Pillars"
+            title="Technology Pillar Breakdown"
+            subtitle="How each area of your technology environment contributes to overall health"
           >
-            <div className="grid gap-3 sm:grid-cols-2">
-              {pillarInsights.map((pillar) => (
-                <div key={pillar.pillarCode} className="rounded-lg border p-4">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{pillar.pillarName}</p>
-                    {pillar.percentScore !== null ? (
+            <div className="report-pillar-grid">
+              {pillarInsights.map((pillar) => {
+                const score = pillar.percentScore !== null ? Math.round(pillar.percentScore) : null;
+                return (
+                  <div key={pillar.pillarCode} className="report-pillar-card">
+                    <div className="report-pillar-header">
+                      <p className="report-pillar-name">{pillar.pillarName}</p>
                       <p
                         className={cn(
-                          "text-lg font-bold",
-                          getScoreTextColorClass(Math.round(pillar.percentScore)),
+                          "report-pillar-score",
+                          score !== null ? getScoreTextColorClass(score) : undefined,
                         )}
                       >
-                        {Math.round(pillar.percentScore)}
+                        {score ?? "—"}
                       </p>
-                    ) : null}
-                  </div>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    {pillar.businessQuestion}
-                  </p>
-                  {pillar.percentScore !== null ? (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {RATING_LABELS[getRating(pillar.percentScore)]}
+                    </div>
+                    <div className="report-pillar-bar-track">
+                      <div
+                        className={cn(
+                          "report-pillar-bar-fill",
+                          score !== null ? getScoreBarColorClass(score) : "bg-muted",
+                        )}
+                        style={{ width: `${score ?? 0}%` }}
+                      />
+                    </div>
+                    <p className="report-pillar-note">
+                      {score !== null
+                        ? RATING_LABELS[getRating(score)]
+                        : "Not assessed in this review"}
                     </p>
-                  ) : (
-                    <p className="mt-2 text-xs text-muted-foreground">Not assessed</p>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </ReportSection>
 
+          <div className="report-two-column">
+            <ReportSection title="Top Strengths" subtitle="Areas performing well today">
+              {topStrengths.length === 0 ? (
+                <ReportEmptyState>Strengths will appear after pillar scoring is complete.</ReportEmptyState>
+              ) : (
+                <div className="report-insight-cards">
+                  {topStrengths.map((pillar) => (
+                    <div key={pillar.pillarCode} className="report-insight-card">
+                      <p className="report-insight-title">{pillar.pillarName}</p>
+                      <p className="report-insight-body">
+                        Scoring {Math.round(pillar.percentScore ?? 0)}% —{" "}
+                        {pillar.maturityTier ?? "strong relative performance"}.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ReportSection>
+
+            <ReportSection
+              title="Top Risks"
+              subtitle="Areas that may benefit from focused improvement"
+            >
+              {topRisks.length === 0 ? (
+                <ReportEmptyState>No material risk areas were identified.</ReportEmptyState>
+              ) : (
+                <div className="report-insight-cards">
+                  {topRisks.map((pillar) => (
+                    <div key={pillar.pillarCode} className="report-insight-card report-insight-card-risk">
+                      <p className="report-insight-title">{pillar.pillarName}</p>
+                      <p className="report-insight-body">
+                        Scoring {Math.round(pillar.percentScore ?? 0)}% — an opportunity to reduce
+                        operational and security exposure.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ReportSection>
+          </div>
+
           <ReportSection
-            title="Prioritized Recommendations"
-            subtitle="Sorted by priority and estimated StackScore impact"
+            title="Priority Recommendations"
+            subtitle="Highest-impact opportunities identified in this assessment"
           >
-            {sections.sortedRecommendations.length === 0 ? (
+            {priorityRecommendations.length === 0 ? (
               <ReportEmptyState>No recommendations were generated for this assessment.</ReportEmptyState>
             ) : (
-              <div className="space-y-6">
-                {sections.recommendationsByPriority.map((group) => (
-                  <div key={group.priority} className="space-y-3">
-                    <p className="text-sm font-semibold text-primary">
-                      {PRIORITY_LABELS[group.priority]}
-                    </p>
-                    {group.items.map((recommendation) => (
-                      <ReportDataCard
-                        key={recommendation.id}
-                        title={
-                          <>
-                            <p className="font-medium">{recommendation.title}</p>
-                            <ReportPriorityBadge priority={recommendation.priority} />
-                          </>
-                        }
-                        description={recommendation.businessImpact}
-                        meta={
-                          <div className="space-y-2">
-                            <RecommendationPillarHint categoryCode={recommendation.categoryCode} />
-                            <p>+{recommendation.estimatedImpactPoints} impact points</p>
-                          </div>
-                        }
-                      />
-                    ))}
-                  </div>
+              <div className="report-recommendation-list">
+                {priorityRecommendations.map((recommendation) => (
+                  <ReportDataCard
+                    key={recommendation.id}
+                    title={
+                      <div className="report-recommendation-title-row">
+                        <p className="report-recommendation-title">{recommendation.title}</p>
+                        <ReportPriorityBadge priority={recommendation.priority} />
+                      </div>
+                    }
+                    description={recommendation.description || recommendation.businessImpact}
+                    meta={
+                      <div className="space-y-2">
+                        {recommendation.businessImpact ? (
+                          <p className="report-prose-sm">{recommendation.businessImpact}</p>
+                        ) : null}
+                        <RecommendationPillarHint categoryCode={recommendation.categoryCode} />
+                        <p className="report-impact-line">
+                          +{recommendation.estimatedImpactPoints} StackScore points estimated
+                          improvement
+                        </p>
+                      </div>
+                    }
+                  />
                 ))}
               </div>
             )}
           </ReportSection>
 
-          <ReportSection title="Improvement Roadmap" subtitle="Projected StackScore progression">
-            <div className="space-y-3">
-              {sections.roadmapMilestones.map((milestone) => (
-                <div
-                  key={milestone.label}
-                  className={cn(
-                    "flex items-center justify-between rounded-lg border p-4",
-                    milestone.highlight && "border-primary bg-primary/5",
-                    milestone.isTarget && "border-dashed",
-                  )}
-                >
-                  <div>
-                    <p className="font-medium">{milestone.label}</p>
-                    {milestone.isTarget ? (
-                      <Badge variant="outline" className="mt-1">
-                        Target threshold
-                      </Badge>
-                    ) : null}
-                  </div>
-                  <p
-                    className={cn(
-                      "text-2xl font-bold tabular-nums",
-                      getScoreTextColorClass(milestone.score),
-                    )}
-                  >
-                    {milestone.score}
+          <ReportSection title="Next Steps" subtitle="How to turn insight into action">
+            <div className="report-next-steps">
+              <div className="report-next-step">
+                <FileText className="report-next-step-icon" />
+                <div>
+                  <p className="report-next-step-title">Download this report</p>
+                  <p className="report-prose-sm">
+                    Save a PDF copy for leadership review and internal planning.
                   </p>
+                  <a
+                    href={`/api/v1/assessments/${assessmentId}/export/pdf`}
+                    className={buttonClassName({
+                      variant: "outline",
+                      size: "sm",
+                      className: "report-no-print mt-3",
+                    })}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                  </a>
                 </div>
-              ))}
+              </div>
+              <div className="report-next-step">
+                <Calendar className="report-next-step-icon" />
+                <div>
+                  <p className="report-next-step-title">Schedule a results review</p>
+                  <p className="report-prose-sm">
+                    Meet with BobKat IT to walk through findings and align on priorities.
+                  </p>
+                  {bookingUrl ? (
+                    <a
+                      href={bookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonClassName({
+                        size: "sm",
+                        className: "report-no-print mt-3",
+                      })}
+                    >
+                      Book Strategy Session
+                    </a>
+                  ) : (
+                    <Link
+                      href="/support"
+                      className={buttonClassName({
+                        size: "sm",
+                        className: "report-no-print mt-3",
+                      })}
+                    >
+                      Contact Support
+                    </Link>
+                  )}
+                </div>
+              </div>
+              <div className="report-next-step">
+                <p className="report-next-step-title">Review your roadmap with BobKat IT</p>
+                <p className="report-prose-sm">
+                  Your consultant will help translate recommendations into a phased implementation
+                  plan tailored to your business goals and budget.
+                </p>
+              </div>
             </div>
-          </ReportSection>
-
-          <ReportSection title="Next Steps">
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Review prioritized recommendations with your BobKat IT consultant to build a Technology
-              Improvement Plan. Addressing critical and high-priority items first delivers the
-              strongest risk reduction and StackScore gains.
-            </p>
-            <Link
-              href={`/clients/${clientId}/technology-profile`}
-              className={buttonClassName({
-                variant: "outline",
-                size: "sm",
-                className: "report-no-print mt-4",
-              })}
-            >
-              Open {TECHNOLOGY_MATURITY_PROFILE_SHORT}
-            </Link>
           </ReportSection>
 
           <ReportFooter confidentialFor={data.clientName} />

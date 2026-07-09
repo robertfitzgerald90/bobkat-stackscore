@@ -5,6 +5,7 @@ import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary
 import { prisma } from "@/lib/db";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentReportPreview } from "@/components/assessments/assessment-report-preview";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -25,6 +26,14 @@ export default async function AssessmentReportPage({ params }: PageProps) {
   });
 
   if (!assessment || assessment.status !== "completed") notFound();
+
+  if (isCustomerMode(session.user.role)) {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId !== assessment.clientId) notFound();
+  }
 
   const recommendations = await getRecommendationsTriggeredByAssessment(id);
 
@@ -59,6 +68,7 @@ export default async function AssessmentReportPage({ params }: PageProps) {
         assessmentId={assessment.id}
         clientId={assessment.clientId}
         data={reportData}
+        isCustomerView={isCustomerMode(session.user.role)}
       />
     </div>
   );
