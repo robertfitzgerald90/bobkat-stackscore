@@ -23,35 +23,59 @@ export type OfferTimelineStep = {
 export type OfferShowcaseItem = {
   id: string;
   caption: string;
-  /** Drop PNGs in public/assessment-offer/screenshots/ to override mockups */
-  imageSrc?: string;
+  description: string;
+  imageSrc: string;
+  imageWidth: number;
+  imageHeight: number;
+  /** Browser chrome for app UI; document frame for report cover */
+  frame?: "browser" | "document";
 };
 
 export const OFFER_SHOWCASE_ITEMS: OfferShowcaseItem[] = [
   {
     id: "executive-dashboard",
     caption: "Executive Dashboard",
-    imageSrc: "/assessment-offer/screenshots/executive-dashboard.png",
-  },
-  {
-    id: "maturity-score",
-    caption: "Technology Maturity Score",
-    imageSrc: "/assessment-offer/screenshots/maturity-score.png",
+    description: "Your technology health at a glance — scores, strengths, and risks in one view.",
+    imageSrc: "/images/executive-dashboard.png",
+    imageWidth: 1287,
+    imageHeight: 933,
+    frame: "browser",
   },
   {
     id: "assessment-experience",
     caption: "Assessment Experience",
-    imageSrc: "/assessment-offer/screenshots/assessment-experience.png",
+    description: "Structured scoring across your environment with clear current and projected outcomes.",
+    imageSrc: "/images/recommendation-summary-report.png",
+    imageWidth: 807,
+    imageHeight: 576,
+    frame: "browser",
+  },
+  {
+    id: "technology-maturity-dashboard",
+    caption: "Technology Maturity Dashboard",
+    description: "Maturity scores across all eight StackScore pillars, with tier and risk context.",
+    imageSrc: "/images/technology-pillars.png",
+    imageWidth: 1296,
+    imageHeight: 439,
+    frame: "browser",
   },
   {
     id: "recommendations",
-    caption: "Personalized Recommendations",
-    imageSrc: "/assessment-offer/screenshots/recommendations.png",
+    caption: "Customer Recommendations",
+    description: "Prioritized improvements with business impact and estimated StackScore gains.",
+    imageSrc: "/images/immediate-priorities.png",
+    imageWidth: 1295,
+    imageHeight: 874,
+    frame: "browser",
   },
   {
     id: "executive-report",
-    caption: "Executive Report Preview",
-    imageSrc: "/assessment-offer/screenshots/executive-report.png",
+    caption: "Executive Report",
+    description: "A polished, shareable deliverable ready for leadership and board conversations.",
+    imageSrc: "/images/report-cover.png",
+    imageWidth: 809,
+    imageHeight: 785,
+    frame: "document",
   },
 ];
 
