@@ -1,4 +1,5 @@
 import { getEmailConfig, logEmailEnvDiagnostics } from "@/lib/email/config";
+import { purchaseTrace, purchaseTraceError, purchaseTraceStop } from "@/lib/purchase-trace";
 
 export type SendEmailInput = {
   to: string;
@@ -14,65 +15,80 @@ export type SendEmailResult = {
 };
 
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  purchaseTrace("S01", "ENTER sendEmail()", {
+    to: input.to,
+    subject: input.subject,
+  });
+
   logEmailEnvDiagnostics("sendEmail entry");
 
   const { from, resendApiKey } = getEmailConfig();
 
-  console.info("[email/send] >>> ENTER sendEmail()", {
+  purchaseTrace("S02", "sendEmail config loaded", {
     to: input.to,
     subject: input.subject,
+    emailFrom: from,
     resendApiKeyPresent: Boolean(resendApiKey),
     resendApiKeyLength: resendApiKey?.length ?? 0,
-    emailFrom: from,
   });
 
   if (!resendApiKey) {
-    console.warn("[email/send] <<< EXIT sendEmail() — RESEND_API_KEY missing, console fallback only (Resend NOT called)", {
-      to: input.to,
-      subject: input.subject,
-      emailFrom: from,
-      textPreview: input.text.slice(0, 200),
-    });
+    purchaseTraceStop(
+      "S03",
+      "send.ts → if (!resendApiKey)",
+      "RESEND_API_KEY missing at runtime — returning console fallback, resend.emails.send() NOT called",
+      {
+        to: input.to,
+        subject: input.subject,
+        emailFrom: from,
+        textPreview: input.text.slice(0, 200),
+      },
+    );
     return { delivered: true, provider: "console" };
   }
 
-  console.info("[email/send] >>> BEFORE resend.emails.send()", {
+  const resendRequest = {
+    from,
     to: input.to,
     subject: input.subject,
-    emailFrom: from,
+    html: input.html,
+    text: input.text,
+  };
+
+  purchaseTrace("S04", "BEFORE resend.emails.send() — full request payload", {
+    request: resendRequest,
   });
 
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(resendApiKey);
-    const response = await resend.emails.send({
-      from,
-      to: input.to,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-    });
+    const response = await resend.emails.send(resendRequest);
 
-    console.info("[email/send] <<< AFTER resend.emails.send() — raw response received", {
+    purchaseTrace("S05", "AFTER resend.emails.send() — full response", {
       to: input.to,
-      hasError: Boolean(response.error),
-      messageId: response.data?.id ?? null,
-      error: response.error ?? null,
+      response: {
+        data: response.data ?? null,
+        error: response.error ?? null,
+      },
     });
 
     if (response.error) {
-      console.error("[email/send] <<< Resend response.error — throwing", {
-        to: input.to,
-        subject: input.subject,
-        error: response.error,
-      });
+      purchaseTraceError(
+        "S06",
+        "send.ts → if (response.error)",
+        new Error(response.error.message),
+        {
+          to: input.to,
+          resendError: response.error,
+        },
+      );
       throw new Error(response.error.message);
     }
 
-    console.info("[email/send] <<< EXIT sendEmail() — Resend success", {
+    purchaseTrace("S07", "EXIT sendEmail() — Resend success", {
       to: input.to,
-      subject: input.subject,
       messageId: response.data?.id ?? null,
+      provider: "resend",
     });
 
     return {
@@ -81,12 +97,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       id: response.data?.id,
     };
   } catch (error) {
-    console.error("[email/send] <<< CAUGHT ERROR in sendEmail()", {
+    purchaseTraceError("S08", "send.ts → resend.emails.send() catch", error, {
       to: input.to,
       subject: input.subject,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      error,
     });
     throw error;
   }

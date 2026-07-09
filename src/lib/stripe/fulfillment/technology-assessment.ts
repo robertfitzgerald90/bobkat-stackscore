@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { prisma } from "@/lib/db";
+import { purchaseTrace, purchaseTraceStop } from "@/lib/purchase-trace";
 import {
   activationTokenExpiresAt,
   createPlaceholderPasswordHash,
@@ -51,37 +52,22 @@ async function recordManualReviewPurchase(
     },
   });
 
-  console.warn("[stripe/fulfillment] Manual review required", {
-    purchaseId: purchase.id,
-    sessionId: session.id,
-    purchaserEmail,
-    failureReason,
-  });
+  purchaseTraceStop(
+    "F12",
+    "technology-assessment.ts → recordManualReviewPurchase return",
+    "Fulfillment outcome manual_review — sendPurchaseFulfillmentEmail will NOT be called",
+    {
+      sessionId: session.id,
+      purchaseId: purchase.id,
+      failureReason,
+    },
+  );
 
   return {
     outcome: "manual_review",
     purchaseId: purchase.id,
     reason: failureReason,
   };
-}
-
-async function createActivationTokenForUser(userId: string): Promise<string> {
-  const { rawToken, tokenHash } = generateActivationToken();
-
-  await prisma.accountActivationToken.updateMany({
-    where: { userId, usedAt: null },
-    data: { usedAt: new Date() },
-  });
-
-  await prisma.accountActivationToken.create({
-    data: {
-      userId,
-      tokenHash,
-      expiresAt: activationTokenExpiresAt(),
-    },
-  });
-
-  return rawToken;
 }
 
 type FulfillmentContext = {
@@ -155,7 +141,7 @@ async function fulfillForClientUser(
             expiresAt: activationTokenExpiresAt(),
           },
         });
-        console.info("[stripe/fulfillment] Activation token created for inactive client user", {
+        purchaseTrace("F10a", "Activation token created for inactive existing client user", {
           userId: user.id,
           sessionId: context.session.id,
         });
@@ -164,7 +150,7 @@ async function fulfillForClientUser(
       return { purchase, assessment, requiresActivation, activationToken };
     });
 
-  console.info("[stripe/fulfillment] Purchase created for existing client user", {
+  purchaseTrace("F10", "RETURN fulfillForClientUser — outcome fulfilled", {
     sessionId: context.session.id,
     purchaseId: purchase.id,
     assessmentId: assessment.id,
@@ -255,7 +241,7 @@ async function fulfillNewCustomer(context: FulfillmentContext): Promise<Fulfillm
     return { purchase, assessment };
   });
 
-  console.info("[stripe/fulfillment] Purchase created for new customer", {
+  purchaseTrace("F11", "RETURN fulfillNewCustomer — outcome fulfilled", {
     sessionId: context.session.id,
     purchaseId: purchase.id,
     assessmentId: assessment.id,
@@ -276,46 +262,68 @@ async function fulfillNewCustomer(context: FulfillmentContext): Promise<Fulfillm
 export async function fulfillTechnologyAssessmentPurchase(
   session: Stripe.Checkout.Session,
 ): Promise<FulfillmentResult> {
-  console.info("[stripe/fulfillment] Entering fulfillment", {
+  purchaseTrace("F01", "ENTER fulfillTechnologyAssessmentPurchase()", {
     sessionId: session.id,
     paymentStatus: session.payment_status,
     productType: sessionProductType(session),
+    metadata: session.metadata ?? null,
     customerEmail: session.customer_details?.email ?? session.customer_email ?? null,
   });
 
   if (session.payment_status !== "paid") {
-    console.info("[stripe/fulfillment] Skipped — payment not paid", {
-      sessionId: session.id,
-      paymentStatus: session.payment_status,
-    });
+    purchaseTraceStop(
+      "F02",
+      "technology-assessment.ts → if (payment_status !== paid) return",
+      `payment_status=${session.payment_status} — outcome ignored, email NOT sent`,
+      { sessionId: session.id },
+    );
     return { outcome: "ignored", reason: `payment_status=${session.payment_status}` };
   }
 
+  purchaseTrace("F02", "PASS payment_status === paid", { sessionId: session.id });
+
   const productType = sessionProductType(session);
   if (!isTechnologyAssessmentProduct(productType)) {
-    console.info("[stripe/fulfillment] Skipped — unexpected product type", {
-      sessionId: session.id,
-      productType: productType ?? "missing",
-    });
+    purchaseTraceStop(
+      "F03",
+      "technology-assessment.ts → if (!isTechnologyAssessmentProduct) return",
+      `productType=${productType ?? "missing"} — outcome ignored, email NOT sent`,
+      { sessionId: session.id, metadata: session.metadata ?? null },
+    );
     return { outcome: "ignored", reason: `productType=${productType ?? "missing"}` };
   }
+
+  purchaseTrace("F03", "PASS productType is technology_assessment", {
+    sessionId: session.id,
+    productType,
+  });
 
   const purchaserEmail = sessionPurchaserEmail(session);
   if (!purchaserEmail) {
     throw new Error(`Checkout session ${session.id} is missing purchaser email`);
   }
 
+  purchaseTrace("F04", "PASS purchaser email resolved", {
+    sessionId: session.id,
+    purchaserEmail,
+  });
+
   const existingPurchase = await prisma.assessmentPurchase.findUnique({
     where: { stripeSessionId: session.id },
   });
 
   if (existingPurchase) {
-    console.info("[stripe/fulfillment] Duplicate webhook — purchase already exists, email will be skipped", {
-      sessionId: session.id,
-      purchaseId: existingPurchase.id,
-      purchaseStatus: existingPurchase.status,
-      purchaserEmail: existingPurchase.purchaserEmail,
-    });
+    purchaseTraceStop(
+      "F05",
+      "technology-assessment.ts → if (existingPurchase) return",
+      "outcome already_fulfilled — sendPurchaseFulfillmentEmail will NOT be called on this webhook delivery",
+      {
+        sessionId: session.id,
+        purchaseId: existingPurchase.id,
+        purchaseStatus: existingPurchase.status,
+        purchaserEmail: existingPurchase.purchaserEmail,
+      },
+    );
     return {
       outcome: "already_fulfilled",
       purchaseId: existingPurchase.id,
@@ -323,12 +331,34 @@ export async function fulfillTechnologyAssessmentPurchase(
     };
   }
 
+  purchaseTrace("F05", "PASS no existing purchase for stripeSessionId", {
+    sessionId: session.id,
+  });
+
   const existingUser = await prisma.user.findUnique({
     where: { email: purchaserEmail },
     select: { id: true, role: true, clientId: true, isActive: true },
   });
 
+  purchaseTrace("F06", "Existing user lookup complete", {
+    sessionId: session.id,
+    purchaserEmail,
+    existingUser: existingUser
+      ? {
+          id: existingUser.id,
+          role: existingUser.role,
+          clientId: existingUser.clientId,
+          isActive: existingUser.isActive,
+        }
+      : null,
+  });
+
   if (existingUser && STAFF_ROLES.includes(existingUser.role as (typeof STAFF_ROLES)[number])) {
+    purchaseTrace("F07", "Branch: staff email collision → manual_review", {
+      sessionId: session.id,
+      userId: existingUser.id,
+      role: existingUser.role,
+    });
     return recordManualReviewPurchase(
       session,
       purchaserEmail,
@@ -344,16 +374,20 @@ export async function fulfillTechnologyAssessmentPurchase(
   };
 
   if (existingUser?.role === "client" && existingUser.clientId) {
-    console.info("[stripe/fulfillment] Repeat purchase for existing client user", {
+    purchaseTrace("F08", "Branch: existing client user → fulfillForClientUser", {
       sessionId: session.id,
       userId: existingUser.id,
       isActive: existingUser.isActive,
-      willRequireActivation: !existingUser.isActive,
     });
     return fulfillForClientUser(context, existingUser);
   }
 
   if (existingUser) {
+    purchaseTrace("F09", "Branch: unsupported existing user → manual_review", {
+      sessionId: session.id,
+      userId: existingUser.id,
+      role: existingUser.role,
+    });
     return recordManualReviewPurchase(
       session,
       purchaserEmail,
@@ -361,11 +395,30 @@ export async function fulfillTechnologyAssessmentPurchase(
     );
   }
 
-  console.info("[stripe/fulfillment] Creating new customer workspace", {
+  purchaseTrace("F09", "Branch: new customer → fulfillNewCustomer", {
     sessionId: session.id,
     purchaserEmail,
   });
   return fulfillNewCustomer(context);
+}
+
+async function createActivationTokenForUser(userId: string): Promise<string> {
+  const { rawToken, tokenHash } = generateActivationToken();
+
+  await prisma.accountActivationToken.updateMany({
+    where: { userId, usedAt: null },
+    data: { usedAt: new Date() },
+  });
+
+  await prisma.accountActivationToken.create({
+    data: {
+      userId,
+      tokenHash,
+      expiresAt: activationTokenExpiresAt(),
+    },
+  });
+
+  return rawToken;
 }
 
 export { createActivationTokenForUser };
