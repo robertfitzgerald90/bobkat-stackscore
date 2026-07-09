@@ -5,7 +5,7 @@ import {
   getSessionUserWithClient,
   requireAssessmentAccess,
 } from "@/lib/api/access";
-import { unauthorized } from "@/lib/api/helpers";
+import { notFound, unauthorized } from "@/lib/api/helpers";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
