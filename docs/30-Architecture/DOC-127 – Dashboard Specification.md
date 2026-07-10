@@ -16,7 +16,7 @@ The goal is to provide every user with a dashboard tailored to their role, respo
 
 DOC-127 is a **dashboard architecture specification only**. It does not define UI code, components, or application logic.
 
-Data is supplied by the **Dashboard Service** per [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md). Visibility is enforced per [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md). Visual standards align with [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
+Data is supplied by the **Dashboard Service** per [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md). Visibility is enforced per [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md). Visual standards align with [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
 
 ---
 
@@ -366,13 +366,13 @@ Aligns with responsive patterns in DOC-005 and implemented mobile layout convent
 
 # 18. Related Documents
 
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
 * [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
 * [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
-* [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md)
+* [DOC-004 – Design Principles](../00-Governance/DOC-004%20%E2%80%93%20Design%20Principles.md)
 
 ---
 

@@ -52,19 +52,19 @@ When determining application behavior, follow this order:
 | Priority | Document |
 | -------- | -------- |
 | 1 | **DOC-129** – AI Development Rules (this constitution) |
-| 2 | [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md) |
-| 3 | [DOC-002 – Product Philosophy](DOC-002%20-%20Product%20Philosophy.md) |
-| 4 | [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md) |
+| 2 | [DOC-001 – Product Vision](../00-Governance/DOC-001%20-%20Product%20Vision.md) |
+| 3 | [DOC-002 – Product Philosophy](../00-Governance/DOC-002-Product%20Philosophy.md) |
+| 4 | [DOC-003 – BTIL](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md) |
 | 5 | [DOC-120 – Domain Model](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) |
 | 6 | [DOC-123 – Application Workflows](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) |
 | 7 | [DOC-121 – Database Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) |
 | 8 | [DOC-124 – Service Layer](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md) |
-| 9 | Business documents (DOC-100–119, DOC-125–128) per [DOC-000](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) |
+| 9 | Business documents (DOC-100–119, DOC-125–128) per [DOC-000](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) |
 | 10 | Existing source code |
 
 **Source code shall never become the authoritative source** when it conflicts with approved documentation.
 
-**Migration note:** During v1 → v2 transition, [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md) documents where running application behavior intentionally diverges from v2 target specs until Phase 5 cutover. New work follows v2 documentation; legacy behavior is changed only through documented migration phases.
+**Migration note:** During v1 → v2 transition, [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md) documents where running application behavior intentionally diverges from v2 target specs until Phase 5 cutover. New work follows v2 documentation; legacy behavior is changed only through documented migration phases.
 
 ---
 
@@ -77,7 +77,7 @@ Contributors **must**:
 * Never duplicate business logic across services — use [DOC-124](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md) service boundaries.
 * Never embed pricing logic in UI components — delegate to Pricing Service.
 * Never expose internal pricing or margins to unauthorized roles per [DOC-122](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md).
-* Never modify scoring rules without updating [DOC-111](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) / [DOC-111A](DOC-111A%20-%20Scoring%20Engine%20Specification.md) and migration notes as applicable.
+* Never modify scoring rules without updating [DOC-111](../20-Business-Logic/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) / [DOC-111A](../20-Business-Logic/DOC-111A%20-%20Scoring%20Engine%20Specification.md) and migration notes as applicable.
 * Never create new business workflows without documentation in [DOC-123](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md).
 * Never bypass audit logging for critical actions per DOC-122 and [DOC-121](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md).
 * Never create undocumented database entities — align with DOC-121 target or document gap in DOC-118.
@@ -140,7 +140,7 @@ Any change affecting the following **must** include corresponding documentation 
 * Dashboards and UX standards (DOC-005, DOC-127)
 * Database schema intent (DOC-121)
 
-Register new documents in [DOC-000](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md). Do not create parallel undocumented spec files.
+Register new documents in [DOC-000](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md). Do not create parallel undocumented spec files.
 
 ---
 
@@ -216,11 +216,11 @@ If these questions cannot be answered, **implementation should pause** until doc
 
 # Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) — master registry
-* [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
-* [DOC-002 – Product Philosophy](DOC-002%20-%20Product%20Philosophy.md)
-* [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
-* [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) — master registry
+* [DOC-001 – Product Vision](../00-Governance/DOC-001%20-%20Product%20Vision.md)
+* [DOC-002 – Product Philosophy](../00-Governance/DOC-002-Product%20Philosophy.md)
+* [DOC-003 – BTIL](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
+* [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
 * [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)

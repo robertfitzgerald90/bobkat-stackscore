@@ -51,7 +51,7 @@ The consultant should leave the client feeling that StackScore helped them **see
 
 # 3. Technology Maturity Framework
 
-The assessment is organized into **eight Technology Pillars** defined in [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md).
+The assessment is organized into **eight Technology Pillars** defined in [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md).
 
 | # | Technology Pillar |
 | - | ----------------- |
@@ -277,22 +277,22 @@ Future enhancements must preserve vendor agnosticism, business-outcome focus, an
 
 | ID | Title | Relationship |
 | -- | ----- | ------------ |
-| [DOC-006](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | Governing product principles for consultant-first, low-cognitive-load UX |
-| [DOC-110](DOC-110%20-%20StackScore%20Assessment%20Framework.md) | StackScore Assessment Framework | Legacy category framework; pillar model superseded by DOC-150 |
-| [DOC-111](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) | Scoring Engine Specification | Defines how responses become pillar scores and StackScore |
-| [DOC-150](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | StackScore Technology Maturity Framework | Authoritative eight-pillar model and business questions |
+| [DOC-006](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | Governing product principles for consultant-first, low-cognitive-load UX |
+| [DOC-110](../20-Business-Logic/DOC-110%20-%20StackScore%20Assessment%20Framework.md) | StackScore Assessment Framework | Legacy category framework; pillar model superseded by DOC-150 |
+| [DOC-111](../20-Business-Logic/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) | Scoring Engine Specification | Defines how responses become pillar scores and StackScore |
+| [DOC-150](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | StackScore Technology Maturity Framework | Authoritative eight-pillar model and business questions |
 | DOC-151 | *(planned)* | Assessment experience companion specifications |
 | DOC-152 | *(planned)* | Assessment content and question design standards |
-| [DOC-129](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | Engineering governance for implementation |
+| [DOC-129](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | Engineering governance for implementation |
 
 ### Additional references
 
 * [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) — pre-assessment business context
-* [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) — recommendation generation from assessment data
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) — Technology Maturity Profile presentation
-* [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md) — question bank meta-standard
-* [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) — assessment lifecycle in the application
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) — visual and interaction standards
+* [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) — recommendation generation from assessment data
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) — Technology Maturity Profile presentation
+* [DOC-114 – Assessment Library Specification](../20-Business-Logic/DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md) — question bank meta-standard
+* [DOC-123 – Application Workflow Specification](../30-Architecture/DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) — assessment lifecycle in the application
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) — visual and interaction standards
 
 ---
 

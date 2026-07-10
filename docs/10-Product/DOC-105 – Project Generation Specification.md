@@ -45,7 +45,7 @@ Project Generation shall:
 * Project inherits: title, priority, suggested service, linked recommendation(s), estimated impact
 * Project follows the [Project Lifecycle](#project-lifecycle) status workflow
 * Completing a project marks linked recommendation `completed` and prompts reassessment — see [Completion Workflow](#completion-workflow)
-* `actualImpactPoints` measured only via reassessment (per [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md) Appendix A) — see [Project Impact](#project-impact)
+* `actualImpactPoints` measured only via reassessment (per [DOC-111A – Scoring Engine Specification](../20-Business-Logic/DOC-111A%20-%20Scoring%20Engine%20Specification.md) Appendix A) — see [Project Impact](#project-impact)
 
 ---
 
@@ -204,7 +204,7 @@ Projects shall never be permanently deleted.
 
 # v1 Implementation Note
 
-Current app: manual project creation from assessment results UI. v1 project status workflow: `proposed` → `approved` → `scheduled` → `in_progress` → `completed` / `cancelled`. See [MVP_PRD.md](MVP_PRD.md) PJ-01–04.
+Current app: manual project creation from assessment results UI. v1 project status workflow: `proposed` → `approved` → `scheduled` → `in_progress` → `completed` / `cancelled`. See [MVP_PRD.md](../50-Development/MVP_PRD.md) PJ-01–04.
 
 ---
 
@@ -223,8 +223,8 @@ Current app: manual project creation from assessment results UI. v1 project stat
 
 * [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
 * [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-301 – Database Schema Specification](../30-Architecture/DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md)
 
 ---
 

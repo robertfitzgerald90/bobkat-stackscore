@@ -49,10 +49,10 @@
 3. `npm run db:seed` with custom `SEED_ADMIN_PASSWORD`
 4. `npm test && npm run build`
 5. `npm start` then `npm run smoke`
-6. Complete [PILOT_GO_LIVE.md](PILOT_GO_LIVE.md) manual checklist
+6. Complete [PILOT_GO_LIVE.md](../50-Development/PILOT_GO_LIVE.md) manual checklist
 
 ---
 
 ## Not in scope (deferred to roadmap)
 
-TIP, roadmaps, client portal, Today's Focus, integrations, audit log — see [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md).
+TIP, roadmaps, client portal, Today's Focus, integrations, audit log — see [KNOWN_LIMITATIONS.md](../50-Development/KNOWN_LIMITATIONS.md).

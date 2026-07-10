@@ -14,7 +14,7 @@ DOC-125 defines StackScore's reporting architecture, report types, data sources,
 
 This document governs **what** reports exist, **who** may see them, **what data** they include, and **how** they are versioned and retained. It does not define rendering code, PDF libraries, or database migrations.
 
-Individual deliverable specs (e.g. [DOC-103 – TIP](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md), [DOC-107 – Completion Report](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)) remain authoritative for detailed section content; DOC-125 provides the **reporting engine** framework that unifies them.
+Individual deliverable specs (e.g. [DOC-103 – TIP](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md), [DOC-107 – Completion Report](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)) remain authoritative for detailed section content; DOC-125 provides the **reporting engine** framework that unifies them.
 
 ---
 
@@ -38,7 +38,7 @@ Reports exist to communicate **business value** and support **executive decision
 4. **No financial leakage** — client reports never expose margins, costs, or formulas.
 5. **No methodology leakage** — playbook names and scoring internals stay internal.
 6. **Versioned and preserved** — superseded reports archived, not deleted.
-7. **Consistent presentation** — visual standards per [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
+7. **Consistent presentation** — visual standards per [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
 8. **Supplemental when needed** — raw assessment detail separated from primary deliverables.
 9. **Journey closing** — every exported PDF ends with the Technology Journey closing page per [DOC-126](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md#11-technology-journey-closing-page).
 
@@ -119,7 +119,7 @@ Each report type defines: **Purpose**, **Primary audience**, **Business question
 | **Primary audience** | Executive / Business Owner, Client User, Consultant |
 | **Business question** | *What should we improve, why, and what is the investment?* |
 | **Source data** | Technology Profile, Recommendations, Services, Pricing Service output (client slice), Roadmap phases |
-| **Required sections** | Per [DOC-103](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md): executive summary, recommendations (business language), phased priorities, investment summary, approval block |
+| **Required sections** | Per [DOC-103](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md): executive summary, recommendations (business language), phased priorities, investment summary, approval block |
 | **Optional sections** | Profile projection, business outcomes summary, supplemental appendix reference |
 | **Export formats** | In-app view, PDF |
 | **Visibility rules** | Investment total visible; no labor rates, margins, or playbook names |
@@ -151,7 +151,7 @@ Each report type defines: **Purpose**, **Primary audience**, **Business question
 | **Primary audience** | Executive / Business Owner, Client User, Consultant |
 | **Business question** | *What value did we receive from this investment?* |
 | **Source data** | Completed Project(s), Technology Profile Snapshots (before/after), Recommendations closed, Roadmap |
-| **Required sections** | Per [DOC-107](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md): executive summary, business impact, profile comparison, completed initiatives, before/after, warranty, next steps, closing statement |
+| **Required sections** | Per [DOC-107](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md): executive summary, business impact, profile comparison, completed initiatives, before/after, warranty, next steps, closing statement |
 | **Optional sections** | Business metrics (devices modernized, coverage improved) |
 | **Export formats** | In-app view, PDF, future email delivery |
 | **Visibility rules** | Fully client-facing; business language only |
@@ -480,17 +480,17 @@ Reporting Service **must not** query persistence directly from UI routes — API
 
 # 18. Related Documents
 
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
-* [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
-* [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
-* [DOC-107 – Technology Completion Report Specification](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
+* [DOC-103 – Technology Improvement Plan Specification](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
+* [DOC-104 – Technology Roadmap Specification](../10-Product/DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
+* [DOC-107 – Technology Completion Report Specification](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
 * [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
 * [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
-* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
+* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
 
 ---
 

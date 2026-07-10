@@ -14,8 +14,8 @@ DOC-130 defines the **standard architecture diagrams** used to explain how Stack
 
 These diagrams are the canonical visual companion to:
 
-* [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) — lightweight business context
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) — client technology health record
+* [DOC-108 – Business Profile Specification](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) — lightweight business context
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) — client technology health record
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) — core business objects
 * [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) — persistence model
 * [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) — user workflows
@@ -32,7 +32,7 @@ DOC-130 is a **visual architecture specification only**. It does not define impl
 * **Prefer Mermaid in Markdown** — diagrams live in this document and may be embedded in other approved specs.
 * **Stay aligned with governing specs** — if a diagram conflicts with DOC-120, DOC-123, or DOC-124, the governing spec wins until DOC-130 is revised.
 * **Update on major change** — new domain objects, workflow stages, services, or role boundaries require a diagram review.
-* **Label v1 vs v2 when needed** — note intentional divergence per [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
+* **Label v1 vs v2 when needed** — note intentional divergence per [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
 
 ---
 
@@ -54,7 +54,7 @@ DOC-130 is a **visual architecture specification only**. It does not define impl
 
 **Question answered:** What is the standard client journey through StackScore?
 
-**Source:** [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md), [DOC-123 – Application Workflow](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
+**Source:** [DOC-003 – BTIL](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md), [DOC-123 – Application Workflow](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
 
 Business context is captured early; technology health and improvement drive the lifecycle. The **Technology Profile** is the hub for all improvement activity.
 
@@ -78,8 +78,8 @@ flowchart TD
 
 **Notes:**
 
-* [DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) provides context only — it does not change StackScore calculations.
-* Every completed assessment and qualifying project feeds back into the Technology Profile per [DOC-113](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md).
+* [DOC-108](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) provides context only — it does not change StackScore calculations.
+* Every completed assessment and qualifying project feeds back into the Technology Profile per [DOC-113](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md).
 
 ---
 
@@ -127,7 +127,7 @@ flowchart TB
 **Notes:**
 
 * **Client** is the root aggregate ([DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)).
-* **Business Profile** ([DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)) is lightweight context on the client record — not a CRM.
+* **Business Profile** ([DOC-108](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)) is lightweight context on the client record — not a CRM.
 * **Catalog objects** (services, playbooks, question library) are shared reference data and omitted here for clarity.
 
 ---
@@ -136,7 +136,7 @@ flowchart TB
 
 **Question answered:** How does the Technology Profile relate to assessments, history, and planning artifacts?
 
-**Source:** [DOC-113 – Technology Profile](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md), [DOC-121 – Database Schema](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
+**Source:** [DOC-113 – Technology Profile](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md), [DOC-121 – Database Schema](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
 
 ```mermaid
 flowchart LR
@@ -350,10 +350,10 @@ flowchart TB
 
 # 10. Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-108 – Business Profile Specification](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 * [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
 * [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)

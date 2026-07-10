@@ -16,7 +16,7 @@ Its purpose is to communicate measurable business value, document completed work
 
 The report is intended for business owners, executives, and operational leadership rather than technical staff.
 
-The report is generated during the BTIL **Implement** phase following project completion per [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md) and is presentation-ready per [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
+The report is generated during the BTIL **Implement** phase following project completion per [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md) and is presentation-ready per [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
 
 ---
 
@@ -54,7 +54,7 @@ The report shall:
 8. Warranty & Support Information
 9. Recommended Next Steps
 10. Technology Journey Summary
-11. Technology Journey Closing Page (per [DOC-126](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md#11-technology-journey-closing-page))
+11. Technology Journey Closing Page (per [DOC-126](../30-Architecture/DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md#11-technology-journey-closing-page))
 
 ---
 
@@ -185,14 +185,14 @@ The report shall then end with the standard **Technology Journey closing page** 
 
 # Related Documents
 
-* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
+* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
 * [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
 * [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
 * [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
 * [DOC-106 – Solution Playbook Specification](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
-* [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-126 – PDF Generation Specification](../30-Architecture/DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 
 ---
 

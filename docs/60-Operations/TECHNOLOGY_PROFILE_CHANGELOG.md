@@ -89,5 +89,5 @@ Manual:
 
 ## Related docs
 
-- [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+- [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 - [ASSESSMENT_ENGINE_CHANGELOG.md](ASSESSMENT_ENGINE_CHANGELOG.md)

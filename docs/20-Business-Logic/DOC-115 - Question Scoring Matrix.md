@@ -6,7 +6,7 @@
 
 This document is the authoritative scoring reference for all 50 assessment questions in v1. It defines question weights, answer option point values, risk levels, and recommendation template linkage.
 
-**Related documents:** [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md), [DOC-111A – v1 Scoring Implementation (Appendix A)](DOC-111A%20-%20Scoring%20Engine%20Specification.md), [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+**Related documents:** [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20%28v1%20Legacy%29.md).md), [DOC-111A – v1 Scoring Implementation (Appendix A)](DOC-111A%20-%20Scoring%20Engine%20Specification.md), [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md), [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json)
 
 ---
 
@@ -582,7 +582,7 @@ Answers with `triggersCriticalFlag: true` surface a **Critical Exposure Warning*
 2. Sum of all category `maxPoints` must equal 100.
 3. Every answer option `scoreValue` must be between 0 and question weight (inclusive).
 4. At least one answer per question must equal full weight.
-5. Recommendation triggers fire on worst-tier answers (scoreValue = 0) unless noted in [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json).
+5. Recommendation triggers fire on worst-tier answers (scoreValue = 0) unless noted in [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json).
 
 ---
 

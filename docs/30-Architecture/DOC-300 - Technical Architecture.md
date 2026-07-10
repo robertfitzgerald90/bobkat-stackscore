@@ -4,11 +4,11 @@
 
 The software architecture shall implement the business architecture defined in:
 
-- [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
-- [DOC-002 – Product Philosophy](DOC-002-Product%20Philosophy.md)
-- [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md)
-- [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md)
-- [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
+- [DOC-001 – Product Vision](../00-Governance/DOC-001%20-%20Product%20Vision.md)
+- [DOC-002 – Product Philosophy](../00-Governance/DOC-002-Product%20Philosophy.md)
+- [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md)
+- [DOC-004 – Design Principles](../00-Governance/DOC-004%20%E2%80%93%20Design%20Principles.md)
+- [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
 
 If technical implementation conflicts with business architecture, the governing business documents take precedence until updated.
 
@@ -16,7 +16,7 @@ If technical implementation conflicts with business architecture, the governing 
 
 This document defines the technology stack, application architecture, deployment model, and API boundaries for BobKat StackScore MVP.
 
-**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md), [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+**Related documents:** [MVP_PRD.md](../50-Development/MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md), [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
 
 ---
 
@@ -129,7 +129,7 @@ bobkat-stackscore/
 }
 ```
 
-**Rules source:** [DOC-111A – Scoring Engine Specification](DOC-111A%20-%20Scoring%20Engine%20Specification.md), [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md)
+**Rules source:** [DOC-111A – Scoring Engine Specification](../20-Business-Logic/DOC-111A%20-%20Scoring%20Engine%20Specification.md), [DOC-115 – Question Scoring Matrix](../20-Business-Logic/DOC-115%20-%20Question%20Scoring%20Matrix.md)
 
 **Key functions:**
 - `calculateCategoryScore(responses, questions)`
@@ -141,7 +141,7 @@ bobkat-stackscore/
 
 **Responsibility:** Generate, consolidate, and deduplicate recommendations on assessment completion.
 
-**Rules source:** [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+**Rules source:** [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json)
 
 **Key functions:**
 - `evaluateTriggers(responses, catalog)`
@@ -180,8 +180,8 @@ bobkat-stackscore/
 
 Loaded from:
 - Categories: fixed 7 categories from DOC-301 – Database Schema Specification
-- Questions + Answer Options: [DOC-115 – Question Scoring Matrix](DOC-115%20-%20Question%20Scoring%20Matrix.md)
-- Recommendation Templates: [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+- Questions + Answer Options: [DOC-115 – Question Scoring Matrix](../20-Business-Logic/DOC-115%20-%20Question%20Scoring%20Matrix.md)
+- Recommendation Templates: [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json)
 
 ### Migrations
 

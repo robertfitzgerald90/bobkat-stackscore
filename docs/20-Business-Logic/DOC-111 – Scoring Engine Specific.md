@@ -379,13 +379,13 @@ All scoring changes shall be versioned.
 
 # Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
 * [DOC-110 – Assessment Framework](DOC-110%20-%20StackScore%20Assessment%20Framework.md)
 * [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
 * [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 * [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md)
-* [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md)
-* [DOC-106 – Solution Playbook Specification](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
+* [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20%28v1%20Legacy%29.md).md)
+* [DOC-106 – Solution Playbook Specification](../10-Product/DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
 * [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 
 ---

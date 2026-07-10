@@ -12,7 +12,7 @@
 
 The Technology Improvement Plan (TIP) is the client-facing deliverable that translates assessment findings, recommendations, and Solution Playbooks into an approved investment proposal.
 
-A TIP is the output of the BTIL **Plan** phase. It is distinct from internal drafts — it is presentation-ready per [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
+A TIP is the output of the BTIL **Plan** phase. It is distinct from internal drafts — it is presentation-ready per [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md).
 
 **Terminology:** "Proposal" refers to a formatted TIP deliverable (PDF/document), not a separate engine.
 
@@ -196,12 +196,12 @@ Technology Profile → Improvement Opportunities → Solution Playbooks
 
 # Related Documents
 
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 * [DOC-102 – Pricing Engine Specification](DOC-102%20%E2%80%93%20Pricing%20Engine%20Specific.md)
 * [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
 * [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
 * [DOC-106 – Solution Playbook Specification](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
-* [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
+* [DOC-003 – BTIL](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
 
 ---
 

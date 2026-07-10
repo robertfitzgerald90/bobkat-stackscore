@@ -53,15 +53,15 @@ This document specifies page hierarchy, header behavior, assessment entry rules,
 
 | Document | Relationship |
 | -------- | ------------ |
-| [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | Governing product principles — consultant-first, reduce complexity |
-| [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | UX constitution — one purpose per screen, intelligent defaults, calm layout |
-| [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) | Underlying Technology Profile data model and maturity presentation |
+| [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | Governing product principles — consultant-first, reduce complexity |
+| [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | UX constitution — one purpose per screen, intelligent defaults, calm layout |
+| [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) | Underlying Technology Profile data model and maturity presentation |
 | [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio entry point — card click opens Client Workspace at Immediate Focus |
 | [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md) | Ranking and display rules for Immediate Focus items and KPI count |
-| [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | StackScore, projected score, and maturity calculations |
-| [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Recommendation prioritization and next-action guidance |
-| [DOC-109 – Assessment Design Specification](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md) | Assessment capture experience after Assess Client is invoked |
-| [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Complementary read-only analytics — not the Client Workspace |
+| [DOC-119 – Technology Maturity Scoring Engine](../20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | StackScore, projected score, and maturity calculations |
+| [DOC-152 – Decision Intelligence Engine](../20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Recommendation prioritization and next-action guidance |
+| [DOC-109 – Assessment Design Specification](../10-Product/DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md) | Assessment capture experience after Assess Client is invoked |
+| [DOC-127 – Dashboard Specification](../30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Complementary read-only analytics — not the Client Workspace |
 
 **Authority:** For Client Workspace experience decisions, DOC-161 takes precedence over DOC-113 for page layout and operational entry behavior. DOC-113 remains authoritative for Technology Profile data semantics.
 
@@ -310,13 +310,13 @@ Before Client Workspace v1.0 is considered complete:
 
 # 15. Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
-* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
-* [DOC-109 – Assessment Design Specification](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
-* [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
+* [DOC-109 – Assessment Design Specification](../10-Product/DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-119 – Technology Maturity Scoring Engine](../20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
+* [DOC-127 – Dashboard Specification](../30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
 * [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
 * [DOC-162 – Portfolio Decision Engine](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md)
 * [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)

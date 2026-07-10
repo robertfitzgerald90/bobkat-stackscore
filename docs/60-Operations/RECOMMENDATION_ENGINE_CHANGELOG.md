@@ -1,7 +1,7 @@
 # Recommendation Engine — Sprint 2 (DOC-112)
 
 **Date:** June 2026  
-**Spec:** [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)  
+**Spec:** [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)  
 **Catalog:** `data/RecommendationRuleCatalog.json` (50 templates, 6 consolidation groups)
 
 ---

@@ -194,4 +194,4 @@ Returns **503** if database or auth configuration is unhealthy.
 
 - [PILOT_GO_LIVE.md](PILOT_GO_LIVE.md) — pre-flight checklist
 - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) — what v1.0 does not include
-- [AUTH_LOGIN_FIX.md](AUTH_LOGIN_FIX.md) — login troubleshooting
+- [AUTH_LOGIN_FIX.md](../90-Archive/AUTH_LOGIN_FIX.md) — login troubleshooting

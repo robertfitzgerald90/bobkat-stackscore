@@ -19,7 +19,7 @@ DOC-126 is a **PDF generation architecture specification only**. It does not def
 **Relationship to other documents:**
 
 * [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md) defines **what** reports exist and their data rules.
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) defines canonical typography, color, and visual identity shared with the application.
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) defines canonical typography, color, and visual identity shared with the application.
 * DOC-126 defines **how** approved report content is presented in PDF form.
 
 ---
@@ -428,14 +428,14 @@ Each type defines: **Purpose**, **Audience**, **Required Sections**, **Optional 
 
 # 18. Related Documents
 
-* [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
-* [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
-* [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
-* [DOC-107 – Technology Completion Report Specification](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
+* [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
+* [DOC-103 – Technology Improvement Plan Specification](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
+* [DOC-104 – Technology Roadmap Specification](../10-Product/DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
+* [DOC-107 – Technology Completion Report Specification](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
 * [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
 * [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
-* [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md)
+* [DOC-004 – Design Principles](../00-Governance/DOC-004%20%E2%80%93%20Design%20Principles.md)
 
 ---
 

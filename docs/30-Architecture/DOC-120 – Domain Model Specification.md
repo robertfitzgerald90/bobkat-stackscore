@@ -433,7 +433,7 @@ BobKat IT (catalog).
 **Business rules**
 
 * Capabilities are internal assessment constructs — not shown to clients by name.
-* Capability gaps drive recommendation generation per [DOC-112](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md).
+* Capability gaps drive recommendation generation per [DOC-112](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md).
 
 ---
 
@@ -512,7 +512,7 @@ BobKat IT (catalog).
 
 **Business rules**
 
-* Internal-only per [DOC-106](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md).
+* Internal-only per [DOC-106](../10-Product/DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md).
 * Consultants may customize selected services per engagement.
 
 ---
@@ -542,7 +542,7 @@ Living document — new versions supersede prior drafts; approved versions are a
 
 **Business rules**
 
-* Not a quotation — supports incremental approval per [DOC-103](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md).
+* Not a quotation — supports incremental approval per [DOC-103](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md).
 * Does not expose internal pricing formulas.
 
 ---
@@ -569,7 +569,7 @@ Parent Client.
 
 **Business rules**
 
-* Living document — phases adjust with reassessments per [DOC-104](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md).
+* Living document — phases adjust with reassessments per [DOC-104](../10-Product/DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md).
 * Historical versions remain archived.
 
 ---
@@ -598,7 +598,7 @@ Parent Client.
 
 **Business rules**
 
-* Permanent record — never deleted per [DOC-105](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md).
+* Permanent record — never deleted per [DOC-105](../10-Product/DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md).
 * Multiple recommendations may belong to one project.
 * Completion triggers reassessment and recommendation closure.
 * Impact measured via reassessment, not manual entry.
@@ -655,7 +655,7 @@ Parent Client.
 
 **Business rules**
 
-* Focus on business outcomes per [DOC-107](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md).
+* Focus on business outcomes per [DOC-107](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md).
 * Permanently attached to client Technology Profile history.
 
 ---
@@ -901,7 +901,7 @@ This section describes how DOC-120 maps to implementation artifacts **without de
 | Lifecycle enforcement | Service layer + DB constraints | Status enums; immutability guards on completed assessments |
 | RBAC | Middleware from DOC-303 | Role-to-permission map per object type |
 
-**v1 implementation note:** The running application implements a subset of this model in [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) — Client, Assessment, AssessmentResponse, AssessmentRecommendation, Project, ClientScoreHistory, Document, Note, and User. Technology Profile, Solution Playbook, TIP, Roadmap, Completion Report, and Managed Technology Program are **target domain objects** to be introduced in later migration phases per [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
+**v1 implementation note:** The running application implements a subset of this model in [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) — Client, Assessment, AssessmentResponse, AssessmentRecommendation, Project, ClientScoreHistory, Document, Note, and User. Technology Profile, Solution Playbook, TIP, Roadmap, Completion Report, and Managed Technology Program are **target domain objects** to be introduced in later migration phases per [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
 
 No Prisma schema, migration, or application code is defined by this document.
 
@@ -909,21 +909,21 @@ No Prisma schema, migration, or application code is defined by this document.
 
 # 14. Related Documents
 
-* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
-* [DOC-100 – Service Catalog Specification](DOC-100%20%E2%80%93%20Service%20Catalog.md)
-* [DOC-101 – Approved Technology Catalog Specification](DOC-101%20%E2%80%93%20Approved%20Technology%20Cat.md)
-* [DOC-102 – Pricing Engine Specification](DOC-102%20%E2%80%93%20Pricing%20Engine%20Specific.md)
-* [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
-* [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
-* [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
-* [DOC-106 – Solution Playbook Specification](DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
-* [DOC-107 – Technology Completion Report Specification](DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](../00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
+* [DOC-100 – Service Catalog Specification](../10-Product/DOC-100%20%E2%80%93%20Service%20Catalog.md)
+* [DOC-101 – Approved Technology Catalog Specification](../10-Product/DOC-101%20%E2%80%93%20Approved%20Technology%20Cat.md)
+* [DOC-102 – Pricing Engine Specification](../10-Product/DOC-102%20%E2%80%93%20Pricing%20Engine%20Specific.md)
+* [DOC-103 – Technology Improvement Plan Specification](../10-Product/DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
+* [DOC-104 – Technology Roadmap Specification](../10-Product/DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md)
+* [DOC-105 – Project Generation Specification](../10-Product/DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
+* [DOC-106 – Solution Playbook Specification](../10-Product/DOC-106%20%E2%80%93%20Solution%20Playbook%20Specification.md)
+* [DOC-107 – Technology Completion Report Specification](../10-Product/DOC-107%20%E2%80%93%20Technology%20Completion%20Report%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 * [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md)
 * [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md)
 * [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) — future Technology Program entities (DOC-200–206); does not change current implemented behavior
-* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-200 – Client Lifecycle Architecture](../40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
 
 ---
 

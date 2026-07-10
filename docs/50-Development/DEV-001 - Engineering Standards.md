@@ -9,11 +9,11 @@
 
 # Purpose
 
-Engineering standards for StackScore implementation. This document **supplements** [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md). It does not override DOC-129.
+Engineering standards for StackScore implementation. This document **supplements** [DOC-129 – AI Development Rules & Engineering Constitution](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md). It does not override DOC-129.
 
 Implementation sequencing is governed by [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md).
 
-Canonical product vocabulary: [DOC-200 § Canonical Glossary](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md#canonical-glossary).
+Canonical product vocabulary: [DOC-200 § Canonical Glossary](../40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md#canonical-glossary).
 
 ---
 
@@ -94,11 +94,11 @@ DEV-002 Definition of Done requires DEV-001 compliance for new business logic.
 
 # Related Documents
 
-* [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
+* [DOC-129 – AI Development Rules & Engineering Constitution](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
 * [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
-* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-200 – Client Lifecycle Architecture](../40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-120A – Next Generation Domain Model Addendum](../30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
 
 ---
 

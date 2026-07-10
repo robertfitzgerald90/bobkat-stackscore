@@ -16,12 +16,12 @@ This document defines compatibility mappings between the **v1 implementation** (
 
 * [DOC-111A – Scoring Engine Appendix A](DOC-111A%20-%20Scoring%20Engine%20Specification.md)
 * [DOC-115 – Question Scoring Matrix (v1 Legacy)](DOC-115%20-%20Question%20Scoring%20Matrix.md)
-* [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md)
+* [DOC-117 – Assessment Question Bank (v1 Legacy)](DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20%28v1%20Legacy%29.md).md)
 * `data/RecommendationRuleCatalog.json` (v1.0.0)
 
 **Long-term governing sources (v2):**
 
-* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md)
+* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
 * [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md) + [DOC-114A–G](DOC-114B%20%E2%80%93%20Security%20Assessment%20Library.md)
 * [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
 
@@ -90,7 +90,7 @@ Applies to **category maturity** display. Renamed in Stage A to avoid collision 
 
 # Service Name Alignment (DOC-100 canonical)
 
-During Phase 2, align `RecommendationRuleCatalog.json` `services` array to [DOC-100 – Service Catalog](DOC-100%20%E2%80%93%20Service%20Catalog.md). Interim aliases:
+During Phase 2, align `RecommendationRuleCatalog.json` `services` array to [DOC-100 – Service Catalog](../10-Product/DOC-100%20%E2%80%93%20Service%20Catalog.md). Interim aliases:
 
 | JSON catalog (v1) | DOC-100 canonical (target) |
 | ----------------- | -------------------------- |
@@ -146,8 +146,8 @@ Completed v1 assessments must **never** be recalculated under v2 rules without a
 
 # Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
 * [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 
 ---

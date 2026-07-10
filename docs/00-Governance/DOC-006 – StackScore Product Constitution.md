@@ -296,7 +296,7 @@ Before implementing any feature, answer:
 
 If most answers are **No**, redesign or reject the feature.
 
-Technology Pillar definitions are governed by [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md).
+Technology Pillar definitions are governed by [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md).
 
 ---
 
@@ -329,7 +329,7 @@ When implementation decisions conflict with lower-level specifications or featur
 
 **Relationship to other constitutions:**
 
-* [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) governs **how** software is built (documentation-first, engineering discipline).
+* [DOC-129 – AI Development Rules & Engineering Constitution](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) governs **how** software is built (documentation-first, engineering discipline).
 * DOC-006 governs **what** the product should be and **how** it should behave for users.
 * For product and UX conflicts, DOC-006 wins over domain specs, feature requests, and informal notes unless DOC-006 is revised.
 * For engineering and implementation discipline, DOC-129 wins unless DOC-129 is revised.
@@ -340,19 +340,19 @@ When implementation decisions conflict with lower-level specifications or featur
 
 * [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
 * [DOC-002 – Product Philosophy](DOC-002-Product%20Philosophy.md)
-* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
+* [DOC-003 – BobKat Technology Improvement Lifecycle (BTIL)](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
 * [DOC-004 – Design Principles](DOC-004%20%E2%80%93%20Design%20Principles.md)
 * [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md)
-* [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
-* [DOC-110 – StackScore Assessment Framework](DOC-110%20-%20StackScore%20Assessment%20Framework.md)
-* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
-* [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
-* [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
-* [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
-* [DOC-130 – Architecture Diagrams Specification](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
-* [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
+* [DOC-108 – Business Profile Specification](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
+* [DOC-110 – StackScore Assessment Framework](../20-Business-Logic/DOC-110%20-%20StackScore%20Assessment%20Framework.md)
+* [DOC-111 – Scoring Engine Specification](../20-Business-Logic/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
+* [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-120 – Domain Model Specification](../30-Architecture/DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
+* [DOC-123 – Application Workflow Specification](../30-Architecture/DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
+* [DOC-129 – AI Development Rules & Engineering Constitution](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
+* [DOC-130 – Architecture Diagrams Specification](../30-Architecture/DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
+* [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
 
 ---
 

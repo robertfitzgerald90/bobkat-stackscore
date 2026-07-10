@@ -432,13 +432,13 @@ Projects are the primary mechanism through which consultants deliver measurable 
 # Related Documents
 
 * [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
-* [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md) (current 1:1 generation)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DOC-105 – Project Generation Specification](../10-Product/DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md) (current 1:1 generation)
+* [DOC-120A – Next Generation Domain Model Addendum](../30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
 * [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
 * [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
 * [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
 * [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
-* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
+* [DEV-002 – Next Generation Migration Plan](../50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
 
 ---
 

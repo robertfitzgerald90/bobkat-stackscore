@@ -4,7 +4,7 @@
 
 REST API specification for BobKat StackScore MVP. All endpoints require authentication unless noted.
 
-**Related documents:** [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [MVP_PRD.md](MVP_PRD.md)
+**Related documents:** [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md), [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md), [MVP_PRD.md](../50-Development/MVP_PRD.md)
 
 ---
 

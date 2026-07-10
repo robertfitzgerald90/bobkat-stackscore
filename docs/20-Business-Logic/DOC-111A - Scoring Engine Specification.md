@@ -1,12 +1,12 @@
-> **Migration notice (Stage A):** This document is **Appendix A – v1 Implementation Reference** under [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md). It remains **implementation-active** for the running application until Phase 5 cutover (target: TBD). **DOC-111** is the long-term authoritative scoring specification.
+> **Migration notice (Stage A):** This document is **Appendix A – v1 Implementation Reference** under [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md). It remains **implementation-active** for the running application until Phase 5 cutover (target: TBD). **DOC-111** is the long-term authoritative scoring specification.
 
 # Appendix A – v1 Scoring Implementation (Active for Running Application)
 
 ## Purpose
 
-This document is the **v1 implementation** scoring specification for BobKat StackScore. It supersedes conflicting sections in [DOC-111B – Scoring Methodology Reference](DOC-111B%20-%20Scoring%20Engine%20Specification.md) where noted.
+This document is the **v1 implementation** scoring specification for BobKat StackScore. It supersedes conflicting sections in [DOC-111B – Scoring Methodology Reference](DOC-111B%20-%20Scoring%20Methodology%20Reference.md) where noted.
 
-**Related documents:** [DOC-115 – Question Scoring Matrix (v1 Legacy)](DOC-115%20-%20Question%20Scoring%20Matrix.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md), [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)
+**Related documents:** [DOC-115 – Question Scoring Matrix (v1 Legacy)](DOC-115%20-%20Question%20Scoring%20Matrix.md), [DOC-301 – Database Schema Specification](../30-Architecture/DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md), [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json)
 
 ---
 
@@ -214,7 +214,7 @@ Projected score estimates improvement if open recommendations are implemented.
 
 1. Start from current `overallScore`.
 2. Collect `estimatedImpactPoints` from **open** recommendations linked to the assessment.
-3. Apply **consolidation groups** first (see [RecommendationRuleCatalog.json](RecommendationRuleCatalog.json)) — use consolidated impact, not sum of individuals.
+3. Apply **consolidation groups** first (see [RecommendationRuleCatalog.json](../70-Data/RecommendationRuleCatalog.json)) — use consolidated impact, not sum of individuals.
 4. For non-consolidated recommendations, sum impacts but **deduplicate by category** — only the highest-impact recommendation per category counts toward projection (prevents double-counting).
 5. Add total impact to current score.
 6. **Cap at 100.**

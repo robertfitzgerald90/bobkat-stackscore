@@ -12,7 +12,7 @@
 
 The Technology Roadmap defines how approved improvement opportunities are sequenced over time (typically 12–36 months) based on risk, dependency, and business priority.
 
-It is generated from the [Technology Profile](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) during the BTIL **Plan** phase and feeds the [Technology Improvement Plan](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md).
+It is generated from the [Technology Profile](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) during the BTIL **Plan** phase and feeds the [Technology Improvement Plan](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md).
 
 ---
 
@@ -184,10 +184,10 @@ The emphasis should be on business progress rather than project completion.
 
 # Related Documents
 
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
 * [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
 * [DOC-105 – Project Generation Specification](DOC-105%20%E2%80%93%20Project%20Generation%20Specification.md)
-* [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
+* [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
 
 ---
 

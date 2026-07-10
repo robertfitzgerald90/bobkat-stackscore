@@ -16,7 +16,7 @@ Playbooks bridge the gap between assessment recommendations and project executio
 
 Solution Playbooks are an internal consulting tool and are **not client-facing**.
 
-Playbooks are referenced by [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md), [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md), and category libraries DOC-114A–G.
+Playbooks are referenced by [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md), [DOC-114 – Assessment Library Specification](../20-Business-Logic/DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md), and category libraries DOC-114A–G.
 
 ---
 
@@ -248,11 +248,11 @@ Every Solution Playbook shall define:
 | Playbook ID | Unique identifier (e.g. `PB-M365-SECURITY`, `PB-TECH-FOUNDATION`) |
 | Name | Internal playbook name (not shown to clients) |
 | Purpose | Business outcome the playbook delivers |
-| Target Technology Categories | One or more v2 categories per [DOC-110 – Assessment Framework](DOC-110%20-%20StackScore%20Assessment%20Framework.md) |
+| Target Technology Categories | One or more v2 categories per [DOC-110 – Assessment Framework](../20-Business-Logic/DOC-110%20-%20StackScore%20Assessment%20Framework.md) |
 | Typical Assessment Triggers | Assessment capabilities or recommendation templates that suggest this playbook |
 | Recommended Services | One or more services from [DOC-100 – Service Catalog Specification](DOC-100%20%E2%80%93%20Service%20Catalog.md) |
 | Recommended Products | Technology types or entries from [DOC-101 – Approved Technology Catalog Specification](DOC-101%20%E2%80%93%20Approved%20Technology%20Cat.md) |
-| Expected Technology Profile Improvements | Anticipated maturity or StackScore impact per [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) |
+| Expected Technology Profile Improvements | Anticipated maturity or StackScore impact per [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) |
 | Standard Deliverables | Documents and artifacts produced on completion |
 | Typical Timeline | Expected implementation duration |
 | Estimated Labor | Hours range; priced via [DOC-102 – Pricing Engine Specification](DOC-102%20%E2%80%93%20Pricing%20Engine%20Specific.md) |
@@ -336,7 +336,7 @@ These defaults may be adjusted for individual engagements.
 
 # v1 Implementation Note
 
-Until playbooks are implemented as first-class entities in StackScore, `RecommendationRuleCatalog.json` templates and consolidation groups act as playbook proxies. See [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
+Until playbooks are implemented as first-class entities in StackScore, `RecommendationRuleCatalog.json` templates and consolidation groups act as playbook proxies. See [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md).
 
 ---
 
@@ -346,12 +346,12 @@ Until playbooks are implemented as first-class entities in StackScore, `Recommen
 * [DOC-101 – Approved Technology Catalog Specification](DOC-101%20%E2%80%93%20Approved%20Technology%20Cat.md)
 * [DOC-102 – Pricing Engine Specification](DOC-102%20%E2%80%93%20Pricing%20Engine%20Specific.md)
 * [DOC-103 – Technology Improvement Plan Specification](DOC-103%20%E2%80%93%20Technology%20Improvement%20Plan%20Specification.md)
-* [DOC-110 – Assessment Framework](DOC-110%20-%20StackScore%20Assessment%20Framework.md)
-* [DOC-111 – Scoring Engine Specification](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
-* [DOC-112 – Recommendation Engine Specification](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-114 – Assessment Library Specification](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md)
-* [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+* [DOC-110 – Assessment Framework](../20-Business-Logic/DOC-110%20-%20StackScore%20Assessment%20Framework.md)
+* [DOC-111 – Scoring Engine Specification](../20-Business-Logic/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md)
+* [DOC-112 – Recommendation Engine Specification](../20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-114 – Assessment Library Specification](../20-Business-Logic/DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md)
+* [DOC-118 – v1 to v2 Compatibility Reference](../20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 
 ---
 

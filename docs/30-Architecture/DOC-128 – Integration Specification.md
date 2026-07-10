@@ -368,7 +368,7 @@ Framework principles carry forward from Section 3: optional, auditable, profile-
 * [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md)
 * [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
 * [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
-* [DOC-302 – API Specification](DOC-302%20%E2%80%93%20API%20Specification.md)
+* [DOC-302 – API Specification](DOC-302%20-%20API%20Specification.md)
 * [DOC-303 – RBAC & Security Specification](DOC-303%20RBAC%20&%20Security%20Specification.md)
 
 ---

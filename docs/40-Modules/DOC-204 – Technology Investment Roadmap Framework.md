@@ -466,13 +466,13 @@ Technology should become a managed business asset with a clear direction, measur
 # Related Documents
 
 * [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
-* [DOC-104 – Technology Roadmap Specification](DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md) (legacy TIP-oriented roadmap)
+* [DOC-104 – Technology Roadmap Specification](../10-Product/DOC-104%20%E2%80%93%20Technology%20Roadmap%20Specification.md) (legacy TIP-oriented roadmap)
 * [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
 * [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
 * [DOC-203 – Project Definition Framework](DOC-203%20-%20Project%20Definition%20Framework.md)
 * [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
-* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
+* [DOC-120A – Next Generation Domain Model Addendum](../30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DEV-002 – Next Generation Migration Plan](../50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
 
 ---
 

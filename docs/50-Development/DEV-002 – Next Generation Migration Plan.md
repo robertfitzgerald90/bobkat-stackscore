@@ -60,7 +60,7 @@ Development shall follow the following hierarchy:
 
 If implementation conflicts with architecture, the architecture should generally take precedence unless an explicit migration exception exists in this document.
 
-Canonical vocabulary is defined in [DOC-200 § Canonical Glossary](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md#canonical-glossary).
+Canonical vocabulary is defined in [DOC-200 § Canonical Glossary](../40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md#canonical-glossary).
 
 ---
 
@@ -437,19 +437,19 @@ This migration is successful when:
 
 # Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) (glossary + product intent)
-* [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
-* [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
-* [DOC-203 – Project Definition Framework](DOC-203%20-%20Project%20Definition%20Framework.md)
-* [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
-* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
-* [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
-* [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
-* [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-200 – Client Lifecycle Architecture](../40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) (glossary + product intent)
+* [DOC-201 – Client Workspace Framework](../40-Modules/DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
+* [DOC-202 – Technology Journey Framework](../40-Modules/DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
+* [DOC-203 – Project Definition Framework](../40-Modules/DOC-203%20-%20Project%20Definition%20Framework.md)
+* [DOC-204 – Technology Investment Roadmap Framework](../40-Modules/DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
+* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](../40-Modules/DOC-205%20%E2%80%93%20Planning%20Workshop%20&%20Strategic%20Prioritization%20Engine.md)
+* [DOC-206 – Executive Business Review Framework](../40-Modules/DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
+* [DOC-120A – Next Generation Domain Model Addendum](../30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DOC-160 – Portfolio Module Specification](../40-Modules/DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
+* [DOC-161 – Client Workspace Specification](../40-Modules/DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
 * [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md)
-* [DOC-180 – Benchmark Intelligence Framework](DOC-180%20-%20Benchmark%20Intelligence%20Framework.md)
+* [DOC-180 – Benchmark Intelligence Framework](../40-Modules/DOC-180%20-%20Benchmark%20Intelligence%20Framework.md)
 
 ---
 

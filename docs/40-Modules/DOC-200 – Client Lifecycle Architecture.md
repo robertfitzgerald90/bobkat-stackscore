@@ -505,10 +505,10 @@ Use these terms uniformly across product, domain, and engineering documents.
 
 # Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
-* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
+* [DOC-120A – Next Generation Domain Model Addendum](../30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
 * [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
 * [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
 * [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
@@ -516,8 +516,8 @@ Use these terms uniformly across product, domain, and engineering documents.
 * [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
 * [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
 * [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
-* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
-* [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md)
+* [DEV-002 – Next Generation Migration Plan](../50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
+* [DEV-001 – Engineering Standards](../50-Development/DEV-001%20-%20Engineering%20Standards.md)
 
 ---
 

@@ -28,7 +28,7 @@ The Portfolio Decision Engine answers one question:
 
 It specifies decision inputs, readiness evaluation, card field semantics, sort modes, and recommended ranking philosophy. It does not define UI components or API contracts.
 
-This document complements [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) (experience) and [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) (recommendation intelligence).
+This document complements [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) (experience) and [DOC-152 – Decision Intelligence Engine](../20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) (recommendation intelligence).
 
 ---
 
@@ -241,14 +241,14 @@ Before Portfolio Decision Engine v1.0 is considered complete:
 
 # 11. Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
-* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
-* [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
-* [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
-* [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-119 – Technology Maturity Scoring Engine](../20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
+* [DOC-127 – Dashboard Specification](../30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
+* [DOC-152 – Decision Intelligence Engine](../20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
 * [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
 * [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
 * [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)

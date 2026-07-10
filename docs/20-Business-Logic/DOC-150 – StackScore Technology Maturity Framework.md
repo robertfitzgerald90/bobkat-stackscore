@@ -391,7 +391,7 @@ The Technology Profile is the aggregation root for assessments, recommendations,
 
 # 12. Relationship to Reports
 
-Reports communicate maturity to audiences who may never open the application. Per [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md):
+Reports communicate maturity to audiences who may never open the application. Per [DOC-125 – Reporting Engine Specification](../30-Architecture/DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md):
 
 * Reports explain maturity in **plain business language** using Technology Pillar names and business questions.
 * Assessment, progress, completion, QBR, and TIP reports reference **pillar movement** — not internal category codes.
@@ -465,19 +465,19 @@ Framework version increments require revision to this document and registration 
 
 | ID | Title | Relationship |
 | -- | ----- | ------------ |
-| [DOC-001](DOC-001%20-%20Product%20Vision.md) | Product Vision | Strategic north star |
+| [DOC-001](../00-Governance/DOC-001%20-%20Product%20Vision.md) | Product Vision | Strategic north star |
 | DOC-001A | Product Constitution / Design Principles | Design principles (if created) |
-| [DOC-002](DOC-002-Product%20Philosophy.md) | Product Philosophy | Product beliefs aligned to maturity framing |
-| [DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Business context for pillar prioritization |
+| [DOC-002](../00-Governance/DOC-002-Product%20Philosophy.md) | Product Philosophy | Product beliefs aligned to maturity framing |
+| [DOC-108](../10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Business context for pillar prioritization |
 | [DOC-110](DOC-110%20-%20StackScore%20Assessment%20Framework.md) | StackScore Assessment Framework | Legacy category framework; superseded for v2 pillar design |
 | [DOC-111](DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) | Scoring Engine Specification | Score calculation mechanics |
 | [DOC-112](DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) | Recommendation Engine Specification | Recommendation generation rules |
 | [DOC-113](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) | Technology Profile Specification | Profile aggregation and lifecycle |
 | [DOC-114](DOC-114%20%E2%80%93%20Assessment%20Library%20Specification.md) | Assessment Library Specification | Question library meta-standard |
-| [DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | Domain objects and relationships |
-| [DOC-123](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | BTIL workflow alignment |
-| [DOC-129](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | Documentation-driven development |
-| [DOC-130](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md) | Architecture Diagrams Specification | Visual architecture reference |
+| [DOC-120](../30-Architecture/DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | Domain objects and relationships |
+| [DOC-123](../30-Architecture/DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | BTIL workflow alignment |
+| [DOC-129](../30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | Documentation-driven development |
+| [DOC-130](../30-Architecture/DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md) | Architecture Diagrams Specification | Visual architecture reference |
 | [DOC-118](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md) | v1 to v2 Compatibility Reference | Legacy-to-pillar migration mapping |
 
 ---

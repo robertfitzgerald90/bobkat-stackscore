@@ -40,16 +40,16 @@ This document specifies experience architecture, card anatomy, readiness semanti
 
 | Document | Relationship |
 | -------- | ------------ |
-| [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | Governing product principles — consultant-first, reduce complexity, intelligent defaults |
-| [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | UX constitution — Portfolio purpose, cards before tables, Immediate Focus, Five Second Rule |
-| [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) | Source of client maturity, trend, and health data displayed on cards |
-| [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | StackScore, projected score, maturity labels, and trend calculations |
-| [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Complementary global KPI surface — Portfolio is operational; Dashboard is executive |
-| [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | Maturity language and pillar context underlying client health |
-| [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Recommendation prioritization, readiness logic, and default sort intelligence |
-| [DOC-005 – UI & UX Standards](DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) | Visual standards — calm layout, card components, color semantics |
-| [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Role-scoped client visibility on Portfolio |
-| [DOC-123 – Application Workflow Specification](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Client Workspace and Immediate Focus entry workflows |
+| [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | Governing product principles — consultant-first, reduce complexity, intelligent defaults |
+| [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | UX constitution — Portfolio purpose, cards before tables, Immediate Focus, Five Second Rule |
+| [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md) | Source of client maturity, trend, and health data displayed on cards |
+| [DOC-119 – Technology Maturity Scoring Engine](../20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | StackScore, projected score, maturity labels, and trend calculations |
+| [DOC-127 – Dashboard Specification](../30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Complementary global KPI surface — Portfolio is operational; Dashboard is executive |
+| [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | Maturity language and pillar context underlying client health |
+| [DOC-152 – Decision Intelligence Engine](../20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Recommendation prioritization, readiness logic, and default sort intelligence |
+| [DOC-005 – UI & UX Standards](../00-Governance/DOC-005%20%E2%80%93%20UI%20&%20UX%20Standards.md) | Visual standards — calm layout, card components, color semantics |
+| [DOC-122 – Roles & Permissions Specification](../30-Architecture/DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Role-scoped client visibility on Portfolio |
+| [DOC-123 – Application Workflow Specification](../30-Architecture/DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Client Workspace and Immediate Focus entry workflows |
 
 **Authority:** For Portfolio experience decisions, DOC-160 takes precedence over DOC-127 for consultant landing behavior. DOC-127 remains authoritative for Dashboard widgets and global KPI architecture.
 
@@ -382,14 +382,14 @@ Before Portfolio v1.0 is considered complete:
 
 # 16. Related Documents
 
-* [DOC-000 – Documentation Architecture & Index](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
-* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
-* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
-* [DOC-113 – Technology Profile Specification](DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
-* [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
-* [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
-* [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
-* [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
+* [DOC-000 – Documentation Architecture & Index](../DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md)
+* [DOC-006 – StackScore Product Constitution](../00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-007 – StackScore User Experience Constitution](../00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
+* [DOC-113 – Technology Profile Specification](../20-Business-Logic/DOC-113%20%E2%80%93%20Technology%20Profile%20Specification.md)
+* [DOC-119 – Technology Maturity Scoring Engine](../20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
+* [DOC-127 – Dashboard Specification](../30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-150 – StackScore Technology Maturity Framework](../20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
+* [DOC-152 – Decision Intelligence Engine](../20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
 
 ---
 

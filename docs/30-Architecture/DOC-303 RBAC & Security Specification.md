@@ -4,7 +4,7 @@
 
 This document defines role-based access control, authentication requirements, and security policies for BobKat StackScore MVP.
 
-**Related documents:** [MVP_PRD.md](MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md)
+**Related documents:** [MVP_PRD.md](../50-Development/MVP_PRD.md), [DOC-301 – Database Schema Specification](DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md), [DOC-300 – Technical Architecture](DOC-300%20-%20Technical%20Architecture.md)
 
 ---
 
