@@ -7,6 +7,8 @@
  *   npm run cleanup:test-data -- --pattern "bobby%" --dry-run
  *   npm run cleanup:test-data -- --client-id <uuid> --dry-run
  *   npm run cleanup:test-data -- --all-test --dry-run
+ *   npm run cleanup:test-data -- --all-test --include-snapshot-leads --dry-run
+ *   npm run cleanup:test-data -- --all-test --include-snapshot-leads --confirm
  *
  * Requires --confirm to delete. Without --confirm, only reports counts (--dry-run is default behavior).
  */
@@ -22,11 +24,17 @@ const DEFAULT_PROTECTED_EMAILS = [
   "bobby@bobkatit.com",
 ];
 
+const DEFAULT_TEST_SNAPSHOT_EMAIL_PATTERNS = [
+  "bobbytest%@bobkatit.com",
+  "%test%@bobkatit.com",
+];
+
 type CliOptions = {
   email?: string;
   pattern?: string;
   clientId?: string;
   allTest: boolean;
+  includeSnapshotLeads: boolean;
   dryRun: boolean;
   confirm: boolean;
 };
@@ -37,14 +45,26 @@ type CleanupScope = {
   clientIds: string[];
   clientUserIds: string[];
   orphanedPurchaseIds: string[];
+  snapshotLeadIds: string[];
   matchedClients: Array<{ id: string; companyName: string; primaryContactEmail: string }>;
   matchedUsers: Array<{ id: string; email: string; role: UserRole; clientId: string | null }>;
+  matchedSnapshotLeads: Array<{
+    id: string;
+    email: string;
+    contactName: string;
+    companyName: string;
+    status: string;
+    totalScore: number;
+    createdAt: Date;
+  }>;
   skippedProtectedEmails: string[];
+  skippedProtectedSnapshotEmails: string[];
 };
 
 function parseArgs(argv: string[]): CliOptions {
   const opts: CliOptions = {
     allTest: false,
+    includeSnapshotLeads: false,
     dryRun: false,
     confirm: false,
   };
@@ -63,6 +83,9 @@ function parseArgs(argv: string[]): CliOptions {
         break;
       case "--all-test":
         opts.allTest = true;
+        break;
+      case "--include-snapshot-leads":
+        opts.includeSnapshotLeads = true;
         break;
       case "--dry-run":
         opts.dryRun = true;
@@ -96,6 +119,31 @@ function protectedClientEmails(): Set<string> {
     .map((value) => normalizeEmail(value))
     .filter(Boolean);
   return new Set(fromEnv);
+}
+
+function protectedSnapshotLeadEmails(): Set<string> {
+  const fromEnv = (process.env.PROTECTED_SNAPSHOT_LEAD_EMAILS ?? "")
+    .split(",")
+    .map((value) => normalizeEmail(value))
+    .filter(Boolean);
+  return new Set([...protectedEmails(), ...fromEnv]);
+}
+
+function testSnapshotEmailPatterns(): string[] {
+  const fromEnv = (process.env.TEST_SNAPSHOT_EMAIL_PATTERNS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return fromEnv.length > 0 ? fromEnv : DEFAULT_TEST_SNAPSHOT_EMAIL_PATTERNS;
+}
+
+function emailMatchesIlike(email: string, pattern: string): boolean {
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(
+    `^${escaped.replace(/%/g, ".*").replace(/_/g, ".")}$`,
+    "i",
+  );
+  return regex.test(email);
 }
 
 function validateSelector(opts: CliOptions): void {
@@ -261,14 +309,142 @@ async function resolveScope(opts: CliOptions): Promise<CleanupScope> {
     clientIds: resolvedClientIds,
     clientUserIds: [...clientUserIds],
     orphanedPurchaseIds: [...orphanedPurchaseIds],
+    snapshotLeadIds: [],
     matchedClients,
     matchedUsers,
+    matchedSnapshotLeads: [],
     skippedProtectedEmails: [...skippedProtectedEmails],
+    skippedProtectedSnapshotEmails: [],
+  };
+}
+
+const snapshotLeadSelect = {
+  id: true,
+  email: true,
+  contactName: true,
+  companyName: true,
+  status: true,
+  totalScore: true,
+  createdAt: true,
+} as const;
+
+async function resolveSnapshotLeads(
+  opts: CliOptions,
+  scope: Omit<
+    CleanupScope,
+    "snapshotLeadIds" | "matchedSnapshotLeads" | "skippedProtectedSnapshotEmails"
+  >,
+): Promise<Pick<CleanupScope, "snapshotLeadIds" | "matchedSnapshotLeads" | "skippedProtectedSnapshotEmails">> {
+  if (!opts.includeSnapshotLeads) {
+    return {
+      snapshotLeadIds: [],
+      matchedSnapshotLeads: [],
+      skippedProtectedSnapshotEmails: [],
+    };
+  }
+
+  const protectedSnapshotEmails = protectedSnapshotLeadEmails();
+  const snapshotLeadIds = new Set<string>();
+  const skippedProtectedSnapshotEmails = new Set<string>();
+
+  const includeLead = (email: string, id: string) => {
+    const normalized = normalizeEmail(email);
+    if (protectedSnapshotEmails.has(normalized)) {
+      skippedProtectedSnapshotEmails.add(normalized);
+      return;
+    }
+    snapshotLeadIds.add(id);
+  };
+
+  if (opts.email) {
+    const email = normalizeEmail(opts.email);
+    assertNotProtectedEmail(email, protectedSnapshotEmails);
+
+    const leads = await prisma.technologySnapshotLead.findMany({
+      where: { email: { equals: email, mode: "insensitive" } },
+      select: snapshotLeadSelect,
+    });
+    for (const lead of leads) includeLead(lead.email, lead.id);
+  } else if (opts.pattern) {
+    const leads = await prisma.$queryRaw<
+      Array<{
+        id: string;
+        email: string;
+        contactName: string;
+        companyName: string;
+        status: string;
+        totalScore: number;
+        createdAt: Date;
+      }>
+    >`
+      SELECT id, email, "contactName", "companyName", status, "totalScore", "createdAt"
+      FROM "TechnologySnapshotLead"
+      WHERE email ILIKE ${opts.pattern}
+    `;
+    for (const lead of leads) includeLead(lead.email, lead.id);
+  } else if (opts.clientId) {
+    const client = await prisma.client.findUnique({
+      where: { id: opts.clientId },
+      select: { primaryContactEmail: true },
+    });
+    if (client) {
+      const email = normalizeEmail(client.primaryContactEmail);
+      const leads = await prisma.technologySnapshotLead.findMany({
+        where: { email: { equals: email, mode: "insensitive" } },
+        select: snapshotLeadSelect,
+      });
+      for (const lead of leads) includeLead(lead.email, lead.id);
+    }
+  } else if (opts.allTest) {
+    // Mirror test-customer emails from the client scope, then apply explicit test patterns.
+    // Does NOT blanket-delete every snapshot lead — see printSnapshotSelectionRules().
+    const testEmails = new Set<string>();
+    for (const client of scope.matchedClients) {
+      testEmails.add(normalizeEmail(client.primaryContactEmail));
+    }
+    for (const user of scope.matchedUsers) {
+      testEmails.add(normalizeEmail(user.email));
+    }
+
+    const patterns = testSnapshotEmailPatterns();
+    const leads = await prisma.technologySnapshotLead.findMany({
+      select: snapshotLeadSelect,
+    });
+
+    for (const lead of leads) {
+      const normalized = normalizeEmail(lead.email);
+      if (protectedSnapshotEmails.has(normalized)) {
+        skippedProtectedSnapshotEmails.add(normalized);
+        continue;
+      }
+      if (testEmails.has(normalized)) {
+        snapshotLeadIds.add(lead.id);
+        continue;
+      }
+      if (patterns.some((pattern) => emailMatchesIlike(normalized, pattern))) {
+        snapshotLeadIds.add(lead.id);
+      }
+    }
+  }
+
+  const matchedSnapshotLeads =
+    snapshotLeadIds.size > 0
+      ? await prisma.technologySnapshotLead.findMany({
+          where: { id: { in: [...snapshotLeadIds] } },
+          select: snapshotLeadSelect,
+          orderBy: [{ createdAt: "desc" }, { email: "asc" }],
+        })
+      : [];
+
+  return {
+    snapshotLeadIds: [...snapshotLeadIds],
+    matchedSnapshotLeads,
+    skippedProtectedSnapshotEmails: [...skippedProtectedSnapshotEmails],
   };
 }
 
 async function countDeletions(scope: CleanupScope): Promise<DeletionCounts> {
-  const { clientIds, clientUserIds, orphanedPurchaseIds } = scope;
+  const { clientIds, clientUserIds, orphanedPurchaseIds, snapshotLeadIds } = scope;
   const assessmentIds =
     clientIds.length > 0
       ? (
@@ -340,6 +516,7 @@ async function countDeletions(scope: CleanupScope): Promise<DeletionCounts> {
       : 0,
     User_client: clientUserIds.length,
     Client: clientIds.length,
+    TechnologySnapshotLead: snapshotLeadIds.length,
   };
 
   return counts;
@@ -350,11 +527,15 @@ function incrementCount(counts: DeletionCounts, key: string, value: number): voi
 }
 
 async function deleteScopedData(scope: CleanupScope): Promise<DeletionCounts> {
-  const { clientIds, clientUserIds, orphanedPurchaseIds } = scope;
+  const { clientIds, clientUserIds, orphanedPurchaseIds, snapshotLeadIds } = scope;
   const counts: DeletionCounts = {};
 
   await prisma.$transaction(async (tx) => {
-    if (clientIds.length === 0 && orphanedPurchaseIds.length === 0) {
+    if (
+      clientIds.length === 0 &&
+      orphanedPurchaseIds.length === 0 &&
+      snapshotLeadIds.length === 0
+    ) {
       return;
     }
 
@@ -480,6 +661,13 @@ async function deleteScopedData(scope: CleanupScope): Promise<DeletionCounts> {
       const clientResult = await tx.client.deleteMany({ where: { id: { in: clientIds } } });
       incrementCount(counts, "Client", clientResult.count);
     }
+
+    if (snapshotLeadIds.length > 0) {
+      const snapshotLeadResult = await tx.technologySnapshotLead.deleteMany({
+        where: { id: { in: snapshotLeadIds } },
+      });
+      incrementCount(counts, "TechnologySnapshotLead", snapshotLeadResult.count);
+    }
   });
 
   return counts;
@@ -515,6 +703,50 @@ function printScope(scope: CleanupScope): void {
   }
 }
 
+function printSnapshotScope(scope: CleanupScope, includeSnapshotLeads: boolean): void {
+  if (!includeSnapshotLeads) return;
+
+  console.log("\nMatched Technology Snapshot leads (free funnel — TechnologySnapshotLead):");
+  if (scope.matchedSnapshotLeads.length === 0) {
+    console.log("  (none)");
+  } else {
+    for (const lead of scope.matchedSnapshotLeads) {
+      console.log(
+        `  - ${lead.contactName} @ ${lead.companyName} <${lead.email}> score=${lead.totalScore} status=${lead.status} [${lead.id}]`,
+      );
+    }
+    console.log(
+      "    (each row includes embedded answers JSON, score/classification, and conversion status)",
+    );
+  }
+
+  if (scope.skippedProtectedSnapshotEmails.length > 0) {
+    console.log(
+      `\nSkipped protected snapshot emails: ${scope.skippedProtectedSnapshotEmails.sort().join(", ")}`,
+    );
+  }
+}
+
+function printSnapshotSelectionRules(opts: CliOptions): void {
+  if (!opts.includeSnapshotLeads) return;
+
+  console.log("\nTechnology Snapshot selection rules:");
+  if (opts.email) {
+    console.log("  --email: snapshot leads with the same email address");
+  } else if (opts.pattern) {
+    console.log("  --pattern: snapshot leads whose email matches ILIKE pattern (protected emails skipped)");
+  } else if (opts.clientId) {
+    console.log("  --client-id: snapshot leads whose email matches the client primaryContactEmail");
+  } else if (opts.allTest) {
+    console.log("  --all-test: snapshot leads are test data ONLY when:");
+    console.log("    1. email matches a test client/user selected for deletion, OR");
+    console.log("    2. email matches TEST_SNAPSHOT_EMAIL_PATTERNS (ILIKE)");
+    console.log(`       defaults: ${DEFAULT_TEST_SNAPSHOT_EMAIL_PATTERNS.join(", ")}`);
+    console.log("    Protected emails (never deleted): PROTECTED_USER_EMAILS + PROTECTED_SNAPSHOT_LEAD_EMAILS");
+    console.log("    Legitimate production leads outside those patterns are preserved.");
+  }
+}
+
 function printCounts(title: string, counts: DeletionCounts): void {
   console.log(`\n${title}`);
   const order = [
@@ -535,6 +767,7 @@ function printCounts(title: string, counts: DeletionCounts): void {
     "TechnologyProfile",
     "User_client",
     "Client",
+    "TechnologySnapshotLead",
   ];
 
   let total = 0;
@@ -553,8 +786,10 @@ function printProtectedSummary(): void {
   console.log("  Users with role admin or technician");
   console.log(`  Default protected emails: ${DEFAULT_PROTECTED_EMAILS.join(", ")}`);
   console.log("  Optional env PROTECTED_USER_EMAILS, PROTECTED_CLIENT_EMAILS");
+  console.log("  Optional env PROTECTED_SNAPSHOT_LEAD_EMAILS, TEST_SNAPSHOT_EMAIL_PATTERNS");
   console.log("  AssessmentCategory, AssessmentQuestion, AnswerOption");
   console.log("  RecommendationTemplate");
+  console.log("  TechnologyProfileSnapshot (paid client profiles — not free snapshot leads)");
   console.log("  Service catalog, technology catalog, playbooks (JSON files, not in DB)");
   console.log("  Prisma migrations / schema");
 }
@@ -567,12 +802,19 @@ async function main() {
     throw new Error("DATABASE_URL is not set.");
   }
 
-  const scope = await resolveScope(opts);
+  const clientScope = await resolveScope(opts);
+  const snapshotScope = await resolveSnapshotLeads(opts, clientScope);
+  const scope: CleanupScope = { ...clientScope, ...snapshotScope };
   const counts = await countDeletions(scope);
 
   console.log("StackScore test-data cleanup");
   console.log(`Mode: ${opts.confirm ? "DELETE" : "DRY RUN"}`);
+  if (opts.includeSnapshotLeads) {
+    console.log("Snapshot leads: included");
+  }
   printScope(scope);
+  printSnapshotScope(scope, opts.includeSnapshotLeads);
+  printSnapshotSelectionRules(opts);
   printCounts("Rows that would be deleted:", counts);
   printProtectedSummary();
 
@@ -601,6 +843,12 @@ async function main() {
   console.log("\nDeleting...");
   const deleted = await deleteScopedData(scope);
   printCounts("Deleted rows:", deleted);
+  if (opts.includeSnapshotLeads && (deleted.TechnologySnapshotLead ?? 0) > 0) {
+    console.log(
+      `\nTechnology Snapshot summary: removed ${deleted.TechnologySnapshotLead} lead row(s) ` +
+        "(contact info, questionnaire answers, computed scores, and conversion status).",
+    );
+  }
   console.log("\nCleanup complete.");
 }
 
