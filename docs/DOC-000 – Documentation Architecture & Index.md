@@ -1,10 +1,10 @@
 # DOC-000 – Documentation Architecture & Index
 
 **Document ID:** DOC-000
-**Version:** 2.8
+**Version:** 2.9
 **Status:** Approved
 **Owner:** BobKat IT
-**Last Updated:** July 4, 2026
+**Last Updated:** July 9, 2026
 
 ---
 
@@ -12,7 +12,30 @@
 
 This document is the master registry for all StackScore documentation. It defines authority tiers, version lanes (v1 implementation vs v2 strategic target), and the governance hierarchy for future development.
 
-**Operational guides** (`MVP_PRD.md`, `PROJECT_STATUS.md`, `DEVELOPMENT_GUIDE.md`) are excluded from the governance hierarchy — they describe scope and implementation status, not long-term architecture.
+**Operational guides** in [`50-Development/`](50-Development/) (`MVP_PRD.md`, `PROJECT_STATUS.md`, `DEVELOPMENT_GUIDE.md`) are excluded from the governance hierarchy — they describe scope and implementation status, not long-term architecture.
+
+All new governing specifications must be placed in the folder that matches their DOC series (see **Folder structure** below). [DOC-000](DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) remains the master index; [`README.md`](README.md) provides a navigational overview.
+
+---
+
+# Folder structure
+
+StackScore documentation is organized by concern. Paths are relative to `docs/`.
+
+| Folder | DOC series | Purpose |
+| ------ | ---------- | ------- |
+| [`00-Governance/`](00-Governance/) | DOC-001 – DOC-007 | Product vision, philosophy, BTIL, design principles, constitutions |
+| [`10-Product/`](10-Product/) | DOC-100 – DOC-109 | Commercial domain, deliverables, assessment design |
+| [`20-Business-Logic/`](20-Business-Logic/) | DOC-110 – DOC-119, DOC-131 – DOC-135, DOC-150 – DOC-153, DOC-151A–H | Scoring, assessment libraries, maturity framework, intelligence engines |
+| [`30-Architecture/`](30-Architecture/) | DOC-120 – DOC-130, DOC-300 – DOC-303 | Domain model, schema, workflow, services, reporting, technical layer |
+| [`40-Modules/`](40-Modules/) | DOC-160 – DOC-163, DOC-180, DOC-200 – DOC-206 | Portfolio, client workspace, lifecycle architecture |
+| [`50-Development/`](50-Development/) | DEV-001, DEV-002 | Engineering standards, migration plan, operational guides (non-governing) |
+| [`60-Operations/`](60-Operations/) | DOC-021 | Deployment strategy, changelogs, runbooks |
+| [`70-Data/`](70-Data/) | — | Machine-readable documentation mirrors |
+| [`90-Archive/`](90-Archive/) | — | Retired notes (not authoritative) |
+| `docs/` (root) | DOC-000 | Master index and legacy redirect stubs (`Superceded-*.md`) |
+
+**Linking rule:** Cross-references must use paths relative to the source file (e.g. from `10-Product/` to DOC-113: `../20-Business-Logic/DOC-113 – Technology Profile Specification.md`).
 
 ---
 
@@ -33,6 +56,7 @@ DOC-000 (this index)
     ├── Assessment Domain (DOC-109 – DOC-112, DOC-114, DOC-114A–G, DOC-119)
     ├── Assessment Libraries v2 (DOC-151A–H)
     ├── Decision Intelligence (DOC-152, DOC-153)
+    ├── StackScore Intelligence Engines (DOC-131 – DOC-135)
     ├── v1 Legacy Appendices (DOC-111A, DOC-111B, DOC-115, DOC-117) — active until Phase 5
     ├── Domain Architecture (DOC-120, DOC-120A, DOC-121 – DOC-124)
     ├── Architecture Diagrams (DOC-130)
@@ -49,15 +73,15 @@ DOC-000 (this index)
 
 If documents conflict, resolve in this order:
 
-1. [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — engineering and implementation discipline
-2. [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) — product principles, UX, and feature acceptance
-3. [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) — experience principles
+1. [DOC-129 – AI Development Rules & Engineering Constitution](30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) — engineering and implementation discipline
+2. [DOC-006 – StackScore Product Constitution](00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) — product principles, UX, and feature acceptance
+3. [DOC-007 – StackScore User Experience Constitution](00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) — experience principles
 4. DOC-000 disposition table below
-5. [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) — long-term program model and **canonical glossary**
-6. [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) — future entity/relationship contract
-7. [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) — **implementation sequencing** (phase order)
-8. [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md) — comments, refactoring, docs-as-deliverable (supplements DOC-129)
-9. [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+5. [DOC-200 – Client Lifecycle Architecture](40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) — long-term program model and **canonical glossary**
+6. [DOC-120A – Next Generation Domain Model Addendum](30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) — future entity/relationship contract
+7. [DEV-002 – Next Generation Migration Plan](50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) — **implementation sequencing** (phase order)
+8. [DEV-001 – Engineering Standards](50-Development/DEV-001%20-%20Engineering%20Standards.md) — comments, refactoring, docs-as-deliverable (supplements DOC-129)
+9. [DOC-118 – v1 to v2 Compatibility Reference](20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
 10. Higher authority tier wins within the same domain
 11. **Strategic vs operational:** DOC-200–206 = product intent. DOC-120A = entities/relationships. DEV-002 = build order. DOC-160–163 = current Portfolio/Workspace until a phase replaces them. DOC-103–105 = TIP/roadmap/project generation until Phases 3–4 supersede them. DOC-120 = currently implemented domain behavior.
 12. v2 strategic specs win long-term; v1 appendices win for **running application behavior** until Phase 5 cutover
@@ -71,7 +95,7 @@ If documents conflict, resolve in this order:
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-129](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | **Governing (constitution)** | v2 | Draft |
+| [DOC-129](30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md) | AI Development Rules & Engineering Constitution | **Governing (constitution)** | v2 | Draft |
 
 ### DOC-129 – AI Development Rules & Engineering Constitution
 
@@ -89,8 +113,8 @@ If documents conflict, resolve in this order:
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-006](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | **Governing (constitution)** | v2 | Draft |
-| [DOC-007](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | StackScore User Experience Constitution | **Governing (constitution)** | v2 | Draft |
+| [DOC-006](00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md) | StackScore Product Constitution | **Governing (constitution)** | v2 | Draft |
+| [DOC-007](00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md) | StackScore User Experience Constitution | **Governing (constitution)** | v2 | Draft |
 
 ### DOC-006 – StackScore Product Constitution
 
@@ -143,14 +167,14 @@ If documents conflict, resolve in this order:
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-108](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Governing | v2 | Draft |
+| [DOC-108](10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md) | Business Profile Specification | Governing | v2 | Draft |
 | DOC-113 | Technology Profile Specification | Governing | v2 | Draft |
 
 ## Technology Maturity Framework
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-150](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | StackScore Technology Maturity Framework | **Governing (framework)** | v2 | Draft |
+| [DOC-150](20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md) | StackScore Technology Maturity Framework | **Governing (framework)** | v2 | Draft |
 
 ### DOC-150 – StackScore Technology Maturity Framework
 
@@ -168,7 +192,7 @@ If documents conflict, resolve in this order:
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-109](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md) | Assessment Design Specification | Governing | v2 | Draft |
+| [DOC-109](10-Product/DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md) | Assessment Design Specification | Governing | v2 | Draft |
 | DOC-110 | StackScore Assessment Framework | Governing | v2 (weights pending revision) | Informal — pillar model superseded by DOC-150 |
 | DOC-111 | Scoring Engine Specification | **Governing (v2 target)** | v2 | Draft |
 | DOC-111A | Scoring Engine — Appendix A (v1 Implementation) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
@@ -185,7 +209,7 @@ If documents conflict, resolve in this order:
 | DOC-115 | Question Scoring Matrix (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-117 | Assessment Question Bank (v1 Legacy) | Appendix — **active for app** | v1 | Deprecated at Phase 5 |
 | DOC-118 | v1 to v2 Compatibility Reference | Governing (migration) | Both | Approved |
-| [DOC-119](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | Technology Maturity Scoring Engine | Governing (scoring) | v2 | Draft |
+| [DOC-119](20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md) | Technology Maturity Scoring Engine | Governing (scoring) | v2 | Draft |
 
 ## Assessment libraries (v2 pillars)
 
@@ -193,21 +217,93 @@ Pillar-specific assessment content aligned to DOC-150 Technology Pillars.
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-151A](DOC-151A%20-%20Identity%20%26%20Access.md) | Identity & Access | Governing (library) | v2 | Draft |
-| [DOC-151B](DOC-151B%20-%20Endpoint%20Management.md) | Endpoint Management | Governing (library) | v2 | Draft |
-| [DOC-151C](DOC-151C%20-%20Network%20%26%20Connectivity.md) | Network & Connectivity | Governing (library) | v2 | Draft |
-| [DOC-151D](DOC-151D%20-%20Data%20Protection%20%26%20Recovery.md) | Data Protection & Recovery | Governing (library) | v2 | Draft |
-| [DOC-151E](DOC-151E%20-%20Productivity%20%26%20Collaboration.md) | Productivity & Collaboration | Governing (library) | v2 | Draft |
-| [DOC-151F](DOC-151F%20-%20Security%20Operations.md) | Security Operations | Governing (library) | v2 | Draft |
-| [DOC-151G](DOC-151G%20-%20Documentation%20%26%20Knowledge.md) | Documentation & Knowledge | Governing (library) | v2 | Draft |
-| [DOC-151H](DOC-151H%20-%20Technology%20Strategy.md) | Technology Strategy | Governing (library) | v2 | Draft |
+| [DOC-151A](20-Business-Logic/DOC-151A%20-%20Identity%20&%20Access.md) | Identity & Access | Governing (library) | v2 | Draft |
+| [DOC-151B](20-Business-Logic/DOC-151B%20-%20Endpoint%20Management.md) | Endpoint Management | Governing (library) | v2 | Draft |
+| [DOC-151C](20-Business-Logic/DOC-151C%20-%20Network%20&%20Connectivity.md) | Network & Connectivity | Governing (library) | v2 | Draft |
+| [DOC-151D](20-Business-Logic/DOC-151D%20-%20Data%20Protection%20&%20Recovery.md) | Data Protection & Recovery | Governing (library) | v2 | Draft |
+| [DOC-151E](20-Business-Logic/DOC-151E%20-%20Productivity%20&%20Collaboration.md) | Productivity & Collaboration | Governing (library) | v2 | Draft |
+| [DOC-151F](20-Business-Logic/DOC-151F%20-%20Security%20Operations.md) | Security Operations | Governing (library) | v2 | Draft |
+| [DOC-151G](20-Business-Logic/DOC-151G%20-%20Documentation%20&%20Knowledge.md) | Documentation & Knowledge | Governing (library) | v2 | Draft |
+| [DOC-151H](20-Business-Logic/DOC-151H%20-%20Technology%20Strategy.md) | Technology Strategy | Governing (library) | v2 | Draft |
 
 ## Decision intelligence
 
 | ID | Title | Authority | Version lane | Status |
 | -- | ----- | --------- | ------------ | ------ |
-| [DOC-152](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Decision Intelligence Engine | Governing (intelligence) | v2 | Draft |
-| [DOC-153](DOC-153%20-%20Recommendation%20Library%20Version.md) | Recommendation Library | Governing (catalog) | v2 | Draft |
+| [DOC-152](20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md) | Decision Intelligence Engine | Governing (intelligence) | v2 | Draft |
+| [DOC-153](20-Business-Logic/DOC-153%20-%20Recommendation%20Library%20Version.md) | Recommendation Library | Governing (catalog) | v2 | Draft |
+
+## StackScore intelligence engines
+
+Cross-cutting engines that extend assessment and recommendation behavior into continuous improvement, roadmap execution, analytics, and executive intelligence.
+
+| ID | Title | Authority | Version lane | Status |
+| -- | ----- | --------- | ------------ | ------ |
+| [DOC-131](20-Business-Logic/DOC-131%20%E2%80%93%20Technology%20Maturity%20Engine%20Specification.md) | Technology Maturity Engine | Governing (engine) | v2 | Draft |
+| [DOC-132](20-Business-Logic/DOC-132%20%E2%80%93%20Recommendation%20Lifecycle%20Engine%20Specification.md) | Recommendation Lifecycle Engine | Governing (engine) | v2 | Draft |
+| [DOC-133](20-Business-Logic/DOC-133%20%E2%80%93%20Roadmap%20&%20Project%20Synchronization%20Specification.md) | Roadmap & Project Synchronization | Governing (engine) | v2 | Draft |
+| [DOC-134](20-Business-Logic/DOC-134%20%E2%80%93%20Historical%20Analytics%20&%20Trend%20Engine%20Specification.md) | Historical Analytics & Trend Engine | Governing (engine) | v2 | Draft |
+| [DOC-135](20-Business-Logic/DOC-135%20%E2%80%93%20Technology%20Intelligence%20Engine%20Specification.md) | Technology Intelligence Engine | Governing (engine) | v2 | Draft |
+
+### DOC-131 – Technology Maturity Engine Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-131 |
+| **Title** | Technology Maturity Engine Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Core intelligence layer governing how maturity is measured, projected, tracked, and improved over time. |
+| **Depends on** | DOC-111, DOC-119, DOC-150 |
+| **Used by** | DOC-132, DOC-133, DOC-134, DOC-135, DOC-113, DOC-125 |
+
+### DOC-132 – Recommendation Lifecycle Engine Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-132 |
+| **Title** | Recommendation Lifecycle Engine Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Governs recommendation lifecycle from planning through completion and maturity impact. |
+| **Depends on** | DOC-112, DOC-131, DOC-152 |
+| **Used by** | DOC-133, DOC-163, DOC-124 |
+
+### DOC-133 – Roadmap & Project Synchronization Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-133 |
+| **Title** | Roadmap & Project Synchronization Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Connects recommendations to roadmap phases and project execution with maturity feedback. |
+| **Depends on** | DOC-104, DOC-105, DOC-131, DOC-132, DOC-204 |
+| **Used by** | DOC-201, DOC-204, DOC-206, DEV-002 |
+
+### DOC-134 – Historical Analytics & Trend Engine Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-134 |
+| **Title** | Historical Analytics & Trend Engine Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Captures and visualizes technology maturity evolution over time. |
+| **Depends on** | DOC-113, DOC-131, DOC-119 |
+| **Used by** | DOC-127, DOC-206, DOC-180 |
+
+### DOC-135 – Technology Intelligence Engine Specification
+
+| Attribute | Value |
+| --------- | ----- |
+| **Document ID** | DOC-135 |
+| **Title** | Technology Intelligence Engine Specification |
+| **Version** | 1.0 |
+| **Status** | Draft |
+| **Purpose** | Strategic decision layer — insights, investment prioritization, and executive guidance. |
+| **Depends on** | DOC-131, DOC-132, DOC-134, DOC-152 |
+| **Used by** | DOC-162, DOC-163, DOC-180 |
 
 ### DOC-109 – Assessment Design Specification
 
@@ -227,12 +323,12 @@ Authoritative specifications that translate business architecture into software 
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-120](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | 1.0 | Governing (domain) | v2 | Draft |
-| [DOC-120A](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) | Next Generation Domain Model Addendum | 1.0 | Governing (domain — strategic) | v2 strategic | Draft |
-| [DOC-121](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) | Database Schema Specification | 1.0 | Governing (database) | v2 | Draft |
-| [DOC-122](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Roles & Permissions Specification | 1.0 | Governing (security) | v2 | Draft |
-| [DOC-123](DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | 1.0 | Governing (workflow) | v2 | Draft |
-| [DOC-124](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md) | Service Layer Specification | 1.0 | Governing (services) | v2 | Draft |
+| [DOC-120](30-Architecture/DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md) | Domain Model Specification | 1.0 | Governing (domain) | v2 | Draft |
+| [DOC-120A](30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md) | Next Generation Domain Model Addendum | 1.0 | Governing (domain — strategic) | v2 strategic | Draft |
+| [DOC-121](30-Architecture/DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md) | Database Schema Specification | 1.0 | Governing (database) | v2 | Draft |
+| [DOC-122](30-Architecture/DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md) | Roles & Permissions Specification | 1.0 | Governing (security) | v2 | Draft |
+| [DOC-123](30-Architecture/DOC-123%20%E2%80%93%20Application%20Workflow%20Specification.md) | Application Workflow Specification | 1.0 | Governing (workflow) | v2 | Draft |
+| [DOC-124](30-Architecture/DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md) | Service Layer Specification | 1.0 | Governing (services) | v2 | Draft |
 
 ### DOC-120 – Domain Model Specification
 
@@ -303,7 +399,7 @@ Canonical Mermaid diagrams explaining lifecycle, domain, services, data flow, an
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-130](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md) | Architecture Diagrams Specification | 1.0 | Governing (visual) | v2 | Draft |
+| [DOC-130](30-Architecture/DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md) | Architecture Diagrams Specification | 1.0 | Governing (visual) | v2 | Draft |
 
 ### DOC-130 – Architecture Diagrams Specification
 
@@ -323,8 +419,8 @@ Cross-cutting reporting engine standards governing report types, audiences, data
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-125](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md) | Reporting Engine Specification | 1.0 | Governing (reporting) | v2 | Draft |
-| [DOC-126](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md) | PDF Generation Specification | 1.1 | Governing (document generation) | v2 | Draft |
+| [DOC-125](30-Architecture/DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md) | Reporting Engine Specification | 1.0 | Governing (reporting) | v2 | Draft |
+| [DOC-126](30-Architecture/DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md) | PDF Generation Specification | 1.1 | Governing (document generation) | v2 | Draft |
 
 ### DOC-125 – Reporting Engine Specification
 
@@ -356,7 +452,7 @@ Application experience standards for role-based dashboards and read-only analyti
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-127](DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Dashboard Specification | 1.0 | Governing (experience) | v2 | Draft |
+| [DOC-127](30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md) | Dashboard Specification | 1.0 | Governing (experience) | v2 | Draft |
 
 ### DOC-127 – Dashboard Specification
 
@@ -376,10 +472,10 @@ Consultant operational surfaces — portfolio prioritization, client workspace, 
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-160](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio Module Specification | 1.0 | Governing (experience) | v2 | Draft |
-| [DOC-161](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md) | Client Workspace Specification | 1.0 | Governing (experience) | v2 | Approved |
-| [DOC-162](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md) | Portfolio Decision Engine | 1.0 | Governing (operations) | v2 | Approved |
-| [DOC-163](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md) | Immediate Focus Engine | 1.0 | Governing (operations) | v2 | Approved |
+| [DOC-160](40-Modules/DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md) | Portfolio Module Specification | 1.0 | Governing (experience) | v2 | Draft |
+| [DOC-161](40-Modules/DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md) | Client Workspace Specification | 1.0 | Governing (experience) | v2 | Approved |
+| [DOC-162](40-Modules/DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md) | Portfolio Decision Engine | 1.0 | Governing (operations) | v2 | Approved |
+| [DOC-163](40-Modules/DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md) | Immediate Focus Engine | 1.0 | Governing (operations) | v2 | Approved |
 
 ### DOC-160 – Portfolio Module Specification
 
@@ -435,13 +531,13 @@ Strategic program-management model. StackScore is a **Technology Program Managem
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-200](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) | Client Lifecycle Architecture | 1.0 | **Governing (lifecycle)** | v2 strategic | Draft |
-| [DOC-201](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md) | Client Workspace Framework | 1.0 | Governing (lifecycle experience) | v2 strategic | Draft |
-| [DOC-202](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md) | Technology Journey Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
-| [DOC-203](DOC-203%20-%20Project%20Definition%20Framework.md) | Project Definition Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
-| [DOC-204](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md) | Technology Investment Roadmap Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
-| [DOC-205](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md) | Planning Workshop & Strategic Prioritization Engine | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
-| [DOC-206](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md) | Executive Business Review Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-200](40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md) | Client Lifecycle Architecture | 1.0 | **Governing (lifecycle)** | v2 strategic | Draft |
+| [DOC-201](40-Modules/DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md) | Client Workspace Framework | 1.0 | Governing (lifecycle experience) | v2 strategic | Draft |
+| [DOC-202](40-Modules/DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md) | Technology Journey Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-203](40-Modules/DOC-203%20-%20Project%20Definition%20Framework.md) | Project Definition Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-204](40-Modules/DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md) | Technology Investment Roadmap Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-205](40-Modules/DOC-205%20%E2%80%93%20Planning%20Workshop%20&%20Strategic%20Prioritization%20Engine.md) | Planning Workshop & Strategic Prioritization Engine | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
+| [DOC-206](40-Modules/DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md) | Executive Business Review Framework | 1.0 | Governing (lifecycle) | v2 strategic | Draft |
 
 ### DOC-200 – Client Lifecycle Architecture
 
@@ -538,8 +634,8 @@ Implementation standards and next-generation migration sequencing. Not product s
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DEV-001](DEV-001%20-%20Engineering%20Standards.md) | Engineering Standards | 1.1 | Governing (engineering practice) | Operational | Active |
-| [DEV-002](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) | Next Generation Migration Plan | 1.1 | Governing (implementation sequencing) | Operational | Active |
+| [DEV-001](50-Development/DEV-001%20-%20Engineering%20Standards.md) | Engineering Standards | 1.1 | Governing (engineering practice) | Operational | Active |
+| [DEV-002](50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md) | Next Generation Migration Plan | 1.1 | Governing (implementation sequencing) | Operational | Active |
 
 ### DEV-001 – Engineering Standards
 
@@ -569,7 +665,7 @@ Implementation standards and next-generation migration sequencing. Not product s
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-180](DOC-180%20-%20Benchmark%20Intelligence%20Framework.md) | Benchmark Intelligence Framework | 0.1 | Future (deferred) | Long-term | Draft — implementation deferred |
+| [DOC-180](40-Modules/DOC-180%20-%20Benchmark%20Intelligence%20Framework.md) | Benchmark Intelligence Framework | 0.1 | Future (deferred) | Long-term | Draft — implementation deferred |
 
 ### DOC-180 – Benchmark Intelligence Framework
 
@@ -587,7 +683,7 @@ Implementation standards and next-generation migration sequencing. Not product s
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-021](DOC-021%20%E2%80%93%20Environment%20%26%20Deployment%20Strategy.md) | Environment & Deployment Strategy | 0.1 | Governing (infrastructure) | Operational | Planned |
+| [DOC-021](60-Operations/DOC-021%20%E2%80%93%20Environment%20&%20Deployment%20Strategy.md) | Environment & Deployment Strategy | 0.1 | Governing (infrastructure) | Operational | Planned |
 
 ### DOC-021 – Environment & Deployment Strategy
 
@@ -607,7 +703,7 @@ External platform connectivity standards — vendor-neutral connectors, sync rul
 
 | ID | Title | Version | Authority | Version lane | Status |
 | -- | ----- | ------- | --------- | ------------ | ------ |
-| [DOC-128](DOC-128%20%E2%80%93%20Integration%20Specification.md) | Integration Specification | 1.0 | Governing (integration) | v2 | Draft |
+| [DOC-128](30-Architecture/DOC-128%20%E2%80%93%20Integration%20Specification.md) | Integration Specification | 1.0 | Governing (integration) | v2 | Draft |
 
 ### DOC-128 – Integration Specification
 
@@ -635,19 +731,34 @@ External platform connectivity standards — vendor-neutral connectors, sync rul
 | Artifact | Authority | Notes |
 | -------- | --------- | ----- |
 | `data/RecommendationRuleCatalog.json` | Governing (v1 rules) | Canonical runtime source |
-| `docs/RecommendationRuleCatalog.json` | Deprecated mirror | Remove after link audit |
+| [`70-Data/RecommendationRuleCatalog.json`](70-Data/RecommendationRuleCatalog.json) | Reference mirror | Documentation copy; runtime uses `data/` |
 
 ## Operational (non-governing)
 
+Located in [`50-Development/`](50-Development/).
+
 | File | Purpose |
 | ---- | ------- |
-| `MVP_PRD.md` | MVP scope and user stories |
-| `PROJECT_STATUS.md` | Implementation status snapshot |
-| `DEVELOPMENT_GUIDE.md` | Local developer setup |
+| [`50-Development/MVP_PRD.md`](50-Development/MVP_PRD.md) | MVP scope and user stories |
+| [`50-Development/PROJECT_STATUS.md`](50-Development/PROJECT_STATUS.md) | Implementation status snapshot |
+| [`50-Development/DEVELOPMENT_GUIDE.md`](50-Development/DEVELOPMENT_GUIDE.md) | Local developer setup |
 
 ## Legacy redirect stubs
 
-Ten `*.md` stubs (e.g. `Vision.md`, `ScoringSpecification.md`) redirect to canonical DOC files. See [DOC-118](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md#legacy-redirect-stubs).
+Eight `Superceded-*.md` stubs at the `docs/` root redirect legacy filenames to canonical DOC specifications:
+
+| Stub | Legacy name | Canonical target |
+| ---- | ----------- | ---------------- |
+| [`Superceded-Vision.md`](Superceded-Vision.md) | `Vision.md` | DOC-001 |
+| [`Superceded-ScoringSpecification.md`](Superceded-ScoringSpecification.md) | `ScoringSpecification.md` | DOC-111 / DOC-111A |
+| [`Superceded-ScoreCalculation.md`](Superceded-ScoreCalculation.md) | `ScoreCalculation.md` | DOC-111B |
+| [`Superceded-QuestionScoringMatrix.md`](Superceded-QuestionScoringMatrix.md) | `QuestionScoringMatrix.md` | DOC-115 |
+| [`Superceded-RecommendationEngine.md`](Superceded-RecommendationEngine.md) | `RecommendationEngine.md` | DOC-112 |
+| [`Superceded-TechnicalArchitecture.md`](Superceded-TechnicalArchitecture.md) | `TechnicalArchitecture.md` | DOC-300 |
+| [`Superceded-DatabaseSchema.md`](Superceded-DatabaseSchema.md) | `DatabaseSchema.md` | DOC-301 |
+| [`Superceded-RBAC_Security_Spec.md`](Superceded-RBAC_Security_Spec.md) | `RBAC_Security_Spec.md` | DOC-303 |
+
+See also [DOC-118 – v1 to v2 Compatibility Reference](20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md#legacy-redirect-stubs).
 
 ---
 
@@ -668,42 +779,42 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 
 # Related Documents
 
-* [DOC-118 – v1 to v2 Compatibility Reference](DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
-* [DOC-001 – Product Vision](DOC-001%20-%20Product%20Vision.md)
-* [DOC-003 – BTIL](DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20(BTIL).md)
-* [DOC-120 – Domain Model Specification](DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
-* [DOC-120A – Next Generation Domain Model Addendum](DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
-* [DEV-001 – Engineering Standards](DEV-001%20-%20Engineering%20Standards.md)
-* [DEV-002 – Next Generation Migration Plan](DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
-* [DOC-121 – Database Schema Specification](DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
-* [DOC-122 – Roles & Permissions Specification](DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
-* [DOC-124 – Service Layer Specification](DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
-* [DOC-125 – Reporting Engine Specification](DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
-* [DOC-126 – PDF Generation Specification](DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
-* [DOC-127 – Dashboard Specification](DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
-* [DOC-007 – StackScore User Experience Constitution](DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
-* [DOC-160 – Portfolio Module Specification](DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
-* [DOC-161 – Client Workspace Specification](DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
-* [DOC-162 – Portfolio Decision Engine](DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md)
-* [DOC-163 – Immediate Focus Engine](DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)
-* [DOC-200 – Client Lifecycle Architecture](DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
-* [DOC-201 – Client Workspace Framework](DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
-* [DOC-202 – Technology Journey Framework](DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
-* [DOC-203 – Project Definition Framework](DOC-203%20-%20Project%20Definition%20Framework.md)
-* [DOC-204 – Technology Investment Roadmap Framework](DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
-* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](DOC-205%20%E2%80%93%20Planning%20Workshop%20%26%20Strategic%20Prioritization%20Engine.md)
-* [DOC-206 – Executive Business Review Framework](DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
-* [DOC-119 – Technology Maturity Scoring Engine](DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
-* [DOC-152 – Decision Intelligence Engine](DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
-* [DOC-180 – Benchmark Intelligence Framework](DOC-180%20-%20Benchmark%20Intelligence%20Framework.md)
-* [DOC-021 – Environment & Deployment Strategy](DOC-021%20%E2%80%93%20Environment%20%26%20Deployment%20Strategy.md)
-* [DOC-128 – Integration Specification](DOC-128%20%E2%80%93%20Integration%20Specification.md)
-* [DOC-108 – Business Profile Specification](DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
-* [DOC-129 – AI Development Rules & Engineering Constitution](DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
-* [DOC-130 – Architecture Diagrams Specification](DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
-* [DOC-150 – StackScore Technology Maturity Framework](DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
-* [DOC-006 – StackScore Product Constitution](DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
-* [DOC-109 – Assessment Design Specification](DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md)
+* [DOC-118 – v1 to v2 Compatibility Reference](20-Business-Logic/DOC-118%20%E2%80%93%20v1%20to%20v2%20Compatibility%20Reference.md)
+* [DOC-001 – Product Vision](00-Governance/DOC-001%20-%20Product%20Vision.md)
+* [DOC-003 – BTIL](00-Governance/DOC-003%20-%20Bobkat%20Technology%20Improvement%20Lifecycle%20%28BTIL%29.md).md)
+* [DOC-120 – Domain Model Specification](30-Architecture/DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
+* [DOC-120A – Next Generation Domain Model Addendum](30-Architecture/DOC-120A%20%E2%80%93%20Next%20Generation%20Domain%20Model%20Addendum.md)
+* [DEV-001 – Engineering Standards](50-Development/DEV-001%20-%20Engineering%20Standards.md)
+* [DEV-002 – Next Generation Migration Plan](50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)
+* [DOC-121 – Database Schema Specification](30-Architecture/DOC-121%20%E2%80%93%20Database%20Schema%20Specification.md)
+* [DOC-122 – Roles & Permissions Specification](30-Architecture/DOC-122%20%E2%80%93%20Roles%20&%20Permissions%20Specification.md)
+* [DOC-124 – Service Layer Specification](30-Architecture/DOC-124%20%E2%80%93%20Service%20Layer%20Specification.md)
+* [DOC-125 – Reporting Engine Specification](30-Architecture/DOC-125%20%E2%80%93%20Reporting%20Engine%20Specification.md)
+* [DOC-126 – PDF Generation Specification](30-Architecture/DOC-126%20%E2%80%93%20PDF%20Generation%20Specification.md)
+* [DOC-127 – Dashboard Specification](30-Architecture/DOC-127%20%E2%80%93%20Dashboard%20Specification.md)
+* [DOC-007 – StackScore User Experience Constitution](00-Governance/DOC-007%20%E2%80%93%20StackScore%20User%20Experience%20Constitution.md)
+* [DOC-160 – Portfolio Module Specification](40-Modules/DOC-160%20%E2%80%93%20Portfolio%20Module%20Specification.md)
+* [DOC-161 – Client Workspace Specification](40-Modules/DOC-161%20%E2%80%93%20Client%20Workspace%20Specification.md)
+* [DOC-162 – Portfolio Decision Engine](40-Modules/DOC-162%20%E2%80%93%20Portfolio%20Decision%20Engine.md)
+* [DOC-163 – Immediate Focus Engine](40-Modules/DOC-163%20%E2%80%93%20Immediate%20Focus%20Engine.md)
+* [DOC-200 – Client Lifecycle Architecture](40-Modules/DOC-200%20%E2%80%93%20Client%20Lifecycle%20Architecture.md)
+* [DOC-201 – Client Workspace Framework](40-Modules/DOC-201%20%E2%80%93%20Client%20Workspace%20Framework.md)
+* [DOC-202 – Technology Journey Framework](40-Modules/DOC-202%20%E2%80%93%20Technology%20Journey%20Framework.md)
+* [DOC-203 – Project Definition Framework](40-Modules/DOC-203%20-%20Project%20Definition%20Framework.md)
+* [DOC-204 – Technology Investment Roadmap Framework](40-Modules/DOC-204%20%E2%80%93%20Technology%20Investment%20Roadmap%20Framework.md)
+* [DOC-205 – Planning Workshop & Strategic Prioritization Engine](40-Modules/DOC-205%20%E2%80%93%20Planning%20Workshop%20&%20Strategic%20Prioritization%20Engine.md)
+* [DOC-206 – Executive Business Review Framework](40-Modules/DOC-206%20%E2%80%93%20Executive%20Business%20Review%20Framework.md)
+* [DOC-119 – Technology Maturity Scoring Engine](20-Business-Logic/DOC-119%20-%20Technology%20Maturity%20Scoring%20Engine.md)
+* [DOC-152 – Decision Intelligence Engine](20-Business-Logic/DOC-152%20-%20Decision%20Intelligence%20Engine%20Version.md)
+* [DOC-180 – Benchmark Intelligence Framework](40-Modules/DOC-180%20-%20Benchmark%20Intelligence%20Framework.md)
+* [DOC-021 – Environment & Deployment Strategy](60-Operations/DOC-021%20%E2%80%93%20Environment%20&%20Deployment%20Strategy.md)
+* [DOC-128 – Integration Specification](30-Architecture/DOC-128%20%E2%80%93%20Integration%20Specification.md)
+* [DOC-108 – Business Profile Specification](10-Product/DOC-108%20%E2%80%93%20Business%20Profile%20Specification.md)
+* [DOC-129 – AI Development Rules & Engineering Constitution](30-Architecture/DOC-129%20%E2%80%93%20AI%20Development%20Rules%20&%20Engineering%20Constitution.md)
+* [DOC-130 – Architecture Diagrams Specification](30-Architecture/DOC-130%20%E2%80%93%20Architecture%20Diagrams%20Specification.md)
+* [DOC-150 – StackScore Technology Maturity Framework](20-Business-Logic/DOC-150%20%E2%80%93%20StackScore%20Technology%20Maturity%20Framework.md)
+* [DOC-006 – StackScore Product Constitution](00-Governance/DOC-006%20%E2%80%93%20StackScore%20Product%20Constitution.md)
+* [DOC-109 – Assessment Design Specification](10-Product/DOC-109%20%E2%80%93%20Assessment%20Design%20Specification.md)
 
 ---
 
@@ -730,3 +841,4 @@ Target Phase 5 date: **TBD** (set when C4 pilot library ships).
 | 2.6 | 2026-07-04 | BobKat IT | Registered Client Lifecycle Architecture (DOC-200–206); DOC-007, DOC-119, DOC-151A–H, DOC-152, DOC-153, DOC-180, DOC-021; clarified strategic vs operational authority |
 | 2.7 | 2026-07-04 | BobKat IT | Registered DOC-120A (Next Generation Domain Model Addendum) for 200-series entities and Project 1:N transition |
 | 2.8 | 2026-07-04 | BobKat IT | Consistency resolution — registered DEV-001/DEV-002; authority split (intent / entities / sequencing); DOC-200 glossary |
+| 2.9 | 2026-07-09 | BobKat IT | Documented folder hierarchy; registered DOC-131–135; updated paths for reorganized structure; legacy stub registry |

@@ -46,7 +46,7 @@ npm run db:push
 npm run db:seed
 ```
 
-If you already used `db push` on an existing database, baseline before deploying migrations — see [DEPLOY.md](docs/DEPLOY.md#existing-database-previously-used-db-push).
+If you already used `db push` on an existing database, baseline before deploying migrations — see [DEPLOY.md](docs/50-Development/DEPLOY.md#existing-database-previously-used-db-push).
 
 Seed creates:
 
@@ -85,36 +85,41 @@ src/
 
 ## Documentation
 
-See the [`docs/`](docs/) folder for product requirements, scoring rules, API specification, and architecture.
+See [`docs/`](docs/) for product requirements, scoring rules, API specification, and architecture.
+
+**Entry points:**
+
+- [docs/README.md](docs/README.md) — folder guide and quick links
+- [DOC-000 – Documentation Architecture & Index](docs/DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) — master registry (authoritative)
 
 ### Operational guides
 
 | Guide | Description |
 |-------|-------------|
-| [ENVIRONMENTS.md](docs/ENVIRONMENTS.md) | Local vs Vercel (Neon) database setup |
-| [DEPLOY.md](docs/DEPLOY.md) | Production / pilot deployment |
-| [PILOT_GO_LIVE.md](docs/PILOT_GO_LIVE.md) | Pre-flight checklist for field use |
-| [KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md) | What v1.0 includes and excludes |
-| [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md) | Local setup, env vars, seeding, troubleshooting |
-| [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | What's built, MVP gaps, commit checklist |
-| [MVP_PRD.md](docs/MVP_PRD.md) | Product requirements and user stories |
+| [ENVIRONMENTS.md](docs/50-Development/ENVIRONMENTS.md) | Local vs Vercel (Neon) database setup |
+| [DEPLOY.md](docs/50-Development/DEPLOY.md) | Production / pilot deployment |
+| [PILOT_GO_LIVE.md](docs/50-Development/PILOT_GO_LIVE.md) | Pre-flight checklist for field use |
+| [KNOWN_LIMITATIONS.md](docs/50-Development/KNOWN_LIMITATIONS.md) | What v1.0 includes and excludes |
+| [DEVELOPMENT_GUIDE.md](docs/50-Development/DEVELOPMENT_GUIDE.md) | Local setup, env vars, seeding, troubleshooting |
+| [PROJECT_STATUS.md](docs/50-Development/PROJECT_STATUS.md) | What's built, MVP gaps, commit checklist |
+| [MVP_PRD.md](docs/50-Development/MVP_PRD.md) | Product requirements and user stories |
 
 ### Technical specifications (DOC-###)
 
 | Document | Description |
 |----------|-------------|
-| [DOC-300 – Technical Architecture](docs/DOC-300%20-%20Technical%20Architecture.md) | Stack, services, deployment |
-| [DOC-302 – API Specification](docs/DOC-302%20-%20API%20Specification.md) | REST API reference |
-| [DOC-301 – Database Schema Specification](docs/DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) | Relational data model |
-| [DOC-303 – RBAC & Security Specification](docs/DOC-303%20RBAC%20&%20Security%20Specification.md) | Roles and permissions |
-| [DOC-111 – Scoring Engine Specification](docs/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specification.md) | Authoritative scoring rules (v2 target) |
-| [DOC-111A – v1 Scoring Implementation](docs/DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Active v1 scoring rules |
-| [DOC-115 – Question Scoring Matrix](docs/DOC-115%20-%20Question%20Scoring%20Matrix.md) | Question weights and answer scores |
-| [DOC-117 – Assessment Question Bank (v1 Legacy)](docs/DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20(v1%20Legacy).md) | 50 assessment questions (v1) |
-| [DOC-112 – Recommendation Engine Specification](docs/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) | Recommendation rules |
+| [DOC-300 – Technical Architecture](docs/30-Architecture/DOC-300%20-%20Technical%20Architecture.md) | Stack, services, deployment |
+| [DOC-302 – API Specification](docs/30-Architecture/DOC-302%20-%20API%20Specification.md) | REST API reference |
+| [DOC-301 – Database Schema Specification](docs/30-Architecture/DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md) | Relational data model |
+| [DOC-303 – RBAC & Security Specification](docs/30-Architecture/DOC-303%20RBAC%20&%20Security%20Specification.md) | Roles and permissions |
+| [DOC-111 – Scoring Engine Specification](docs/20-Business-Logic/DOC-111%20%E2%80%93%20Scoring%20Engine%20Specific.md) | Authoritative scoring rules (v2 target) |
+| [DOC-111A – v1 Scoring Implementation](docs/20-Business-Logic/DOC-111A%20-%20Scoring%20Engine%20Specification.md) | Active v1 scoring rules |
+| [DOC-115 – Question Scoring Matrix](docs/20-Business-Logic/DOC-115%20-%20Question%20Scoring%20Matrix.md) | Question weights and answer scores |
+| [DOC-117 – Assessment Question Bank (v1 Legacy)](docs/20-Business-Logic/DOC-117%20%E2%80%93%20Assessment%20Question%20Bank%20%28v1%20Legacy%29.md) | 50 assessment questions (v1) |
+| [DOC-112 – Recommendation Engine Specification](docs/20-Business-Logic/DOC-112%20%E2%80%93%20Recommendation%20Engine%20Specification.md) | Recommendation rules |
 | [DOC-000 – Documentation Architecture & Index](docs/DOC-000%20%E2%80%93%20Documentation%20Architecture%20&%20Index.md) | Master doc registry |
 
-Legacy filenames (e.g. `TechnicalArchitecture.md`, `ScoringSpecification.md`) redirect to the canonical DOC-### documents above.
+Legacy filenames (e.g. `Vision.md`, `TechnicalArchitecture.md`) redirect via [`Superceded-*.md`](docs/Superceded-Vision.md) stubs in `docs/`.
 
 ## Scripts
 
