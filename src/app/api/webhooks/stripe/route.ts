@@ -177,6 +177,7 @@ export async function POST(request: Request) {
     purchaserEmail,
     requiresActivation: result.requiresActivation ?? false,
     activationToken: result.activationToken,
+    assessmentId: result.assessmentId,
   };
 
   purchaseTrace("W10", "BEFORE sendPurchaseFulfillmentEmail() [sendActivationEmail alias]", {

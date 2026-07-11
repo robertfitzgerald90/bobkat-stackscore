@@ -66,6 +66,17 @@ export async function activateAccount(input: z.infer<typeof activateSchema>) {
     }),
   ]);
 
+  if (activationToken.user.clientId) {
+    const { recordAccountActivatedActivity } = await import(
+      "@/lib/communications/activity/record-activity"
+    );
+    await recordAccountActivatedActivity({
+      clientId: activationToken.user.clientId,
+      userId: activationToken.user.id,
+      email: normalizePurchaserEmail(activationToken.user.email),
+    });
+  }
+
   return {
     ok: true as const,
     email: normalizePurchaserEmail(activationToken.user.email),

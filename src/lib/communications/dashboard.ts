@@ -1,4 +1,6 @@
+import { getRecentOrganizationActivity } from "@/lib/communications/activity/record-activity";
 import { withCommunicationDbFallback } from "@/lib/communications/db-safe";
+import { getCommunicationAnalyticsSummary } from "@/lib/communications/tracking/analytics";
 import { getTemplateVersionSummary } from "@/lib/communications/template-versions";
 import { prisma } from "@/lib/db";
 import { isEmailConfigured } from "@/lib/email/config";
@@ -15,7 +17,7 @@ import type {
 } from "@/lib/communications/types";
 
 export async function getCommunicationDashboardStats(): Promise<CommunicationDashboardStats> {
-  const [testEmailsSent, lastTestSend, versionSummary] = await Promise.all([
+  const [testEmailsSent, lastTestSend, versionSummary, analytics] = await Promise.all([
     withCommunicationDbFallback(() => prisma.communicationTestSend.count(), 0),
     withCommunicationDbFallback(
       () =>
@@ -31,6 +33,7 @@ export async function getCommunicationDashboardStats(): Promise<CommunicationDas
       null,
     ),
     getTemplateVersionSummary(),
+    getCommunicationAnalyticsSummary({ isTest: false }),
   ]);
 
   const activeTemplates = EMAIL_TEMPLATE_REGISTRY.filter((t) => t.status === "active").length;
@@ -48,6 +51,11 @@ export async function getCommunicationDashboardStats(): Promise<CommunicationDas
     draftVersions: versionSummary.draftCount,
     templatesNeedingReview: versionSummary.templatesNeedingReview,
     testEmailsSent,
+    messagesSent: analytics.messagesSent,
+    deliveryRate: analytics.deliveryRate,
+    openRate: analytics.openRate,
+    clickRate: analytics.clickRate,
+    failedDeliveries: analytics.failedCount + analytics.bouncedCount,
     lastTestEmail: lastTestSend
       ? {
           templateKey: lastTestSend.templateKey,
@@ -157,3 +165,5 @@ export async function getCommunicationHealth(): Promise<CommunicationHealthItem[
 
   return items;
 }
+
+export { getRecentOrganizationActivity };

@@ -32,6 +32,16 @@ export async function POST(_request: Request, context: RouteContext) {
     const result = await completeAssessment(id, user.id);
     if (!result) return notFound("Assessment not found");
 
+    const { recordAssessmentCompletedActivity } = await import(
+      "@/lib/communications/activity/record-activity"
+    );
+    await recordAssessmentCompletedActivity({
+      clientId: result.clientId,
+      assessmentId: result.id,
+      assessmentName: result.assessmentName,
+      actorUserId: user.id,
+    });
+
     const openRecommendations: AssessmentRecommendation[] = result.recommendations ?? [];
     const projectionImpact = calculateProjectionImpacts(
       openRecommendations.map((rec: AssessmentRecommendation) => ({

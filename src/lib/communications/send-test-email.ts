@@ -1,12 +1,12 @@
 import { withCommunicationDbFallback } from "@/lib/communications/db-safe";
-import { prisma } from "@/lib/db";
-import { sendEmail } from "@/lib/email/send";
 import { getEmailTemplate } from "@/lib/communications/registry";
 import { renderCommunicationTemplate } from "@/lib/communications/render-template";
 import {
   buildAccountActivationSampleData,
   PREVIEW_ACTIVATION_URL,
 } from "@/lib/communications/sample-data";
+import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
+import { prisma } from "@/lib/db";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,6 +24,7 @@ export type SendTestEmailResult = {
   status: "sent" | "failed";
   providerMessageId?: string;
   errorMessage?: string;
+  communicationMessageId?: string;
 };
 
 function buildSampleOverrides(input: SendTestEmailInput): Record<string, unknown> {
@@ -63,11 +64,20 @@ export async function sendCommunicationTestEmail(
   });
 
   try {
-    const result = await sendEmail({
+    const result = await recordAndSendCommunication({
       to: email,
       subject: rendered.subject,
       html: rendered.html,
       text: rendered.text,
+      previewText: rendered.previewText,
+      templateKey: input.templateKey,
+      recipientName: input.firstName,
+      isTest: true,
+      createdByUserId: input.sentByUserId,
+      metadata: {
+        sampleFirstName: input.firstName,
+        sampleOrganizationName: input.organizationName,
+      },
     });
 
     const record = await withCommunicationDbFallback(
@@ -76,19 +86,22 @@ export async function sendCommunicationTestEmail(
           data: {
             templateKey: input.templateKey,
             recipientEmail: email,
-            providerMessageId: result.id ?? null,
+            providerMessageId: result.providerMessageId ?? null,
             status: "sent",
             sentByUserId: input.sentByUserId,
+            communicationMessageId:
+              result.messageId !== "untracked" ? result.messageId : null,
           },
         }),
       {
         id: "local-test-send",
         templateKey: input.templateKey,
         recipientEmail: email,
-        providerMessageId: result.id ?? null,
+        providerMessageId: result.providerMessageId ?? null,
         status: "sent" as const,
         errorMessage: null,
         sentByUserId: input.sentByUserId,
+        communicationMessageId: null,
         createdAt: new Date(),
       },
     );
@@ -96,7 +109,8 @@ export async function sendCommunicationTestEmail(
     return {
       id: record.id,
       status: "sent",
-      providerMessageId: result.id,
+      providerMessageId: result.providerMessageId,
+      communicationMessageId: result.messageId,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to send test email";
@@ -120,6 +134,7 @@ export async function sendCommunicationTestEmail(
         status: "failed" as const,
         errorMessage: message,
         sentByUserId: input.sentByUserId,
+        communicationMessageId: null,
         createdAt: new Date(),
       },
     );

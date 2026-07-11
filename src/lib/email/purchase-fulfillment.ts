@@ -1,18 +1,44 @@
-import { sendEmail } from "@/lib/email/send";
 import { getEmailConfig, isEmailConfigured, logEmailEnvDiagnostics } from "@/lib/email/config";
 import {
   buildActivationEmail,
   buildActivationUrls,
   buildAssessmentReadyEmail,
 } from "@/lib/email/templates/assessment-purchase";
+import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
 import { purchaseTrace, purchaseTraceError, purchaseTraceStop } from "@/lib/purchase-trace";
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
+import { prisma } from "@/lib/db";
 
 export type PurchaseFulfillmentEmailInput = {
   purchaserEmail: string;
   requiresActivation: boolean;
   activationToken?: string;
+  assessmentId?: string;
 };
+
+async function resolveFulfillmentContext(assessmentId?: string) {
+  if (!assessmentId) return { clientId: null, userId: null, assessmentId: null as string | null };
+  const assessment = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    select: {
+      id: true,
+      clientId: true,
+      client: {
+        select: {
+          users: { select: { id: true, email: true }, take: 1 },
+        },
+      },
+    },
+  });
+  if (!assessment) {
+    return { clientId: null, userId: null, assessmentId: null as string | null };
+  }
+  return {
+    clientId: assessment.clientId,
+    userId: assessment.client.users[0]?.id ?? null,
+    assessmentId: assessment.id,
+  };
+}
 
 /** Sends activation or assessment-ready email after successful purchase fulfillment. */
 export async function sendPurchaseFulfillmentEmail(
@@ -22,6 +48,7 @@ export async function sendPurchaseFulfillmentEmail(
     rawPurchaserEmail: input.purchaserEmail,
     requiresActivation: input.requiresActivation,
     hasActivationToken: Boolean(input.activationToken),
+    assessmentId: input.assessmentId ?? null,
   });
 
   logEmailEnvDiagnostics("sendPurchaseFulfillmentEmail entry");
@@ -50,6 +77,8 @@ export async function sendPurchaseFulfillmentEmail(
     return;
   }
 
+  const context = await resolveFulfillmentContext(input.assessmentId);
+
   const urls = input.activationToken
     ? buildActivationUrls(input.activationToken)
     : buildActivationUrls("");
@@ -68,13 +97,27 @@ export async function sendPurchaseFulfillmentEmail(
         throw new Error("Activation email requires activationToken");
       }
 
-      purchaseTrace("E07", "BEFORE sendEmail() — activation template", { to: email });
+      purchaseTrace("E07", "BEFORE recordAndSendCommunication() — activation template", { to: email });
       const content = await buildActivationEmail({ activationUrl: urls.activationUrl });
-      const result = await sendEmail({ to: email, ...content });
-      purchaseTrace("E08", "AFTER sendEmail() — activation template", {
+      const result = await recordAndSendCommunication({
+        to: email,
+        subject: content.subject,
+        html: content.html,
+        text: content.text,
+        templateKey: "EMAIL-001",
+        clientId: context.clientId,
+        userId: context.userId,
+        assessmentId: context.assessmentId,
+        metadata: {
+          workflow: "assessment_purchase_activation",
+          assessmentId: context.assessmentId,
+        },
+      });
+      purchaseTrace("E08", "AFTER recordAndSendCommunication() — activation template", {
         to: email,
         provider: result.provider,
-        messageId: result.id ?? null,
+        messageId: result.messageId,
+        providerMessageId: result.providerMessageId ?? null,
       });
       return;
     }
@@ -83,16 +126,27 @@ export async function sendPurchaseFulfillmentEmail(
       to: email,
     });
 
-    purchaseTrace("E10", "BEFORE sendEmail() — assessment-ready template", { to: email });
+    purchaseTrace("E10", "BEFORE recordAndSendCommunication() — assessment-ready template", { to: email });
     const content = buildAssessmentReadyEmail({
       loginUrl: urls.loginUrl,
       startUrl: urls.startUrl,
     });
-    const result = await sendEmail({ to: email, ...content });
-    purchaseTrace("E11", "AFTER sendEmail() — assessment-ready template", {
+    const result = await recordAndSendCommunication({
+      to: email,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      templateKey: "LEGACY-ASSESSMENT-READY",
+      clientId: context.clientId,
+      userId: context.userId,
+      assessmentId: context.assessmentId,
+      metadata: { workflow: "assessment_ready" },
+    });
+    purchaseTrace("E11", "AFTER recordAndSendCommunication() — assessment-ready template", {
       to: email,
       provider: result.provider,
-      messageId: result.id ?? null,
+      messageId: result.messageId,
+      providerMessageId: result.providerMessageId ?? null,
     });
   } catch (error) {
     purchaseTraceError("E12", "purchase-fulfillment.ts catch", error, {

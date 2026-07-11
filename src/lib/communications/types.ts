@@ -50,6 +50,11 @@ export type CommunicationDashboardStats = {
   draftVersions: number;
   templatesNeedingReview: number;
   testEmailsSent: number;
+  messagesSent: number;
+  deliveryRate: number | null;
+  openRate: number | null;
+  clickRate: number | null;
+  failedDeliveries: number;
   lastTestEmail: {
     templateKey: string;
     recipientEmail: string;

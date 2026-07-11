@@ -9,6 +9,7 @@ export {
 export {
   getCommunicationDashboardStats,
   getCommunicationHealth,
+  getRecentOrganizationActivity,
   getRecentTemplateActivity,
   getRecentTestSends,
 } from "./dashboard";

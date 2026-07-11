@@ -6,11 +6,13 @@ import { assertCommunicationsAccessRole } from "@/lib/communications/auth";
 import {
   getCommunicationDashboardStats,
   getCommunicationHealth,
+  getRecentOrganizationActivity,
   getRecentTemplateActivity,
   getRecentTestSends,
   isTemplatePreviewable,
   listEmailTemplates,
 } from "@/lib/communications";
+import { getRecentDeliveryFailures } from "@/lib/communications/tracking/analytics";
 import { ensureTemplateVersionsSeeded } from "@/lib/communications/template-versions";
 
 export default async function CommunicationsOverviewPage() {
@@ -23,10 +25,13 @@ export default async function CommunicationsOverviewPage() {
     await ensureTemplateVersionsSeeded(session.user.id);
   }
 
-  const [stats, recentTestSends, recentActivity, health, templates] = await Promise.all([
+  const [stats, recentTestSends, recentActivity, customerActivity, recentFailures, health, templates] =
+    await Promise.all([
     getCommunicationDashboardStats(),
     getRecentTestSends(),
     getRecentTemplateActivity(),
+    getRecentOrganizationActivity(),
+    getRecentDeliveryFailures(5),
     getCommunicationHealth(),
     Promise.resolve(listEmailTemplates()),
   ]);
@@ -52,6 +57,8 @@ export default async function CommunicationsOverviewPage() {
       recentTemplates={recentTemplates}
       recentTestSends={recentTestSends}
       recentActivity={recentActivity}
+      customerActivity={customerActivity}
+      recentFailures={recentFailures}
       health={health}
     />
   );

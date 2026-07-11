@@ -92,6 +92,29 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     },
   });
 
+  if (!existingResponse && body.selectedAnswerOptionId) {
+    const priorCount = await prisma.assessmentResponse.count({
+      where: { assessmentId: id },
+    });
+    if (priorCount === 1) {
+      const assessmentRecord = await prisma.assessment.findUnique({
+        where: { id },
+        select: { clientId: true, assessmentName: true },
+      });
+      if (assessmentRecord) {
+        const { recordAssessmentStartedActivity } = await import(
+          "@/lib/communications/activity/record-activity"
+        );
+        await recordAssessmentStartedActivity({
+          clientId: assessmentRecord.clientId,
+          assessmentId: id,
+          assessmentName: assessmentRecord.assessmentName,
+          userId: user.id,
+        });
+      }
+    }
+  }
+
   const preview = await getAssessmentPreview(id);
 
   return NextResponse.json({ ...response, preview });

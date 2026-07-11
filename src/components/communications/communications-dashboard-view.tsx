@@ -21,6 +21,7 @@ import type {
   CommunicationTestSendRecord,
   TemplateActivityItem,
 } from "@/lib/communications/types";
+import type { ActivityFeedItem } from "@/lib/communications/activity/record-activity";
 import type { TemplateLibraryItem } from "@/components/communications/template-library-view";
 
 type CommunicationsDashboardViewProps = {
@@ -28,6 +29,15 @@ type CommunicationsDashboardViewProps = {
   recentTemplates: TemplateLibraryItem[];
   recentTestSends: CommunicationTestSendRecord[];
   recentActivity: TemplateActivityItem[];
+  customerActivity: ActivityFeedItem[];
+  recentFailures: Array<{
+    id: string;
+    subject: string;
+    recipientEmail: string;
+    organizationName: string | null;
+    status: string;
+    occurredAt: string;
+  }>;
   health: CommunicationHealthItem[];
 };
 
@@ -36,15 +46,19 @@ export function CommunicationsDashboardView({
   recentTemplates,
   recentTestSends,
   recentActivity,
+  customerActivity,
+  recentFailures,
   health,
 }: CommunicationsDashboardViewProps) {
   const metrics = [
-    { label: "Active Templates", value: stats.activeTemplates },
-    { label: "Draft Templates", value: stats.draftTemplates },
+    { label: "Production Messages", value: stats.messagesSent },
+    { label: "Delivery Rate", value: stats.deliveryRate === null ? "—" : `${stats.deliveryRate}%` },
+    { label: "Open Rate", value: stats.openRate === null ? "—" : `${stats.openRate}%` },
+    { label: "Click Rate", value: stats.clickRate === null ? "—" : `${stats.clickRate}%` },
+    { label: "Failed Deliveries", value: stats.failedDeliveries },
+    { label: "Test Emails Sent", value: stats.testEmailsSent },
     { label: "Published Versions", value: stats.publishedVersions },
     { label: "Pending Drafts", value: stats.draftVersions },
-    { label: "Needing Review", value: stats.templatesNeedingReview },
-    { label: "Test Emails Sent", value: stats.testEmailsSent },
   ];
 
   return (
@@ -67,6 +81,12 @@ export function CommunicationsDashboardView({
             >
               <LayoutTemplate className="size-4" />
               Browse Templates
+            </Link>
+            <Link href="/admin/communications/history" className={buttonClassName({ variant: "outline" })}>
+              History
+            </Link>
+            <Link href="/admin/communications/analytics" className={buttonClassName({ variant: "outline" })}>
+              Analytics
             </Link>
             <Link href="/admin/communications/templates/EMAIL-001" className={buttonClassName({})}>
               <Send className="size-4" />
@@ -156,6 +176,55 @@ export function CommunicationsDashboardView({
               </Link>
             ))}
           </div>
+        </CommunicationsPanel>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <CommunicationsPanel title="Recent Customer Activity">
+          {customerActivity.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No customer activity recorded yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {customerActivity.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href ?? `/clients/${item.clientId}/activity`}
+                  className="block rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/20"
+                >
+                  <p className="font-medium">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">{item.clientName}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(item.occurredAt).toLocaleString()}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </CommunicationsPanel>
+
+        <CommunicationsPanel title="Recent Delivery Failures">
+          {recentFailures.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No recent delivery failures.</p>
+          ) : (
+            <div className="space-y-3">
+              {recentFailures.map((failure) => (
+                <Link
+                  key={failure.id}
+                  href={`/admin/communications/history/${failure.id}`}
+                  className="block rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/20"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-medium">{failure.subject}</p>
+                    <StatusPill tone="warning">{failure.status}</StatusPill>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {failure.recipientEmail}
+                    {failure.organizationName ? ` · ${failure.organizationName}` : ""}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
         </CommunicationsPanel>
       </div>
 

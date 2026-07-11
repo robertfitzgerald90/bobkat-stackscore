@@ -12,6 +12,8 @@ const NAV_ITEMS: Array<{
 }> = [
   { href: "/admin/communications", label: "Overview", exact: true },
   { href: "/admin/communications/templates", label: "Templates", exact: false },
+  { href: "/admin/communications/history", label: "History", exact: false },
+  { href: "/admin/communications/analytics", label: "Analytics", exact: false },
   { href: "/admin/communications/components", label: "Components", exact: false, adminOnly: true },
   { href: "/admin/communications/variables", label: "Variables", exact: false },
   { href: "/admin/communications/settings", label: "Settings", exact: false, adminOnly: true },
