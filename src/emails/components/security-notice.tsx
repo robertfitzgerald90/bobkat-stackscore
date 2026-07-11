@@ -4,12 +4,14 @@ import { emailTokens } from "@/emails/tokens";
 
 type SecurityNoticeProps = {
   title?: string;
-  message: string;
+  message?: string;
+  items?: string[];
 };
 
 export function SecurityNotice({
   title = "Security Notice",
   message,
+  items,
 }: SecurityNoticeProps) {
   return (
     <Section
@@ -41,16 +43,31 @@ export function SecurityNotice({
         >
           {title}
         </Heading>
-        <Text
-          style={{
-            margin: 0,
-            fontSize: "14px",
-            lineHeight: "22px",
-            color: emailTokens.warningText,
-          }}
-        >
-          {message}
-        </Text>
+        {message ? (
+          <Text
+            style={{
+              margin: 0,
+              fontSize: "14px",
+              lineHeight: "22px",
+              color: emailTokens.warningText,
+            }}
+          >
+            {message}
+          </Text>
+        ) : null}
+        {items?.map((item) => (
+          <Text
+            key={item}
+            style={{
+              margin: "0 0 6px",
+              fontSize: "14px",
+              lineHeight: "22px",
+              color: emailTokens.warningText,
+            }}
+          >
+            • {item}
+          </Text>
+        ))}
       </Section>
     </Section>
   );

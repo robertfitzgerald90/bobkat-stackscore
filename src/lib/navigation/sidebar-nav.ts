@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   Lightbulb,
   Map,
+  Mail,
   Settings,
   Shield,
   UserCircle,
@@ -94,6 +95,12 @@ export function getConsultantSidebarNav(
       adminOnly: true,
     },
     { href: "/snapshot-leads", label: "Snapshot Leads", icon: Camera, adminOnly: true },
+    {
+      href: "/admin/communications",
+      label: "Communications",
+      icon: Mail,
+      adminOnly: true,
+    },
   ];
 
   return items.filter((item) => {

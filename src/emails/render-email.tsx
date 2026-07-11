@@ -1,4 +1,3 @@
-import React from "react";
 import { render } from "@react-email/render";
 import type { ReactElement } from "react";
 

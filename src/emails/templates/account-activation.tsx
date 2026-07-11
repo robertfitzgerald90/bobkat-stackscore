@@ -1,50 +1,78 @@
 import React from "react";
 import {
+  ContentSection,
+  EmailFooter,
+  EmailHeader,
+  EmailHero,
   EmailLayout,
-  Footer,
-  Header,
-  Hero,
-  InformationCard,
+  NextSteps,
   PrimaryButton,
   SecurityNotice,
 } from "@/emails/components";
 import { BRAND } from "@/lib/branding";
 
-export type AccountActivationEmailProps = {
+export type AccountActivationEmailData = {
   activationUrl: string;
+  firstName?: string;
+  organizationName?: string;
+  assessmentName?: string;
+  expirationDays?: number;
+  supportEmail?: string;
+  websiteUrl?: string;
 };
 
-export function AccountActivationEmail({ activationUrl }: AccountActivationEmailProps) {
+export type AccountActivationEmailProps = AccountActivationEmailData;
+
+export function AccountActivationEmail({
+  activationUrl,
+  firstName,
+  organizationName,
+  assessmentName = `${BRAND.productName} Technology Maturity Assessment`,
+  expirationDays = 7,
+  supportEmail = BRAND.email,
+}: AccountActivationEmailProps) {
+  const greeting = firstName ? `Welcome to ${BRAND.productName}, ${firstName}` : `Welcome to ${BRAND.productName}`;
+  const orgLine = organizationName
+    ? `Thank you for purchasing your ${assessmentName} for ${organizationName}.`
+    : `Thank you for purchasing your ${assessmentName}.`;
+
   return (
-    <EmailLayout
-      preview={`Welcome to ${BRAND.productName}. Activate your account to begin your ${BRAND.reportTitle}.`}
-    >
-      <Header />
-      <Hero
-        title={`Welcome to ${BRAND.productName}`}
-        description={`Thank you for purchasing the ${BRAND.reportTitle}. Activate your account to begin evaluating your technology environment and building a clear improvement plan.`}
+    <EmailLayout preview="Activate your account and begin discovering your organization's technology maturity.">
+      <EmailHeader />
+      <EmailHero
+        title={greeting}
+        description="You're one step away from a clear picture of your technology environment."
       />
-      <PrimaryButton href={activationUrl} label="Activate My Account" />
-      <InformationCard
-        title="Assessment Overview"
-        items={[
-          "Evaluate technology maturity across eight business-focused pillars.",
-          "Identify risks, gaps, and priorities in your current environment.",
-          "Receive actionable recommendations aligned to your business goals.",
-          "Build a realistic roadmap for improvement with Bobkat IT guidance.",
+      <ContentSection
+        paragraphs={[
+          orgLine,
+          "You are about to gain a clear understanding of your technology environment, uncover hidden risks, and identify practical opportunities to strengthen your business through technology.",
+          `${BRAND.productName} transforms technical information into clear, measurable insights so you can make technology decisions with confidence.`,
         ]}
       />
-      <InformationCard
-        title="Next Steps"
-        items={[
-          "Click Activate My Account to secure your login.",
-          "Set your password and complete your profile.",
-          "Begin your Technology Maturity Assessment at your own pace.",
-          "Review results and recommendations with the StackScore team.",
+      <PrimaryButton href={activationUrl} label="Activate My Assessment" />
+      <NextSteps
+        steps={[
+          "Activate your account",
+          "Complete your guided assessment",
+          "Review your technology health scores and recommendations",
+          "Build a prioritized roadmap",
+          "Meet with Bobkat IT to discuss next steps",
         ]}
       />
-      <SecurityNotice message="This activation link expires in 7 days and can only be used once. If you did not purchase this assessment, you can safely ignore this email." />
-      <Footer />
+      <SecurityNotice
+        items={[
+          `The activation link expires in ${expirationDays} days`,
+          "The link may only be used once",
+          "If you did not request this message, you may safely ignore it",
+        ]}
+      />
+      <ContentSection
+        paragraphs={[
+          `Questions? Contact us at ${supportEmail}. We're here to help you get started.`,
+        ]}
+      />
+      <EmailFooter />
     </EmailLayout>
   );
 }

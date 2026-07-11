@@ -210,6 +210,7 @@ model User {
   quarterlyBusinessReviewsCreated QuarterlyBusinessReview[]
   purchases              AssessmentPurchase[]
   activationTokens       AccountActivationToken[]
+  communicationTestSends CommunicationTestSend[]
 }
 
 model Client {
@@ -640,6 +641,11 @@ enum PurchaseStatus {
   refunded
 }
 
+enum CommunicationTestSendStatus {
+  sent
+  failed
+}
+
 enum TechnologyStandardStatus {
   preferred
   approved
@@ -746,6 +752,23 @@ model AccountActivationToken {
   createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CommunicationTestSend {
+  id                String                      @id @default(uuid())
+  templateKey       String
+  recipientEmail    String
+  providerMessageId String?
+  status            CommunicationTestSendStatus
+  errorMessage      String?                     @db.Text
+  sentByUserId      String
+  createdAt         DateTime                    @default(now())
+
+  sentBy User @relation(fields: [sentByUserId], references: [id])
+
+  @@index([createdAt])
+  @@index([templateKey])
+  @@index([sentByUserId])
 }
 
 model TechnologyCategory {

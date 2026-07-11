@@ -1,18 +1,24 @@
-import { renderEmailTemplate } from "@/emails/render-email";
-import { AccountActivationEmail } from "@/emails/templates/account-activation";
+import { renderCommunicationTemplate } from "@/lib/communications/render-template";
+import { PREVIEW_ACTIVATION_URL } from "@/lib/communications/sample-data";
 import { getAppUrl } from "@/lib/stripe/app-url";
 import { BRAND } from "@/lib/branding";
 
 export async function buildActivationEmail(input: {
   activationUrl: string;
+  firstName?: string;
+  organizationName?: string;
 }): Promise<{ subject: string; html: string; text: string }> {
-  const subject = `Activate your ${BRAND.reportTitle} account`;
+  const rendered = await renderCommunicationTemplate("EMAIL-001", {
+    activationUrl: input.activationUrl,
+    firstName: input.firstName,
+    organizationName: input.organizationName,
+  });
 
-  const { html, text } = await renderEmailTemplate(
-    AccountActivationEmail({ activationUrl: input.activationUrl }),
-  );
-
-  return { subject, html, text };
+  return {
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+  };
 }
 
 export function buildAssessmentReadyEmail(input: {
@@ -51,5 +57,5 @@ export function buildActivationUrls(rawToken: string) {
 
 /** Sample activation URL for previews and local testing. */
 export function buildSampleActivationUrl(): string {
-  return buildActivationUrls("preview-sample-token").activationUrl;
+  return PREVIEW_ACTIVATION_URL;
 }
