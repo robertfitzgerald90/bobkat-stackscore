@@ -2,7 +2,6 @@
 
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -10,7 +9,7 @@ import {
   CommandList,
 } from "cmdk";
 import { useRouter, usePathname } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -19,6 +18,15 @@ import {
   SEARCH_TYPE_ICONS,
 } from "@/components/command-palette/command-icons";
 import { useQuickInviteOptional } from "@/components/communications/quick-invite-provider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { buildPageContext } from "@/lib/command-center/context";
 import { initializeCommandModules } from "@/lib/command-center/modules";
 import {
@@ -33,13 +41,27 @@ import {
   recordRecentItem,
   toggleFavorite,
 } from "@/lib/command-center/storage";
-import { CATEGORY_LABELS, type UniversalSearchResult } from "@/lib/command-center/types";
+import {
+  CATEGORY_LABELS,
+  type CommandCategory,
+  type UniversalSearchResult,
+} from "@/lib/command-center/types";
 
 type CommandPaletteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: { role: string; clientId?: string | null };
 };
+
+type CategoryFilter = "all" | "navigation" | "create" | "communications" | "customers";
+
+const CATEGORY_FILTERS: Array<{ id: CategoryFilter; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "navigation", label: "Navigate" },
+  { id: "create", label: "Create" },
+  { id: "communications", label: "Communications" },
+  { id: "customers", label: "Clients" },
+];
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -50,17 +72,25 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
   return debounced;
 }
 
+function matchesCategoryFilter(category: CommandCategory, filter: CategoryFilter): boolean {
+  if (filter === "all") return true;
+  return category === filter;
+}
+
 export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPaletteDialogProps) {
   const router = useRouter();
   const pathname = usePathname();
   const quickInvite = useQuickInviteOptional();
   const { setTheme, resolvedTheme } = useTheme();
   const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [searchResults, setSearchResults] = useState<UniversalSearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [recentItems, setRecentItems] = useState(getRecentItems());
   const [favoriteItems, setFavoriteItems] = useState(getFavoriteItems());
   const debouncedQuery = useDebouncedValue(query, 200);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const pageContext = useMemo(
     () =>
@@ -79,11 +109,29 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
   useEffect(() => {
     if (!open) {
       setQuery("");
+      setCategoryFilter("all");
       setSearchResults([]);
       return;
     }
+
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setRecentItems(getRecentItems());
     setFavoriteItems(getFavoriteItems());
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusTimer = window.setTimeout(() => {
+      inputRef.current?.focus();
+      document.querySelector<HTMLInputElement>("[cmdk-input]")?.focus();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus();
+    };
   }, [open]);
 
   useEffect(() => {
@@ -156,20 +204,23 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
     [onOpenChange, quickInvite, resolvedTheme, router, setTheme],
   );
 
-  const filteredCommands = useMemo(
-    () => searchCommands(query, pageContext),
-    [query, pageContext],
-  );
+  const filteredCommands = useMemo(() => {
+    const commands = searchCommands(query, pageContext);
+    if (categoryFilter === "all") return commands;
+    return commands.filter((command) => matchesCategoryFilter(command.category, categoryFilter));
+  }, [query, pageContext, categoryFilter]);
 
-  const contextualCommands = useMemo(
-    () => getContextualCommands(pageContext),
-    [pageContext],
-  );
+  const contextualCommands = useMemo(() => {
+    const commands = getContextualCommands(pageContext);
+    if (categoryFilter === "all") return commands;
+    return commands.filter((command) => matchesCategoryFilter(command.category, categoryFilter));
+  }, [pageContext, categoryFilter]);
 
-  const suggestedCommands = useMemo(
-    () => getSuggestedCommands(pageContext),
-    [pageContext],
-  );
+  const suggestedCommands = useMemo(() => {
+    const commands = getSuggestedCommands(pageContext);
+    if (categoryFilter === "all") return commands;
+    return commands.filter((command) => matchesCategoryFilter(command.category, categoryFilter));
+  }, [pageContext, categoryFilter]);
 
   const groupedCommands = useMemo(() => {
     const groups = new Map<string, ResolvedCommand[]>();
@@ -183,160 +234,91 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
   }, [filteredCommands, query]);
 
   const showEmptyState = !query.trim();
+  const showRecentAndFavorites = showEmptyState && categoryFilter === "all";
   const isMac =
     typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac");
 
   return (
-    <CommandDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      label="Global Command Palette"
-      overlayClassName="bg-black/60 backdrop-blur-sm"
-      contentClassName="overflow-hidden rounded-2xl border border-white/10 bg-[#0b1526] p-0 text-white shadow-2xl"
-    >
-      <Command shouldFilter={false} className="flex max-h-[min(70vh,640px)] flex-col bg-[#0b1526]">
-        <div className="border-b border-white/10 px-4 py-3">
-          <CommandInput
-            value={query}
-            onValueChange={setQuery}
-            placeholder="Search StackScore or type a command..."
-            className="h-10 w-full bg-transparent text-base text-white outline-none placeholder:text-white/45"
-          />
-          <p className="mt-2 text-xs text-white/45">
-            Navigate · Create · Search · Recent · Favorites
-          </p>
-        </div>
-
-        <CommandList className="max-h-[min(56vh,520px)] overflow-y-auto p-2">
-          <CommandEmpty className="px-3 py-8 text-center text-sm text-white/50">
-            {searchLoading ? "Searching..." : "No matching commands or records."}
-          </CommandEmpty>
-
-          {showEmptyState && favoriteItems.length > 0 ? (
-            <CommandGroup heading="Favorites" className="cmd-group">
-              {favoriteItems.map((item) => (
-                <PaletteItem
-                  key={item.id}
-                  value={`favorite-${item.id}`}
-                  icon={Star}
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  onSelect={() =>
-                    executeCommand({
-                      id: item.id,
-                      title: item.title,
-                      subtitle: item.subtitle,
-                      href: item.href,
-                      actionId: item.commandId,
-                      type: item.type,
-                    })
-                  }
-                />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="command-palette flex max-h-[min(calc(100dvh-2rem),720px)] flex-col gap-0 p-0"
+        aria-describedby="command-palette-description"
+      >
+        <Command shouldFilter={false} className="flex h-full min-h-0 flex-1 flex-col bg-[#0b1526]">
+          <DialogHeader className="shrink-0 space-y-3">
+            <div>
+              <DialogTitle>Command Palette</DialogTitle>
+              <DialogDescription id="command-palette-description">
+                Search commands, pages, clients, assessments, and more.
+              </DialogDescription>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="command-palette-search" className="sr-only">
+                Search commands
+              </label>
+              <CommandInput
+                ref={inputRef}
+                id="command-palette-search"
+                value={query}
+                onValueChange={setQuery}
+                placeholder="Search commands, pages, clients, assessments..."
+                className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/45 focus:border-white/20 focus:ring-2 focus:ring-[#7D97AC]/40"
+              />
+            </div>
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Command categories">
+              {CATEGORY_FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={categoryFilter === filter.id}
+                  className={cn(
+                    "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    categoryFilter === filter.id
+                      ? "bg-white/12 text-white"
+                      : "text-white/55 hover:bg-white/6 hover:text-white/80",
+                  )}
+                  onClick={() => setCategoryFilter(filter.id)}
+                >
+                  {filter.label}
+                </button>
               ))}
-            </CommandGroup>
-          ) : null}
+            </div>
+          </DialogHeader>
 
-          {showEmptyState && contextualCommands.length > 0 ? (
-            <CommandGroup heading={CATEGORY_LABELS.contextual} className="cmd-group">
-              {contextualCommands.map((command) => (
-                <CommandRow
-                  key={command.id}
-                  command={command}
-                  onSelect={() =>
-                    executeCommand({
-                      id: command.id,
-                      title: command.title,
-                      subtitle: command.subtitle,
-                      href: command.resolvedHref,
-                      actionId: command.actionId,
-                    })
-                  }
-                />
-              ))}
-            </CommandGroup>
-          ) : null}
+          <CommandList className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
+            <CommandEmpty className="px-3 py-8 text-center text-sm text-white/50">
+              {searchLoading ? "Searching..." : "No matching commands or records."}
+            </CommandEmpty>
 
-          {showEmptyState && suggestedCommands.length > 0 ? (
-            <CommandGroup heading={CATEGORY_LABELS.suggested} className="cmd-group">
-              {suggestedCommands.map((command) => (
-                <CommandRow
-                  key={command.id}
-                  command={command}
-                  onSelect={() =>
-                    executeCommand({
-                      id: command.id,
-                      title: command.title,
-                      subtitle: command.subtitle,
-                      href: command.resolvedHref,
-                      actionId: command.actionId,
-                    })
-                  }
-                />
-              ))}
-            </CommandGroup>
-          ) : null}
-
-          {showEmptyState && recentItems.length > 0 ? (
-            <CommandGroup heading="Recent" className="cmd-group">
-              {recentItems.slice(0, 8).map((item) => (
-                <PaletteItem
-                  key={item.id}
-                  value={`recent-${item.id}`}
-                  icon={resolveCommandIcon("ArrowRight")}
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  onSelect={() =>
-                    executeCommand({
-                      id: item.id,
-                      title: item.title,
-                      subtitle: item.subtitle,
-                      href: item.href,
-                      type: item.type,
-                    })
-                  }
-                />
-              ))}
-            </CommandGroup>
-          ) : null}
-
-          {searchResults.length > 0 ? (
-            <CommandGroup heading="Search Results" className="cmd-group">
-              {searchResults.map((result) => {
-                const Icon = SEARCH_TYPE_ICONS[result.type] ?? resolveCommandIcon("Search");
-                return (
+            {showRecentAndFavorites && favoriteItems.length > 0 ? (
+              <CommandGroup heading="Favorites" className="cmd-group">
+                {favoriteItems.map((item) => (
                   <PaletteItem
-                    key={result.id}
-                    value={result.id}
-                    icon={Icon}
-                    title={result.title}
-                    subtitle={result.subtitle}
+                    key={item.id}
+                    value={`favorite-${item.id}`}
+                    icon={Star}
+                    title={item.title}
+                    subtitle={item.subtitle}
                     onSelect={() =>
                       executeCommand({
-                        id: result.id,
-                        title: result.title,
-                        subtitle: result.subtitle,
-                        href: result.href,
-                        type: result.type,
+                        id: item.id,
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        href: item.href,
+                        actionId: item.commandId,
+                        type: item.type,
                       })
                     }
                   />
-                );
-              })}
-            </CommandGroup>
-          ) : null}
+                ))}
+              </CommandGroup>
+            ) : null}
 
-          {[...groupedCommands.entries()].map(([category, commands]) => {
-            if (showEmptyState && (category === "contextual" || category === "suggested")) {
-              return null;
-            }
-            if (commands.length === 0) return null;
-            return (
-              <CommandGroup
-                key={category}
-                heading={CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}
-                className="cmd-group"
-              >
-                {commands.map((command) => (
+            {showEmptyState && contextualCommands.length > 0 ? (
+              <CommandGroup heading={CATEGORY_LABELS.contextual} className="cmd-group">
+                {contextualCommands.map((command) => (
                   <CommandRow
                     key={command.id}
                     command={command}
@@ -349,44 +331,129 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
                         actionId: command.actionId,
                       })
                     }
-                    onToggleFavorite={() => {
-                      toggleFavorite({
-                        id: command.favoriteKey ?? command.id,
-                        type: "command",
-                        title: command.title,
-                        subtitle: command.subtitle,
-                        href: command.resolvedHref,
-                        commandId: command.actionId,
-                      });
-                      setFavoriteItems(getFavoriteItems());
-                    }}
                   />
                 ))}
               </CommandGroup>
-            );
-          })}
-        </CommandList>
+            ) : null}
 
-        <div className="flex items-center justify-between border-t border-white/10 px-4 py-2 text-[11px] text-white/40">
-          <span>↑↓ navigate · ↵ run · esc close</span>
-          <span>{isMac ? "⌘K" : "Ctrl+K"}</span>
-        </div>
-      </Command>
+            {showEmptyState && suggestedCommands.length > 0 ? (
+              <CommandGroup heading={CATEGORY_LABELS.suggested} className="cmd-group">
+                {suggestedCommands.map((command) => (
+                  <CommandRow
+                    key={command.id}
+                    command={command}
+                    onSelect={() =>
+                      executeCommand({
+                        id: command.id,
+                        title: command.title,
+                        subtitle: command.subtitle,
+                        href: command.resolvedHref,
+                        actionId: command.actionId,
+                      })
+                    }
+                  />
+                ))}
+              </CommandGroup>
+            ) : null}
 
-      <style jsx global>{`
-        .cmd-group [cmdk-group-heading] {
-          padding: 0.5rem 0.75rem 0.25rem;
-          font-size: 0.68rem;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.38);
-        }
-        [cmdk-item][data-selected="true"] {
-          background: rgba(255, 255, 255, 0.08);
-        }
-      `}</style>
-    </CommandDialog>
+            {showRecentAndFavorites && recentItems.length > 0 ? (
+              <CommandGroup heading="Recent" className="cmd-group">
+                {recentItems.slice(0, 8).map((item) => (
+                  <PaletteItem
+                    key={item.id}
+                    value={`recent-${item.id}`}
+                    icon={resolveCommandIcon("ArrowRight")}
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    onSelect={() =>
+                      executeCommand({
+                        id: item.id,
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        href: item.href,
+                        type: item.type,
+                      })
+                    }
+                  />
+                ))}
+              </CommandGroup>
+            ) : null}
+
+            {searchResults.length > 0 ? (
+              <CommandGroup heading="Search Results" className="cmd-group">
+                {searchResults.map((result) => {
+                  const Icon = SEARCH_TYPE_ICONS[result.type] ?? resolveCommandIcon("Search");
+                  return (
+                    <PaletteItem
+                      key={result.id}
+                      value={result.id}
+                      icon={Icon}
+                      title={result.title}
+                      subtitle={result.subtitle}
+                      onSelect={() =>
+                        executeCommand({
+                          id: result.id,
+                          title: result.title,
+                          subtitle: result.subtitle,
+                          href: result.href,
+                          type: result.type,
+                        })
+                      }
+                    />
+                  );
+                })}
+              </CommandGroup>
+            ) : null}
+
+            {[...groupedCommands.entries()].map(([category, commands]) => {
+              if (showEmptyState && (category === "contextual" || category === "suggested")) {
+                return null;
+              }
+              if (commands.length === 0) return null;
+              return (
+                <CommandGroup
+                  key={category}
+                  heading={CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category}
+                  className="cmd-group"
+                >
+                  {commands.map((command) => (
+                    <CommandRow
+                      key={command.id}
+                      command={command}
+                      onSelect={() =>
+                        executeCommand({
+                          id: command.id,
+                          title: command.title,
+                          subtitle: command.subtitle,
+                          href: command.resolvedHref,
+                          actionId: command.actionId,
+                        })
+                      }
+                      onToggleFavorite={() => {
+                        toggleFavorite({
+                          id: command.favoriteKey ?? command.id,
+                          type: "command",
+                          title: command.title,
+                          subtitle: command.subtitle,
+                          href: command.resolvedHref,
+                          commandId: command.actionId,
+                        });
+                        setFavoriteItems(getFavoriteItems());
+                      }}
+                    />
+                  ))}
+                </CommandGroup>
+              );
+            })}
+          </CommandList>
+
+          <DialogFooter className="shrink-0 text-[11px] text-white/40">
+            <span>↑ ↓ Navigate · Enter Select · Esc Close</span>
+            <span>{isMac ? "⌘K" : "Ctrl+K"}</span>
+          </DialogFooter>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
 

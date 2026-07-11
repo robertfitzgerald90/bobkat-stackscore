@@ -721,3 +721,22 @@
   font-size: 0.9375rem;
   font-weight: 600;
 }
+
+.command-palette [cmdk-group-heading] {
+  padding: 0.5rem 0.75rem 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.command-palette [cmdk-item][data-selected="true"] {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.command-palette [cmdk-list] {
+  max-height: none !important;
+  flex: 1 1 auto;
+  min-height: 0;
+}

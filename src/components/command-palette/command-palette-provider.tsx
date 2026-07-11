@@ -9,6 +9,10 @@ import {
   useState,
 } from "react";
 import { CommandPaletteDialog } from "@/components/command-palette/command-palette-dialog";
+import {
+  isCommandPaletteInput,
+  isTypingTarget,
+} from "@/lib/keyboard-shortcuts";
 
 type CommandPaletteContextValue = {
   open: boolean;
@@ -36,10 +40,14 @@ export function CommandPaletteProvider({
     function onKeyDown(event: KeyboardEvent) {
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const modifier = isMac ? event.metaKey : event.ctrlKey;
-      if (modifier && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((current) => !current);
+      if (!modifier || event.key.toLowerCase() !== "k") return;
+
+      if (isTypingTarget(event.target) && !isCommandPaletteInput(event.target)) {
+        return;
       }
+
+      event.preventDefault();
+      setOpen((current) => !current);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
