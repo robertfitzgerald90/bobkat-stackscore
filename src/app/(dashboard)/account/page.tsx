@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { AccountAppearanceSection } from "@/components/account/account-appearance-section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function AccountPage() {
@@ -28,6 +29,7 @@ export default async function AccountPage() {
           </div>
         </CardContent>
       </Card>
+      <AccountAppearanceSection />
     </div>
   );
 }

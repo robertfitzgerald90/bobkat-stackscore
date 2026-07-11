@@ -1,8 +1,9 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { Menu } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { formatUserRole } from "@/lib/display";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +21,14 @@ export function AppHeader({
   user,
   pageTitle,
   onMenuClick,
+  sidebarCollapsed = false,
+  onSidebarToggle,
 }: {
   user: { name: string; email: string; role: string };
   pageTitle: string;
   onMenuClick: () => void;
+  sidebarCollapsed?: boolean;
+  onSidebarToggle?: () => void;
 }) {
   const initials = user.name
     .split(" ")
@@ -33,7 +38,7 @@ export function AppHeader({
     .toUpperCase();
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b bg-card px-4 shadow-sm lg:h-16 lg:px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 shadow-[var(--shadow-glow)] lg:h-16 lg:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Button
           type="button"
@@ -45,6 +50,23 @@ export function AppHeader({
         >
           <Menu className="h-5 w-5" />
         </Button>
+        {onSidebarToggle ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="hidden shrink-0 lg:inline-flex"
+            onClick={onSidebarToggle}
+            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!sidebarCollapsed}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="h-5 w-5" />
+            ) : (
+              <PanelLeftClose className="h-5 w-5" />
+            )}
+          </Button>
+        ) : null}
         <BrandLogo showText={false} size={32} className="shrink-0 lg:hidden" />
         <div className="min-w-0 lg:hidden">
           <h1 className="truncate text-base font-semibold text-primary">{pageTitle}</h1>
@@ -54,35 +76,39 @@ export function AppHeader({
           <p className="text-xs text-muted-foreground">Executive-ready client insights</p>
         </div>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          className="flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-muted"
-        >
-          <Avatar className="h-8 w-8 border border-border">
-            <AvatarFallback className="bg-primary text-xs text-primary-foreground">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="hidden text-left md:block">
-            <p className="text-sm font-medium">{user.name}</p>
-            <p className="text-xs text-muted-foreground">{formatUserRole(user.role)}</p>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel className="md:hidden">
+      <div className="flex shrink-0 items-center gap-2">
+        <ThemeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label="Account menu"
+          >
+            <Avatar className="h-8 w-8 border border-border">
+              <AvatarFallback className="bg-primary text-xs text-primary-foreground">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="hidden text-left md:block">
               <p className="text-sm font-medium">{user.name}</p>
-              <p className="text-xs font-normal text-muted-foreground">
-                {formatUserRole(user.role)}
-              </p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="md:hidden" />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <p className="text-xs text-muted-foreground">{formatUserRole(user.role)}</p>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="md:hidden">
+                <p className="text-sm font-medium">{user.name}</p>
+                <p className="text-xs font-normal text-muted-foreground">
+                  {formatUserRole(user.role)}
+                </p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="md:hidden" />
+              <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

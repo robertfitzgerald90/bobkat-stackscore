@@ -20,9 +20,9 @@ const CATEGORY_COLORS = [
   "var(--chart-3)",
   "var(--chart-4)",
   "var(--chart-2)",
-  "#5c6b7a",
-  "#94a3b8",
-  "#64748b",
+  "var(--chart-5)",
+  "var(--text-secondary)",
+  "var(--muted-foreground)",
 ];
 
 type CategoryTrendsChartProps = {
@@ -106,7 +106,7 @@ export function CategoryTrendsChart({ series }: CategoryTrendsChartProps) {
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis dataKey="label" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
             <Tooltip

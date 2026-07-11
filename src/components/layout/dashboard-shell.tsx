@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar, MobileSidebar } from "@/components/layout/app-sidebar";
+import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { getPageTitle } from "@/lib/navigation/page-titles";
 
 type DashboardShellProps = {
@@ -14,11 +15,12 @@ type DashboardShellProps = {
 export function DashboardShell({ user, children }: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { collapsed, toggleCollapsed, hydrated } = useSidebarCollapsed();
   const pageTitle = getPageTitle(pathname);
 
   return (
     <div className="flex h-screen min-h-screen overflow-hidden bg-background">
-      <AppSidebar role={user.role} clientId={user.clientId} />
+      <AppSidebar role={user.role} clientId={user.clientId} collapsed={hydrated && collapsed} />
       <MobileSidebar
         role={user.role}
         clientId={user.clientId}
@@ -30,8 +32,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           user={user}
           pageTitle={pageTitle}
           onMenuClick={() => setMobileNavOpen(true)}
+          sidebarCollapsed={hydrated && collapsed}
+          onSidebarToggle={toggleCollapsed}
         />
-        <main className="page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/40 p-4 sm:p-6 lg:p-8">
+        <main className="page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/30 p-4 dark:bg-surface-elevated/20 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

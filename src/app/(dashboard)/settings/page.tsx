@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { AccountAppearanceSection } from "@/components/account/account-appearance-section";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { isConsultantMode } from "@/lib/navigation/portal-mode";
@@ -26,6 +27,7 @@ export default async function SettingsPage() {
           Contact your administrator to manage users, assessment library, and integrations.
         </CardContent>
       </Card>
+      <AccountAppearanceSection />
     </div>
   );
 }

@@ -2,11 +2,20 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .midnight *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface-app: var(--surface-app);
+  --color-surface-sidebar: var(--surface-sidebar);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-card: var(--surface-card);
+  --color-surface-card-hover: var(--surface-card-hover);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-hover: var(--accent-blue-hover);
+  --color-chart-grid: var(--chart-grid);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -52,16 +61,26 @@
 }
 
 :root {
-  --background: #ffffff;
+  --surface-app: #ffffff;
+  --surface-sidebar: #082f5b;
+  --surface-elevated: #ffffff;
+  --surface-card: #ffffff;
+  --surface-card-hover: #f8fafc;
+  --text-secondary: #475569;
+  --accent-blue: #082f5b;
+  --accent-blue-hover: #0a3d75;
+  --chart-grid: rgba(15, 23, 42, 0.08);
+  --shadow-glow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --background: var(--surface-app);
   --foreground: #0f172a;
-  --card: #ffffff;
+  --card: var(--surface-card);
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #082f5b;
+  --primary: var(--accent-blue);
   --primary-foreground: #ffffff;
-  --link: #082f5b;
-  --link-hover: #0a3d75;
+  --link: var(--accent-blue);
+  --link-hover: var(--accent-blue-hover);
   --secondary: #e8eef3;
   --secondary-foreground: #082f5b;
   --muted: #f4f6f8;
@@ -80,7 +99,7 @@
   --chart-4: #d97706;
   --chart-5: #dc2626;
   --radius: 0.625rem;
-  --sidebar: #082f5b;
+  --sidebar: var(--surface-sidebar);
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #7d97ac;
   --sidebar-primary-foreground: #082f5b;
@@ -90,42 +109,56 @@
   --sidebar-ring: #7d97ac;
 }
 
+/* StackScore Midnight — also applied via `.dark` when OS/system prefers dark */
+.midnight,
 .dark {
-  --background: #0b1a2e;
-  --foreground: #f8fafc;
-  --card: #0f2340;
-  --card-foreground: #f8fafc;
-  --popover: #0f2340;
-  --popover-foreground: #f8fafc;
-  --primary: #1a4d75;
-  --primary-foreground: #ffffff;
-  --link: #9ec5de;
-  --link-hover: #b8d8eb;
-  --secondary: #1a3354;
-  --secondary-foreground: #e8eef3;
-  --muted: #1a3354;
-  --muted-foreground: #a8b8cc;
-  --accent: #1a3354;
-  --accent-foreground: #f8fafc;
+  --surface-app: #06111f;
+  --surface-sidebar: #08182a;
+  --surface-elevated: #0c1c2e;
+  --surface-card: #10243a;
+  --surface-card-hover: #163051;
+  --text-secondary: #afc0d4;
+  --accent-blue: #2387ff;
+  --accent-blue-hover: #4a9dff;
+  --chart-grid: rgba(175, 192, 212, 0.12);
+  --shadow-glow:
+    0 0 0 1px rgba(35, 135, 255, 0.1),
+    0 10px 40px rgba(0, 0, 0, 0.35);
+  --background: var(--surface-app);
+  --foreground: #f7fafc;
+  --card: var(--surface-card);
+  --card-foreground: #f7fafc;
+  --popover: #10243a;
+  --popover-foreground: #f7fafc;
+  --primary: var(--accent-blue);
+  --primary-foreground: #f7fafc;
+  --link: var(--accent-blue);
+  --link-hover: var(--accent-blue-hover);
+  --secondary: #0c1c2e;
+  --secondary-foreground: #afc0d4;
+  --muted: #0c1c2e;
+  --muted-foreground: #7f93aa;
+  --accent: rgba(35, 135, 255, 0.14);
+  --accent-foreground: #dbeafe;
   --destructive: #f87171;
-  --success: #4ade80;
+  --success: #34d399;
   --warning: #fbbf24;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.12);
-  --ring: #7d97ac;
-  --chart-1: #7d97ac;
-  --chart-2: #082f5b;
-  --chart-3: #4ade80;
+  --border: #21384f;
+  --input: #21384f;
+  --ring: #2387ff;
+  --chart-1: #2387ff;
+  --chart-2: #4a9dff;
+  --chart-3: #34d399;
   --chart-4: #fbbf24;
   --chart-5: #f87171;
-  --sidebar: #061e3a;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #7d97ac;
-  --sidebar-primary-foreground: #082f5b;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #7d97ac;
+  --sidebar: var(--surface-sidebar);
+  --sidebar-foreground: #f7fafc;
+  --sidebar-primary: #2387ff;
+  --sidebar-primary-foreground: #f7fafc;
+  --sidebar-accent: rgba(35, 135, 255, 0.16);
+  --sidebar-accent-foreground: #f7fafc;
+  --sidebar-border: #21384f;
+  --sidebar-ring: #2387ff;
 }
 
 @layer base {
@@ -150,7 +183,11 @@
   .dark h1,
   .dark h2,
   .dark h3,
-  .dark h4 {
+  .dark h4,
+  .midnight h1,
+  .midnight h2,
+  .midnight h3,
+  .midnight h4 {
     @apply text-foreground;
   }
 }
@@ -168,20 +205,29 @@
   .page-title {
     @apply break-words text-xl font-semibold tracking-tight text-primary sm:text-2xl;
   }
-  .dark .page-title {
+  .dark .page-title,
+  .midnight .page-title {
     @apply text-foreground;
   }
   .page-description {
     @apply break-words text-sm text-muted-foreground;
   }
   .stat-card {
-    @apply min-w-0 max-w-full shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md;
+    @apply min-w-0 max-w-full bg-card shadow-[var(--shadow-glow)] ring-1 ring-border/60 transition-[box-shadow,background-color] hover:bg-surface-card-hover hover:shadow-[var(--shadow-glow)];
+  }
+  .surface-elevated {
+    background: var(--surface-elevated);
+    box-shadow: var(--shadow-glow);
   }
   .text-brand {
     @apply text-primary;
   }
-  .dark .text-brand {
+  .dark .text-brand,
+  .midnight .text-brand {
     color: var(--link);
+  }
+  .text-secondary-token {
+    color: var(--text-secondary);
   }
   .action-bar {
     @apply flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end;

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const BAR_COLORS: Record<Rating, string> = {
   critical: "bg-destructive",
   at_risk: "bg-warning",
-  stable: "bg-[#7d97ac]",
+  stable: "bg-chart-2",
   strong: "bg-success",
   exceptional: "bg-success",
 };
