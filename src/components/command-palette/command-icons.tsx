@@ -1,0 +1,76 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Building2,
+  Camera,
+  ClipboardList,
+  Eye,
+  FileText,
+  FolderKanban,
+  HelpCircle,
+  LayoutDashboard,
+  LayoutGrid,
+  Library,
+  Lightbulb,
+  Mail,
+  Map,
+  Megaphone,
+  Play,
+  Plus,
+  Search,
+  Send,
+  Settings,
+  Shield,
+  Star,
+  Upload,
+  UserCircle,
+  UserPlus,
+  Users,
+} from "lucide-react";
+
+export const COMMAND_ICON_MAP: Record<string, LucideIcon> = {
+  ArrowRight,
+  BookOpen,
+  Building2,
+  Camera,
+  ClipboardList,
+  Eye,
+  FileText,
+  FolderKanban,
+  HelpCircle,
+  LayoutDashboard,
+  LayoutGrid,
+  Library,
+  Lightbulb,
+  Mail,
+  Map,
+  Megaphone,
+  Play,
+  Plus,
+  Search,
+  Send,
+  Settings,
+  Shield,
+  Star,
+  Upload,
+  UserCircle,
+  UserPlus,
+  Users,
+};
+
+export function resolveCommandIcon(name?: string): LucideIcon {
+  if (!name) return ArrowRight;
+  return COMMAND_ICON_MAP[name] ?? ArrowRight;
+}
+
+export const SEARCH_TYPE_ICONS: Record<string, LucideIcon> = {
+  organization: Building2,
+  prospect: UserPlus,
+  assessment: ClipboardList,
+  campaign: Megaphone,
+  template: Mail,
+  project: FolderKanban,
+  technology: Library,
+  playbook: BookOpen,
+};

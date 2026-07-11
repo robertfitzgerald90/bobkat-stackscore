@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { CommandPaletteTrigger } from "@/components/command-palette/command-palette-trigger";
 import { formatUserRole } from "@/lib/display";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,6 +78,7 @@ export function AppHeader({
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
+        <CommandPaletteTrigger />
         <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger

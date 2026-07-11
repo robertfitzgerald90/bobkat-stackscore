@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar, MobileSidebar } from "@/components/layout/app-sidebar";
 import { FloatingQuickInviteButton } from "@/components/communications/floating-quick-invite-button";
 import { QuickInviteProvider } from "@/components/communications/quick-invite-provider";
+import { CommandPaletteProvider } from "@/components/command-palette/command-palette-provider";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { getPageTitle } from "@/lib/navigation/page-titles";
 
@@ -46,9 +47,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     </div>
   );
 
-  if (!staffQuickInviteEnabled) {
-    return shell;
-  }
-
-  return <QuickInviteProvider enabled={staffQuickInviteEnabled}>{shell}</QuickInviteProvider>;
+  return (
+    <CommandPaletteProvider user={user}>
+      <QuickInviteProvider enabled={staffQuickInviteEnabled}>{shell}</QuickInviteProvider>
+    </CommandPaletteProvider>
+  );
 }
