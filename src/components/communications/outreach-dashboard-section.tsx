@@ -1,8 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Megaphone, Upload, UserPlus, Users } from "lucide-react";
 import {
+  CheckCircle2,
+  Megaphone,
+  Percent,
+  Send,
+  Target,
+  Upload,
+  UserPlus,
+  Users,
+} from "lucide-react";
+import {
+  CommunicationsEmptyState,
+  CommunicationsMetricsGrid,
   CommunicationsPageHeader,
   CommunicationsPanel,
   StatusPill,
@@ -40,17 +51,25 @@ export type OutreachDashboardStats = {
   }>;
 };
 
+function campaignStatusTone(status: string): "success" | "warning" | "neutral" | "info" {
+  if (status === "completed" || status === "active") return "success";
+  if (status === "draft" || status === "paused") return "warning";
+  if (status === "ready") return "info";
+  return "neutral";
+}
+
 export function OutreachDashboardSection({ stats }: { stats: OutreachDashboardStats }) {
   const quickInvite = useQuickInviteOptional();
 
-  const cards = [
-    { label: "Active Campaigns", value: stats.activeCampaigns },
-    { label: "Invitations Sent", value: stats.invitationsSent },
-    { label: "Assessments Started", value: stats.assessmentsStarted },
-    { label: "Assessments Completed", value: stats.assessmentsCompleted },
+  const metrics = [
+    { label: "Active Campaigns", value: stats.activeCampaigns, icon: Megaphone },
+    { label: "Invitations Sent", value: stats.invitationsSent, icon: Send },
+    { label: "Assessments Started", value: stats.assessmentsStarted, icon: Target },
+    { label: "Assessments Completed", value: stats.assessmentsCompleted, icon: CheckCircle2 },
     {
       label: "Conversion Rate",
       value: stats.conversionRate === null ? "—" : `${stats.conversionRate}%`,
+      icon: Percent,
     },
   ];
 
@@ -70,7 +89,7 @@ export function OutreachDashboardSection({ stats }: { stats: OutreachDashboardSt
             </Link>
             <button
               type="button"
-              className={buttonClassName({ variant: "default", className: "bg-[#082F5B] hover:bg-[#062646]" })}
+              className={buttonClassName({ variant: "default" })}
               onClick={() => quickInvite?.openQuickInvite()}
             >
               <UserPlus className="size-4" />
@@ -80,89 +99,95 @@ export function OutreachDashboardSection({ stats }: { stats: OutreachDashboardSt
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-xl border border-[#1e3a5f]/10 bg-card p-5 shadow-sm"
-          >
-            <p className="text-sm text-muted-foreground">{card.label}</p>
-            <p className="mt-2 text-3xl font-bold text-[#082F5B]">{card.value}</p>
-          </div>
-        ))}
-      </div>
+      <CommunicationsMetricsGrid metrics={metrics} columns={5} />
 
-      <CommunicationsPanel title="Quick Actions">
-        <div className="flex flex-wrap gap-3">
+      <CommunicationsPanel title="Quick Actions" compact>
+        <div className="action-bar-start gap-2">
           <button
             type="button"
-            className={buttonClassName({ variant: "default", className: "bg-[#082F5B] hover:bg-[#062646]" })}
+            className={buttonClassName({ variant: "default", size: "sm" })}
             onClick={() => quickInvite?.openQuickInvite()}
           >
             <UserPlus className="size-4" />
             Quick Invite
           </button>
-          <Link href="/admin/communications/campaigns/new" className={buttonClassName({ variant: "outline" })}>
+          <Link
+            href="/admin/communications/campaigns/new"
+            className={buttonClassName({ variant: "outline", size: "sm" })}
+          >
             <Megaphone className="size-4" />
             New Campaign
           </Link>
-          <Link href="/admin/communications/prospects/import" className={buttonClassName({ variant: "outline" })}>
+          <Link
+            href="/admin/communications/prospects/import"
+            className={buttonClassName({ variant: "outline", size: "sm" })}
+          >
             <Upload className="size-4" />
             Import CSV
           </Link>
-          <Link href="/admin/communications/prospects" className={buttonClassName({ variant: "outline" })}>
+          <Link
+            href="/admin/communications/prospects"
+            className={buttonClassName({ variant: "outline", size: "sm" })}
+          >
             <Users className="size-4" />
             Browse Prospects
           </Link>
           <Link
             href="/admin/communications/templates/EMAIL-009"
-            className={buttonClassName({ variant: "outline" })}
+            className={buttonClassName({ variant: "outline", size: "sm" })}
           >
             Preview Invitation
           </Link>
         </div>
       </CommunicationsPanel>
 
-      <CommunicationsPanel title="Recent Campaigns">
+      <CommunicationsPanel title="Recent Campaigns" contentClassName="p-0 sm:p-0">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Campaign</TableHead>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="px-5">Campaign</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Recipients</TableHead>
               <TableHead>Sent</TableHead>
               <TableHead>Completed</TableHead>
-              <TableHead>Conversion</TableHead>
+              <TableHead className="pr-5">Conversion</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {stats.recentCampaigns.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-muted-foreground">
-                  No campaigns yet. Use Quick Invite to send your first assessment invitation.
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={6} className="px-5">
+                  <CommunicationsEmptyState
+                    title="No campaigns yet"
+                    description="Use Quick Invite to send your first assessment invitation."
+                  />
                 </TableCell>
               </TableRow>
             ) : (
               stats.recentCampaigns.map((campaign) => (
                 <TableRow key={campaign.id}>
-                  <TableCell>
+                  <TableCell className="px-5">
                     <Link
                       href={`/admin/communications/campaigns/${campaign.id}`}
-                      className="font-medium text-[#082F5B] hover:underline"
+                      className="font-medium text-foreground hover:text-link hover:underline"
                     >
                       {campaign.name}
                     </Link>
                     <p className="text-xs text-muted-foreground">by {campaign.createdByName}</p>
                   </TableCell>
                   <TableCell>
-                    <StatusPill tone="info">
+                    <StatusPill tone={campaignStatusTone(campaign.status)}>
                       {CAMPAIGN_STATUS_LABELS[campaign.status] ?? campaign.status}
                     </StatusPill>
                   </TableCell>
-                  <TableCell>{campaign.recipientCount}</TableCell>
-                  <TableCell>{campaign.metrics.invitationsSent}</TableCell>
-                  <TableCell>{campaign.metrics.assessmentCompletions}</TableCell>
-                  <TableCell>
+                  <TableCell className="tabular-nums text-foreground">{campaign.recipientCount}</TableCell>
+                  <TableCell className="tabular-nums text-foreground">
+                    {campaign.metrics.invitationsSent}
+                  </TableCell>
+                  <TableCell className="tabular-nums text-foreground">
+                    {campaign.metrics.assessmentCompletions}
+                  </TableCell>
+                  <TableCell className="pr-5 tabular-nums text-foreground">
                     {campaign.metrics.conversionRate === null
                       ? "—"
                       : `${campaign.metrics.conversionRate}%`}

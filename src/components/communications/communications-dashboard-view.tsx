@@ -1,6 +1,21 @@
 import Link from "next/link";
-import { Eye, LayoutTemplate, Send } from "lucide-react";
 import {
+  AlertTriangle,
+  BarChart3,
+  Eye,
+  FileCheck2,
+  FilePenLine,
+  LayoutTemplate,
+  Mail,
+  MailCheck,
+  MailOpen,
+  MousePointerClick,
+  Send,
+  TestTube2,
+} from "lucide-react";
+import {
+  CommunicationsEmptyState,
+  CommunicationsMetricsGrid,
   CommunicationsPageHeader,
   CommunicationsPanel,
   StatusPill,
@@ -54,18 +69,30 @@ export function CommunicationsDashboardView({
   health,
 }: CommunicationsDashboardViewProps) {
   const metrics = [
-    { label: "Production Messages", value: stats.messagesSent },
-    { label: "Delivery Rate", value: stats.deliveryRate === null ? "—" : `${stats.deliveryRate}%` },
-    { label: "Open Rate", value: stats.openRate === null ? "—" : `${stats.openRate}%` },
-    { label: "Click Rate", value: stats.clickRate === null ? "—" : `${stats.clickRate}%` },
-    { label: "Failed Deliveries", value: stats.failedDeliveries },
-    { label: "Test Emails Sent", value: stats.testEmailsSent },
-    { label: "Published Versions", value: stats.publishedVersions },
-    { label: "Pending Drafts", value: stats.draftVersions },
+    { label: "Production Messages", value: stats.messagesSent, icon: Mail },
+    {
+      label: "Delivery Rate",
+      value: stats.deliveryRate === null ? "—" : `${stats.deliveryRate}%`,
+      icon: MailCheck,
+    },
+    {
+      label: "Open Rate",
+      value: stats.openRate === null ? "—" : `${stats.openRate}%`,
+      icon: MailOpen,
+    },
+    {
+      label: "Click Rate",
+      value: stats.clickRate === null ? "—" : `${stats.clickRate}%`,
+      icon: MousePointerClick,
+    },
+    { label: "Failed Deliveries", value: stats.failedDeliveries, icon: AlertTriangle },
+    { label: "Test Emails Sent", value: stats.testEmailsSent, icon: TestTube2 },
+    { label: "Published Versions", value: stats.publishedVersions, icon: FileCheck2 },
+    { label: "Pending Drafts", value: stats.draftVersions, icon: FilePenLine },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="page-shell space-y-8">
       <OutreachDashboardSection stats={outreachStats} />
 
       <CommunicationsPageHeader
@@ -75,25 +102,35 @@ export function CommunicationsDashboardView({
           <>
             <Link
               href="/admin/communications/templates/EMAIL-001"
-              className={buttonClassName({ variant: "outline" })}
+              className={buttonClassName({ variant: "outline", size: "sm" })}
             >
               <Eye className="size-4" />
               Preview Account Activation
             </Link>
             <Link
               href="/admin/communications/templates"
-              className={buttonClassName({ variant: "outline" })}
+              className={buttonClassName({ variant: "outline", size: "sm" })}
             >
               <LayoutTemplate className="size-4" />
               Browse Templates
             </Link>
-            <Link href="/admin/communications/history" className={buttonClassName({ variant: "outline" })}>
+            <Link
+              href="/admin/communications/history"
+              className={buttonClassName({ variant: "outline", size: "sm" })}
+            >
               History
             </Link>
-            <Link href="/admin/communications/analytics" className={buttonClassName({ variant: "outline" })}>
+            <Link
+              href="/admin/communications/analytics"
+              className={buttonClassName({ variant: "outline", size: "sm" })}
+            >
+              <BarChart3 className="size-4" />
               Analytics
             </Link>
-            <Link href="/admin/communications/templates/EMAIL-001" className={buttonClassName({})}>
+            <Link
+              href="/admin/communications/templates/EMAIL-001"
+              className={buttonClassName({ variant: "default", size: "sm" })}
+            >
               <Send className="size-4" />
               Send Test Email
             </Link>
@@ -101,21 +138,7 @@ export function CommunicationsDashboardView({
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {metrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="rounded-xl border border-[#1e3a5f]/10 bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {metric.label}
-            </p>
-            <p className="mt-2 text-2xl font-semibold tabular-nums text-[#082F5B]">
-              {metric.value}
-            </p>
-          </div>
-        ))}
-      </div>
+      <CommunicationsMetricsGrid metrics={metrics} columns={4} />
 
       <div className="grid gap-6 xl:grid-cols-3">
         <CommunicationsPanel title="Communication Health">
@@ -123,7 +146,7 @@ export function CommunicationsDashboardView({
             {health.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start justify-between gap-3 rounded-lg border border-[#1e3a5f]/10 p-3"
+                className="flex items-start justify-between gap-3 rounded-lg border border-border/70 bg-muted/15 p-3"
               >
                 <div>
                   <p className="font-medium text-foreground">{item.label}</p>
@@ -141,11 +164,11 @@ export function CommunicationsDashboardView({
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between gap-3">
               <span className="text-muted-foreground">Provider</span>
-              <span className="font-medium">{stats.providerLabel}</span>
+              <span className="font-medium text-foreground">{stats.providerLabel}</span>
             </div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-muted-foreground">Last test email</span>
-              <span className="font-medium">
+              <span className="font-medium text-foreground">
                 {stats.lastTestEmail
                   ? new Date(stats.lastTestEmail.createdAt).toLocaleString()
                   : "None yet"}
@@ -153,7 +176,9 @@ export function CommunicationsDashboardView({
             </div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-muted-foreground">Previewable templates</span>
-              <span className="font-medium">{stats.previewableTemplates}</span>
+              <span className="font-medium tabular-nums text-foreground">
+                {stats.previewableTemplates}
+              </span>
             </div>
           </div>
         </CommunicationsPanel>
@@ -171,7 +196,7 @@ export function CommunicationsDashboardView({
               <Link
                 key={template.key}
                 href={`/admin/communications/templates/${template.key}`}
-                className="flex items-start justify-between gap-3 rounded-lg border border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] p-3 transition-colors hover:bg-[#082F5B]/[0.05]"
+                className="flex items-start justify-between gap-3 rounded-lg border border-border/70 bg-muted/15 p-3 transition-colors hover:bg-surface-card-hover"
               >
                 <div>
                   <p className="font-medium text-foreground">{template.name}</p>
@@ -187,16 +212,19 @@ export function CommunicationsDashboardView({
       <div className="grid gap-6 xl:grid-cols-2">
         <CommunicationsPanel title="Recent Customer Activity">
           {customerActivity.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No customer activity recorded yet.</p>
+            <CommunicationsEmptyState
+              title="No customer activity recorded yet"
+              description="Activity from client workspaces will appear here."
+            />
           ) : (
             <div className="space-y-3">
               {customerActivity.map((item) => (
                 <Link
                   key={item.id}
                   href={item.href ?? `/clients/${item.clientId}/activity`}
-                  className="block rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/20"
+                  className="block rounded-lg border border-border/70 p-3 transition-colors hover:bg-surface-card-hover"
                 >
-                  <p className="font-medium">{item.title}</p>
+                  <p className="font-medium text-foreground">{item.title}</p>
                   <p className="text-sm text-muted-foreground">{item.clientName}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {new Date(item.occurredAt).toLocaleString()}
@@ -209,17 +237,20 @@ export function CommunicationsDashboardView({
 
         <CommunicationsPanel title="Recent Delivery Failures">
           {recentFailures.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No recent delivery failures.</p>
+            <CommunicationsEmptyState
+              title="No recent delivery failures"
+              description="Failed sends will appear here for follow-up."
+            />
           ) : (
             <div className="space-y-3">
               {recentFailures.map((failure) => (
                 <Link
                   key={failure.id}
                   href={`/admin/communications/history/${failure.id}`}
-                  className="block rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/20"
+                  className="block rounded-lg border border-border/70 p-3 transition-colors hover:bg-surface-card-hover"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{failure.subject}</p>
+                    <p className="font-medium text-foreground">{failure.subject}</p>
                     <StatusPill tone="warning">{failure.status}</StatusPill>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -236,13 +267,19 @@ export function CommunicationsDashboardView({
       <div className="grid gap-6 xl:grid-cols-2">
         <CommunicationsPanel title="Recent Activity">
           {recentActivity.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No template version activity yet.</p>
+            <CommunicationsEmptyState
+              title="No template version activity yet"
+              description="Publish or update a template to see activity here."
+            />
           ) : (
             <div className="space-y-3">
               {recentActivity.map((item) => (
-                <div key={item.id} className="rounded-lg border border-[#1e3a5f]/10 p-3">
+                <div
+                  key={item.id}
+                  className="rounded-lg border border-border/70 bg-muted/10 p-3"
+                >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{item.templateName}</p>
+                    <p className="font-medium text-foreground">{item.templateName}</p>
                     <StatusPill tone={item.status === "published" ? "success" : "info"}>
                       v{item.versionNumber} · {item.status}
                     </StatusPill>
@@ -265,10 +302,10 @@ export function CommunicationsDashboardView({
               <Link
                 key={template.key}
                 href={`/admin/communications/templates/${template.key}`}
-                className="flex items-start justify-between gap-3 rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/30"
+                className="flex items-start justify-between gap-3 rounded-lg border border-border/70 p-3 transition-colors hover:bg-surface-card-hover"
               >
                 <div>
-                  <p className="font-medium">{template.name}</p>
+                  <p className="font-medium text-foreground">{template.name}</p>
                   <p className="text-xs text-muted-foreground">
                     Updated {new Date(template.lastUpdated).toLocaleDateString()}
                   </p>
@@ -280,42 +317,42 @@ export function CommunicationsDashboardView({
         </CommunicationsPanel>
       </div>
 
-      <CommunicationsPanel title="Recent Test Sends">
+      <CommunicationsPanel title="Recent Test Sends" contentClassName="p-0 sm:p-0">
         {recentTestSends.length === 0 ? (
-          <div className="py-8 text-center">
-            <p className="font-medium text-foreground">No test emails sent yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Send a test email from a template detail page to see history here.
-            </p>
+          <div className="px-5 pb-5">
+            <CommunicationsEmptyState
+              title="No test emails sent yet"
+              description="Send a test email from a template detail page to see history here."
+            />
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Template</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="px-5">Template</TableHead>
                 <TableHead>Recipient</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Sent by</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="pr-5">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recentTestSends.map((record) => (
                 <TableRow key={record.id}>
-                  <TableCell>
+                  <TableCell className="px-5">
                     <div>
-                      <p className="font-medium">{record.templateName}</p>
+                      <p className="font-medium text-foreground">{record.templateName}</p>
                       <p className="text-xs text-muted-foreground">{record.templateKey}</p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm">{record.recipientEmail}</TableCell>
+                  <TableCell className="text-sm text-foreground">{record.recipientEmail}</TableCell>
                   <TableCell>
                     <StatusPill tone={record.status === "sent" ? "success" : "warning"}>
                       {record.status}
                     </StatusPill>
                   </TableCell>
-                  <TableCell className="text-sm">{record.sentByName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-foreground">{record.sentByName}</TableCell>
+                  <TableCell className="pr-5 text-sm text-muted-foreground">
                     {new Date(record.createdAt).toLocaleString()}
                   </TableCell>
                 </TableRow>
