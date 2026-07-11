@@ -1,26 +1,32 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
-import { OFFER_TIMELINE } from "@/lib/assessment-offer/content";
+import { OFFER_TIMELINE, type OfferTimelineStep } from "@/lib/assessment-offer/content";
 import { OfferReveal } from "./offer-reveal";
+import { OfferSectionHeader } from "./offer-section-header";
 
-export function OfferTimeline() {
+type OfferTimelineProps = {
+  steps?: OfferTimelineStep[];
+  eyebrow?: string;
+  title?: string;
+  sectionClassName?: string;
+};
+
+export function OfferTimeline({
+  steps = OFFER_TIMELINE,
+  eyebrow = "What happens next",
+  title = "A clear path from purchase to strategy",
+  sectionClassName = "px-4 py-16 sm:px-6 sm:py-20 md:py-24",
+}: OfferTimelineProps = {}) {
   return (
-    <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+    <section className={sectionClassName}>
       <div className="mx-auto max-w-6xl">
-        <OfferReveal className="mb-10 text-center md:mb-14">
-          <p className="text-sm font-medium uppercase tracking-wider text-primary">
-            What happens next
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-            A clear path from purchase to strategy
-          </h2>
-        </OfferReveal>
+        <OfferSectionHeader eyebrow={eyebrow} title={title} />
 
         <div
           role="list"
           className="flex flex-col items-center lg:flex-row lg:items-start lg:justify-between"
         >
-          {OFFER_TIMELINE.map((step, index) => (
+          {steps.map((step, index) => (
             <Fragment key={step.title}>
               <OfferReveal delayMs={index * 70} className="w-full lg:flex-1 lg:min-w-0">
                 <div role="listitem" className="flex flex-col items-center px-2 text-center">
@@ -33,7 +39,7 @@ export function OfferTimeline() {
                   </p>
                 </div>
               </OfferReveal>
-              {index < OFFER_TIMELINE.length - 1 ? (
+              {index < steps.length - 1 ? (
                 <div
                   className="flex shrink-0 items-center justify-center py-3 text-muted-foreground/50 lg:px-1 lg:py-0 lg:pt-9"
                   aria-hidden

@@ -8,7 +8,7 @@ export const PREVIEW_ACTIVATION_URL =
 
 /** Safe fake invitation URL — never a production token. */
 export const PREVIEW_INVITATION_URL =
-  "https://app.stackscore.example/activate-account?token=preview-invitation-do-not-use";
+  "https://app.stackscore.example/assessment-invitation";
 
 export function buildAccountActivationSampleData(
   overrides: Partial<AccountActivationEmailData> = {},

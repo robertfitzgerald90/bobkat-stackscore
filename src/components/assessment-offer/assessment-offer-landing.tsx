@@ -4,6 +4,7 @@ import {
 } from "@/lib/assessment-offer/content";
 import { OfferFeatures } from "./offer-features";
 import { OfferFinalCta } from "./offer-final-cta";
+import { OfferFooter } from "./offer-footer";
 import { OfferHero } from "./offer-hero";
 import { OfferNav } from "./offer-nav";
 import { OfferScreenshotGallery } from "./offer-screenshot-gallery";
@@ -24,9 +25,7 @@ export function AssessmentOfferLanding() {
         <OfferWhy />
         <OfferFinalCta />
       </main>
-      <footer className="border-t border-border/60 px-4 py-8 text-center text-xs text-muted-foreground sm:px-6">
-        Powered by Bobkat IT · StackScore
-      </footer>
+      <OfferFooter />
     </div>
   );
 }
