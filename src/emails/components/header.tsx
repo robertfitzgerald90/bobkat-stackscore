@@ -1,10 +1,16 @@
 import React from "react";
 import { Img, Section, Text } from "@react-email/components";
-import { EMAIL_BRAND_ASSETS } from "@/emails/assets";
+import { DEFAULT_COMMUNICATION_BRAND, type CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import { emailTokens } from "@/emails/tokens";
-import { BRAND } from "@/lib/branding";
 
-export function Header() {
+type HeaderProps = {
+  brand?: CommunicationBrandConfig;
+};
+
+export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
+  const tagline =
+    brand.componentSettings.header?.tagline ?? `Powered by ${brand.companyName}`;
+
   return (
     <Section
       style={{
@@ -26,8 +32,8 @@ export function Header() {
           <tr>
             <td style={{ paddingRight: "16px", verticalAlign: "middle" }}>
               <Img
-                src={EMAIL_BRAND_ASSETS.bobkatItLogoNavy}
-                alt={`${BRAND.companyName} logo`}
+                src={brand.primaryLogoUrl}
+                alt={`${brand.companyName} logo`}
                 width={48}
                 height={48}
                 style={{
@@ -42,26 +48,26 @@ export function Header() {
               <Text
                 style={{
                   margin: 0,
-                  fontFamily: emailTokens.fontFamilyHeading,
+                  fontFamily: brand.fontFamilyHeading,
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: "32px",
-                  color: emailTokens.primary,
+                  color: brand.primaryColor,
                   letterSpacing: "-0.02em",
                 }}
               >
-                {BRAND.productName}
+                {brand.productName}
               </Text>
               <Text
                 style={{
                   margin: "4px 0 0",
                   fontSize: "12px",
                   lineHeight: "16px",
-                  color: emailTokens.secondary,
+                  color: brand.secondaryColor,
                   fontWeight: 500,
                 }}
               >
-                Powered by {BRAND.companyName}
+                {tagline}
               </Text>
             </td>
           </tr>

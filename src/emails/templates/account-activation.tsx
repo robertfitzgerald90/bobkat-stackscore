@@ -9,6 +9,9 @@ import {
   PrimaryButton,
   SecurityNotice,
 } from "@/emails/components";
+import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
+import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";
+import type { TemplateVersionContent } from "@/lib/communications/template-content";
 import { BRAND } from "@/lib/branding";
 
 export type AccountActivationEmailData = {
@@ -21,58 +24,109 @@ export type AccountActivationEmailData = {
   websiteUrl?: string;
 };
 
-export type AccountActivationEmailProps = AccountActivationEmailData;
+export type AccountActivationEmailProps = AccountActivationEmailData & {
+  brand?: CommunicationBrandConfig;
+  content?: TemplateVersionContent | null;
+};
+
+function interpolateCopy(
+  value: string,
+  data: AccountActivationEmailData,
+  brand: CommunicationBrandConfig,
+): string {
+  return value
+    .replace(/\{\{expirationDays\}\}/g, String(data.expirationDays ?? 7))
+    .replace(/\{\{supportEmail\}\}/g, data.supportEmail ?? brand.supportEmail)
+    .replace(/\{\{organizationName\}\}/g, data.organizationName ?? "your organization")
+    .replace(/\{\{firstName\}\}/g, data.firstName ?? "there");
+}
 
 export function AccountActivationEmail({
   activationUrl,
   firstName,
   organizationName,
-  assessmentName = `${BRAND.productName} Technology Maturity Assessment`,
+  assessmentName,
   expirationDays = 7,
-  supportEmail = BRAND.email,
+  supportEmail,
+  brand = DEFAULT_COMMUNICATION_BRAND,
+  content,
 }: AccountActivationEmailProps) {
-  const greeting = firstName ? `Welcome to ${BRAND.productName}, ${firstName}` : `Welcome to ${BRAND.productName}`;
-  const orgLine = organizationName
-    ? `Thank you for purchasing your ${assessmentName} for ${organizationName}.`
-    : `Thank you for purchasing your ${assessmentName}.`;
+  const resolvedAssessmentName =
+    assessmentName ?? `${brand.productName} Technology Maturity Assessment`;
+  const greeting =
+    content?.heroTitle ??
+    (firstName ? `Welcome to ${brand.productName}, ${firstName}` : `Welcome to ${brand.productName}`);
+
+  const defaultOrgLine = organizationName
+    ? `Thank you for purchasing your ${resolvedAssessmentName} for ${organizationName}.`
+    : `Thank you for purchasing your ${resolvedAssessmentName}.`;
+
+  const paragraphs =
+    content?.contentParagraphs && content.contentParagraphs.length > 0
+      ? content.contentParagraphs.map((paragraph, index) => {
+          if (index === 0 && paragraph.includes("Thank you for purchasing")) {
+            return defaultOrgLine;
+          }
+          return interpolateCopy(paragraph, { activationUrl, firstName, organizationName, expirationDays, supportEmail }, brand);
+        })
+      : [
+          defaultOrgLine,
+          "You are about to gain a clear understanding of your technology environment, uncover hidden risks, and identify practical opportunities to strengthen your business through technology.",
+          `${brand.productName} transforms technical information into clear, measurable insights so you can make technology decisions with confidence.`,
+        ];
+
+  const nextSteps = content?.nextSteps ?? [
+    "Activate your account",
+    "Complete your guided assessment",
+    "Review your technology health scores and recommendations",
+    "Build a prioritized roadmap",
+    `Meet with ${brand.companyName} to discuss next steps`,
+  ];
+
+  const securityItems = (content?.securityItems ?? [
+    `The activation link expires in ${expirationDays} days`,
+    "The link may only be used once",
+    "If you did not request this message, you may safely ignore it",
+  ]).map((item) =>
+    interpolateCopy(item, { activationUrl, firstName, organizationName, expirationDays, supportEmail }, brand),
+  );
+
+  const closingParagraph =
+    content?.closingParagraph ??
+    `Questions? Contact us at ${supportEmail ?? brand.supportEmail}. We're here to help you get started.`;
+
+  const previewText =
+    content?.previewText ??
+    "Activate your account and begin discovering your organization's technology maturity.";
 
   return (
-    <EmailLayout preview="Activate your account and begin discovering your organization's technology maturity.">
-      <EmailHeader />
+    <EmailLayout preview={previewText}>
+      <EmailHeader brand={brand} />
       <EmailHero
         title={greeting}
-        description="You're one step away from a clear picture of your technology environment."
+        description={
+          content?.heroDescription ??
+          "You're one step away from a clear picture of your technology environment."
+        }
       />
+      <ContentSection paragraphs={paragraphs} />
+      <PrimaryButton
+        href={activationUrl}
+        label={content?.ctaLabel ?? "Activate My Assessment"}
+        brand={brand}
+      />
+      <NextSteps steps={nextSteps} />
+      <SecurityNotice items={securityItems} />
       <ContentSection
-        paragraphs={[
-          orgLine,
-          "You are about to gain a clear understanding of your technology environment, uncover hidden risks, and identify practical opportunities to strengthen your business through technology.",
-          `${BRAND.productName} transforms technical information into clear, measurable insights so you can make technology decisions with confidence.`,
-        ]}
+        paragraphs={[interpolateCopy(closingParagraph, { activationUrl, firstName, organizationName, expirationDays, supportEmail }, brand)]}
       />
-      <PrimaryButton href={activationUrl} label="Activate My Assessment" />
-      <NextSteps
-        steps={[
-          "Activate your account",
-          "Complete your guided assessment",
-          "Review your technology health scores and recommendations",
-          "Build a prioritized roadmap",
-          "Meet with Bobkat IT to discuss next steps",
-        ]}
-      />
-      <SecurityNotice
-        items={[
-          `The activation link expires in ${expirationDays} days`,
-          "The link may only be used once",
-          "If you did not request this message, you may safely ignore it",
-        ]}
-      />
-      <ContentSection
-        paragraphs={[
-          `Questions? Contact us at ${supportEmail}. We're here to help you get started.`,
-        ]}
-      />
-      <EmailFooter />
+      <EmailFooter brand={brand} />
     </EmailLayout>
   );
+}
+
+export function buildAccountActivationDefaults() {
+  return {
+    assessmentName: `${BRAND.productName} Technology Maturity Assessment`,
+  };
 }

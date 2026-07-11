@@ -211,6 +211,10 @@ model User {
   purchases              AssessmentPurchase[]
   activationTokens       AccountActivationToken[]
   communicationTestSends CommunicationTestSend[]
+  communicationBrandSettingsUpdates CommunicationBrandSettings[]
+  communicationTemplateVersionsPublished CommunicationTemplateVersion[] @relation("PublishedTemplateVersions")
+  communicationTemplateVersionsCreated CommunicationTemplateVersion[] @relation("CreatedTemplateVersions")
+  communicationSampleProfiles CommunicationSampleProfile[]
 }
 
 model Client {
@@ -646,6 +650,12 @@ enum CommunicationTestSendStatus {
   failed
 }
 
+enum CommunicationTemplateVersionStatus {
+  draft
+  published
+  archived
+}
+
 enum TechnologyStandardStatus {
   preferred
   approved
@@ -769,6 +779,73 @@ model CommunicationTestSend {
   @@index([createdAt])
   @@index([templateKey])
   @@index([sentByUserId])
+}
+
+model CommunicationBrandSettings {
+  id                String   @id @default("default")
+  primaryLogoUrl    String?
+  secondaryLogoUrl  String?
+  primaryColor      String   @default("#082F5B")
+  secondaryColor    String   @default("#7D97AC")
+  accentColor       String   @default("#2563EB")
+  buttonPrimaryBg   String   @default("#082F5B")
+  buttonPrimaryText String   @default("#FFFFFF")
+  buttonSecondaryBg String @default("#F4F6F8")
+  buttonSecondaryText String @default("#082F5B")
+  fontFamilyHeading String   @default("Georgia, 'Times New Roman', serif")
+  fontFamilyBody    String   @default("Arial, Helvetica, sans-serif")
+  companyName       String   @default("Bobkat IT")
+  productName       String   @default("StackScore")
+  websiteUrl        String?
+  supportEmail      String?
+  supportPhone      String?
+  address           String?  @db.Text
+  copyrightText     String?
+  footerTagline     String?
+  socialLinks       Json     @default("[]")
+  componentSettings Json     @default("{}")
+  updatedAt         DateTime @updatedAt
+  updatedByUserId   String?
+
+  updatedBy User? @relation(fields: [updatedByUserId], references: [id])
+}
+
+model CommunicationTemplateVersion {
+  id                String                             @id @default(uuid())
+  templateKey       String
+  versionNumber     Int
+  status            CommunicationTemplateVersionStatus
+  subject           String
+  previewText       String                             @db.Text
+  contentJson       Json
+  sharedComponents  Json                               @default("[]")
+  changeNotes       String?                            @db.Text
+  publishedAt       DateTime?
+  publishedByUserId String?
+  createdByUserId   String
+  createdAt         DateTime                           @default(now())
+  updatedAt         DateTime                           @updatedAt
+
+  publishedBy User? @relation("PublishedTemplateVersions", fields: [publishedByUserId], references: [id])
+  createdBy   User  @relation("CreatedTemplateVersions", fields: [createdByUserId], references: [id])
+
+  @@unique([templateKey, versionNumber])
+  @@index([templateKey, status])
+}
+
+model CommunicationSampleProfile {
+  id              String   @id @default(uuid())
+  name            String
+  templateKey     String?
+  sampleDataJson  Json
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  createdBy User @relation(fields: [createdByUserId], references: [id])
+
+  @@index([templateKey])
+  @@index([createdByUserId])
 }
 
 model TechnologyCategory {

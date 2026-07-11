@@ -1,3 +1,4 @@
+import { withCommunicationDbFallback } from "@/lib/communications/db-safe";
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email/send";
 import { getEmailTemplate } from "@/lib/communications/registry";
@@ -14,6 +15,7 @@ export type SendTestEmailInput = {
   recipientEmail: string;
   firstName?: string;
   organizationName?: string;
+  assessmentName?: string;
   sentByUserId: string;
 };
 
@@ -29,6 +31,7 @@ function buildSampleOverrides(input: SendTestEmailInput): Record<string, unknown
     return buildAccountActivationSampleData({
       firstName: input.firstName,
       organizationName: input.organizationName,
+      assessmentName: input.assessmentName,
       activationUrl: PREVIEW_ACTIVATION_URL,
     });
   }
@@ -36,6 +39,7 @@ function buildSampleOverrides(input: SendTestEmailInput): Record<string, unknown
   return {
     firstName: input.firstName,
     organizationName: input.organizationName,
+    assessmentName: input.assessmentName,
   };
 }
 
@@ -66,15 +70,28 @@ export async function sendCommunicationTestEmail(
       text: rendered.text,
     });
 
-    const record = await prisma.communicationTestSend.create({
-      data: {
+    const record = await withCommunicationDbFallback(
+      () =>
+        prisma.communicationTestSend.create({
+          data: {
+            templateKey: input.templateKey,
+            recipientEmail: email,
+            providerMessageId: result.id ?? null,
+            status: "sent",
+            sentByUserId: input.sentByUserId,
+          },
+        }),
+      {
+        id: "local-test-send",
         templateKey: input.templateKey,
         recipientEmail: email,
         providerMessageId: result.id ?? null,
-        status: "sent",
+        status: "sent" as const,
+        errorMessage: null,
         sentByUserId: input.sentByUserId,
+        createdAt: new Date(),
       },
-    });
+    );
 
     return {
       id: record.id,
@@ -84,15 +101,28 @@ export async function sendCommunicationTestEmail(
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to send test email";
 
-    const record = await prisma.communicationTestSend.create({
-      data: {
+    const record = await withCommunicationDbFallback(
+      () =>
+        prisma.communicationTestSend.create({
+          data: {
+            templateKey: input.templateKey,
+            recipientEmail: email,
+            status: "failed",
+            errorMessage: message,
+            sentByUserId: input.sentByUserId,
+          },
+        }),
+      {
+        id: "local-test-send-failed",
         templateKey: input.templateKey,
         recipientEmail: email,
-        status: "failed",
+        providerMessageId: null,
+        status: "failed" as const,
         errorMessage: message,
         sentByUserId: input.sentByUserId,
+        createdAt: new Date(),
       },
-    });
+    );
 
     return {
       id: record.id,

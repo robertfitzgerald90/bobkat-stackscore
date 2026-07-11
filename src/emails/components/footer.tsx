@@ -1,18 +1,23 @@
 import React from "react";
 import { Hr, Link, Section, Text } from "@react-email/components";
+import { DEFAULT_COMMUNICATION_BRAND, type CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import { emailTokens } from "@/emails/tokens";
-import { BRAND } from "@/lib/branding";
 
-function websiteHref(): string {
-  const website = BRAND.website.trim();
+function websiteHref(website: string): string {
   if (website.startsWith("http://") || website.startsWith("https://")) {
     return website;
   }
   return `https://${website.replace(/^\/\//, "")}`;
 }
 
-export function Footer() {
-  const siteUrl = websiteHref();
+export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: CommunicationBrandConfig }) {
+  const siteUrl = websiteHref(brand.websiteUrl);
+  const teamLabel =
+    brand.componentSettings.footer?.teamLabel ?? `The ${brand.productName} Team`;
+  const servicesLine =
+    brand.componentSettings.footer?.servicesLine ?? brand.footerTagline;
+  const showSocial =
+    brand.componentSettings.socialLinks?.enabled !== false && brand.socialLinks.length > 0;
 
   return (
     <Section
@@ -33,10 +38,10 @@ export function Footer() {
           fontSize: "14px",
           fontWeight: 600,
           lineHeight: "20px",
-          color: emailTokens.primary,
+          color: brand.primaryColor,
         }}
       >
-        The {BRAND.productName} Team
+        {teamLabel}
       </Text>
       <Text
         style={{
@@ -46,34 +51,65 @@ export function Footer() {
           color: emailTokens.textMuted,
         }}
       >
-        Powered by {BRAND.companyName}
+        Powered by {brand.companyName}
       </Text>
-      <Text
-        style={{
-          margin: "0 0 16px",
-          fontSize: "12px",
-          lineHeight: "18px",
-          color: emailTokens.textMuted,
-        }}
-      >
-        Technology Consulting · Managed Services · Technology Strategy
-      </Text>
+      {servicesLine ? (
+        <Text
+          style={{
+            margin: "0 0 16px",
+            fontSize: "12px",
+            lineHeight: "18px",
+            color: emailTokens.textMuted,
+          }}
+        >
+          {servicesLine}
+        </Text>
+      ) : null}
+      {brand.address ? (
+        <Text
+          style={{
+            margin: "0 0 12px",
+            fontSize: "12px",
+            lineHeight: "18px",
+            color: emailTokens.textMuted,
+          }}
+        >
+          {brand.address}
+        </Text>
+      ) : null}
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
           href={siteUrl}
-          style={{ color: emailTokens.primary, textDecoration: "underline" }}
+          style={{ color: brand.primaryColor, textDecoration: "underline" }}
         >
-          {BRAND.website.replace(/^https?:\/\//, "")}
+          {brand.websiteUrl.replace(/^https?:\/\//, "")}
         </Link>
       </Text>
-      <Text style={{ margin: 0, fontSize: "13px", lineHeight: "20px" }}>
+      <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
-          href={`mailto:${BRAND.email}`}
-          style={{ color: emailTokens.primary, textDecoration: "underline" }}
+          href={`mailto:${brand.supportEmail}`}
+          style={{ color: brand.primaryColor, textDecoration: "underline" }}
         >
-          {BRAND.email}
+          {brand.supportEmail}
         </Link>
       </Text>
+      {brand.supportPhone ? (
+        <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px", color: emailTokens.textMuted }}>
+          {brand.supportPhone}
+        </Text>
+      ) : null}
+      {showSocial ? (
+        <Text style={{ margin: "12px 0 0", fontSize: "12px", lineHeight: "20px" }}>
+          {brand.socialLinks.map((link, index) => (
+            <React.Fragment key={link.platform}>
+              {index > 0 ? " · " : null}
+              <Link href={link.url} style={{ color: brand.primaryColor, textDecoration: "underline" }}>
+                {link.label ?? link.platform}
+              </Link>
+            </React.Fragment>
+          ))}
+        </Text>
+      ) : null}
       <Text
         style={{
           margin: "20px 0 0",
@@ -82,7 +118,7 @@ export function Footer() {
           color: emailTokens.textMuted,
         }}
       >
-        © {new Date().getFullYear()} {BRAND.companyName}. All rights reserved.
+        {brand.copyrightText}
       </Text>
     </Section>
   );

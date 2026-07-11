@@ -1,14 +1,18 @@
 import React from "react";
 import { Button, Section } from "@react-email/components";
+import { DEFAULT_COMMUNICATION_BRAND, type CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import { emailTokens } from "@/emails/tokens";
 
 type PrimaryButtonProps = {
   href: string;
   label: string;
+  brand?: CommunicationBrandConfig;
 };
 
 /** Centered bulletproof CTA for Gmail, Outlook, and Apple Mail. */
-export function PrimaryButton({ href, label }: PrimaryButtonProps) {
+export function PrimaryButton({ href, label, brand = DEFAULT_COMMUNICATION_BRAND }: PrimaryButtonProps) {
+  const borderRadius = brand.componentSettings.primaryButton?.borderRadius ?? "10px";
+
   return (
     <Section
       style={{
@@ -22,11 +26,11 @@ export function PrimaryButton({ href, label }: PrimaryButtonProps) {
       <Button
         href={href}
         style={{
-          backgroundColor: emailTokens.primary,
-          borderRadius: "10px",
-          color: emailTokens.textInverse,
+          backgroundColor: brand.buttonPrimaryBg,
+          borderRadius,
+          color: brand.buttonPrimaryText,
           display: "inline-block",
-          fontFamily: emailTokens.fontFamily,
+          fontFamily: brand.fontFamilyBody,
           fontSize: "16px",
           fontWeight: 600,
           lineHeight: "100%",

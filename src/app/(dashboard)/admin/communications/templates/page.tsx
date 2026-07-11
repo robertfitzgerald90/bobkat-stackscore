@@ -2,12 +2,12 @@ import { redirect } from "next/navigation";
 import { TemplateLibraryView } from "@/components/communications/template-library-view";
 import type { TemplateLibraryItem } from "@/components/communications/template-library-view";
 import { auth } from "@/lib/auth";
-import { assertCommunicationsAdminRole } from "@/lib/communications/auth";
+import { assertCommunicationsAccessRole } from "@/lib/communications/auth";
 import { isTemplatePreviewable, listEmailTemplates } from "@/lib/communications";
 
 export default async function CommunicationsTemplatesPage() {
   const session = await auth();
-  if (!session?.user || !assertCommunicationsAdminRole(session.user.role)) {
+  if (!session?.user || !assertCommunicationsAccessRole(session.user.role)) {
     redirect("/dashboard");
   }
 

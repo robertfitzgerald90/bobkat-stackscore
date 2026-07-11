@@ -1,10 +1,13 @@
+import { getCommunicationBrandSettings } from "@/lib/communications/brand-settings";
 import { getEmailTemplate, isTemplatePreviewable } from "@/lib/communications/registry";
 import { mergeTemplateData } from "@/lib/communications/sample-data";
+import { getEffectiveTemplateContent } from "@/lib/communications/template-versions";
 import type { RenderedEmail } from "@/lib/communications/types";
 
 type RenderOptions = {
   isTest?: boolean;
   useSampleDefaults?: boolean;
+  versionMode?: "published" | "draft";
 };
 
 export async function renderCommunicationTemplate(
@@ -32,7 +35,12 @@ export async function renderCommunicationTemplate(
     }
   }
 
-  const rendered = await template.render(data);
+  const [brand, content] = await Promise.all([
+    getCommunicationBrandSettings(),
+    getEffectiveTemplateContent(templateKey, options.versionMode ?? "published"),
+  ]);
+
+  const rendered = await template.render(data, { brand, content });
   if (options.isTest) {
     return {
       ...rendered,

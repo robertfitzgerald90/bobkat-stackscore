@@ -27,6 +27,7 @@ export type SidebarNavItem = {
   /** When true, item is omitted unless clientId is available. */
   requiresClient?: boolean;
   adminOnly?: boolean;
+  staffOnly?: boolean;
   portfolioOnly?: boolean;
 };
 
@@ -99,12 +100,13 @@ export function getConsultantSidebarNav(
       href: "/admin/communications",
       label: "Communications",
       icon: Mail,
-      adminOnly: true,
+      staffOnly: true,
     },
   ];
 
   return items.filter((item) => {
     if (item.adminOnly && role !== "admin") return false;
+    if (item.staffOnly && role !== "admin" && role !== "technician") return false;
     if (item.portfolioOnly && !canAccessPortfolio(role)) return false;
     if (item.requiresClient && !clientId) return false;
     return true;

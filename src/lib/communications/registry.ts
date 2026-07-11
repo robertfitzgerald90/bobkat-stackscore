@@ -1,23 +1,35 @@
 import { renderEmailTemplate } from "@/emails/render-email";
 import { AccountActivationEmail } from "@/emails/templates/account-activation";
 import type { AccountActivationEmailData } from "@/emails/templates/account-activation";
+import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
 import { buildAccountActivationSampleData } from "@/lib/communications/sample-data";
 import type {
   EmailTemplateCategory,
   EmailTemplateDefinition,
   EmailTemplateStatus,
+  RenderContext,
   RenderedEmail,
 } from "@/lib/communications/types";
 
 const LAST_UPDATED = "2026-07-11";
 
-async function renderAccountActivation(data: Record<string, unknown>): Promise<RenderedEmail> {
+async function renderAccountActivation(
+  data: Record<string, unknown>,
+  context?: RenderContext,
+): Promise<RenderedEmail> {
+  const brand = context?.brand ?? DEFAULT_COMMUNICATION_BRAND;
+  const content = context?.content ?? null;
   const { html, text } = await renderEmailTemplate(
-    AccountActivationEmail(data as AccountActivationEmailData),
+    AccountActivationEmail({
+      ...(data as AccountActivationEmailData),
+      brand,
+      content,
+    }),
   );
   return {
-    subject: "Welcome to StackScore — Activate Your Technology Assessment",
+    subject: content?.subject ?? "Welcome to StackScore — Activate Your Technology Assessment",
     previewText:
+      content?.previewText ??
       "Activate your account and begin discovering your organization's technology maturity.",
     html,
     text,
