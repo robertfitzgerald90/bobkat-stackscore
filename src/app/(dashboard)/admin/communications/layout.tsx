@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CommunicationsSubnav } from "@/components/communications/communications-shell";
+import { CommunicationsSubnav } from "@/components/communications/communications-subnav";
 import { auth } from "@/lib/auth";
 import {
   assertCommunicationsAccessRole,

@@ -1,18 +1,5 @@
 import Link from "next/link";
-import {
-  AlertTriangle,
-  BarChart3,
-  Eye,
-  FileCheck2,
-  FilePenLine,
-  LayoutTemplate,
-  Mail,
-  MailCheck,
-  MailOpen,
-  MousePointerClick,
-  Send,
-  TestTube2,
-} from "lucide-react";
+import { BarChart3, Eye, LayoutTemplate, Send } from "lucide-react";
 import {
   CommunicationsEmptyState,
   CommunicationsMetricsGrid,
@@ -69,26 +56,23 @@ export function CommunicationsDashboardView({
   health,
 }: CommunicationsDashboardViewProps) {
   const metrics = [
-    { label: "Production Messages", value: stats.messagesSent, icon: Mail },
+    { label: "Production Messages", value: stats.messagesSent },
     {
       label: "Delivery Rate",
       value: stats.deliveryRate === null ? "—" : `${stats.deliveryRate}%`,
-      icon: MailCheck,
     },
     {
       label: "Open Rate",
       value: stats.openRate === null ? "—" : `${stats.openRate}%`,
-      icon: MailOpen,
     },
     {
       label: "Click Rate",
       value: stats.clickRate === null ? "—" : `${stats.clickRate}%`,
-      icon: MousePointerClick,
     },
-    { label: "Failed Deliveries", value: stats.failedDeliveries, icon: AlertTriangle },
-    { label: "Test Emails Sent", value: stats.testEmailsSent, icon: TestTube2 },
-    { label: "Published Versions", value: stats.publishedVersions, icon: FileCheck2 },
-    { label: "Pending Drafts", value: stats.draftVersions, icon: FilePenLine },
+    { label: "Failed Deliveries", value: stats.failedDeliveries },
+    { label: "Test Emails Sent", value: stats.testEmailsSent },
+    { label: "Published Versions", value: stats.publishedVersions },
+    { label: "Pending Drafts", value: stats.draftVersions },
   ];
 
   return (
