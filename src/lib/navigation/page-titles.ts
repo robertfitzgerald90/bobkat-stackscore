@@ -11,6 +11,7 @@ const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/settings$/, title: "Settings" },
   { pattern: /^\/technology-catalog$/, title: "Technology Catalog" },
   { pattern: /^\/technology-catalog\/[^/]+$/, title: "Technology Catalog" },
+  { pattern: /^\/email\/preview\/account-activation$/, title: "Email Preview" },
   { pattern: /^\/playbooks$/, title: "Playbooks" },
   { pattern: /^\/assessments$/, title: "Assessments" },
   { pattern: /^\/clients\/new$/, title: "New Client" },

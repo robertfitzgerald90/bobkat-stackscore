@@ -69,7 +69,7 @@ export async function sendPurchaseFulfillmentEmail(
       }
 
       purchaseTrace("E07", "BEFORE sendEmail() — activation template", { to: email });
-      const content = buildActivationEmail({ activationUrl: urls.activationUrl });
+      const content = await buildActivationEmail({ activationUrl: urls.activationUrl });
       const result = await sendEmail({ to: email, ...content });
       purchaseTrace("E08", "AFTER sendEmail() — activation template", {
         to: email,

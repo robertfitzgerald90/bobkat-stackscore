@@ -1,29 +1,16 @@
+import { renderEmailTemplate } from "@/emails/render-email";
+import { AccountActivationEmail } from "@/emails/templates/account-activation";
 import { getAppUrl } from "@/lib/stripe/app-url";
 import { BRAND } from "@/lib/branding";
 
-export function buildActivationEmail(input: {
+export async function buildActivationEmail(input: {
   activationUrl: string;
-}): { subject: string; html: string; text: string } {
+}): Promise<{ subject: string; html: string; text: string }> {
   const subject = `Activate your ${BRAND.reportTitle} account`;
 
-  const text = [
-    `Thank you for purchasing the ${BRAND.reportTitle}.`,
-    "",
-    "Activate your account to begin your assessment:",
-    input.activationUrl,
-    "",
-    "This link expires in 7 days and can only be used once.",
-    "",
-    `— ${BRAND.companyName}`,
-  ].join("\n");
-
-  const html = `
-    <p>Thank you for purchasing the <strong>${BRAND.reportTitle}</strong>.</p>
-    <p>Activate your account to begin your assessment:</p>
-    <p><a href="${input.activationUrl}">${input.activationUrl}</a></p>
-    <p>This link expires in 7 days and can only be used once.</p>
-    <p>— ${BRAND.companyName}</p>
-  `.trim();
+  const { html, text } = await renderEmailTemplate(
+    AccountActivationEmail({ activationUrl: input.activationUrl }),
+  );
 
   return { subject, html, text };
 }
@@ -60,4 +47,9 @@ export function buildActivationUrls(rawToken: string) {
     loginUrl: `${appUrl}/login`,
     startUrl: `${appUrl}/assessment/start`,
   };
+}
+
+/** Sample activation URL for previews and local testing. */
+export function buildSampleActivationUrl(): string {
+  return buildActivationUrls("preview-sample-token").activationUrl;
 }

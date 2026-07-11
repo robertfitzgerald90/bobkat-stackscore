@@ -1,0 +1,18 @@
+import { getAppUrl } from "@/lib/stripe/app-url";
+
+/** Absolute URL for a public asset used in HTML emails (required by Gmail, Outlook, Apple Mail). */
+export function getEmailAssetUrl(assetPath: string): string {
+  const base = (
+    process.env.EMAIL_ASSET_BASE_URL?.trim() ||
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    getAppUrl()
+  ).replace(/\/$/, "");
+
+  const path = assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
+  return `${base}${path}`;
+}
+
+export const EMAIL_BRAND_ASSETS = {
+  bobkatItLogoNavy: getEmailAssetUrl("/branding/bobkat-it-logo-navy.png"),
+  bobkatItLogo: getEmailAssetUrl("/branding/bobkat-it-logo.png"),
+} as const;
