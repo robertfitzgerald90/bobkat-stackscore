@@ -16,6 +16,8 @@
     "smoke": "tsx scripts/smoke-check.ts",
     "merge:recommendations": "tsx scripts/merge-duplicate-recommendations.ts",
     "cleanup:test-data": "tsx scripts/cleanup-test-customer-data.ts",
+    "seed:demo-client": "tsx scripts/seed-demo-client.ts",
+    "demo:reset": "tsx scripts/seed-demo-client.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

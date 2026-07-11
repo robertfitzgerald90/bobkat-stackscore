@@ -187,7 +187,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
         pillarScores: pillarSnapshots as unknown as Prisma.InputJsonValue,
       },
     });
-  });
+  }, { timeout: 60_000 });
 
   await syncProfileFromAssessmentV2(assessmentId);
 
