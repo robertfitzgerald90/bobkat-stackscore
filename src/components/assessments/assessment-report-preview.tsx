@@ -23,7 +23,7 @@ import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import { getBookingUrl } from "@/lib/support/config";
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import { buttonClassName } from "@/components/ui/button";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,8 @@ type AssessmentReportPreviewProps = {
   data: AssessmentReportData;
   isCustomerView?: boolean;
 };
+
+const DOCUMENT_THEME = true;
 
 function SnapshotCard({
   label,
@@ -51,7 +53,7 @@ function SnapshotCard({
       <p
         className={cn(
           "report-snapshot-value",
-          emphasize && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
+          emphasize && typeof value === "number" ? getReportScoreTextClass(value) : undefined,
         )}
       >
         {value}
@@ -63,7 +65,7 @@ function SnapshotCard({
 
 function InsightList({ items, emptyMessage }: { items: string[]; emptyMessage: string }) {
   if (items.length === 0) {
-    return <ReportEmptyState>{emptyMessage}</ReportEmptyState>;
+    return <ReportEmptyState documentTheme={DOCUMENT_THEME}>{emptyMessage}</ReportEmptyState>;
   }
   return (
     <ul className="report-insight-list">
@@ -136,7 +138,7 @@ export function AssessmentReportPreview({
         downloadHref={`/api/v1/assessments/${assessmentId}/export/pdf`}
       />
 
-      <ReportDocument className="report-document-executive">
+      <ReportDocument className="report-document-executive" documentTheme={DOCUMENT_THEME}>
         <AssessmentReportHero
           clientName={data.clientName}
           assessmentDate={data.assessmentDate}
@@ -149,6 +151,7 @@ export function AssessmentReportPreview({
           <ReportSection
             title="Executive Summary"
             subtitle="What this assessment means for your organization"
+            documentTheme={DOCUMENT_THEME}
           >
             <div className="report-prose-stack">
               {executiveParagraphs.map((paragraph) => (
@@ -158,27 +161,27 @@ export function AssessmentReportPreview({
               ))}
             </div>
             <div className="report-executive-grid">
-              <ReportHighlightCard>
+              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                 <p className="report-highlight-label">Overall maturity</p>
                 <p className="report-highlight-value">
                   {data.summary.overallScore} — {data.summary.overallRatingLabel}
                 </p>
               </ReportHighlightCard>
-              <ReportHighlightCard>
+              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                 <p className="report-highlight-label">Primary risks</p>
                 <InsightList
                   items={sections.riskBullets.slice(0, 3)}
                   emptyMessage="No significant risk areas were identified."
                 />
               </ReportHighlightCard>
-              <ReportHighlightCard>
+              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                 <p className="report-highlight-label">Top opportunities</p>
                 <InsightList
                   items={sections.priorityBullets.slice(0, 3)}
                   emptyMessage="Complete remediation planning during your strategy session."
                 />
               </ReportHighlightCard>
-              <ReportHighlightCard>
+              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                 <p className="report-highlight-label">Recommended next step</p>
                 <p className="report-prose-sm">
                   Review this report with BobKat IT to prioritize actions, align investment, and
@@ -188,7 +191,7 @@ export function AssessmentReportPreview({
             </div>
           </ReportSection>
 
-          <ReportSection title="Score Snapshot" subtitle="At-a-glance assessment metrics">
+          <ReportSection title="Score Snapshot" subtitle="At-a-glance assessment metrics" documentTheme={DOCUMENT_THEME}>
             <div className="report-snapshot-grid">
               <SnapshotCard
                 label="Overall StackScore"
@@ -222,6 +225,7 @@ export function AssessmentReportPreview({
           <ReportSection
             title="Technology Pillar Breakdown"
             subtitle="How each area of your technology environment contributes to overall health"
+            documentTheme={DOCUMENT_THEME}
           >
             <div className="report-pillar-grid">
               {pillarInsights.map((pillar) => {
@@ -233,7 +237,7 @@ export function AssessmentReportPreview({
                       <p
                         className={cn(
                           "report-pillar-score",
-                          score !== null ? getScoreTextColorClass(score) : undefined,
+                          score !== null ? getReportScoreTextClass(score) : undefined,
                         )}
                       >
                         {score ?? "—"}
@@ -243,7 +247,7 @@ export function AssessmentReportPreview({
                       <div
                         className={cn(
                           "report-pillar-bar-fill",
-                          score !== null ? getScoreBarColorClass(score) : "bg-muted",
+                          score !== null ? getReportScoreBarClass(score) : "report-score-bar-track",
                         )}
                         style={{ width: `${score ?? 0}%` }}
                       />
@@ -260,9 +264,9 @@ export function AssessmentReportPreview({
           </ReportSection>
 
           <div className="report-two-column">
-            <ReportSection title="Top Strengths" subtitle="Areas performing well today">
+            <ReportSection title="Top Strengths" subtitle="Areas performing well today" documentTheme={DOCUMENT_THEME}>
               {topStrengths.length === 0 ? (
-                <ReportEmptyState>Strengths will appear after pillar scoring is complete.</ReportEmptyState>
+                <ReportEmptyState documentTheme={DOCUMENT_THEME}>Strengths will appear after pillar scoring is complete.</ReportEmptyState>
               ) : (
                 <div className="report-insight-cards">
                   {topStrengths.map((pillar) => (
@@ -281,9 +285,10 @@ export function AssessmentReportPreview({
             <ReportSection
               title="Top Risks"
               subtitle="Areas that may benefit from focused improvement"
+              documentTheme={DOCUMENT_THEME}
             >
               {topRisks.length === 0 ? (
-                <ReportEmptyState>No material risk areas were identified.</ReportEmptyState>
+                <ReportEmptyState documentTheme={DOCUMENT_THEME}>No material risk areas were identified.</ReportEmptyState>
               ) : (
                 <div className="report-insight-cards">
                   {topRisks.map((pillar) => (
@@ -303,18 +308,20 @@ export function AssessmentReportPreview({
           <ReportSection
             title="Priority Recommendations"
             subtitle="Highest-impact opportunities identified in this assessment"
+            documentTheme={DOCUMENT_THEME}
           >
             {priorityRecommendations.length === 0 ? (
-              <ReportEmptyState>No recommendations were generated for this assessment.</ReportEmptyState>
+              <ReportEmptyState documentTheme={DOCUMENT_THEME}>No recommendations were generated for this assessment.</ReportEmptyState>
             ) : (
               <div className="report-recommendation-list">
                 {priorityRecommendations.map((recommendation) => (
                   <ReportDataCard
                     key={recommendation.id}
+                    documentTheme={DOCUMENT_THEME}
                     title={
                       <div className="report-recommendation-title-row">
                         <p className="report-recommendation-title">{recommendation.title}</p>
-                        <ReportPriorityBadge priority={recommendation.priority} />
+                        <ReportPriorityBadge priority={recommendation.priority} documentTheme={DOCUMENT_THEME} />
                       </div>
                     }
                     description={recommendation.description || recommendation.businessImpact}
@@ -323,7 +330,10 @@ export function AssessmentReportPreview({
                         {recommendation.businessImpact ? (
                           <p className="report-prose-sm">{recommendation.businessImpact}</p>
                         ) : null}
-                        <RecommendationPillarHint categoryCode={recommendation.categoryCode} />
+                        <RecommendationPillarHint
+                          categoryCode={recommendation.categoryCode}
+                          documentTheme={DOCUMENT_THEME}
+                        />
                         <p className="report-impact-line">
                           +{recommendation.estimatedImpactPoints} StackScore points estimated
                           improvement
@@ -336,7 +346,7 @@ export function AssessmentReportPreview({
             )}
           </ReportSection>
 
-          <ReportSection title="Next Steps" subtitle="How to turn insight into action">
+          <ReportSection title="Next Steps" subtitle="How to turn insight into action" documentTheme={DOCUMENT_THEME}>
             <div className="report-next-steps">
               <div className="report-next-step">
                 <FileText className="report-next-step-icon" />
@@ -400,7 +410,7 @@ export function AssessmentReportPreview({
             </div>
           </ReportSection>
 
-          <ReportFooter confidentialFor={data.clientName} />
+          <ReportFooter confidentialFor={data.clientName} documentTheme={DOCUMENT_THEME} />
         </ReportBody>
       </ReportDocument>
     </ReportShell>

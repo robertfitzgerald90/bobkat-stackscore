@@ -4,13 +4,22 @@ import { cn } from "@/lib/utils";
 type ReportDocumentProps = {
   children: ReactNode;
   className?: string;
+  /** When true, applies fixed light document theme independent of app dark mode. */
+  documentTheme?: boolean;
 };
 
-export function ReportDocument({ children, className }: ReportDocumentProps) {
+export function ReportDocument({
+  children,
+  className,
+  documentTheme = false,
+}: ReportDocumentProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border bg-white shadow-sm print:shadow-none",
+        "overflow-hidden rounded-xl border shadow-sm print:shadow-none",
+        documentTheme
+          ? "report-document-theme border-[color:var(--report-border-light)] bg-[color:var(--report-background)]"
+          : "border-border bg-white",
         className,
       )}
     >

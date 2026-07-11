@@ -7,6 +7,7 @@ type ReportSectionProps = {
   children: ReactNode;
   className?: string;
   variant?: "default" | "accent";
+  documentTheme?: boolean;
 };
 
 export function ReportSection({
@@ -15,30 +16,60 @@ export function ReportSection({
   children,
   className,
   variant = "default",
+  documentTheme = false,
 }: ReportSectionProps) {
   return (
     <section className={cn("report-section break-inside-avoid", className)}>
       <div
         className={cn(
-          "mb-4",
-          variant === "accent" ? "border-b border-primary/20 pb-2" : "border-b-2 border-primary pb-2",
+          documentTheme ? "report-section-divider" : "mb-4",
+          !documentTheme &&
+            (variant === "accent"
+              ? "border-b border-primary/20 pb-2"
+              : "border-b-2 border-primary pb-2"),
         )}
       >
         <h4
           className={cn(
-            "font-bold text-primary",
-            variant === "default" ? "text-lg" : "text-sm",
+            documentTheme
+              ? cn(
+                  "report-section-heading",
+                  variant === "accent" && "report-section-heading-accent",
+                )
+              : cn("font-bold text-primary", variant === "default" ? "text-lg" : "text-sm"),
           )}
         >
           {title}
         </h4>
-        {subtitle ? <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? (
+          <p
+            className={cn(
+              documentTheme ? "report-section-subtitle" : "mt-1 text-xs text-muted-foreground",
+            )}
+          >
+            {subtitle}
+          </p>
+        ) : null}
       </div>
       {children}
     </section>
   );
 }
 
-export function ReportEmptyState({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-muted-foreground">{children}</p>;
+export function ReportEmptyState({
+  children,
+  documentTheme = false,
+}: {
+  children: ReactNode;
+  documentTheme?: boolean;
+}) {
+  return (
+    <p
+      className={cn(
+        documentTheme ? "report-empty-state" : "text-sm text-muted-foreground",
+      )}
+    >
+      {children}
+    </p>
+  );
 }

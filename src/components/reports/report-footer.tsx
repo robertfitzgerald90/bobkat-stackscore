@@ -7,17 +7,21 @@ type ReportFooterProps = {
   icon?: LucideIcon;
   className?: string;
   confidentialFor?: string;
+  documentTheme?: boolean;
 };
 
 export function ReportFooter({
   icon: Icon = TrendingUp,
   className,
   confidentialFor,
+  documentTheme = false,
 }: ReportFooterProps) {
   return (
     <div
       className={cn(
-        "border-t pt-6 text-center text-xs text-muted-foreground print:pt-4",
+        documentTheme
+          ? "report-doc-footer print:pt-4"
+          : "border-t pt-6 text-center text-xs text-muted-foreground print:pt-4",
         className,
       )}
     >

@@ -63,7 +63,7 @@ export default async function AssessmentReportPage({ params }: PageProps) {
   });
 
   return (
-    <div className="page-shell min-w-0">
+    <div className="report-viewport page-shell min-w-0">
       <AssessmentReportPreview
         assessmentId={assessment.id}
         clientId={assessment.clientId}

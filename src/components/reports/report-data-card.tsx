@@ -9,6 +9,7 @@ type ReportDataCardProps = {
   icon?: ReactNode;
   className?: string;
   accent?: boolean;
+  documentTheme?: boolean;
 };
 
 export function ReportDataCard({
@@ -19,12 +20,17 @@ export function ReportDataCard({
   icon,
   className,
   accent = false,
+  documentTheme = false,
 }: ReportDataCardProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-border/60 p-4",
-        accent && "border-primary/20 bg-primary/5",
+        documentTheme
+          ? "report-data-card"
+          : cn(
+              "rounded-lg border border-border/60 p-4",
+              accent && "border-primary/20 bg-primary/5",
+            ),
         className,
       )}
     >
@@ -34,12 +40,37 @@ export function ReportDataCard({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">{title}</div>
             {description ? (
-              <div className="mt-2 text-sm text-muted-foreground">{description}</div>
+              <div
+                className={cn(
+                  documentTheme
+                    ? "report-data-card-description"
+                    : "mt-2 text-sm text-muted-foreground",
+                )}
+              >
+                {description}
+              </div>
             ) : null}
-            {meta ? <div className="mt-2 text-xs text-muted-foreground">{meta}</div> : null}
+            {meta ? (
+              <div
+                className={cn(
+                  documentTheme ? "report-data-card-meta" : "mt-2 text-xs text-muted-foreground",
+                )}
+              >
+                {meta}
+              </div>
+            ) : null}
           </div>
         </div>
-        {aside ? <div className="shrink-0 text-right text-sm text-muted-foreground">{aside}</div> : null}
+        {aside ? (
+          <div
+            className={cn(
+              "shrink-0 text-right text-sm",
+              documentTheme ? "text-[color:var(--report-muted)]" : "text-muted-foreground",
+            )}
+          >
+            {aside}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -49,16 +80,19 @@ export function ReportHighlightCard({
   children,
   className,
   leftBorder = false,
+  documentTheme = false,
 }: {
   children: ReactNode;
   className?: string;
   leftBorder?: boolean;
+  documentTheme?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "rounded-lg border bg-background p-4",
-        leftBorder && "border-l-4 border-l-primary",
+        documentTheme
+          ? "report-highlight-card"
+          : cn("rounded-lg border bg-background p-4", leftBorder && "border-l-4 border-l-primary"),
         className,
       )}
     >

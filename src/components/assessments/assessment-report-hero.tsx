@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/branding";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { cn } from "@/lib/utils";
 
 type AssessmentReportHeroProps = {
@@ -18,44 +18,44 @@ export function AssessmentReportHero({
   projectedScore,
 }: AssessmentReportHeroProps) {
   return (
-    <header className="report-hero">
-      <div className="report-hero-brand">
-        <p className="report-hero-product">{BRAND.productName}</p>
-        <p className="report-hero-company">{BRAND.companyName}</p>
+    <header className="report-cover">
+      <div className="report-cover-brand">
+        <p className="report-cover-product">{BRAND.productName.toUpperCase()}</p>
+        <p className="report-cover-powered">Powered by {BRAND.companyName}</p>
       </div>
 
-      <h1 className="report-hero-title">Technology Maturity Assessment Report</h1>
-      <p className="report-hero-subtitle">
+      <h1 className="report-cover-title">Technology Maturity Assessment Report</h1>
+      <p className="report-cover-description">
         A comprehensive evaluation of technology posture, operational readiness, and improvement
         opportunities prepared for executive review.
       </p>
 
-      <div className="report-hero-meta">
-        <div className="report-hero-meta-item">
-          <p className="report-hero-meta-label">Prepared for</p>
-          <p className="report-hero-meta-value">{clientName}</p>
+      <div className="report-cover-meta">
+        <div className="report-cover-meta-item">
+          <p className="report-cover-meta-label">Prepared for</p>
+          <p className="report-cover-meta-value">{clientName}</p>
         </div>
-        <div className="report-hero-meta-item">
-          <p className="report-hero-meta-label">Assessment date</p>
-          <p className="report-hero-meta-value">{assessmentDate}</p>
+        <div className="report-cover-meta-item">
+          <p className="report-cover-meta-label">Assessment date</p>
+          <p className="report-cover-meta-value">{assessmentDate}</p>
         </div>
-        <div className="report-hero-meta-item">
-          <p className="report-hero-meta-label">Overall StackScore</p>
-          <p className={cn("report-hero-score", getScoreTextColorClass(overallScore))}>
+        <div className="report-cover-meta-item">
+          <p className="report-cover-meta-label">Overall StackScore</p>
+          <p className={cn("report-cover-score", getReportScoreTextClass(overallScore))}>
             {overallScore}
           </p>
-          <p className="report-hero-meta-note">{overallRatingLabel}</p>
+          <p className="report-cover-meta-note">{overallRatingLabel}</p>
         </div>
-        <div className="report-hero-meta-item">
-          <p className="report-hero-meta-label">Technology health</p>
-          <p className="report-hero-meta-value">{overallRatingLabel}</p>
-          <p className="report-hero-meta-note">
+        <div className="report-cover-meta-item">
+          <p className="report-cover-meta-label">Technology health</p>
+          <p className="report-cover-meta-value">{overallRatingLabel}</p>
+          <p className="report-cover-meta-note">
             Projected {projectedScore} with recommended actions
           </p>
         </div>
       </div>
 
-      <p className="report-hero-attribution">Prepared by {BRAND.companyName}</p>
+      <p className="report-cover-attribution">Prepared by {BRAND.companyName}</p>
     </header>
   );
 }
