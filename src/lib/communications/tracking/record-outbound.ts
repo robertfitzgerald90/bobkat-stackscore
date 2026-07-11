@@ -30,6 +30,7 @@ export type OutboundCommunicationInput = {
   assessmentId?: string | null;
   projectId?: string | null;
   createdByUserId?: string | null;
+  campaignId?: string | null;
   metadata?: Record<string, unknown>;
 };
 
@@ -69,6 +70,7 @@ export async function recordAndSendCommunication(
           userId: input.userId ?? null,
           assessmentId: input.assessmentId ?? null,
           projectId: input.projectId ?? null,
+          campaignId: input.campaignId ?? null,
           status: "QUEUED",
           isTest: input.isTest ?? false,
           metadataJson: (input.metadata ?? null) as Prisma.InputJsonValue,
@@ -277,6 +279,17 @@ export async function applyCommunicationProviderEvent(input: {
     where: { id: message.id },
     data: updates,
   });
+
+  if (!message.isTest) {
+    const { syncCampaignRecipientFromMessageEvent } = await import(
+      "@/lib/communications/outreach/campaign-sync"
+    );
+    await syncCampaignRecipientFromMessageEvent({
+      messageId: message.id,
+      eventType: input.eventType,
+      occurredAt: input.occurredAt,
+    });
+  }
 
   return { matched: true, messageId: message.id };
 }

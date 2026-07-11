@@ -5,6 +5,7 @@ import {
   CommunicationsPanel,
   StatusPill,
 } from "@/components/communications/communications-shell";
+import { OutreachDashboardSection, type OutreachDashboardStats } from "@/components/communications/outreach-dashboard-section";
 import { TemplateStatusBadge } from "@/components/communications/template-status-badge";
 import { buttonClassName } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ import type { TemplateLibraryItem } from "@/components/communications/template-l
 
 type CommunicationsDashboardViewProps = {
   stats: CommunicationDashboardStats;
+  outreachStats: OutreachDashboardStats;
   recentTemplates: TemplateLibraryItem[];
   recentTestSends: CommunicationTestSendRecord[];
   recentActivity: TemplateActivityItem[];
@@ -43,6 +45,7 @@ type CommunicationsDashboardViewProps = {
 
 export function CommunicationsDashboardView({
   stats,
+  outreachStats,
   recentTemplates,
   recentTestSends,
   recentActivity,
@@ -63,6 +66,8 @@ export function CommunicationsDashboardView({
 
   return (
     <div className="space-y-8">
+      <OutreachDashboardSection stats={outreachStats} />
+
       <CommunicationsPageHeader
         title="Communications"
         description="Author, preview, and validate production email templates without triggering customer workflows."

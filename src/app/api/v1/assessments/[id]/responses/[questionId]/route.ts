@@ -111,6 +111,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
           assessmentName: assessmentRecord.assessmentName,
           userId: user.id,
         });
+        const { syncCampaignRecipientAssessmentStarted } = await import(
+          "@/lib/communications/outreach/campaign-sync"
+        );
+        await syncCampaignRecipientAssessmentStarted({
+          assessmentId: id,
+          clientId: assessmentRecord.clientId,
+        });
       }
     }
   }

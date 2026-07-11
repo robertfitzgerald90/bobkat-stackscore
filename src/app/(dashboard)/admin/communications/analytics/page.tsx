@@ -8,6 +8,7 @@ import {
   getRecentDeliveryFailures,
   getTemplatePerformance,
 } from "@/lib/communications/tracking/analytics";
+import { getCampaignAnalyticsSummary } from "@/lib/communications/outreach/campaigns";
 
 export default async function CommunicationAnalyticsPage() {
   const session = await auth();
@@ -16,11 +17,13 @@ export default async function CommunicationAnalyticsPage() {
   }
 
   const filters = { isTest: false };
-  const [summary, sentOverTime, templatePerformance, recentFailures] = await Promise.all([
+  const [summary, sentOverTime, templatePerformance, recentFailures, campaignAnalytics] =
+    await Promise.all([
     getCommunicationAnalyticsSummary(filters),
     getMessagesSentOverTime(filters),
     getTemplatePerformance(filters),
     getRecentDeliveryFailures(),
+    getCampaignAnalyticsSummary(),
   ]);
 
   return (
@@ -29,6 +32,7 @@ export default async function CommunicationAnalyticsPage() {
       sentOverTime={sentOverTime}
       templatePerformance={templatePerformance}
       recentFailures={recentFailures}
+      campaignAnalytics={campaignAnalytics}
     />
   );
 }

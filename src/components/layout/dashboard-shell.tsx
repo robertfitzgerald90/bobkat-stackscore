@@ -4,6 +4,8 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar, MobileSidebar } from "@/components/layout/app-sidebar";
+import { FloatingQuickInviteButton } from "@/components/communications/floating-quick-invite-button";
+import { QuickInviteProvider } from "@/components/communications/quick-invite-provider";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { getPageTitle } from "@/lib/navigation/page-titles";
 
@@ -17,8 +19,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { collapsed, toggleCollapsed, hydrated } = useSidebarCollapsed();
   const pageTitle = getPageTitle(pathname);
+  const staffQuickInviteEnabled = user.role === "admin" || user.role === "technician";
 
-  return (
+  const shell = (
     <div className="flex h-screen min-h-screen overflow-hidden bg-background">
       <AppSidebar role={user.role} clientId={user.clientId} collapsed={hydrated && collapsed} />
       <MobileSidebar
@@ -39,6 +42,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           {children}
         </main>
       </div>
+      {staffQuickInviteEnabled ? <FloatingQuickInviteButton /> : null}
     </div>
   );
+
+  if (!staffQuickInviteEnabled) {
+    return shell;
+  }
+
+  return <QuickInviteProvider enabled={staffQuickInviteEnabled}>{shell}</QuickInviteProvider>;
 }

@@ -41,6 +41,13 @@ export async function POST(_request: Request, context: RouteContext) {
       assessmentName: result.assessmentName,
       actorUserId: user.id,
     });
+    const { syncCampaignRecipientAssessmentCompleted } = await import(
+      "@/lib/communications/outreach/campaign-sync"
+    );
+    await syncCampaignRecipientAssessmentCompleted({
+      assessmentId: result.id,
+      clientId: result.clientId,
+    });
 
     const openRecommendations: AssessmentRecommendation[] = result.recommendations ?? [];
     const projectionImpact = calculateProjectionImpacts(

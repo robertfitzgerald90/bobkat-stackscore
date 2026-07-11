@@ -219,6 +219,10 @@ model User {
   communicationMessagesReceived CommunicationMessage[] @relation("CommunicationMessagesReceived")
   organizationActivityEvents OrganizationActivityEvent[] @relation("OrganizationActivitySubject")
   organizationActivityActions OrganizationActivityEvent[] @relation("OrganizationActivityActor")
+  prospectsCreated           Prospect[] @relation("ProspectCreatedBy")
+  campaignsCreated           CommunicationCampaign[] @relation("CampaignCreatedBy")
+  campaignEvents             CampaignEvent[] @relation("CampaignEventActor")
+  campaignRecipients         CampaignRecipient[] @relation("CampaignRecipientUser")
 }
 
 model Client {
@@ -261,6 +265,8 @@ model Client {
   clientTechnologies ClientTechnology[]
   communicationMessages CommunicationMessage[]
   organizationActivityEvents OrganizationActivityEvent[]
+  prospect              Prospect?
+  campaignRecipients    CampaignRecipient[]
 }
 
 model AssessmentCategory {
@@ -369,6 +375,7 @@ model Assessment {
   improvementPlans       TechnologyImprovementPlan[]
   purchase               AssessmentPurchase?
   communicationMessages  CommunicationMessage[]
+  campaignRecipients     CampaignRecipient[]
 }
 
 model TechnologyProfile {
@@ -784,6 +791,36 @@ enum TechnologySnapshotLeadStatus {
   converted
 }
 
+enum ProspectStatus {
+  new
+  invited
+  opened
+  clicked
+  assessment_started
+  assessment_completed
+  converted
+  archived
+}
+
+enum ProspectLeadSource {
+  quick_invite
+  csv_import
+  campaign
+  referral
+  networking
+  website
+  manual
+  other
+}
+
+enum CommunicationCampaignStatus {
+  draft
+  ready
+  sending
+  completed
+  archived
+}
+
 enum SnapshotItManagementModel {
   in_house
   outsourced
@@ -889,8 +926,10 @@ model CommunicationMessage {
   assessment  Assessment?  @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
   project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
   createdBy   User?        @relation("CommunicationMessagesCreated", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  campaign    CommunicationCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   events      CommunicationEvent[]
   testSend    CommunicationTestSend?
+  campaignRecipient CampaignRecipient?
 
   @@index([clientId])
   @@index([templateKey])
@@ -901,6 +940,7 @@ model CommunicationMessage {
   @@index([createdAt])
   @@index([assessmentId])
   @@index([projectId])
+  @@index([campaignId])
 }
 
 model CommunicationEvent {
@@ -1196,4 +1236,104 @@ model TechnologySnapshotLead {
   @@index([status])
   @@index([createdAt])
   @@index([email])
+}
+
+model Prospect {
+  id              String             @id @default(uuid())
+  firstName       String
+  lastName        String
+  company         String
+  email           String             @unique
+  phone           String?
+  industry        String?
+  employeeCount   Int?
+  leadSource      ProspectLeadSource @default(quick_invite)
+  notes           String?            @db.Text
+  status          ProspectStatus     @default(new)
+  clientId        String?            @unique
+  createdByUserId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  lastContactAt   DateTime?
+
+  client             Client?             @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdBy          User?               @relation("ProspectCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  campaignRecipients CampaignRecipient[]
+
+  @@index([company])
+  @@index([status])
+  @@index([industry])
+  @@index([createdAt])
+  @@index([lastContactAt])
+}
+
+model CommunicationCampaign {
+  id              String                      @id @default(uuid())
+  name            String
+  description     String?                     @db.Text
+  templateKey     String                      @default("EMAIL-009")
+  status          CommunicationCampaignStatus @default(draft)
+  createdByUserId String
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
+  startedAt       DateTime?
+  completedAt     DateTime?
+
+  createdBy  User                  @relation("CampaignCreatedBy", fields: [createdByUserId], references: [id])
+  recipients CampaignRecipient[]
+  events     CampaignEvent[]
+  messages   CommunicationMessage[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([createdByUserId])
+}
+
+model CampaignRecipient {
+  id                     String    @id @default(uuid())
+  campaignId             String
+  prospectId             String
+  clientId               String?
+  userId                 String?
+  assessmentId           String?
+  communicationMessageId String?   @unique
+  invitedAt              DateTime?
+  openedAt               DateTime?
+  clickedAt              DateTime?
+  assessmentStartedAt    DateTime?
+  assessmentCompletedAt  DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  campaign   CommunicationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  prospect   Prospect              @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  client     Client?               @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  user       User?                 @relation("CampaignRecipientUser", fields: [userId], references: [id], onDelete: SetNull)
+  assessment Assessment?           @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  message    CommunicationMessage? @relation(fields: [communicationMessageId], references: [id], onDelete: SetNull)
+  events     CampaignEvent[]
+
+  @@unique([campaignId, prospectId])
+  @@index([campaignId])
+  @@index([prospectId])
+  @@index([clientId])
+}
+
+model CampaignEvent {
+  id          String   @id @default(uuid())
+  campaignId  String
+  eventType   String
+  title       String
+  description String?  @db.Text
+  occurredAt  DateTime @default(now())
+  metadataJson Json?
+  actorUserId String?
+  recipientId String?
+
+  campaign  CommunicationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  actor     User?                 @relation("CampaignEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  recipient CampaignRecipient?    @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+
+  @@index([campaignId, occurredAt])
+  @@index([eventType])
 }

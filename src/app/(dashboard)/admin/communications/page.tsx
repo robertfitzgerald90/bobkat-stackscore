@@ -13,6 +13,7 @@ import {
   listEmailTemplates,
 } from "@/lib/communications";
 import { getRecentDeliveryFailures } from "@/lib/communications/tracking/analytics";
+import { getOutreachDashboardStats } from "@/lib/communications/outreach/campaigns";
 import { ensureTemplateVersionsSeeded } from "@/lib/communications/template-versions";
 
 export default async function CommunicationsOverviewPage() {
@@ -25,9 +26,10 @@ export default async function CommunicationsOverviewPage() {
     await ensureTemplateVersionsSeeded(session.user.id);
   }
 
-  const [stats, recentTestSends, recentActivity, customerActivity, recentFailures, health, templates] =
+  const [stats, outreachStats, recentTestSends, recentActivity, customerActivity, recentFailures, health, templates] =
     await Promise.all([
     getCommunicationDashboardStats(),
+    getOutreachDashboardStats(),
     getRecentTestSends(),
     getRecentTemplateActivity(),
     getRecentOrganizationActivity(),
@@ -54,6 +56,7 @@ export default async function CommunicationsOverviewPage() {
   return (
     <CommunicationsDashboardView
       stats={stats}
+      outreachStats={outreachStats}
       recentTemplates={recentTemplates}
       recentTestSends={recentTestSends}
       recentActivity={recentActivity}

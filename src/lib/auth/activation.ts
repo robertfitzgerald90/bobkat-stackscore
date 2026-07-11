@@ -75,6 +75,14 @@ export async function activateAccount(input: z.infer<typeof activateSchema>) {
       userId: activationToken.user.id,
       email: normalizePurchaserEmail(activationToken.user.email),
     });
+
+    const { convertProspectOnActivation } = await import(
+      "@/lib/communications/outreach/campaign-sync"
+    );
+    await convertProspectOnActivation({
+      userId: activationToken.user.id,
+      clientId: activationToken.user.clientId,
+    });
   }
 
   return {

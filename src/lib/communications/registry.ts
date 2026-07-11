@@ -1,8 +1,13 @@
 import { renderEmailTemplate } from "@/emails/render-email";
 import { AccountActivationEmail } from "@/emails/templates/account-activation";
 import type { AccountActivationEmailData } from "@/emails/templates/account-activation";
+import { AssessmentInvitationEmail } from "@/emails/templates/assessment-invitation";
+import type { AssessmentInvitationEmailData } from "@/emails/templates/assessment-invitation";
 import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
-import { buildAccountActivationSampleData } from "@/lib/communications/sample-data";
+import {
+  buildAccountActivationSampleData,
+  buildAssessmentInvitationSampleData,
+} from "@/lib/communications/sample-data";
 import type {
   EmailTemplateCategory,
   EmailTemplateDefinition,
@@ -83,6 +88,54 @@ const EMAIL_001: EmailTemplateDefinition = {
   ],
   sampleData: buildAccountActivationSampleData(),
   render: renderAccountActivation,
+};
+
+async function renderAssessmentInvitation(
+  data: Record<string, unknown>,
+  context?: RenderContext,
+): Promise<RenderedEmail> {
+  const brand = context?.brand ?? DEFAULT_COMMUNICATION_BRAND;
+  const content = context?.content ?? null;
+  const { html, text } = await renderEmailTemplate(
+    AssessmentInvitationEmail({
+      ...(data as AssessmentInvitationEmailData),
+      brand,
+      content,
+    }),
+  );
+  return {
+    subject:
+      content?.subject ??
+      "You're Invited to Complete a StackScore Technology Assessment",
+    previewText:
+      content?.previewText ??
+      "Discover your organization's technology maturity and uncover opportunities for improvement.",
+    html,
+    text,
+  };
+}
+
+const EMAIL_009: EmailTemplateDefinition = {
+  key: "EMAIL-009",
+  documentId: "EMAIL-009",
+  name: "Assessment Invitation",
+  description: "Invites a customer to complete a StackScore Technology Maturity Assessment.",
+  category: "invitation",
+  status: "active",
+  subject: "You're Invited to Complete a StackScore Technology Assessment",
+  previewText:
+    "Discover your organization's technology maturity and uncover opportunities for improvement.",
+  lastUpdated: LAST_UPDATED,
+  requiredVariables: ["invitationUrl"],
+  optionalVariables: [
+    "firstName",
+    "organizationName",
+    "assessmentName",
+    "supportEmail",
+    "websiteUrl",
+  ],
+  sampleData: buildAssessmentInvitationSampleData(),
+  render: renderAssessmentInvitation,
 };
 
 export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
@@ -178,20 +231,7 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
     requiredVariables: ["projectUrl"],
     optionalVariables: ["firstName", "organizationName", "projectName"],
   }),
-  draftTemplate({
-    key: "EMAIL-009",
-    documentId: "EMAIL-009",
-    name: "Assessment Invitation",
-    description: "Invites a customer to complete a StackScore Technology Maturity Assessment.",
-    category: "invitation",
-    status: "draft",
-    subject: "You're Invited to Complete a StackScore Technology Assessment",
-    previewText:
-      "Discover your organization's technology maturity and uncover opportunities for improvement.",
-    lastUpdated: LAST_UPDATED,
-    requiredVariables: ["invitationUrl"],
-    optionalVariables: ["firstName", "organizationName"],
-  }),
+  EMAIL_009,
 ];
 
 export function getEmailTemplate(key: string): EmailTemplateDefinition | undefined {

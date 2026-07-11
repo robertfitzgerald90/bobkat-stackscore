@@ -40,6 +40,17 @@ type CommunicationAnalyticsViewProps = {
     failureReason: string | null;
     occurredAt: string;
   }>;
+  campaignAnalytics?: {
+    invitationsSent: number;
+    assessmentsStarted: number;
+    assessmentsCompleted: number;
+    conversionRate: number | null;
+    topPerformingCampaigns: Array<{
+      id: string;
+      name: string;
+      metrics: { conversionRate: number | null; invitationsSent: number };
+    }>;
+  };
 };
 
 export function CommunicationAnalyticsView({
@@ -47,6 +58,7 @@ export function CommunicationAnalyticsView({
   sentOverTime,
   templatePerformance,
   recentFailures,
+  campaignAnalytics,
 }: CommunicationAnalyticsViewProps) {
   const metrics = [
     { label: "Messages Sent", value: summary.messagesSent },
@@ -134,6 +146,51 @@ export function CommunicationAnalyticsView({
         </CommunicationsPanel>
       </div>
 
+      {campaignAnalytics ? (
+        <div className="grid gap-6 xl:grid-cols-2">
+          <CommunicationsPanel title="Campaign Outreach">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FunnelRow label="Invitations sent" value={campaignAnalytics.invitationsSent} />
+              <FunnelRow label="Assessments started" value={campaignAnalytics.assessmentsStarted} />
+              <FunnelRow label="Assessments completed" value={campaignAnalytics.assessmentsCompleted} />
+              <FunnelRow
+                label="Conversion rate"
+                value={
+                  campaignAnalytics.conversionRate === null
+                    ? "—"
+                    : `${campaignAnalytics.conversionRate}%`
+                }
+              />
+            </div>
+          </CommunicationsPanel>
+
+          <CommunicationsPanel title="Top Performing Campaigns">
+            {campaignAnalytics.topPerformingCampaigns.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No campaign data yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {campaignAnalytics.topPerformingCampaigns.map((campaign) => (
+                  <Link
+                    key={campaign.id}
+                    href={`/admin/communications/campaigns/${campaign.id}`}
+                    className="block rounded-lg border border-[#1e3a5f]/10 p-3 hover:bg-muted/20"
+                  >
+                    <p className="font-medium text-[#082F5B]">{campaign.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {campaign.metrics.invitationsSent} sent ·{" "}
+                      {campaign.metrics.conversionRate === null
+                        ? "—"
+                        : `${campaign.metrics.conversionRate}%`}{" "}
+                      conversion
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CommunicationsPanel>
+        </div>
+      ) : null}
+
       <div className="grid gap-6 xl:grid-cols-2">
         <CommunicationsPanel title="Engagement Funnel">
           <div className="space-y-3 text-sm">
@@ -194,7 +251,7 @@ function formatRate(value: number | null) {
   return value === null ? "—" : `${value}%`;
 }
 
-function FunnelRow({ label, value }: { label: string; value: number }) {
+function FunnelRow({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="flex items-center justify-between rounded-lg border border-[#1e3a5f]/10 px-3 py-2">
       <span>{label}</span>
