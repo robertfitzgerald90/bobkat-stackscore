@@ -23,6 +23,16 @@ export async function POST(_request: Request, context: RouteContext) {
   try {
     const plan = await generateTipPlan(clientId, tipId, user.id, user.role);
     if (!plan) return notFound("Technology Improvement Plan not found");
+
+    const { triggerRoadmapPublishedWorkflow } = await import(
+      "@/lib/communications/workflows/triggers"
+    );
+    await triggerRoadmapPublishedWorkflow({
+      clientId,
+      tipId,
+      createdByUserId: user.id,
+    });
+
     return NextResponse.json({ plan });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to generate plan";

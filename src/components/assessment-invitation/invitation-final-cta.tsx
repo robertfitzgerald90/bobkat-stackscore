@@ -1,7 +1,12 @@
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
+import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 
-export function InvitationFinalCta() {
+type InvitationFinalCtaProps = {
+  invitationContext?: AssessmentInvitationContext;
+};
+
+export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProps) {
   return (
     <OfferCtaPanel
       headline="Ready to See Where Your Technology Stands?"
@@ -10,6 +15,8 @@ export function InvitationFinalCta() {
       <TechnologySnapshotLink
         label="Start My Free Technology Snapshot"
         className="h-11 w-full px-8 text-base sm:w-auto"
+        prospectId={invitationContext?.prospectId}
+        campaignId={invitationContext?.campaignId}
       />
     </OfferCtaPanel>
   );

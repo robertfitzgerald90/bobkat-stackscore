@@ -10,6 +10,9 @@ export const PREVIEW_ACTIVATION_URL =
 export const PREVIEW_INVITATION_URL =
   "https://app.stackscore.example/assessment-invitation";
 
+export const PREVIEW_PROTECTED_URL =
+  "https://app.stackscore.example/login?callbackUrl=%2Fpreview-sample";
+
 export function buildAccountActivationSampleData(
   overrides: Partial<AccountActivationEmailData> = {},
 ): AccountActivationEmailData {
@@ -35,6 +38,38 @@ export function buildAssessmentInvitationSampleData(
     invitationUrl: PREVIEW_INVITATION_URL,
     supportEmail: BRAND.email,
     websiteUrl: "https://www.bobkatit.com",
+    ...overrides,
+  };
+}
+
+export const PREVIEW_RESET_PASSWORD_URL =
+  "https://app.stackscore.example/reset-password?token=preview-sample";
+
+export function buildPasswordResetSampleData(
+  overrides: Partial<{
+    heroTitle: string;
+    previewText: string;
+    paragraphs: string[];
+    primaryCta: { label: string; href: string };
+    securityNotice: string;
+    firstName: string;
+  }> = {},
+) {
+  return {
+    heroTitle: "Reset Your Password",
+    previewText: "A request was received to reset your StackScore password.",
+    paragraphs: [
+      "We received a request to reset the password for your StackScore account.",
+      "If you requested this change, use the button below to create a new password.",
+      "If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.",
+    ],
+    primaryCta: {
+      label: "Reset My Password",
+      href: PREVIEW_RESET_PASSWORD_URL,
+    },
+    securityNotice:
+      "Your password reset link expires in 60 minutes and can only be used once. Never share this link with anyone.",
+    firstName: "Alex",
     ...overrides,
   };
 }

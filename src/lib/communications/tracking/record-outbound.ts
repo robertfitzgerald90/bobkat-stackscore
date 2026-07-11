@@ -29,6 +29,9 @@ export type OutboundCommunicationInput = {
   userId?: string | null;
   assessmentId?: string | null;
   projectId?: string | null;
+  proposalId?: string | null;
+  queueItemId?: string | null;
+  replyToEmail?: string | null;
   createdByUserId?: string | null;
   campaignId?: string | null;
   metadata?: Record<string, unknown>;
@@ -52,6 +55,12 @@ export async function recordAndSendCommunication(
 ): Promise<OutboundCommunicationResult> {
   const email = input.to.trim().toLowerCase();
   const { from } = getEmailConfig();
+  const { getCommunicationWorkflowSettings } = await import(
+    "@/lib/communications/settings/workflow-settings"
+  );
+  const workflowSettings = await getCommunicationWorkflowSettings();
+  const replyTo = input.replyToEmail ?? workflowSettings.defaultReplyToEmail ?? from;
+  const sender = workflowSettings.defaultSenderEmail ?? from;
   const templateVersion =
     input.templateVersion ?? (input.isTest ? null : await resolveTemplateVersion(input.templateKey));
 
@@ -65,11 +74,14 @@ export async function recordAndSendCommunication(
           previewText: input.previewText ?? null,
           recipientEmail: email,
           recipientName: input.recipientName ?? null,
-          senderEmail: from,
+          senderEmail: sender,
+          replyToEmail: replyTo,
           clientId: input.clientId ?? null,
           userId: input.userId ?? null,
           assessmentId: input.assessmentId ?? null,
           projectId: input.projectId ?? null,
+          proposalId: input.proposalId ?? null,
+          queueItemId: input.queueItemId ?? null,
           campaignId: input.campaignId ?? null,
           status: "QUEUED",
           isTest: input.isTest ?? false,

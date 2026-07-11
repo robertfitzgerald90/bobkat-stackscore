@@ -17,6 +17,11 @@ export type AssessmentInvitationPersonalization = {
   recipientFirstName?: string;
 };
 
+export type AssessmentInvitationContext = {
+  prospectId?: string;
+  campaignId?: string;
+};
+
 export const INVITATION_DISCOVER_FEATURES: OfferFeature[] = [
   {
     icon: Activity,

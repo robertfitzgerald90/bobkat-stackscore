@@ -161,7 +161,35 @@ enum QuarterlyBusinessReviewStatus {
 enum TechnologyImprovementPlanStatus {
   draft
   generated
+  published
+  approved
+  revision_requested
   superseded
+}
+
+enum NotificationDeliveryMode {
+  inherit
+  automatic
+  manual
+}
+
+enum CommunicationQueueStatus {
+  pending_review
+  approved
+  scheduled
+  sending
+  sent
+  cancelled
+  dismissed
+  failed
+}
+
+enum QuarterlyReviewReminderStatus {
+  pending
+  scheduled
+  sent
+  dismissed
+  delayed
 }
 
 enum TipWorkflowStep {
@@ -210,6 +238,7 @@ model User {
   quarterlyBusinessReviewsCreated QuarterlyBusinessReview[]
   purchases              AssessmentPurchase[]
   activationTokens       AccountActivationToken[]
+  passwordResetTokens    PasswordResetToken[]
   communicationTestSends CommunicationTestSend[]
   communicationBrandSettingsUpdates CommunicationBrandSettings[]
   communicationTemplateVersionsPublished CommunicationTemplateVersion[] @relation("PublishedTemplateVersions")
@@ -223,6 +252,11 @@ model User {
   campaignsCreated           CommunicationCampaign[] @relation("CampaignCreatedBy")
   campaignEvents             CampaignEvent[] @relation("CampaignEventActor")
   campaignRecipients         CampaignRecipient[] @relation("CampaignRecipientUser")
+  tipsPublished                TechnologyImprovementPlan[] @relation("TipPublishedBy")
+  tipsApproved                 TechnologyImprovementPlan[] @relation("TipApprovedBy")
+  clientContacts               ClientContact[]
+  communicationQueueItemsCreated CommunicationQueueItem[] @relation("QueueCreatedBy")
+  communicationQueueItemsApproved CommunicationQueueItem[] @relation("QueueApprovedBy")
 }
 
 model Client {
@@ -247,6 +281,8 @@ model Client {
   locationState             String?
   status                    ClientStatus         @default(prospect)
   notes                     String?              @db.Text
+  projectCompletionNotification NotificationDeliveryMode @default(inherit)
+  quarterlyReviewAnchorAt   DateTime?
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @updatedAt
 
@@ -267,6 +303,9 @@ model Client {
   organizationActivityEvents OrganizationActivityEvent[]
   prospect              Prospect?
   campaignRecipients    CampaignRecipient[]
+  contacts              ClientContact[]
+  communicationQueueItems CommunicationQueueItem[]
+  quarterlyReviewReminders QuarterlyReviewReminder[]
 }
 
 model AssessmentCategory {
@@ -376,6 +415,7 @@ model Assessment {
   purchase               AssessmentPurchase?
   communicationMessages  CommunicationMessage[]
   campaignRecipients     CampaignRecipient[]
+  communicationQueueItems CommunicationQueueItem[]
 }
 
 model TechnologyProfile {
@@ -541,6 +581,7 @@ model Project {
   startDate             DateTime?
   targetCompletionDate  DateTime?
   completedAt           DateTime?
+  completionNotificationOverride NotificationDeliveryMode?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
@@ -607,14 +648,27 @@ model TechnologyImprovementPlan {
   wizardState      Json
   executiveSummary String?                         @db.Text
   generatedAt      DateTime?
-  createdByUserId  String
-  createdAt        DateTime                        @default(now())
-  updatedAt        DateTime                        @updatedAt
+  publishedAt      DateTime?
+  publishedByUserId  String?
+  approvedAt       DateTime?
+  approvedByUserId   String?
+  approvedByContactId String?
+  signatureJson      Json?
+  revisionRequestedAt DateTime?
+  revisionNotes      String?                        @db.Text
+  createdByUserId    String
+  createdAt          DateTime                        @default(now())
+  updatedAt          DateTime                        @updatedAt
 
   client     Client      @relation(fields: [clientId], references: [id])
   assessment Assessment? @relation(fields: [assessmentId], references: [id])
   createdBy  User        @relation(fields: [createdByUserId], references: [id])
+  publishedBy User?      @relation("TipPublishedBy", fields: [publishedByUserId], references: [id], onDelete: SetNull)
+  approvedBy User?      @relation("TipApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  approvedByContact ClientContact? @relation("TipApprovedByContact", fields: [approvedByContactId], references: [id], onDelete: SetNull)
   document   Document?
+  communicationMessages CommunicationMessage[]
+  communicationQueueItems CommunicationQueueItem[]
 }
 
 model QuarterlyBusinessReview {
@@ -701,6 +755,13 @@ enum CommunicationEventType {
   FAILED
   COMPLAINED
   CANCELLED
+  VIEWED
+  DOWNLOADED
+  APPROVED
+  REVISION_REQUESTED
+  SIGNED
+  PASSWORD_RESET_COMPLETED
+  TIMELINE_VIEWED
 }
 
 enum CommunicationEventSource {
@@ -903,6 +964,7 @@ model CommunicationMessage {
   proposalId         String?
   projectId          String?
   campaignId         String?
+  queueItemId        String?
   status             CommunicationMessageStatus   @default(QUEUED)
   sentAt             DateTime?
   deliveredAt        DateTime?
@@ -927,6 +989,8 @@ model CommunicationMessage {
   project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
   createdBy   User?        @relation("CommunicationMessagesCreated", fields: [createdByUserId], references: [id], onDelete: SetNull)
   campaign    CommunicationCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  tip         TechnologyImprovementPlan? @relation(fields: [proposalId], references: [id], onDelete: SetNull)
+  queueItem   CommunicationQueueItem? @relation(fields: [queueItemId], references: [id], onDelete: SetNull)
   events      CommunicationEvent[]
   testSend    CommunicationTestSend?
   campaignRecipient CampaignRecipient?
@@ -1230,8 +1294,11 @@ model TechnologySnapshotLead {
   classification    String
   lowestPillars     Json
   status            TechnologySnapshotLeadStatus  @default(new)
+  prospectId        String?                       @unique
   createdAt         DateTime                      @default(now())
   updatedAt         DateTime                      @updatedAt
+
+  prospect Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([createdAt])
@@ -1259,6 +1326,8 @@ model Prospect {
   client             Client?             @relation(fields: [clientId], references: [id], onDelete: SetNull)
   createdBy          User?               @relation("ProspectCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   campaignRecipients CampaignRecipient[]
+  snapshotLead       TechnologySnapshotLead?
+  communicationQueueItems CommunicationQueueItem[]
 
   @@index([company])
   @@index([status])
@@ -1336,4 +1405,117 @@ model CampaignEvent {
 
   @@index([campaignId, occurredAt])
   @@index([eventType])
+}
+
+model CommunicationWorkflowSettings {
+  id                                 String                   @id @default("default")
+  defaultSenderEmail                 String?
+  defaultReplyToEmail                String?
+  recipientDefaultsJson              Json                     @default("{}")
+  ctaDestinationsJson                Json                     @default("{}")
+  internalNotificationEmailsJson     Json                     @default("[]")
+  proposalApprovalNotificationEmail  String                   @default("bobby@bobkatit.com")
+  quarterlyReviewDaysAfterAssessment Int                      @default(90)
+  quarterlyReviewLeadDays            Int                      @default(14)
+  attachmentDefaultsJson             Json                     @default("{}")
+  projectCompletionDefault           NotificationDeliveryMode @default(automatic)
+  updatedByUserId                    String?
+  updatedAt                          DateTime                 @updatedAt
+}
+
+model ClientContact {
+  id                           String   @id @default(uuid())
+  clientId                     String
+  name                         String
+  email                        String
+  phone                        String?
+  title                        String?
+  rolesJson                    Json     @default("[]")
+  communicationPreferencesJson Json     @default("{}")
+  isActive                     Boolean  @default(true)
+  userId                       String?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  client       Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user         User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  approvedTips TechnologyImprovementPlan[] @relation("TipApprovedByContact")
+
+  @@unique([clientId, email])
+  @@index([clientId])
+  @@index([email])
+}
+
+model CommunicationQueueItem {
+  id                     String                   @id @default(uuid())
+  workflowKey            String
+  templateKey            String
+  status                 CommunicationQueueStatus @default(pending_review)
+  clientId               String?
+  prospectId             String?
+  assessmentId           String?
+  tipId                  String?
+  projectIdsJson         Json?
+  recipientSelectionJson Json                     @default("{}")
+  payloadJson            Json?
+  scheduledFor           DateTime?
+  reviewRequired         Boolean                  @default(true)
+  autoSend               Boolean                  @default(false)
+  createdByUserId        String?
+  approvedByUserId       String?
+  sentAt                 DateTime?
+  dismissedAt            DateTime?
+  failureReason          String?                  @db.Text
+  metadataJson           Json?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  client     Client?                    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  prospect   Prospect?                  @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  assessment Assessment?                @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  tip        TechnologyImprovementPlan? @relation(fields: [tipId], references: [id], onDelete: SetNull)
+  createdBy  User?                      @relation("QueueCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  approvedBy User?                      @relation("QueueApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  messages   CommunicationMessage[]
+
+  @@index([status])
+  @@index([clientId])
+  @@index([scheduledFor])
+  @@index([workflowKey])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model QuarterlyReviewReminder {
+  id                        String                        @id @default(uuid())
+  clientId                  String
+  dueAt                     DateTime
+  status                    QuarterlyReviewReminderStatus @default(pending)
+  delayedUntil              DateTime?
+  scheduledFor              DateTime?
+  dismissedAt               DateTime?
+  dismissReason             String?                       @db.Text
+  lastAssessmentCompletedAt DateTime?
+  queueItemId               String?
+  idempotencyKey            String                        @unique
+  createdAt                 DateTime                      @default(now())
+  updatedAt                 DateTime                      @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([status])
+  @@index([dueAt])
 }

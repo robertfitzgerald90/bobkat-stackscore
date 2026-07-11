@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { TechnologySnapshotWizard } from "@/components/technology-snapshot/technology-snapshot-wizard";
 import { BRAND } from "@/lib/branding";
 
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
 export default function TechnologySnapshotPage() {
   return (
     <main className="min-h-screen bg-muted/30">
-      <TechnologySnapshotWizard />
+      <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}>
+        <TechnologySnapshotWizard />
+      </Suspense>
     </main>
   );
 }

@@ -32,6 +32,7 @@ export const createSnapshotLeadSchema = z.object({
     "unsure",
   ]),
   answers: answersSchema,
+  prospectId: z.string().uuid().optional(),
 });
 
 export const updateSnapshotLeadStatusSchema = z.object({

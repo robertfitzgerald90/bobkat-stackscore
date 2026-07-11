@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +28,7 @@ const CLASSIFICATION_VARIANT: Record<
 };
 
 export type SnapshotResultsPayload = {
+  id: string;
   totalScore: number;
   classification: SnapshotClassification;
   classificationLabel: string;
@@ -36,13 +40,35 @@ type SnapshotResultsViewProps = {
   companyName: string;
   result: SnapshotResultsPayload;
   onRestart?: () => void;
+  invitationFlow?: boolean;
 };
 
 export function SnapshotResultsView({
   companyName,
   result,
   onRestart,
+  invitationFlow = false,
 }: SnapshotResultsViewProps) {
+  const [continuing, setContinuing] = useState(false);
+
+  async function continueToFullAssessment() {
+    setContinuing(true);
+    try {
+      const response = await fetch(
+        `/api/v1/public/technology-snapshot/${result.id}/continue-assessment`,
+        { method: "POST" },
+      );
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to continue to assessment");
+      }
+      window.location.href =
+        payload.mode === "existing_account" ? payload.loginUrl : payload.activationUrl;
+    } catch (error) {
+      setContinuing(false);
+      window.alert(error instanceof Error ? error.message : "Unable to continue to assessment");
+    }
+  }
   return (
     <div className="min-w-0 space-y-6">
       <Card className="border-primary/20 shadow-md">
@@ -97,17 +123,38 @@ export function SnapshotResultsView({
           </ul>
 
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-            <a
-              href={PURCHASE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonVariants({
-                className: cn("w-full sm:w-auto"),
-              })}
-            >
-              Purchase Full Technology Assessment
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
+            {invitationFlow ? (
+              <Button
+                type="button"
+                className="w-full sm:w-auto"
+                disabled={continuing}
+                onClick={() => void continueToFullAssessment()}
+              >
+                {continuing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Preparing your assessment...
+                  </>
+                ) : (
+                  <>
+                    Continue to Full Assessment
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            ) : (
+              <a
+                href={PURCHASE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({
+                  className: cn("w-full sm:w-auto"),
+                })}
+              >
+                Purchase Full Technology Assessment
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            )}
             {onRestart ? (
               <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onRestart}>
                 Start another snapshot

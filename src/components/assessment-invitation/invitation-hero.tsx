@@ -4,11 +4,13 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { buttonVariants } from "@/components/ui/button";
 import type { AssessmentInvitationPersonalization } from "@/lib/assessment-invitation/content";
+import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 
 type InvitationHeroProps = {
   personalization?: AssessmentInvitationPersonalization;
+  invitationContext?: AssessmentInvitationContext;
 };
 
 function InvitationPersonalizationBanner({
@@ -39,7 +41,7 @@ function InvitationPersonalizationBanner({
   );
 }
 
-export function InvitationHero({ personalization }: InvitationHeroProps) {
+export function InvitationHero({ personalization, invitationContext }: InvitationHeroProps) {
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
       <OfferHeroBackground />
@@ -76,6 +78,8 @@ export function InvitationHero({ personalization }: InvitationHeroProps) {
           <TechnologySnapshotLink
             label="Start My Free Technology Snapshot"
             className="h-11 w-full px-8 text-base sm:w-auto"
+            prospectId={invitationContext?.prospectId}
+            campaignId={invitationContext?.campaignId}
           />
           <a
             href="#why-stackscore"

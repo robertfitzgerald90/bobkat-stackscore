@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { AssessmentInvitationLanding } from "@/components/assessment-invitation/assessment-invitation-landing";
-import type { AssessmentInvitationPersonalization } from "@/lib/assessment-invitation/content";
+import type {
+  AssessmentInvitationContext,
+  AssessmentInvitationPersonalization,
+} from "@/lib/assessment-invitation/content";
 import { BRAND } from "@/lib/branding";
 
 export const metadata: Metadata = {
@@ -12,9 +15,9 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function readParam(
+function readQueryParam(
   params: Record<string, string | string[] | undefined>,
-  key: keyof AssessmentInvitationPersonalization,
+  key: string,
 ): string | undefined {
   const value = params[key];
   if (typeof value === "string" && value.trim().length > 0) {
@@ -26,19 +29,25 @@ function readParam(
 export default async function AssessmentInvitationPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
-  // Reserved for future email-link personalization (inviter, campaign, greeting).
   const personalization: AssessmentInvitationPersonalization = {
-    invitedByName: readParam(params, "invitedByName"),
-    invitedByOrganization: readParam(params, "invitedByOrganization"),
-    campaignName: readParam(params, "campaignName"),
-    recipientFirstName: readParam(params, "recipientFirstName"),
+    invitedByName: readQueryParam(params, "invitedByName"),
+    invitedByOrganization: readQueryParam(params, "invitedByOrganization"),
+    campaignName: readQueryParam(params, "campaignName"),
+    recipientFirstName: readQueryParam(params, "recipientFirstName"),
+  };
+
+  const invitationContext: AssessmentInvitationContext = {
+    prospectId: readQueryParam(params, "prospectId"),
+    campaignId: readQueryParam(params, "campaignId"),
   };
 
   const hasPersonalization = Object.values(personalization).some(Boolean);
+  const hasInvitationContext = Boolean(invitationContext.prospectId || invitationContext.campaignId);
 
   return (
     <AssessmentInvitationLanding
       personalization={hasPersonalization ? personalization : undefined}
+      invitationContext={hasInvitationContext ? invitationContext : undefined}
     />
   );
 }

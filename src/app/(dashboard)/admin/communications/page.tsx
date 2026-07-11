@@ -14,7 +14,10 @@ import {
 } from "@/lib/communications";
 import { getRecentDeliveryFailures } from "@/lib/communications/tracking/analytics";
 import { getOutreachDashboardStats } from "@/lib/communications/outreach/campaigns";
+import { listPendingQueueItems } from "@/lib/communications/queue/service";
+import { listQuarterlyReviewReminders } from "@/lib/communications/quarterly-review/reminders";
 import { ensureTemplateVersionsSeeded } from "@/lib/communications/template-versions";
+import { CommunicationsUpcomingActions } from "@/components/communications/communications-upcoming-actions";
 
 export default async function CommunicationsOverviewPage() {
   const session = await auth();
@@ -26,7 +29,7 @@ export default async function CommunicationsOverviewPage() {
     await ensureTemplateVersionsSeeded(session.user.id);
   }
 
-  const [stats, outreachStats, recentTestSends, recentActivity, customerActivity, recentFailures, health, templates] =
+  const [stats, outreachStats, recentTestSends, recentActivity, customerActivity, recentFailures, health, templates, queueItems, quarterlyReminders] =
     await Promise.all([
     getCommunicationDashboardStats(),
     getOutreachDashboardStats(),
@@ -36,6 +39,8 @@ export default async function CommunicationsOverviewPage() {
     getRecentDeliveryFailures(5),
     getCommunicationHealth(),
     Promise.resolve(listEmailTemplates()),
+    listPendingQueueItems(10),
+    listQuarterlyReviewReminders(10),
   ]);
 
   const recentTemplates: TemplateLibraryItem[] = templates
@@ -54,15 +59,34 @@ export default async function CommunicationsOverviewPage() {
     }));
 
   return (
-    <CommunicationsDashboardView
-      stats={stats}
-      outreachStats={outreachStats}
-      recentTemplates={recentTemplates}
-      recentTestSends={recentTestSends}
-      recentActivity={recentActivity}
-      customerActivity={customerActivity}
-      recentFailures={recentFailures}
-      health={health}
-    />
+    <div className="page-shell space-y-8">
+      <CommunicationsUpcomingActions
+        queueItems={queueItems.map((item) => ({
+          id: item.id,
+          workflowKey: item.workflowKey,
+          templateKey: item.templateKey,
+          status: item.status,
+          reviewRequired: item.reviewRequired,
+          createdAt: item.createdAt.toISOString(),
+          client: item.client,
+        }))}
+        quarterlyReminders={quarterlyReminders.map((reminder) => ({
+          id: reminder.id,
+          status: reminder.status,
+          dueAt: reminder.dueAt.toISOString(),
+          client: reminder.client,
+        }))}
+      />
+      <CommunicationsDashboardView
+        stats={stats}
+        outreachStats={outreachStats}
+        recentTemplates={recentTemplates}
+        recentTestSends={recentTestSends}
+        recentActivity={recentActivity}
+        customerActivity={customerActivity}
+        recentFailures={recentFailures}
+        health={health}
+      />
+    </div>
   );
 }

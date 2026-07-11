@@ -2,7 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { withCommunicationDbFallback } from "@/lib/communications/db-safe";
 import { findDuplicateByEmail } from "@/lib/communications/outreach/duplicate-detection";
-import { provisionInviteWorkspace } from "@/lib/communications/outreach/provisioning";
+import { createOrUpdateProspectOnly } from "@/lib/communications/outreach/create-prospect";
 import { sendAssessmentInvitation } from "@/lib/communications/outreach/send-invitation";
 import {
   recordCampaignEvent,
@@ -32,8 +32,8 @@ export type QuickInviteInput = z.infer<typeof quickInviteSchema> & {
 export type QuickInviteResult = {
   success: true;
   prospectId: string;
-  clientId: string;
-  assessmentId: string;
+  clientId: string | null;
+  assessmentId: string | null;
   messageId: string;
   campaignId: string | null;
   recipientId: string | null;
@@ -71,25 +71,15 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
 
   if (!parsed.skipDuplicateCheck && !parsed.forceResend) {
     const duplicate = await findDuplicateByEmail(email);
-    if (duplicate) {
+    if (duplicate && duplicate.type !== "prospect") {
       throw new Error(`DUPLICATE:${duplicate.type}:${duplicate.id}`);
     }
   }
 
   let existingProspectId: string | null = null;
-  let existingClientId: string | null = null;
-
   if (parsed.forceResend) {
     const prospect = await prisma.prospect.findUnique({ where: { email } });
-    if (prospect) {
-      existingProspectId = prospect.id;
-      existingClientId = prospect.clientId;
-    } else {
-      const client = await prisma.client.findFirst({
-        where: { primaryContactEmail: email },
-      });
-      if (client) existingClientId = client.id;
-    }
+    if (prospect) existingProspectId = prospect.id;
   }
 
   const campaign = await resolveOrCreateCampaign({
@@ -98,7 +88,7 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
     company: parsed.company,
   });
 
-  const workspace = await provisionInviteWorkspace({
+  const { prospect, isNewProspect } = await createOrUpdateProspectOnly({
     firstName: parsed.firstName,
     lastName: parsed.lastName,
     company: parsed.company,
@@ -110,20 +100,19 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
     leadSource: "quick_invite",
     createdByUserId: input.createdByUserId,
     existingProspectId,
-    existingClientId,
   });
 
   const sendResult = await sendAssessmentInvitation({
     email,
     firstName: parsed.firstName,
     organizationName: parsed.company,
-    activationToken: workspace.activationToken,
-    clientId: workspace.clientId,
-    userId: workspace.userId,
-    assessmentId: workspace.assessmentId,
+    prospectId: prospect.id,
     campaignId: campaign.id,
     createdByUserId: input.createdByUserId,
     recipientName: `${parsed.firstName} ${parsed.lastName}`.trim(),
+    clientId: prospect.clientId,
+    userId: null,
+    assessmentId: null,
   });
 
   const invitedAt = new Date();
@@ -134,23 +123,19 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
         where: {
           campaignId_prospectId: {
             campaignId: campaign.id,
-            prospectId: workspace.prospectId,
+            prospectId: prospect.id,
           },
         },
         create: {
           campaignId: campaign.id,
-          prospectId: workspace.prospectId,
-          clientId: workspace.clientId,
-          userId: workspace.userId,
-          assessmentId: workspace.assessmentId,
+          prospectId: prospect.id,
+          clientId: prospect.clientId,
           communicationMessageId:
             sendResult.messageId !== "untracked" ? sendResult.messageId : null,
           invitedAt,
         },
         update: {
-          clientId: workspace.clientId,
-          userId: workspace.userId,
-          assessmentId: workspace.assessmentId,
+          clientId: prospect.clientId,
           communicationMessageId:
             sendResult.messageId !== "untracked" ? sendResult.messageId : null,
           invitedAt,
@@ -160,7 +145,7 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
   );
 
   await prisma.prospect.update({
-    where: { id: workspace.prospectId },
+    where: { id: prospect.id },
     data: { status: "invited", lastContactAt: invitedAt },
   });
 
@@ -173,8 +158,8 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
 
   await recordCampaignEvent({
     campaignId: campaign.id,
-    eventType: workspace.isNewProspect ? "recipient_added" : "invitation_sent",
-    title: workspace.isNewProspect ? "Recipient added" : "Invitation resent",
+    eventType: isNewProspect ? "recipient_added" : "invitation_sent",
+    title: isNewProspect ? "Recipient added" : "Invitation resent",
     description: `${parsed.firstName} ${parsed.lastName} at ${parsed.company}`,
     actorUserId: input.createdByUserId,
     recipientId: recipient?.id ?? null,
@@ -190,28 +175,29 @@ export async function executeQuickInvite(input: QuickInviteInput): Promise<Quick
     metadata: { messageId: sendResult.messageId },
   });
 
-  await recordOrganizationActivity({
-    clientId: workspace.clientId,
-    userId: workspace.userId,
-    category: "COMMUNICATIONS",
-    eventType: "invitation_sent",
-    title: "Assessment invitation sent",
-    description: `Invitation sent to ${email} via Quick Invite.`,
-    sourceRecordType: "CommunicationMessage",
-    sourceRecordId: sendResult.messageId !== "untracked" ? sendResult.messageId : undefined,
-    visibility: "CLIENT_VISIBLE",
-    actorUserId: input.createdByUserId,
-  });
+  if (prospect.clientId) {
+    await recordOrganizationActivity({
+      clientId: prospect.clientId,
+      category: "COMMUNICATIONS",
+      eventType: "invitation_sent",
+      title: "Assessment invitation sent",
+      description: `Invitation sent to ${email} via Quick Invite.`,
+      sourceRecordType: "CommunicationMessage",
+      sourceRecordId: sendResult.messageId !== "untracked" ? sendResult.messageId : undefined,
+      visibility: "CLIENT_VISIBLE",
+      actorUserId: input.createdByUserId,
+    });
+  }
 
   return {
     success: true,
-    prospectId: workspace.prospectId,
-    clientId: workspace.clientId,
-    assessmentId: workspace.assessmentId,
+    prospectId: prospect.id,
+    clientId: prospect.clientId,
+    assessmentId: null,
     messageId: sendResult.messageId,
     campaignId: campaign.id,
     recipientId: recipient?.id ?? null,
-    isNewProspect: workspace.isNewProspect,
+    isNewProspect,
   };
 }
 

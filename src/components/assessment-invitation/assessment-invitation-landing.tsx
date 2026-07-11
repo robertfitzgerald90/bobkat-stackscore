@@ -4,6 +4,7 @@ import {
   INVITATION_BENEFITS,
   INVITATION_DISCOVER_FEATURES,
   INVITATION_TIMELINE,
+  type AssessmentInvitationContext,
   type AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
@@ -14,16 +15,18 @@ import { InvitationNav } from "./invitation-nav";
 
 type AssessmentInvitationLandingProps = {
   personalization?: AssessmentInvitationPersonalization;
+  invitationContext?: AssessmentInvitationContext;
 };
 
 export function AssessmentInvitationLanding({
   personalization,
+  invitationContext,
 }: AssessmentInvitationLandingProps) {
   return (
     <div className="min-h-screen bg-background">
-      <InvitationNav />
+      <InvitationNav invitationContext={invitationContext} />
       <main>
-        <InvitationHero personalization={personalization} />
+        <InvitationHero personalization={personalization} invitationContext={invitationContext} />
 
         <OfferFeatureGrid
           eyebrow="What you'll discover"
@@ -50,7 +53,7 @@ export function AssessmentInvitationLanding({
         />
 
         <InvitationAboutBobkat />
-        <InvitationFinalCta />
+        <InvitationFinalCta invitationContext={invitationContext} />
       </main>
       <OfferFooter />
     </div>

@@ -4,9 +4,13 @@ import type { AccountActivationEmailData } from "@/emails/templates/account-acti
 import { AssessmentInvitationEmail } from "@/emails/templates/assessment-invitation";
 import type { AssessmentInvitationEmailData } from "@/emails/templates/assessment-invitation";
 import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
+import { renderWorkflowNotificationEmail } from "@/lib/communications/workflows/render-workflow-email";
+import type { WorkflowNotificationEmailData } from "@/emails/templates/workflow-notification";
 import {
   buildAccountActivationSampleData,
   buildAssessmentInvitationSampleData,
+  buildPasswordResetSampleData,
+  PREVIEW_PROTECTED_URL,
 } from "@/lib/communications/sample-data";
 import type {
   EmailTemplateCategory,
@@ -55,15 +59,25 @@ type DraftTemplateMeta = {
   optionalVariables: readonly string[];
 };
 
-function draftTemplate(meta: DraftTemplateMeta): EmailTemplateDefinition {
+type WorkflowTemplateMeta = DraftTemplateMeta & {
+  sampleData: Record<string, unknown>;
+  defaults: { subject: string; previewText: string };
+};
+
+function workflowTemplate(
+  meta: WorkflowTemplateMeta,
+): EmailTemplateDefinition {
   return {
     ...meta,
-    sampleData: {},
-    render: async () => {
-      throw new Error(`Template ${meta.key} is not implemented yet.`);
-    },
+    status: "active",
+    sampleData: meta.sampleData,
+    render: async (data, context) =>
+      renderWorkflowNotificationEmail(data as WorkflowNotificationEmailData, context, meta.defaults),
   };
 }
+
+const EMAIL_001_SAMPLE = buildAccountActivationSampleData();
+const EMAIL_009_SAMPLE = buildAssessmentInvitationSampleData();
 
 const EMAIL_001: EmailTemplateDefinition = {
   key: "EMAIL-001",
@@ -86,7 +100,7 @@ const EMAIL_001: EmailTemplateDefinition = {
     "supportEmail",
     "websiteUrl",
   ],
-  sampleData: buildAccountActivationSampleData(),
+  sampleData: EMAIL_001_SAMPLE,
   render: renderAccountActivation,
 };
 
@@ -134,102 +148,201 @@ const EMAIL_009: EmailTemplateDefinition = {
     "supportEmail",
     "websiteUrl",
   ],
-  sampleData: buildAssessmentInvitationSampleData(),
+  sampleData: EMAIL_009_SAMPLE,
   render: renderAssessmentInvitation,
 };
 
 export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
   EMAIL_001,
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-002",
     documentId: "EMAIL-002",
     name: "Assessment Complete",
     description: "Notifies the customer that their assessment results are ready for review.",
     category: "assessment",
-    status: "draft",
+    status: "active",
     subject: "Your StackScore Assessment is Complete",
     previewText: "Your technology maturity report is now available.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["resultsUrl"],
-    optionalVariables: ["firstName", "organizationName"],
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName", "heroTitle"],
+    defaults: {
+      subject: "Your StackScore Assessment is Complete",
+      previewText: "Your technology maturity report is now available.",
+    },
+    sampleData: {
+      heroTitle: "Your Technology Assessment is Complete",
+      heroDescription: "Northwind Professional Services has completed the Technology Maturity Assessment.",
+      previewText: "Your technology maturity report is now available.",
+      paragraphs: [
+        "Congratulations, Alex.",
+        "StackScore has analyzed your responses and generated a detailed view of your technology environment.",
+      ],
+      summaryTitle: "Assessment Summary",
+      summaryItems: ["Overall Technology Health Score: 72"],
+      primaryCta: {
+        label: "View Assessment Results",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      secondaryCta: {
+        label: "Download Executive Report",
+        href: PREVIEW_PROTECTED_URL,
+      },
+    },
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-003",
     documentId: "EMAIL-003",
     name: "Roadmap Ready",
     description: "Informs the customer that their Technology Roadmap has been generated.",
     category: "roadmap",
-    status: "draft",
+    status: "active",
     subject: "Your Technology Roadmap is Ready",
     previewText: "Explore your prioritized technology improvement plan.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["roadmapUrl"],
+    requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "Your Technology Roadmap is Ready",
+      previewText: "Explore your prioritized technology improvement plan.",
+    },
+    sampleData: {
+      heroTitle: "Your Technology Roadmap is Ready",
+      primaryCta: {
+        label: "View Technology Roadmap",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      secondaryCta: {
+        label: "Book Technology Review",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      summaryItems: ["Phases: 3", "Projects: 8"],
+    },
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-004",
     documentId: "EMAIL-004",
     name: "Proposal Ready",
     description: "Notifies the customer that a technology proposal is available for review.",
     category: "proposal",
-    status: "draft",
+    status: "active",
     subject: "Your Technology Proposal is Ready",
     previewText: "Review your recommended technology improvements.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["proposalUrl"],
+    requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "Your Technology Proposal is Ready",
+      previewText: "Review your recommended technology improvements.",
+    },
+    sampleData: {
+      heroTitle: "Your Proposal is Ready",
+      primaryCta: {
+        label: "Review Proposal",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      secondaryCta: {
+        label: "Approve Proposal",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      summaryItems: ["Total Investment: $24,500"],
+    },
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-005",
     documentId: "EMAIL-005",
     name: "Password Reset",
     description: "Allows a customer to securely reset their StackScore password.",
     category: "security",
-    status: "draft",
+    status: "active",
     subject: "Reset Your StackScore Password",
     previewText: "A request was received to reset your StackScore password.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["resetUrl"],
+    requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName"],
+    defaults: {
+      subject: "Reset Your StackScore Password",
+      previewText: "A request was received to reset your StackScore password.",
+    },
+    sampleData: buildPasswordResetSampleData(),
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-006",
     documentId: "EMAIL-006",
     name: "Quarterly Technology Review",
     description: "Invites customers to schedule a quarterly technology review.",
     category: "review",
-    status: "draft",
+    status: "active",
     subject: "It's Time for Your Quarterly Technology Review",
     previewText: "Let's review what's changed in your technology environment.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["reviewUrl"],
+    requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "It's Time for Your Quarterly Technology Review",
+      previewText: "Let's review what's changed in your technology environment.",
+    },
+    sampleData: {
+      heroTitle: "Technology Never Stands Still",
+      primaryCta: {
+        label: "Schedule My Review",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      summaryItems: ["Review completed improvements", "Update your technology roadmap"],
+    },
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-007",
     documentId: "EMAIL-007",
     name: "Project Created",
-    description: "Notifies a customer that a new implementation project has been created.",
+    description: "Notifies a customer that new implementation projects have been shared.",
     category: "project",
-    status: "draft",
-    subject: "A New Project Has Been Created",
-    previewText: "Your next technology improvement project is ready.",
+    status: "active",
+    subject: "New Projects Have Been Shared With You",
+    previewText: "Your next technology improvement projects are ready.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["projectUrl"],
-    optionalVariables: ["firstName", "organizationName", "projectName"],
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "New Projects Have Been Shared With You",
+      previewText: "Your next technology improvement projects are ready.",
+    },
+    sampleData: {
+      heroTitle: "Your Next Projects Are Ready",
+      primaryCta: {
+        label: "View Project Portfolio",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      summaryItems: ["Endpoint Security Upgrade", "Estimated Cost: $8,500"],
+    },
   }),
-  draftTemplate({
+  workflowTemplate({
     key: "EMAIL-008",
     documentId: "EMAIL-008",
     name: "Project Completed",
     description: "Notifies the customer that an implementation project has been completed.",
     category: "project",
-    status: "draft",
+    status: "active",
     subject: "Your Project Has Been Successfully Completed",
     previewText: "Review the completed work and your updated technology environment.",
     lastUpdated: LAST_UPDATED,
-    requiredVariables: ["projectUrl"],
+    requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName", "organizationName", "projectName"],
+    defaults: {
+      subject: "Your Project Has Been Successfully Completed",
+      previewText: "Review the completed work and your updated technology environment.",
+    },
+    sampleData: {
+      heroTitle: "Project Successfully Completed",
+      primaryCta: {
+        label: "View Completed Project",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      secondaryCta: {
+        label: "View Updated Technology Roadmap",
+        href: PREVIEW_PROTECTED_URL,
+      },
+    },
   }),
   EMAIL_009,
 ];
@@ -243,7 +356,7 @@ export function listEmailTemplates(): EmailTemplateDefinition[] {
 }
 
 export function isTemplatePreviewable(template: EmailTemplateDefinition): boolean {
-  return template.status === "active";
+  return template.status !== "archived";
 }
 
 export const CATEGORY_LABELS: Record<EmailTemplateCategory, string> = {

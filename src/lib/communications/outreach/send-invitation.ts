@@ -1,24 +1,29 @@
 import { renderCommunicationTemplate } from "@/lib/communications/render-template";
+import { buildInvitationLandingUrl } from "@/lib/communications/links/build-protected-url";
 import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
-import { buildActivationUrls } from "@/lib/email/templates/assessment-purchase";
 
 export type SendAssessmentInvitationInput = {
   email: string;
   firstName?: string;
   organizationName?: string;
-  activationToken: string;
-  clientId: string;
-  userId: string;
-  assessmentId: string;
+  prospectId: string;
   campaignId?: string | null;
   createdByUserId: string;
   recipientName?: string;
+  clientId?: string | null;
+  userId?: string | null;
+  assessmentId?: string | null;
 };
 
 export async function sendAssessmentInvitation(input: SendAssessmentInvitationInput) {
-  const urls = buildActivationUrls(input.activationToken);
+  const invitationUrl = buildInvitationLandingUrl({
+    prospectId: input.prospectId,
+    campaignId: input.campaignId ?? undefined,
+    recipientFirstName: input.firstName,
+  });
+
   const rendered = await renderCommunicationTemplate("EMAIL-009", {
-    invitationUrl: urls.activationUrl,
+    invitationUrl,
     firstName: input.firstName,
     organizationName: input.organizationName,
   });
@@ -31,14 +36,15 @@ export async function sendAssessmentInvitation(input: SendAssessmentInvitationIn
     previewText: rendered.previewText,
     templateKey: "EMAIL-009",
     recipientName: input.recipientName,
-    clientId: input.clientId,
-    userId: input.userId,
-    assessmentId: input.assessmentId,
+    clientId: input.clientId ?? null,
+    userId: input.userId ?? null,
+    assessmentId: input.assessmentId ?? null,
     campaignId: input.campaignId ?? null,
     createdByUserId: input.createdByUserId,
     metadata: {
       workflow: "assessment_invitation",
       campaignId: input.campaignId ?? null,
+      prospectId: input.prospectId,
     },
   });
 }

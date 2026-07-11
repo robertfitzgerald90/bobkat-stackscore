@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,11 @@ const EMPTY_INTAKE: IntakeForm = {
 type WizardPhase = "intro" | "intake" | "qualifier" | "pillar" | "results";
 
 export function TechnologySnapshotWizard() {
+  const searchParams = useSearchParams();
+  const prospectId = searchParams.get("prospectId") ?? undefined;
+  const campaignId = searchParams.get("campaignId") ?? undefined;
+  const invitationFlow = Boolean(prospectId || campaignId);
+
   const [phase, setPhase] = useState<WizardPhase>("intro");
   const [pillarIndex, setPillarIndex] = useState(0);
   const [intake, setIntake] = useState<IntakeForm>(EMPTY_INTAKE);
@@ -113,6 +119,7 @@ export function TechnologySnapshotWizard() {
           companySize: intake.companySize || undefined,
           itManagementModel,
           answers: finalAnswers,
+          prospectId,
         }),
       });
 
@@ -405,6 +412,7 @@ export function TechnologySnapshotWizard() {
             companyName={intake.companyName}
             result={result}
             onRestart={restart}
+            invitationFlow={invitationFlow}
           />
         ) : null}
       </div>

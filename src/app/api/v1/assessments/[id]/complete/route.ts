@@ -49,6 +49,15 @@ export async function POST(_request: Request, context: RouteContext) {
       clientId: result.clientId,
     });
 
+    const { triggerAssessmentCompleteWorkflow } = await import(
+      "@/lib/communications/workflows/triggers"
+    );
+    await triggerAssessmentCompleteWorkflow({
+      assessmentId: result.id,
+      clientId: result.clientId,
+      createdByUserId: user.id,
+    });
+
     const openRecommendations: AssessmentRecommendation[] = result.recommendations ?? [];
     const projectionImpact = calculateProjectionImpacts(
       openRecommendations.map((rec: AssessmentRecommendation) => ({

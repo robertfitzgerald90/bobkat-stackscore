@@ -22,8 +22,16 @@ export async function createTechnologySnapshotLead(input: CreateSnapshotLeadInpu
       classification: result.classification,
       lowestPillars: result.lowestPillars,
       status: "new",
+      prospectId: input.prospectId ?? null,
     },
   });
+
+  if (input.prospectId) {
+    await prisma.prospect.updateMany({
+      where: { id: input.prospectId },
+      data: { lastContactAt: new Date() },
+    });
+  }
 
   return {
     lead,

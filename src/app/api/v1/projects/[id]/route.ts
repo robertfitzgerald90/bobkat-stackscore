@@ -10,7 +10,7 @@ import {
 } from "@/lib/api/helpers";
 import { deleteProjectPermanently } from "@/lib/records";
 import { parseDeleteConfirmation } from "@/lib/records/validate";
-import { updateProjectWithWorkflow } from "@/lib/projects/service";
+import { completeProjectWithNotifications } from "@/lib/projects/service";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import { updateProjectSchema } from "@/lib/projects/schemas";
 
@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid project update");
   }
 
-  const project = await updateProjectWithWorkflow(id, parsed.data);
+  const project = await completeProjectWithNotifications(id, parsed.data, user.id);
   if (!project) return notFound("Project not found");
 
   return NextResponse.json(project);

@@ -25,6 +25,10 @@ export const authConfig = {
         pathname.startsWith("/technology-snapshot") ||
         pathname.startsWith("/assessment-offer") ||
         pathname.startsWith("/assessment-invitation") ||
+        pathname.startsWith("/forgot-password") ||
+        pathname.startsWith("/reset-password") ||
+        pathname.startsWith("/api/cron/communications") ||
+        pathname.startsWith("/api/v1/public/password-reset") ||
         pathname.startsWith("/purchase/success") ||
         pathname.startsWith("/api/auth") ||
         pathname.startsWith("/api/v1/health") ||
