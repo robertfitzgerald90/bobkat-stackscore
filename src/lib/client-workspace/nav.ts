@@ -36,7 +36,7 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "projects", label: "Projects" },
   { section: "assessments", label: "Assessments" },
   { section: "recommendations", label: "Recommendations" },
-  { section: "assets", label: "Assets" },
+  { section: "assets", label: "Technology Stack" },
   { section: "documents", label: "Documents" },
   { section: "contacts", label: "Contacts" },
   { section: "billing", label: "Billing" },

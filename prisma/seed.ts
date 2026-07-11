@@ -11,6 +11,7 @@ import { CATEGORIES, QUESTIONS_BY_CATEGORY, type SeedAnswer } from "./seed-data"
 import { clearAllClientData, clearAssessmentData, deactivateV1Library, seedV2Library } from "./seed-v2";
 import { backfillV2QuestionMetadata } from "../src/lib/assessment-library/backfill-v2-metadata";
 import { Priority } from "../src/generated/prisma/client";
+import { seedTechnologyCatalog } from "./seed-technology-catalog";
 
 async function main() {
   console.log("Seeding BobKat StackScore...");
@@ -182,6 +183,8 @@ async function main() {
     `V2 metadata backfill: ${backfillResult.updated} updated, ${backfillResult.skipped} already complete (${backfillResult.scanned} scanned).`,
   );
   await backfillTechnologyProfiles();
+
+  await seedTechnologyCatalog(prisma);
 
   console.log("Seed complete.");
   console.log("Admin: admin@bobkatit.com");

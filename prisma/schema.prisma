@@ -249,6 +249,7 @@ model Client {
   quarterlyBusinessReviews QuarterlyBusinessReview[]
   users              User[]
   purchases          AssessmentPurchase[]
+  clientTechnologies ClientTechnology[]
 }
 
 model AssessmentCategory {
@@ -639,6 +640,62 @@ enum PurchaseStatus {
   refunded
 }
 
+enum TechnologyStandardStatus {
+  preferred
+  approved
+  conditional
+  existing_environment
+  legacy
+  prohibited
+}
+
+enum TechnologyLifecycleStatus {
+  current
+  review_required
+  end_of_sale
+  end_of_support
+  replacement_planned
+  retired
+}
+
+enum TechnologyPillarRelationshipType {
+  primary
+  supporting
+  informational
+}
+
+enum ClientTechnologyDeploymentStatus {
+  planned
+  implementing
+  active
+  replacing
+  retired
+}
+
+enum ClientTechnologyAlignmentStatus {
+  preferred
+  approved
+  exception
+  legacy
+  not_standard
+  unassessed
+}
+
+enum ClientTechnologyHealthStatus {
+  healthy
+  attention_needed
+  at_risk
+  unknown
+}
+
+enum ManagedByType {
+  bobkat_it
+  client
+  third_party
+  shared
+  unknown
+}
+
 enum TechnologySnapshotLeadStatus {
   new
   contacted
@@ -689,6 +746,164 @@ model AccountActivationToken {
   createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TechnologyCategory {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  description  String?  @db.Text
+  icon         String?
+  displayOrder Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  technologies Technology[]
+}
+
+model Technology {
+  id                 String                    @id @default(uuid())
+  slug               String                    @unique
+  name               String
+  vendor             String
+  productFamily      String
+  categoryId         String
+  summary            String                    @db.Text
+  purpose            String                    @db.Text
+  whySelected        String?                   @db.Text
+  businessValue      String?                   @db.Text
+  technicalOverview  String?                   @db.Text
+  standardDeployment String?                   @db.Text
+  supportScope       String?                   @db.Text
+  limitations        String?                   @db.Text
+  licensingNotes     String?                   @db.Text
+  securityNotes      String?                   @db.Text
+  operationalNotes   String?                   @db.Text
+  stackLayer         String?
+  standardStatus     TechnologyStandardStatus  @default(approved)
+  lifecycleStatus    TechnologyLifecycleStatus @default(current)
+  isFeatured         Boolean                   @default(false)
+  isActive           Boolean                   @default(true)
+  icon               String?
+  websiteUrl         String?
+  documentationUrl   String?
+  relatedPlaybookCount Int                     @default(0)
+  lastReviewedAt     DateTime?
+  nextReviewAt       DateTime?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  category           TechnologyCategory          @relation(fields: [categoryId], references: [id])
+  capabilities       TechnologyCapability[]
+  products           TechnologyProduct[]
+  businessOutcomes   TechnologyBusinessOutcome[]
+  pillarMappings     TechnologyPillarMapping[]
+  clientTechnologies ClientTechnology[]
+}
+
+model TechnologyCapability {
+  id             String   @id @default(uuid())
+  technologyId   String
+  name           String
+  description    String?  @db.Text
+  capabilityType String?
+  displayOrder   Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@index([technologyId])
+}
+
+model TechnologyProduct {
+  id                 String                    @id @default(uuid())
+  technologyId       String
+  name               String
+  modelNumber        String?
+  productType        String
+  summary            String?                   @db.Text
+  recommendedUseCase String?                   @db.Text
+  environmentSize    String?
+  lifecycleStatus    TechnologyLifecycleStatus @default(current)
+  isPreferred        Boolean                   @default(false)
+  specificationsJson Json?
+  notes              String?                   @db.Text
+  displayOrder       Int
+  isActive           Boolean                   @default(true)
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  technology         Technology         @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+  clientTechnologies ClientTechnology[]
+
+  @@index([technologyId])
+}
+
+model TechnologyBusinessOutcome {
+  id           String   @id @default(uuid())
+  technologyId String
+  name         String
+  description  String?  @db.Text
+  displayOrder Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@index([technologyId])
+}
+
+model TechnologyPillarMapping {
+  id               String                           @id @default(uuid())
+  technologyId     String
+  pillarCode       String
+  relationshipType TechnologyPillarRelationshipType
+  explanation      String?                          @db.Text
+  createdAt        DateTime                         @default(now())
+  updatedAt        DateTime                         @updatedAt
+
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@unique([technologyId, pillarCode, relationshipType])
+  @@index([technologyId])
+  @@index([pillarCode])
+}
+
+model ClientTechnology {
+  id                     String                           @id @default(uuid())
+  clientId               String
+  technologyId           String
+  technologyProductId    String?
+  displayName            String?
+  businessPurpose        String?                          @db.Text
+  deploymentStatus       ClientTechnologyDeploymentStatus @default(active)
+  alignmentStatus        ClientTechnologyAlignmentStatus  @default(unassessed)
+  healthStatus           ClientTechnologyHealthStatus     @default(unknown)
+  lifecycleStatus        TechnologyLifecycleStatus        @default(current)
+  quantity               Int?
+  quantityUnit           String?
+  coverageNotes          String?                          @db.Text
+  managedBy              ManagedByType                    @default(unknown)
+  vendorAccountReference String?
+  implementationDate     DateTime?
+  renewalDate            DateTime?
+  reviewDate             DateTime?
+  ownerName              String?
+  technicalOwnerName     String?
+  exceptionReason        String?                          @db.Text
+  notes                  String?                          @db.Text
+  isActive               Boolean                          @default(true)
+  createdAt              DateTime                         @default(now())
+  updatedAt              DateTime                         @updatedAt
+
+  client            Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  technology        Technology         @relation(fields: [technologyId], references: [id])
+  technologyProduct TechnologyProduct? @relation(fields: [technologyProductId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([technologyId])
 }
 
 model TechnologySnapshotLead {

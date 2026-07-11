@@ -1,7 +1,13 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { TechnologyFeatureCard, TechnologyCatalogMetrics } from "@/components/technology-catalog/technology-feature-card";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  getCatalogMetrics,
+  getCatalogTechnologies,
+  getFeaturedTechnologies,
+  getTechnologyCategories,
+} from "@/lib/technology-catalog";
 import { isConsultantMode } from "@/lib/navigation/portal-mode";
 
 export default async function TechnologyCatalogPage() {
@@ -9,24 +15,58 @@ export default async function TechnologyCatalogPage() {
   if (!session?.user) redirect("/login");
   if (!isConsultantMode(session.user.role)) redirect("/dashboard");
 
+  const [technologies, featured, metrics, categories] = await Promise.all([
+    getCatalogTechnologies(),
+    getFeaturedTechnologies(),
+    getCatalogMetrics(),
+    getTechnologyCategories(),
+  ]);
+
   return (
-    <div className="space-y-6">
+    <div className="page-shell space-y-8">
       <WorkspaceSectionHeader
         title="Technology Catalog"
-        description="Recommended products and services for client engagements."
+        description="Approved technologies that define the Bobkat IT Standard."
       />
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Catalog</CardTitle>
-          <CardDescription>
-            Technology catalog integration is planned for a future release.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Use client recommendations and project workflows to track suggested technology until the
-          catalog module is available.
-        </CardContent>
-      </Card>
+
+      <TechnologyCatalogMetrics
+        preferredCount={metrics.preferredCount}
+        productCount={metrics.productCount}
+        pillarMappings={metrics.pillarMappings}
+        playbookCount={metrics.playbookCount}
+      />
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">Featured Standard</h2>
+          <p className="text-sm text-muted-foreground">
+            Core platforms that define repeatable Bobkat IT delivery.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
+          {featured.map((technology) => (
+            <TechnologyFeatureCard key={technology.id} technology={technology} />
+          ))}
+        </div>
+      </section>
+
+      {technologies.length > featured.length ? (
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Catalog Library</h2>
+            <p className="text-sm text-muted-foreground">
+              {metrics.technologyCount} technologies across {categories.length} categories.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {technologies
+              .filter((technology) => !technology.isFeatured)
+              .map((technology) => (
+                <TechnologyFeatureCard key={technology.id} technology={technology} />
+              ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
