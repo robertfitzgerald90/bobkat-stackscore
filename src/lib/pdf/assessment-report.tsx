@@ -576,8 +576,8 @@ function CategoryScoreCard({
   const fillWidth = `${Math.max(0, Math.min(100, roundedScore))}%`;
 
   return (
-    <View style={styles.categoryCard}>
-      <View wrap={false} style={styles.categoryTitleRow}>
+    <View wrap={false} style={styles.categoryCard}>
+      <View style={styles.categoryTitleRow}>
         <Text style={styles.categoryName}>{categoryName}</Text>
         <Text style={styles.categoryPercent}>{roundedScore}%</Text>
       </View>
@@ -614,8 +614,8 @@ function RecommendationCard({
   categoryName: string;
 }) {
   return (
-    <View style={styles.recommendationCard}>
-      <View wrap={false} style={styles.recommendationHeader}>
+    <View wrap={false} style={styles.recommendationCard}>
+      <View style={styles.recommendationHeader}>
         <Text style={styles.recommendationTitle}>{title}</Text>
         <PdfPriorityBadge priority={priority} />
       </View>
@@ -656,17 +656,29 @@ function RecommendationIndex({
         );
         if (group.length === 0) return null;
 
+        const [first, ...rest] = group;
+
         return (
           <View key={priority}>
             <View wrap={false}>
               <Text style={styles.indexGroupTitle}>
                 {PRIORITY_LABELS[priority]} ({group.length})
               </Text>
+              {(() => {
+                index += 1;
+                return (
+                  <View style={styles.summaryListItem}>
+                    <Text style={styles.summaryListIndex}>{index}.</Text>
+                    <Text style={styles.summaryListTitle}>{first.title}</Text>
+                    <Text style={styles.summaryListImpact}>+{first.estimatedImpactPoints}</Text>
+                  </View>
+                );
+              })()}
             </View>
-            {group.map((recommendation) => {
+            {rest.map((recommendation) => {
               index += 1;
               return (
-                <View key={recommendation.id} style={styles.summaryListItem}>
+                <View key={recommendation.id} wrap={false} style={styles.summaryListItem}>
                   <Text style={styles.summaryListIndex}>{index}.</Text>
                   <Text style={styles.summaryListTitle}>{recommendation.title}</Text>
                   <Text style={styles.summaryListImpact}>
@@ -679,6 +691,44 @@ function RecommendationIndex({
         );
       })}
     </>
+  );
+}
+
+function PriorityRecommendationGroup({
+  label,
+  items,
+}: {
+  label: string;
+  items: RecommendationSummary[];
+}) {
+  const [first, ...rest] = items;
+  if (!first) return null;
+
+  return (
+    <View style={styles.priorityGroup}>
+      <View wrap={false}>
+        <Text style={styles.priorityGroupTitle}>{label}</Text>
+        <RecommendationCard
+          priority={first.priority}
+          title={first.title}
+          estimatedImpactPoints={first.estimatedImpactPoints}
+          suggestedService={first.suggestedService}
+          businessImpact={first.businessImpact}
+          categoryName={first.categoryName}
+        />
+      </View>
+      {rest.map((recommendation) => (
+        <RecommendationCard
+          key={recommendation.id}
+          priority={recommendation.priority}
+          title={recommendation.title}
+          estimatedImpactPoints={recommendation.estimatedImpactPoints}
+          suggestedService={recommendation.suggestedService}
+          businessImpact={recommendation.businessImpact}
+          categoryName={recommendation.categoryName}
+        />
+      ))}
+    </View>
   );
 }
 
@@ -1015,24 +1065,11 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             <Text style={styles.bodyText}>No recommendations at this time.</Text>
           ) : (
             recommendationsByPriority.map((group) => (
-              <View key={group.priority} style={styles.priorityGroup}>
-                <View wrap={false}>
-                  <Text style={styles.priorityGroupTitle}>
-                    {group.label} ({group.items.length})
-                  </Text>
-                </View>
-                {group.items.map((recommendation) => (
-                  <RecommendationCard
-                    key={recommendation.id}
-                    priority={recommendation.priority}
-                    title={recommendation.title}
-                    estimatedImpactPoints={recommendation.estimatedImpactPoints}
-                    suggestedService={recommendation.suggestedService}
-                    businessImpact={recommendation.businessImpact}
-                    categoryName={recommendation.categoryName}
-                  />
-                ))}
-              </View>
+              <PriorityRecommendationGroup
+                key={group.priority}
+                label={`${group.label} (${group.items.length})`}
+                items={group.items}
+              />
             ))
           )}
         </PdfFlowSection>

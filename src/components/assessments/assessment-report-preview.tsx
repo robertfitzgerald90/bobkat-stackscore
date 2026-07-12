@@ -12,6 +12,7 @@ import {
   ReportEmptyState,
   ReportFooter,
   ReportHighlightCard,
+  ReportPrintLeadGroup,
   ReportPriorityBadge,
   ReportSection,
   ReportShell,
@@ -19,9 +20,9 @@ import {
 import { RecommendationPillarHint } from "@/components/technology-maturity/recommendation-pillar-hint";
 import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import { buildAssessmentReportSections } from "@/lib/reports/assessment-content";
-import { takeTopRecommendations } from "@/lib/recommendations/sort";
-import { getBookingUrl } from "@/lib/support/config";
 import type { AssessmentReportData } from "@/lib/pdf/types";
+import type { RecommendationSummary } from "@/lib/assessments/results-summary";
+import { getBookingUrl } from "@/lib/support/config";
 import { buttonClassName } from "@/components/ui/button";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
@@ -60,6 +61,40 @@ function SnapshotCard({
       </p>
       {subtitle ? <p className="report-snapshot-subtitle">{subtitle}</p> : null}
     </div>
+  );
+}
+
+function RecommendationCard({
+  recommendation,
+}: {
+  recommendation: RecommendationSummary;
+}) {
+  return (
+    <ReportDataCard
+      documentTheme={DOCUMENT_THEME}
+      className="report-recommendation-card"
+      title={
+        <div className="report-recommendation-title-row">
+          <p className="report-recommendation-title">{recommendation.title}</p>
+          <ReportPriorityBadge priority={recommendation.priority} documentTheme={DOCUMENT_THEME} />
+        </div>
+      }
+      description={recommendation.description || recommendation.businessImpact}
+      meta={
+        <div className="space-y-2">
+          {recommendation.businessImpact ? (
+            <p className="report-prose-sm">{recommendation.businessImpact}</p>
+          ) : null}
+          <RecommendationPillarHint
+            categoryCode={recommendation.categoryCode}
+            documentTheme={DOCUMENT_THEME}
+          />
+          <p className="report-impact-line">
+            +{recommendation.estimatedImpactPoints} StackScore points estimated improvement
+          </p>
+        </div>
+      }
+    />
   );
 }
 
@@ -115,7 +150,9 @@ export function AssessmentReportPreview({
     .sort((a, b) => (a.percentScore ?? 0) - (b.percentScore ?? 0))
     .slice(0, 3);
 
-  const priorityRecommendations = takeTopRecommendations(sections.clientRecommendations, 5);
+  const recommendationsByPriority = sections.recommendationsByPriority.filter(
+    (group) => group.items.length > 0,
+  );
 
   const executiveParagraphs = data.executiveSummary?.trim()
     ? data.executiveSummary.trim().split(/\n\n+/).filter(Boolean)
@@ -160,13 +197,17 @@ export function AssessmentReportPreview({
                 </p>
               ))}
             </div>
-            <div className="report-executive-grid">
-              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
-                <p className="report-highlight-label">Overall maturity</p>
-                <p className="report-highlight-value">
-                  {data.summary.overallScore} — {data.summary.overallRatingLabel}
-                </p>
-              </ReportHighlightCard>
+            <ReportPrintLeadGroup>
+              <div className="report-executive-grid">
+                <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
+                  <p className="report-highlight-label">Overall maturity</p>
+                  <p className="report-highlight-value">
+                    {data.summary.overallScore} — {data.summary.overallRatingLabel}
+                  </p>
+                </ReportHighlightCard>
+              </div>
+            </ReportPrintLeadGroup>
+            <div className="report-executive-grid mt-4">
               <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                 <p className="report-highlight-label">Primary risks</p>
                 <InsightList
@@ -228,9 +269,9 @@ export function AssessmentReportPreview({
             documentTheme={DOCUMENT_THEME}
           >
             <div className="report-pillar-grid">
-              {pillarInsights.map((pillar) => {
+              {pillarInsights.map((pillar, index) => {
                 const score = pillar.percentScore !== null ? Math.round(pillar.percentScore) : null;
-                return (
+                const card = (
                   <div key={pillar.pillarCode} className="report-pillar-card">
                     <div className="report-pillar-header">
                       <p className="report-pillar-name">{pillar.pillarName}</p>
@@ -259,6 +300,11 @@ export function AssessmentReportPreview({
                     </p>
                   </div>
                 );
+
+                if (index === 0) {
+                  return <ReportPrintLeadGroup key={pillar.pillarCode}>{card}</ReportPrintLeadGroup>;
+                }
+                return card;
               })}
             </div>
           </ReportSection>
@@ -269,15 +315,21 @@ export function AssessmentReportPreview({
                 <ReportEmptyState documentTheme={DOCUMENT_THEME}>Strengths will appear after pillar scoring is complete.</ReportEmptyState>
               ) : (
                 <div className="report-insight-cards">
-                  {topStrengths.map((pillar) => (
-                    <div key={pillar.pillarCode} className="report-insight-card">
-                      <p className="report-insight-title">{pillar.pillarName}</p>
-                      <p className="report-insight-body">
-                        Scoring {Math.round(pillar.percentScore ?? 0)}% —{" "}
-                        {pillar.maturityTier ?? "strong relative performance"}.
-                      </p>
-                    </div>
-                  ))}
+                  {topStrengths.map((pillar, index) => {
+                    const card = (
+                      <div key={pillar.pillarCode} className="report-insight-card">
+                        <p className="report-insight-title">{pillar.pillarName}</p>
+                        <p className="report-insight-body">
+                          Scoring {Math.round(pillar.percentScore ?? 0)}% —{" "}
+                          {pillar.maturityTier ?? "strong relative performance"}.
+                        </p>
+                      </div>
+                    );
+                    if (index === 0) {
+                      return <ReportPrintLeadGroup key={pillar.pillarCode}>{card}</ReportPrintLeadGroup>;
+                    }
+                    return card;
+                  })}
                 </div>
               )}
             </ReportSection>
@@ -291,64 +343,68 @@ export function AssessmentReportPreview({
                 <ReportEmptyState documentTheme={DOCUMENT_THEME}>No material risk areas were identified.</ReportEmptyState>
               ) : (
                 <div className="report-insight-cards">
-                  {topRisks.map((pillar) => (
-                    <div key={pillar.pillarCode} className="report-insight-card report-insight-card-risk">
-                      <p className="report-insight-title">{pillar.pillarName}</p>
-                      <p className="report-insight-body">
-                        Scoring {Math.round(pillar.percentScore ?? 0)}% — an opportunity to reduce
-                        operational and security exposure.
-                      </p>
-                    </div>
-                  ))}
+                  {topRisks.map((pillar, index) => {
+                    const card = (
+                      <div key={pillar.pillarCode} className="report-insight-card report-insight-card-risk">
+                        <p className="report-insight-title">{pillar.pillarName}</p>
+                        <p className="report-insight-body">
+                          Scoring {Math.round(pillar.percentScore ?? 0)}% — an opportunity to reduce
+                          operational and security exposure.
+                        </p>
+                      </div>
+                    );
+                    if (index === 0) {
+                      return <ReportPrintLeadGroup key={pillar.pillarCode}>{card}</ReportPrintLeadGroup>;
+                    }
+                    return card;
+                  })}
                 </div>
               )}
             </ReportSection>
           </div>
 
           <ReportSection
-            title="Priority Recommendations"
-            subtitle="Highest-impact opportunities identified in this assessment"
+            title="Detailed Recommendations"
+            subtitle="Prioritized remediation guidance organized by priority"
             documentTheme={DOCUMENT_THEME}
           >
-            {priorityRecommendations.length === 0 ? (
-              <ReportEmptyState documentTheme={DOCUMENT_THEME}>No recommendations were generated for this assessment.</ReportEmptyState>
+            {recommendationsByPriority.length === 0 ? (
+              <ReportEmptyState documentTheme={DOCUMENT_THEME}>
+                No recommendations were generated for this assessment.
+              </ReportEmptyState>
             ) : (
               <div className="report-recommendation-list">
-                {priorityRecommendations.map((recommendation) => (
-                  <ReportDataCard
-                    key={recommendation.id}
-                    documentTheme={DOCUMENT_THEME}
-                    title={
-                      <div className="report-recommendation-title-row">
-                        <p className="report-recommendation-title">{recommendation.title}</p>
-                        <ReportPriorityBadge priority={recommendation.priority} documentTheme={DOCUMENT_THEME} />
-                      </div>
-                    }
-                    description={recommendation.description || recommendation.businessImpact}
-                    meta={
-                      <div className="space-y-2">
-                        {recommendation.businessImpact ? (
-                          <p className="report-prose-sm">{recommendation.businessImpact}</p>
-                        ) : null}
-                        <RecommendationPillarHint
-                          categoryCode={recommendation.categoryCode}
-                          documentTheme={DOCUMENT_THEME}
-                        />
-                        <p className="report-impact-line">
-                          +{recommendation.estimatedImpactPoints} StackScore points estimated
-                          improvement
-                        </p>
-                      </div>
-                    }
-                  />
-                ))}
+                {recommendationsByPriority.map((group) => {
+                  const [first, ...rest] = group.items;
+                  return (
+                    <div key={group.priority} className="report-priority-group">
+                      <ReportPrintLeadGroup>
+                        <h5 className="report-priority-group-heading">
+                          {group.label} ({group.items.length})
+                        </h5>
+                        {first ? <RecommendationCard recommendation={first} /> : null}
+                      </ReportPrintLeadGroup>
+                      {rest.length > 0 ? (
+                        <div className="report-priority-group-cards">
+                          {rest.map((recommendation) => (
+                            <RecommendationCard
+                              key={recommendation.id}
+                              recommendation={recommendation}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </ReportSection>
 
           <ReportSection title="Next Steps" subtitle="How to turn insight into action" documentTheme={DOCUMENT_THEME}>
             <div className="report-next-steps">
-              <div className="report-next-step">
+              <ReportPrintLeadGroup>
+                <div className="report-next-step">
                 <FileText className="report-next-step-icon" />
                 <div>
                   <p className="report-next-step-title">Download this report</p>
@@ -368,6 +424,7 @@ export function AssessmentReportPreview({
                   </a>
                 </div>
               </div>
+              </ReportPrintLeadGroup>
               <div className="report-next-step">
                 <Calendar className="report-next-step-icon" />
                 <div>

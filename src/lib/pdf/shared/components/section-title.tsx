@@ -8,7 +8,7 @@ type PdfSectionTitleProps = {
 
 export function PdfSectionTitle({ title, subtitle }: PdfSectionTitleProps) {
   return (
-    <View style={styles.sectionTitleWrap}>
+    <View wrap={false} minPresenceAhead={72} style={styles.sectionTitleWrap}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
     </View>

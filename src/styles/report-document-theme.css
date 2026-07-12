@@ -267,8 +267,8 @@
   color: #475569;
 }
 
-.report-document-theme .report-priority-low {
-  border-color: #e2e8f0;
-  background-color: #ffffff;
-  color: #64748b;
+.report-document-theme .report-data-card,
+.report-document-theme .report-recommendation-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }

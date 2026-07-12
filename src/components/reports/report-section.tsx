@@ -19,9 +19,10 @@ export function ReportSection({
   documentTheme = false,
 }: ReportSectionProps) {
   return (
-    <section className={cn("report-section break-inside-avoid", className)}>
+    <section className={cn("report-section", className)}>
       <div
         className={cn(
+          "report-section-header",
           documentTheme ? "report-section-divider" : "mb-4",
           !documentTheme &&
             (variant === "accent"
@@ -51,7 +52,7 @@ export function ReportSection({
           </p>
         ) : null}
       </div>
-      {children}
+      <div className="report-section-body">{children}</div>
     </section>
   );
 }

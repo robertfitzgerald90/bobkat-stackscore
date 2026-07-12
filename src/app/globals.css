@@ -307,8 +307,24 @@
     print-color-adjust: exact;
   }
 
-  .assessment-executive-report .report-section {
-    break-inside: avoid-page;
+  .assessment-executive-report .report-section-header,
+  .assessment-executive-report .report-priority-group-heading,
+  .assessment-executive-report .report-print-keep-with-next {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .assessment-executive-report .report-print-lead-group {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .assessment-executive-report .report-section-body > .report-snapshot-grid,
+  .assessment-executive-report .report-section-body > .report-pillar-grid,
+  .assessment-executive-report .report-section-body > .report-insight-cards,
+  .assessment-executive-report .report-section-body > .report-executive-grid,
+  .assessment-executive-report .report-section-body > .report-next-steps {
+    break-before: auto;
   }
 
   .assessment-executive-report .report-snapshot-card,
@@ -703,12 +719,6 @@
   margin-top: 0.375rem;
 }
 
-.assessment-executive-report .report-recommendation-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .assessment-executive-report .report-recommendation-title-row {
   display: flex;
   flex-wrap: wrap;
@@ -756,6 +766,56 @@
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--report-heading, #0f172a);
+}
+
+.assessment-executive-report .report-section-header {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.assessment-executive-report .report-section-body {
+  margin-top: 1rem;
+}
+
+.assessment-executive-report .report-print-lead-group {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.assessment-executive-report .report-print-keep-with-next {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.assessment-executive-report .report-priority-group + .report-priority-group {
+  margin-top: 1.5rem;
+}
+
+.assessment-executive-report .report-priority-group-heading {
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.5rem;
+  background: var(--report-surface, #f8fafc);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--report-heading, #0f172a);
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.assessment-executive-report .report-priority-group-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.assessment-executive-report .report-recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .command-palette [cmdk-group-heading] {
