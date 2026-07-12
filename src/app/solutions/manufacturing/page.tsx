@@ -1,18 +1,30 @@
 import type { Metadata } from "next";
-import { SolutionPlaceholderPage } from "@/components/solutions/solution-placeholder-page";
-import { BRAND } from "@/lib/branding";
+import { ManufacturingLanding } from "@/components/solutions/manufacturing-landing";
 
 export const metadata: Metadata = {
-  title: `Bobkat Manufacturing | ${BRAND.companyName}`,
+  title: "Bobkat Manufacturing | Industrial IT & Operational Technology Solutions",
   description:
-    "Bobkat Manufacturing is a standardized technology solution for industrial and production environments.",
+    "Bobkat Manufacturing provides secure industrial networking, IT and OT integration, business continuity, operational monitoring, and resilient technology solutions for manufacturing organizations.",
+  alternates: {
+    canonical: "https://stackscore.bobkatit.com/solutions/manufacturing",
+  },
+  openGraph: {
+    title: "Bobkat Manufacturing | Industrial IT & Operational Technology Solutions",
+    description:
+      "Secure industrial networking, IT and OT integration, business continuity, operational monitoring, and resilient technology solutions for manufacturing organizations.",
+    url: "https://stackscore.bobkatit.com/solutions/manufacturing",
+    type: "website",
+    images: [
+      {
+        url: "/solutions/manufacturing/Manufacturing Banner Image.png",
+        width: 1280,
+        height: 640,
+        alt: "Bobkat Manufacturing technology solution for industrial operations",
+      },
+    ],
+  },
 };
 
 export default function ManufacturingSolutionPage() {
-  return (
-    <SolutionPlaceholderPage
-      title="Bobkat Manufacturing"
-      description="Technology built for industrial operations. A dedicated solution page will be added here."
-    />
-  );
+  return <ManufacturingLanding />;
 }
