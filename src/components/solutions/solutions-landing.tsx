@@ -134,15 +134,14 @@ export function SolutionsLanding() {
             </div>
 
             <OfferReveal delayMs={140}>
-              <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-muted/30 shadow-sm">
+              <div className="group relative aspect-[16/10] overflow-hidden rounded-2xl border border-primary/20 bg-[#020b18] shadow-md">
                 <Image
                   src={SOLUTIONS_HERO_IMAGE.src}
                   alt={SOLUTIONS_HERO_IMAGE.alt}
-                  width={1280}
-                  height={853}
+                  fill
                   priority
                   sizes="(min-width: 1024px) 48vw, 100vw"
-                  className="aspect-[3/2] h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  className="object-contain object-center transition-transform duration-500 group-hover:scale-[1.015] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent" aria-hidden />
               </div>
