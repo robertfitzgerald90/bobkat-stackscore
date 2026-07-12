@@ -1,5 +1,4 @@
 import type { UserRole } from "@/generated/prisma/client";
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export type SessionUser = {
@@ -10,17 +9,11 @@ export type SessionUser = {
 };
 
 export async function getSessionUser(): Promise<SessionUser | null> {
-  const session = await auth();
-  if (!session?.user?.id || !session.user.email || !session.user.role) {
-    return null;
-  }
-
-  return {
-    id: session.user.id,
-    name: session.user.name ?? "",
-    email: session.user.email,
-    role: session.user.role as UserRole,
-  };
+  const { resolveSessionUserFromDb, toSessionUser } = await import(
+    "@/lib/auth/resolve-session-user"
+  );
+  const user = await resolveSessionUserFromDb();
+  return user ? toSessionUser(user) : null;
 }
 
 export function unauthorized() {

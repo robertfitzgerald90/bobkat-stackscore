@@ -11,10 +11,14 @@ export type BillingPageContext = {
 
 export async function loadBillingPage(clientId: string): Promise<BillingPageContext> {
   const user = await getSessionUserWithClient();
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/api/auth/signout?callbackUrl=/login");
+  }
 
   const isStaff = isStaffRole(user.role);
-  if (!isStaff && user.clientId !== clientId) redirect("/login");
+  if (!isStaff && user.clientId !== clientId) {
+    redirect("/api/auth/signout?callbackUrl=/login");
+  }
   if (!isStaff && !isClientVisibleWorkspaceSection("billing")) {
     redirect(`/clients/${clientId}/technology-profile`);
   }

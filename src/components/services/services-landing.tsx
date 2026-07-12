@@ -4,35 +4,84 @@ import { ArrowDown, ArrowRight, CheckCircle2, ExternalLink, Sparkles } from "luc
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
-import { OfferNav } from "@/components/assessment-offer/offer-nav";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
-import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { SERVICES_CATALOG, type ServiceCatalogItem } from "@/lib/services/catalog";
 import { SERVICES_CTA_DESTINATIONS, type ServicesCtaKey } from "@/lib/services/cta";
 import { cn } from "@/lib/utils";
 
-function ConsultationLink({
+const navLinkClassName =
+  "text-sm font-medium text-muted-foreground transition-colors hover:text-foreground";
+
+function ServicesNav() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link href="/services" className="min-w-0 shrink transition-opacity hover:opacity-90">
+          <BrandLogo size={32} showText className="gap-2" />
+        </Link>
+
+        <nav className="hidden items-center gap-1 sm:flex" aria-label="Bobkat IT services">
+          <Link
+            href="/services"
+            className={cn(
+              navLinkClassName,
+              "rounded-md bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/15 hover:text-primary",
+            )}
+          >
+            Services
+          </Link>
+          <Link
+            href={SERVICES_CTA_DESTINATIONS.purchaseAssessment.href}
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
+          >
+            Assessment
+          </Link>
+        </nav>
+
+        <TechnologySnapshotLink
+          label={SERVICES_CTA_DESTINATIONS.snapshot.label}
+          className="h-9 shrink-0 px-3 text-xs sm:px-4 sm:text-sm"
+        />
+      </div>
+    </header>
+  );
+}
+
+function ServicesCtaLink({
   cta,
   label,
   className,
+  variant = "default",
 }: {
   cta: ServicesCtaKey;
   label?: string;
   className?: string;
+  variant?: "default" | "outline";
 }) {
   const destination = SERVICES_CTA_DESTINATIONS[cta];
+  const isExternal = destination.href.startsWith("http");
+  const classNames = cn(
+    buttonVariants({ variant }),
+    variant === "default" && "shadow-md transition-shadow hover:shadow-lg",
+    className,
+  );
+
+  if (!isExternal) {
+    return (
+      <Link href={destination.href} className={classNames}>
+        {label ?? destination.label}
+      </Link>
+    );
+  }
 
   return (
     <a
       href={destination.href}
-      className={cn(
-        buttonVariants({ variant: "default" }),
-        "shadow-md transition-shadow hover:shadow-lg",
-        className,
-      )}
+      className={classNames}
     >
       {label ?? destination.label}
       <ExternalLink className="ml-1.5 h-4 w-4" aria-hidden />
@@ -47,30 +96,8 @@ function ServicesPrimaryCta({
   service: ServiceCatalogItem;
   className?: string;
 }) {
-  if (service.primaryCta === "purchaseAssessment") {
-    return <AssessmentPurchaseButton label={service.primaryCtaLabel} className={className} />;
-  }
-
-  return <ConsultationLink cta={service.primaryCta} label={service.primaryCtaLabel} className={className} />;
-}
-
-function StandardCtaLink({
-  cta,
-  label,
-  className,
-  variant = "outline",
-}: {
-  cta: ServicesCtaKey;
-  label?: string;
-  className?: string;
-  variant?: "default" | "outline";
-}) {
-  const destination = SERVICES_CTA_DESTINATIONS[cta];
-
   return (
-    <Link href={destination.href} className={cn(buttonVariants({ variant }), className)}>
-      {label ?? destination.label}
-    </Link>
+    <ServicesCtaLink cta={service.primaryCta} label={service.primaryCtaLabel} className={className} />
   );
 }
 
@@ -147,9 +174,10 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
             <div className="flex flex-col gap-3 sm:flex-row">
               <ServicesPrimaryCta service={service} className="h-11 w-full px-6 text-base sm:w-auto" />
               {service.secondaryCta ? (
-                <StandardCtaLink
+                <ServicesCtaLink
                   cta={service.secondaryCta}
                   className="h-11 w-full px-6 text-base sm:w-auto"
+                  variant="outline"
                 />
               ) : null}
             </div>
@@ -198,7 +226,7 @@ function PositioningCard({
 export function ServicesLanding() {
   return (
     <div className="min-h-screen scroll-smooth bg-background motion-reduce:scroll-auto">
-      <OfferNav />
+      <ServicesNav />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
           <OfferHeroBackground />
@@ -236,7 +264,8 @@ export function ServicesLanding() {
                 label={SERVICES_CTA_DESTINATIONS.snapshot.label}
                 className="h-11 w-full px-6 text-base sm:w-auto"
               />
-              <AssessmentPurchaseButton
+              <ServicesCtaLink
+                cta="purchaseAssessment"
                 label={SERVICES_CTA_DESTINATIONS.purchaseAssessment.label}
                 className="h-11 w-full px-6 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
               />
@@ -249,7 +278,7 @@ export function ServicesLanding() {
             <OfferSectionHeader
               eyebrow="Services Overview"
               title="Choose the right starting point"
-              description="Each service connects to the right next step, from instant assessment checkout to a consultation with Bobkat IT."
+              description="Each service connects to the right next step, from public assessment details to a focused consultation with Bobkat IT."
             />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {SERVICES_CATALOG.map((service, index) => (
@@ -295,13 +324,13 @@ export function ServicesLanding() {
                 title="Purchase Comprehensive Assessment"
                 description="Unlock executive reporting, risk analysis, and a strategic roadmap powered by StackScore."
               >
-                <AssessmentPurchaseButton label="Purchase Assessment" className="h-10 w-full px-4" />
+                <ServicesCtaLink cta="purchaseAssessment" label="Purchase Assessment" className="h-10 w-full px-4" />
               </PositioningCard>
               <PositioningCard
                 title="Schedule Consultation"
                 description="Talk with Bobkat IT about managed services, projects, continuity planning, or home support."
               >
-                <ConsultationLink cta="generalConsultation" className="h-10 w-full px-4" />
+                <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" />
               </PositioningCard>
             </div>
           </div>
@@ -315,11 +344,12 @@ export function ServicesLanding() {
             label="Start Free Snapshot"
             className="h-11 w-full px-8 text-base sm:w-auto"
           />
-          <AssessmentPurchaseButton
+          <ServicesCtaLink
+            cta="purchaseAssessment"
             label="Purchase Assessment"
             className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
           />
-          <ConsultationLink
+          <ServicesCtaLink
             cta="generalConsultation"
             label="Schedule Consultation"
             className="h-11 w-full px-8 text-base sm:w-auto"

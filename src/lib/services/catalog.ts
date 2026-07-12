@@ -61,7 +61,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       "Dedicated Strategic IT Partner",
     ],
     primaryCtaLabel: "Schedule Consultation",
-    primaryCta: "generalConsultation",
+    primaryCta: "managedItConsultation",
     image: {
       src: "/services/managed-it-services.png",
       alt: "Bobkat IT Managed IT Services service preview",
@@ -81,7 +81,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       "Scalable Infrastructure Design",
     ],
     primaryCtaLabel: "Discuss Your Project",
-    primaryCta: "generalConsultation",
+    primaryCta: "networkInfrastructureConsultation",
     image: {
       src: "/services/network-infrastructure-deployment.png",
       alt: "Bobkat IT Network Infrastructure and Deployment service preview",
@@ -101,7 +101,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       "Rapid Disaster Recovery",
     ],
     primaryCtaLabel: "Schedule Consultation",
-    primaryCta: "generalConsultation",
+    primaryCta: "backupDisasterRecoveryConsultation",
     image: {
       src: "/services/backup-disaster-recovery.png",
       alt: "Bobkat IT Backup and Disaster Recovery service preview",
@@ -121,7 +121,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       "Expert Project Management",
     ],
     primaryCtaLabel: "Discuss Your Project",
-    primaryCta: "generalConsultation",
+    primaryCta: "technologyImplementationConsultation",
     image: {
       src: "/services/technology-implementation.png",
       alt: "Bobkat IT Technology Implementation service preview",

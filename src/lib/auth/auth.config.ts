@@ -17,7 +17,7 @@ export const authConfig = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user;
+      const isLoggedIn = !!auth?.user?.id;
       const { pathname } = request.nextUrl;
       const isPublic =
         pathname.startsWith("/login") ||

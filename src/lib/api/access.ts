@@ -9,26 +9,8 @@ export type SessionUserWithClient = SessionUser & {
 };
 
 export async function getSessionUserWithClient(): Promise<SessionUserWithClient | null> {
-  const { auth } = await import("@/lib/auth");
-  const session = await auth();
-  if (!session?.user?.id || !session.user.email || !session.user.role) {
-    return null;
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, name: true, email: true, role: true, clientId: true, isActive: true },
-  });
-
-  if (!user || !user.isActive) return null;
-
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role as UserRole,
-    clientId: user.clientId,
-  };
+  const { resolveSessionUserFromDb } = await import("@/lib/auth/resolve-session-user");
+  return resolveSessionUserFromDb();
 }
 
 export function isStaffRole(role: UserRole): boolean {

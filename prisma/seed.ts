@@ -144,6 +144,10 @@ async function main() {
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
+/** Stable staff user ids — survive database reseeds when email is unchanged. */
+const SEED_ADMIN_USER_ID = "b0000001-0000-4000-8000-000000000001";
+const SEED_TECHNICIAN_USER_ID = "b0000001-0000-4000-8000-000000000002";
+
   await prisma.user.upsert({
     where: { email: "admin@bobkatit.com" },
     update: {
@@ -153,6 +157,7 @@ async function main() {
       isActive: true,
     },
     create: {
+      id: SEED_ADMIN_USER_ID,
       name: "BobKat Admin",
       email: "admin@bobkatit.com",
       passwordHash,
@@ -169,6 +174,7 @@ async function main() {
       isActive: true,
     },
     create: {
+      id: SEED_TECHNICIAN_USER_ID,
       name: "BobKat Technician",
       email: "technician@bobkatit.com",
       passwordHash,
