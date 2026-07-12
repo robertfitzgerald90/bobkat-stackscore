@@ -1,13 +1,13 @@
 import { auth } from "@/lib/auth";
-import { BillingDashboard } from "@/components/billing/billing-dashboard";
+import { InvoiceListView } from "@/components/billing/invoice-list-view";
 import { loadBillingPage } from "@/lib/billing/page-context";
 
 type PageProps = { params: Promise<{ id: string }> };
 
-export default async function ClientWorkspaceBillingPage({ params }: PageProps) {
+export default async function ClientBillingInvoicesPage({ params }: PageProps) {
   const { id } = await params;
   await auth();
   const { clientId, isStaff } = await loadBillingPage(id);
 
-  return <BillingDashboard clientId={clientId} isStaff={isStaff} />;
+  return <InvoiceListView clientId={clientId} isStaff={isStaff} />;
 }

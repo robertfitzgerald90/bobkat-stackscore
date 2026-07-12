@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import type { ProjectStatus } from "@/generated/prisma/client";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import type { UpdateProjectInput } from "@/lib/projects/schemas";
+import { assertProjectDepositGate } from "@/lib/billing/deposit-service";
 
 /** Keeps linked recommendation status in sync when a project completes or reopens. */
 export async function updateProjectWithWorkflow(
@@ -19,6 +20,12 @@ export async function updateProjectWithWorkflow(
     }
 
     const nextStatus = (input.status ?? existing.status) as ProjectStatus;
+    if (
+      nextStatus === "scheduled" ||
+      nextStatus === "in_progress"
+    ) {
+      await assertProjectDepositGate(projectId);
+    }
     const isCompleting = nextStatus === "completed" && existing.status !== "completed";
     const isReopening = existing.status === "completed" && nextStatus !== "completed";
 

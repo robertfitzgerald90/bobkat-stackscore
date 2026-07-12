@@ -50,6 +50,7 @@ export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[
   "overview",
   "recommendations",
   "executive-reports",
+  "billing",
 ];
 
 export function isClientVisibleWorkspaceSection(section: ClientWorkspaceSection): boolean {

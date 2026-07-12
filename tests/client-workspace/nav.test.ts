@@ -74,7 +74,7 @@ describe("resolveActiveWorkspaceSection", () => {
 describe("getVisibleWorkspaceNav", () => {
   it("limits client-portal users to overview-oriented sections", () => {
     const sections = getVisibleWorkspaceNav("client").map((item) => item.section);
-    expect(sections).toEqual(["overview", "documents", "contacts"]);
+    expect(sections).toEqual(["overview", "recommendations", "billing", "executive-reports"]);
   });
 
   it("shows the full DOC-201 nav for internal roles", () => {
