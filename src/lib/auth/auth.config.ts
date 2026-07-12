@@ -24,6 +24,7 @@ export const authConfig = {
         pathname.startsWith("/login") ||
         pathname.startsWith("/activate-account") ||
         pathname.startsWith("/technology-snapshot") ||
+        pathname.startsWith("/solutions") ||
         pathname.startsWith("/assessment-offer") ||
         pathname.startsWith("/assessment-invitation") ||
         pathname.startsWith("/services") ||

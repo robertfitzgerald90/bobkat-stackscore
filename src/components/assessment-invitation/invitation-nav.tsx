@@ -27,6 +27,12 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Assessment journey">
           <Link
+            href="/solutions"
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
+          >
+            Solutions
+          </Link>
+          <Link
             href="/services"
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
           >
