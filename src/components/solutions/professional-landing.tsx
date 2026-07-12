@@ -127,9 +127,9 @@ export function ProfessionalLanding() {
     <div className="min-h-screen scroll-smooth bg-background motion-reduce:scroll-auto">
       <PublicMarketingNav active="solutions" />
       <main>
-        <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
+        <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16 lg:pb-32 lg:pt-20">
           <OfferHeroBackground />
-          <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14 xl:grid-cols-[0.78fr_1.22fr]">
             <div className="text-center lg:text-left">
               <OfferReveal>
                 <p className="inline-flex rounded-full border border-primary/15 bg-primary/[0.06] px-4 py-1.5 text-sm font-medium uppercase tracking-wider text-primary">
@@ -173,15 +173,15 @@ export function ProfessionalLanding() {
             </div>
 
             <OfferReveal delayMs={140}>
-              <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-muted/30 shadow-sm">
+              <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/80 p-2 shadow-md sm:p-3">
                 <Image
                   src={PROFESSIONAL_IMAGES.hero.src}
                   alt={PROFESSIONAL_IMAGES.hero.alt}
                   width={1280}
                   height={640}
                   priority
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="aspect-[2/1] h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 60vw, 100vw"
+                  className="h-auto w-full object-contain transition-transform duration-500 group-hover:scale-[1.015] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent" aria-hidden />
               </div>
