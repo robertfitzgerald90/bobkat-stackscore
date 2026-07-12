@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -5,7 +6,7 @@ import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary
 import { getAssessmentPillarSnapshots } from "@/lib/assessments/pillar-snapshots";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentResults } from "@/components/assessments/assessment-results";
-import { AssessmentConsultantReview } from "@/components/assessments/assessment-consultant-review";
+import { AssessmentCustomerResponses } from "@/components/assessments/responses/assessment-customer-responses";
 import { AssessmentAdminActions } from "@/components/admin/assessment-admin-actions";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { isCustomerMode, isConsultantMode } from "@/lib/navigation/portal-mode";
@@ -65,18 +66,11 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
   );
 
   const customerSelfAssessment = assessment.assessor.role === "client";
-  const showConsultantReview =
+  const showCustomerResponses =
     session?.user?.role && isConsultantMode(session.user.role);
 
   return (
     <div className="min-w-0 space-y-6">
-      {showConsultantReview ? (
-        <AssessmentConsultantReview
-          assessmentId={assessment.id}
-          userRole={session!.user!.role}
-          customerSelfAssessment={customerSelfAssessment}
-        />
-      ) : null}
       <AssessmentResults
         assessmentId={assessment.id}
         clientId={assessment.clientId}
@@ -88,6 +82,23 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
         pillarSnapshots={pillarSnapshots}
         hasImprovementSummary={hasImprovementSummary}
       />
+      {showCustomerResponses ? (
+        <Suspense
+          fallback={
+            <div className="rounded-lg border border-border/60 p-6 text-sm text-muted-foreground">
+              Loading customer responses...
+            </div>
+          }
+        >
+          <AssessmentCustomerResponses
+            assessmentId={assessment.id}
+            userRole={session!.user!.role}
+            customerSelfAssessment={customerSelfAssessment}
+            pillarSnapshots={pillarSnapshots}
+            categoryScores={summary.categoryScores}
+          />
+        </Suspense>
+      ) : null}
       {isAdmin ? (
         <AssessmentAdminActions
           assessmentId={assessment.id}
