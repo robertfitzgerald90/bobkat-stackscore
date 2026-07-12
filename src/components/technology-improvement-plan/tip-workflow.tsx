@@ -18,8 +18,8 @@ import { Button, buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TipPreviewWorkspace } from "@/components/technology-improvement-plan/tip-preview-workspace";
 import { TipRecommendationsStep } from "@/components/technology-improvement-plan/tip-recommendations-step";
-import { TipReportPreview } from "@/components/technology-improvement-plan/tip-report-preview";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import {
   mergeRecommendationCatalog,
@@ -390,26 +390,26 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
       ) : null}
 
       {activeStep === "preview" ? (
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold">Report Preview</h3>
-            <p className="text-sm text-muted-foreground">
-              Executive-ready layout matching the generated PDF deliverable.
-            </p>
-          </div>
-          <TipReportPreview
-            plan={plan}
-            isAdmin={isAdmin}
-            isEditable={plan.isEditable}
-            executiveSummary={
-              plan.wizardState.executiveSummary ||
-              plan.wizardState.globalExecutiveNotes ||
-              plan.executiveSummary ||
-              ""
-            }
-            onExecutiveSummaryChange={(value) => updateWizardState({ executiveSummary: value })}
-          />
-        </div>
+        <TipPreviewWorkspace
+          plan={plan}
+          isAdmin={isAdmin}
+          executiveSummary={
+            plan.wizardState.executiveSummary ||
+            plan.wizardState.globalExecutiveNotes ||
+            plan.executiveSummary ||
+            ""
+          }
+          onExecutiveSummaryChange={(value) => updateWizardState({ executiveSummary: value })}
+          downloadUrl={downloadUrl}
+          saving={saving}
+          generating={generating}
+          onPrevious={goBack}
+          onSaveDraft={async () => {
+            await savePlan({ currentStep: "preview", wizardState: plan.wizardState });
+            toast.success("Draft saved");
+          }}
+          onGenerate={handleGenerate}
+        />
       ) : null}
 
       {activeStep === "complete" ? (
@@ -460,38 +460,40 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
         </Card>
       ) : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-        <Button type="button" variant="outline" onClick={goBack} disabled={isFirst || saving}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Previous
-        </Button>
-        {!isLast ? (
-          <Button
-            type="button"
-            onClick={async () => {
-              if (plan.isEditable) {
-                await savePlan({ currentStep: activeStep, wizardState: plan.wizardState });
-              }
-              await goNext();
-            }}
-            disabled={saving}
-          >
-            Next
-            <ChevronRight className="ml-2 h-4 w-4" />
+      {activeStep !== "preview" ? (
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+          <Button type="button" variant="outline" onClick={goBack} disabled={isFirst || saving}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Previous
           </Button>
-        ) : plan.status !== "generated" ? (
-          <Button type="button" onClick={handleGenerate} disabled={generating || saving}>
-            {generating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating…
-              </>
-            ) : (
-              "Generate Plan"
-            )}
-          </Button>
-        ) : null}
-      </div>
+          {!isLast ? (
+            <Button
+              type="button"
+              onClick={async () => {
+                if (plan.isEditable) {
+                  await savePlan({ currentStep: activeStep, wizardState: plan.wizardState });
+                }
+                await goNext();
+              }}
+              disabled={saving}
+            >
+              Next
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : plan.status !== "generated" ? (
+            <Button type="button" onClick={handleGenerate} disabled={generating || saving}>
+              {generating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating…
+                </>
+              ) : (
+                "Generate Plan"
+              )}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
