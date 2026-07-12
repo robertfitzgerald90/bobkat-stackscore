@@ -9,7 +9,7 @@ export const SERVICES_CTA_DESTINATIONS = {
   },
   purchaseAssessment: {
     label: "Purchase Technology Assessment",
-    href: "/assessment-offer",
+    href: "https://cal.com/bobkat-it/technology-maturity-strategy",
   },
   solutionsLanding: {
     label: "Explore All Solutions",
@@ -21,27 +21,27 @@ export const SERVICES_CTA_DESTINATIONS = {
   },
   generalConsultation: {
     label: "Schedule Consultation",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/bobkat-it-free-consult",
+    href: "https://cal.com/bobkat-it/bobkat-it-free-consult",
   },
   managedItConsultation: {
     label: "Schedule Consultation",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/managed-it-consultation",
+    href: "https://cal.com/bobkat-it/managed-it-consultation",
   },
   networkInfrastructureConsultation: {
     label: "Discuss Your Project",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/network-infrastructure-consultation",
+    href: "https://cal.com/bobkat-it/network-infrastructure-consultation",
   },
   backupDisasterRecoveryConsultation: {
     label: "Schedule Consultation",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/backup-disaster-recovery-consultation",
+    href: "https://cal.com/bobkat-it/backup-disaster-recovery-consultation",
   },
   technologyImplementationConsultation: {
     label: "Discuss Your Project",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/technology-implementation-consultation",
+    href: "https://cal.com/bobkat-it/technology-implementation-consultation",
   },
   residentialSupport: {
     label: "Book Residential Support",
-    href: "https://cal.com/robert-fitzgerald-osa9tt/30min",
+    href: "https://cal.com/bobkat-it/30min",
   },
 } as const;
 
