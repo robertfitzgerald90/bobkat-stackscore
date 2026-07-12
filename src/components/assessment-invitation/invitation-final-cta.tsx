@@ -1,6 +1,9 @@
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
+import { buttonVariants } from "@/components/ui/button";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type InvitationFinalCtaProps = {
   invitationContext?: AssessmentInvitationContext;
@@ -18,6 +21,12 @@ export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProp
         prospectId={invitationContext?.prospectId}
         campaignId={invitationContext?.campaignId}
       />
+      <Link
+        href="/services"
+        className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
+      >
+        Explore Bobkat IT Services
+      </Link>
     </OfferCtaPanel>
   );
 }

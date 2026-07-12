@@ -17,6 +17,11 @@ export function OfferReveal({ children, className, delayMs = 0 }: OfferRevealPro
     const element = ref.current;
     if (!element) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
@@ -35,7 +40,7 @@ export function OfferReveal({ children, className, delayMs = 0 }: OfferRevealPro
     <div
       ref={ref}
       className={cn(
-        "transition-all duration-700 ease-out",
+        "transition-all duration-700 ease-out motion-reduce:transition-none",
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
         className,
       )}
