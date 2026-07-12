@@ -13,6 +13,11 @@ export function registerCommand(
 ): RegisteredCommand {
   const existing = registryById.get(command.id);
   if (existing) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `[command-center] Duplicate command id "${command.id}" from module "${module}" — keeping first registration from "${existing.module}".`,
+      );
+    }
     return existing;
   }
 

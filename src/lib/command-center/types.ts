@@ -2,6 +2,9 @@ import type { UserRole } from "@/generated/prisma/client";
 
 export const COMMAND_CATEGORIES = [
   "navigation",
+  "assessment",
+  "deliverables",
+  "account",
   "create",
   "communications",
   "technology",
@@ -23,6 +26,16 @@ export type CommandPermissions = {
   portfolioOnly?: boolean;
   requiresClient?: boolean;
   clientHidden?: boolean;
+  clientOnly?: boolean;
+};
+
+export type ClientPortalState = {
+  draftAssessmentId: string | null;
+  currentAssessmentId: string | null;
+  hasCompletedAssessment: boolean;
+  hasRecommendations: boolean;
+  reportHref: string | null;
+  pdfHref: string | null;
 };
 
 export type CommandActionId =
@@ -35,7 +48,9 @@ export type CommandActionId =
 export type PageContext = {
   pathname: string;
   role: string;
+  userId?: string | null;
   userClientId: string | null;
+  clientPortal?: ClientPortalState | null;
   clientId: string | null;
   assessmentId: string | null;
   technologySlug: string | null;
@@ -64,6 +79,8 @@ export type CommandDefinition = {
   dynamic?: boolean;
   /** Pin-able favorite key */
   favoriteKey?: string;
+  /** Resolve href from runtime page context (e.g. client-scoped routes) */
+  resolveHrefFromContext?: (context: PageContext) => string | null;
 };
 
 export type RegisteredCommand = CommandDefinition & {
@@ -96,6 +113,7 @@ export type RecentItem = {
   subtitle?: string;
   href: string;
   visitedAt: string;
+  commandId?: string;
 };
 
 export type FavoriteItem = {
@@ -110,6 +128,9 @@ export type FavoriteItem = {
 
 export const CATEGORY_LABELS: Record<CommandCategory, string> = {
   navigation: "Navigation",
+  assessment: "Assessment",
+  deliverables: "Deliverables",
+  account: "Account",
   create: "Create",
   communications: "Communications",
   technology: "Technology",

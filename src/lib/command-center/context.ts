@@ -3,7 +3,9 @@ import type { PageContext } from "@/lib/command-center/types";
 export function buildPageContext(input: {
   pathname: string;
   role: string;
+  userId?: string | null;
   userClientId?: string | null;
+  clientPortal?: PageContext["clientPortal"];
 }): PageContext {
   const pathname = input.pathname;
 
@@ -43,7 +45,9 @@ export function buildPageContext(input: {
   return {
     pathname,
     role: input.role,
+    userId: input.userId ?? null,
     userClientId: input.userClientId ?? null,
+    clientPortal: input.clientPortal ?? null,
     clientId,
     assessmentId,
     technologySlug,

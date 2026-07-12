@@ -5,11 +5,12 @@ export function registerAssessmentCommands(): void {
     {
       id: "assessments:dashboard",
       category: "navigation",
-      title: "Assessment Dashboard",
+      title: "Assessments",
       subtitle: "All assessments",
       href: "/assessments",
       icon: "ClipboardList",
       keywords: ["assessment", "dashboard"],
+      permissions: { staffOnly: true, clientHidden: true },
     },
     {
       id: "assessments:new",
@@ -19,17 +20,7 @@ export function registerAssessmentCommands(): void {
       href: "/clients",
       icon: "Plus",
       keywords: ["assessment", "create", "new"],
-      permissions: { staffOnly: true },
-    },
-    {
-      id: "assessments:resume",
-      category: "navigation",
-      title: "Resume Assessment",
-      subtitle: "Continue in progress",
-      href: "/assessment/start",
-      icon: "Play",
-      keywords: ["resume", "assessment", "continue"],
-      permissions: { clientHidden: true },
+      permissions: { staffOnly: true, clientHidden: true },
     },
   ]);
 }

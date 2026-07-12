@@ -23,12 +23,19 @@ type CommandPaletteContextValue = {
 
 const CommandPaletteContext = createContext<CommandPaletteContextValue | null>(null);
 
+import type { ClientPortalState } from "@/lib/command-center/types";
+
 export function CommandPaletteProvider({
   children,
   user,
 }: {
   children: React.ReactNode;
-  user: { role: string; clientId?: string | null };
+  user: {
+    id: string;
+    role: string;
+    clientId?: string | null;
+    clientPortal?: ClientPortalState | null;
+  };
 }) {
   const [open, setOpen] = useState(false);
 

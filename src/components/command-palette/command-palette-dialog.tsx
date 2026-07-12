@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 import {
   resolveCommandIcon,
   SEARCH_TYPE_ICONS,
@@ -35,32 +36,51 @@ import {
   searchCommands,
   type ResolvedCommand,
 } from "@/lib/command-center/resolve-commands";
+import { canExecuteResolvedCommand } from "@/lib/command-center/permissions";
 import {
+  getAuthorizedFavoriteItems,
+  getAuthorizedRecentItems,
   getFavoriteItems,
   getRecentItems,
+  pruneUnauthorizedStoredItems,
   recordRecentItem,
   toggleFavorite,
 } from "@/lib/command-center/storage";
 import {
   CATEGORY_LABELS,
+  type ClientPortalState,
   type CommandCategory,
   type UniversalSearchResult,
 } from "@/lib/command-center/types";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type CommandPaletteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: { role: string; clientId?: string | null };
+  user: {
+    id: string;
+    role: string;
+    clientId?: string | null;
+    clientPortal?: ClientPortalState | null;
+  };
 };
 
-type CategoryFilter = "all" | "navigation" | "create" | "communications" | "customers";
+type CategoryFilter = "all" | CommandCategory;
 
-const CATEGORY_FILTERS: Array<{ id: CategoryFilter; label: string }> = [
+const STAFF_CATEGORY_FILTERS: Array<{ id: CategoryFilter; label: string }> = [
   { id: "all", label: "All" },
   { id: "navigation", label: "Navigate" },
   { id: "create", label: "Create" },
   { id: "communications", label: "Communications" },
   { id: "customers", label: "Clients" },
+];
+
+const CLIENT_CATEGORY_FILTERS: Array<{ id: CategoryFilter; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "navigation", label: "Navigate" },
+  { id: "assessment", label: "Assessment" },
+  { id: "deliverables", label: "Deliverables" },
+  { id: "account", label: "Account" },
 ];
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -97,10 +117,16 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
       buildPageContext({
         pathname,
         role: user.role,
+        userId: user.id,
         userClientId: user.clientId,
+        clientPortal: user.clientPortal,
       }),
-    [pathname, user.role, user.clientId],
+    [pathname, user.role, user.id, user.clientId, user.clientPortal],
   );
+
+  const categoryFilters = isCustomerMode(user.role)
+    ? CLIENT_CATEGORY_FILTERS
+    : STAFF_CATEGORY_FILTERS;
 
   useEffect(() => {
     initializeCommandModules();
@@ -116,8 +142,9 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
 
     previousFocusRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setRecentItems(getRecentItems());
-    setFavoriteItems(getFavoriteItems());
+    setRecentItems(getAuthorizedRecentItems(pageContext, user.id));
+    setFavoriteItems(getAuthorizedFavoriteItems(pageContext, user.id));
+    pruneUnauthorizedStoredItems(pageContext, user.id);
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -132,7 +159,116 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [open]);
+  }, [open, pageContext, user.id]);
+
+  const resolveCommandForExecution = useCallback(
+    (input: {
+      id: string;
+      title: string;
+      subtitle?: string;
+      href?: string;
+      actionId?: string;
+      type?: string;
+    }): ResolvedCommand | null => {
+      const available = searchCommands("", pageContext);
+      const matched =
+        available.find((command) => command.id === input.id) ??
+        available.find(
+          (command) =>
+            Boolean(input.href) &&
+            command.resolvedHref === input.href &&
+            command.title === input.title,
+        );
+
+      if (matched) return matched;
+
+      if (input.href && canExecuteResolvedCommand({ id: input.id, resolvedHref: input.href }, pageContext)) {
+        return {
+          id: input.id,
+          module: "stored",
+          category: "navigation",
+          title: input.title,
+          subtitle: input.subtitle,
+          resolvedHref: input.href,
+          actionId: input.actionId as ResolvedCommand["actionId"],
+        };
+      }
+
+      return null;
+    },
+    [pageContext],
+  );
+
+  const executeCommand = useCallback(
+    (input: {
+      id: string;
+      title: string;
+      subtitle?: string;
+      href?: string;
+      actionId?: string;
+      type?: string;
+    }) => {
+      const command = resolveCommandForExecution(input);
+      if (!command) {
+        toast.error("You do not have access to that command.");
+        return;
+      }
+
+      if (!canExecuteResolvedCommand(command, pageContext)) {
+        toast.error("You do not have access to that command.");
+        return;
+      }
+
+      const href = command.resolvedHref ?? input.href;
+
+      if (href) {
+        recordRecentItem(
+          {
+            id: command.id,
+            type: (input.type as never) ?? "navigation",
+            title: command.title,
+            subtitle: command.subtitle,
+            href,
+            commandId: command.id,
+          },
+          user.id,
+        );
+        onOpenChange(false);
+        router.push(href);
+        return;
+      }
+
+      if (command.actionId === "communications:quick-invite") {
+        onOpenChange(false);
+        quickInvite?.openQuickInvite();
+        return;
+      }
+
+      if (command.actionId === "theme:toggle") {
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
+        onOpenChange(false);
+        return;
+      }
+
+      if (command.actionId === "auth:sign-out") {
+        onOpenChange(false);
+        signOut({ callbackUrl: "/login" });
+        return;
+      }
+
+      toast.error("That command is not available.");
+    },
+    [
+      onOpenChange,
+      pageContext,
+      quickInvite,
+      resolveCommandForExecution,
+      resolvedTheme,
+      router,
+      setTheme,
+      user.id,
+    ],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -162,48 +298,6 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
     };
   }, [debouncedQuery, open]);
 
-  const executeCommand = useCallback(
-    (input: {
-      id: string;
-      title: string;
-      subtitle?: string;
-      href?: string;
-      actionId?: string;
-      type?: string;
-    }) => {
-      if (input.href) {
-        recordRecentItem({
-          id: input.id,
-          type: (input.type as never) ?? "navigation",
-          title: input.title,
-          subtitle: input.subtitle,
-          href: input.href,
-        });
-        onOpenChange(false);
-        router.push(input.href);
-        return;
-      }
-
-      if (input.actionId === "communications:quick-invite") {
-        onOpenChange(false);
-        quickInvite?.openQuickInvite();
-        return;
-      }
-
-      if (input.actionId === "theme:toggle") {
-        setTheme(resolvedTheme === "dark" ? "light" : "dark");
-        onOpenChange(false);
-        return;
-      }
-
-      if (input.actionId === "auth:sign-out") {
-        onOpenChange(false);
-        signOut({ callbackUrl: "/login" });
-      }
-    },
-    [onOpenChange, quickInvite, resolvedTheme, router, setTheme],
-  );
-
   const filteredCommands = useMemo(() => {
     const commands = searchCommands(query, pageContext);
     if (categoryFilter === "all") return commands;
@@ -221,6 +315,23 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
     if (categoryFilter === "all") return commands;
     return commands.filter((command) => matchesCategoryFilter(command.category, categoryFilter));
   }, [pageContext, categoryFilter]);
+
+  const dedupedSuggestedCommands = useMemo(() => {
+    const navigationIds = new Set(
+      filteredCommands.filter((command) => command.category === "navigation").map((command) => command.id),
+    );
+    return suggestedCommands.filter((command) => !navigationIds.has(command.id));
+  }, [filteredCommands, suggestedCommands]);
+
+  const visibleCategoryFilters = useMemo(() => {
+    if (!isCustomerMode(user.role)) return categoryFilters;
+    const availableCategories = new Set(
+      searchCommands("", pageContext).map((command) => command.category),
+    );
+    return categoryFilters.filter(
+      (filter) => filter.id === "all" || availableCategories.has(filter.id),
+    );
+  }, [categoryFilters, pageContext, user.role]);
 
   const groupedCommands = useMemo(() => {
     const groups = new Map<string, ResolvedCommand[]>();
@@ -267,7 +378,7 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
               />
             </div>
             <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Command categories">
-              {CATEGORY_FILTERS.map((filter) => (
+              {visibleCategoryFilters.map((filter) => (
                 <button
                   key={filter.id}
                   type="button"
@@ -303,11 +414,10 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
                     subtitle={item.subtitle}
                     onSelect={() =>
                       executeCommand({
-                        id: item.id,
+                        id: item.commandId ?? item.id,
                         title: item.title,
                         subtitle: item.subtitle,
                         href: item.href,
-                        actionId: item.commandId,
                         type: item.type,
                       })
                     }
@@ -336,9 +446,9 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
               </CommandGroup>
             ) : null}
 
-            {showEmptyState && suggestedCommands.length > 0 ? (
+            {showEmptyState && dedupedSuggestedCommands.length > 0 ? (
               <CommandGroup heading={CATEGORY_LABELS.suggested} className="cmd-group">
-                {suggestedCommands.map((command) => (
+                {dedupedSuggestedCommands.map((command) => (
                   <CommandRow
                     key={command.id}
                     command={command}
@@ -367,7 +477,7 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
                     subtitle={item.subtitle}
                     onSelect={() =>
                       executeCommand({
-                        id: item.id,
+                        id: item.commandId ?? item.id,
                         title: item.title,
                         subtitle: item.subtitle,
                         href: item.href,
@@ -430,15 +540,18 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
                         })
                       }
                       onToggleFavorite={() => {
-                        toggleFavorite({
-                          id: command.favoriteKey ?? command.id,
-                          type: "command",
-                          title: command.title,
-                          subtitle: command.subtitle,
-                          href: command.resolvedHref,
-                          commandId: command.actionId,
-                        });
-                        setFavoriteItems(getFavoriteItems());
+                        toggleFavorite(
+                          {
+                            id: command.favoriteKey ?? command.id,
+                            type: "command",
+                            title: command.title,
+                            subtitle: command.subtitle,
+                            href: command.resolvedHref,
+                            commandId: command.id,
+                          },
+                          user.id,
+                        );
+                        setFavoriteItems(getAuthorizedFavoriteItems(pageContext, user.id));
                       }}
                     />
                   ))}

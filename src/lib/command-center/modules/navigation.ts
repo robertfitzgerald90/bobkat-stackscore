@@ -30,10 +30,9 @@ const CONSULTANT_NAV = [
   { href: "/admin/communications", label: "Communications", staffOnly: true, icon: "Mail" },
 ] as const;
 
-const CUSTOMER_NAV = [
-  { href: "/dashboard", label: "Assessment Dashboard", icon: "LayoutDashboard" },
-  { href: "/account", label: "Account", icon: "UserCircle" },
-] as const;
+function commsCommandId(href: string): string {
+  return `nav:comms:${href.replace(/^\/admin\/communications\/?/, "") || "overview"}`;
+}
 
 export function registerNavigationCommands(): void {
   registerCommands(
@@ -62,23 +61,8 @@ export function registerNavigationCommands(): void {
 
   registerCommands(
     "navigation",
-    CUSTOMER_NAV.map((item) => ({
-      id: `nav:customer:${item.href}`,
-      category: "navigation" as const,
-      title: item.label,
-      subtitle: "Go to page",
-      href: item.href,
-      icon: item.icon,
-      keywords: [item.label, item.href],
-      permissions: { roles: ["client"] },
-      favoriteKey: `nav:${item.href}`,
-    })),
-  );
-
-  registerCommands(
-    "navigation",
     COMMUNICATIONS_NAV.map((item) => ({
-      id: `nav:${item.href}`,
+      id: commsCommandId(item.href),
       category: "navigation" as const,
       title: item.label,
       subtitle: "Communications",
@@ -86,7 +70,7 @@ export function registerNavigationCommands(): void {
       icon: "Mail",
       keywords: [item.label, ...item.keywords],
       permissions: { staffOnly: true, clientHidden: true },
-      favoriteKey: `nav:${item.href}`,
+      favoriteKey: commsCommandId(item.href),
     })),
   );
 }

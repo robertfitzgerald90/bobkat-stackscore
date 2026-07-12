@@ -7,6 +7,7 @@ import { registerOrganizationCommands } from "@/lib/command-center/modules/organ
 import { registerAssessmentCommands } from "@/lib/command-center/modules/assessments";
 import { registerTechnologyCommands } from "@/lib/command-center/modules/technology";
 import { registerProjectCommands } from "@/lib/command-center/modules/projects";
+import { registerClientPortalCommands } from "@/lib/command-center/modules/client-portal";
 import { clearCommandRegistry } from "@/lib/command-center/registry";
 
 let initialized = false;
@@ -22,6 +23,7 @@ export function initializeCommandModules(): void {
   registerTechnologyCommands();
   registerProjectCommands();
   registerContextualCommands();
+  registerClientPortalCommands();
   initialized = true;
 }
 

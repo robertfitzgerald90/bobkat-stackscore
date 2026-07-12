@@ -9,9 +9,17 @@ import { QuickInviteProvider } from "@/components/communications/quick-invite-pr
 import { CommandPaletteProvider } from "@/components/command-palette/command-palette-provider";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { getPageTitle } from "@/lib/navigation/page-titles";
+import type { ClientPortalState } from "@/lib/command-center/types";
 
 type DashboardShellProps = {
-  user: { name: string; email: string; role: string; clientId?: string | null };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    clientId?: string | null;
+    clientPortal?: ClientPortalState | null;
+  };
   children: React.ReactNode;
 };
 
