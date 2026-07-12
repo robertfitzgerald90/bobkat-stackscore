@@ -209,31 +209,29 @@ export function AssessmentReportPreview({
                     {data.summary.overallScore} — {data.summary.overallRatingLabel}
                   </p>
                 </ReportHighlightCard>
+                <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
+                  <p className="report-highlight-label">Primary risks</p>
+                  <InsightList
+                    items={sections.riskBullets.slice(0, 3)}
+                    emptyMessage="No significant risk areas were identified."
+                  />
+                </ReportHighlightCard>
+                <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
+                  <p className="report-highlight-label">Top opportunities</p>
+                  <InsightList
+                    items={sections.priorityBullets.slice(0, 3)}
+                    emptyMessage="Complete remediation planning during your strategy session."
+                  />
+                </ReportHighlightCard>
+                <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
+                  <p className="report-highlight-label">Recommended next step</p>
+                  <p className="report-prose-sm">
+                    Review this report with BobKat IT to prioritize actions, align investment, and
+                    build your technology roadmap.
+                  </p>
+                </ReportHighlightCard>
               </div>
             </ReportPrintLeadGroup>
-            <div className="report-executive-grid mt-4">
-              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
-                <p className="report-highlight-label">Primary risks</p>
-                <InsightList
-                  items={sections.riskBullets.slice(0, 3)}
-                  emptyMessage="No significant risk areas were identified."
-                />
-              </ReportHighlightCard>
-              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
-                <p className="report-highlight-label">Top opportunities</p>
-                <InsightList
-                  items={sections.priorityBullets.slice(0, 3)}
-                  emptyMessage="Complete remediation planning during your strategy session."
-                />
-              </ReportHighlightCard>
-              <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
-                <p className="report-highlight-label">Recommended next step</p>
-                <p className="report-prose-sm">
-                  Review this report with BobKat IT to prioritize actions, align investment, and
-                  build your technology roadmap.
-                </p>
-              </ReportHighlightCard>
-            </div>
           </ReportSection>
 
           <ReportSection title="Score Snapshot" subtitle="At-a-glance assessment metrics" documentTheme={DOCUMENT_THEME}>
