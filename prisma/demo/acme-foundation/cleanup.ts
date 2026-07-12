@@ -79,6 +79,23 @@ export async function clearAcmeFoundationDemo(prisma: PrismaClient): Promise<voi
   await prisma.communicationMessage.deleteMany({ where: { clientId } });
   await prisma.organizationActivityEvent.deleteMany({ where: { clientId } });
   await prisma.campaignRecipient.deleteMany({ where: { clientId } });
+
+  await prisma.paymentApplication.deleteMany({
+    where: { OR: [{ invoice: { clientId } }, { payment: { clientId } }] },
+  });
+  await prisma.invoiceDelivery.deleteMany({ where: { invoice: { clientId } } });
+  await prisma.billingAuditEvent.deleteMany({ where: { clientId } });
+  await prisma.invoice.deleteMany({ where: { clientId } });
+  await prisma.billingPayment.deleteMany({ where: { clientId } });
+  await prisma.project.updateMany({
+    where: { clientId },
+    data: { requiredDepositId: null },
+  });
+  await prisma.billingDeposit.deleteMany({ where: { clientId } });
+  await prisma.recurringService.deleteMany({ where: { clientId } });
+  await prisma.clientBillingProfile.deleteMany({ where: { clientId } });
+  await prisma.clientContact.deleteMany({ where: { clientId } });
+
   await prisma.project.deleteMany({ where: { clientId } });
   await prisma.assessmentRecommendation.deleteMany({ where: { clientId } });
   await prisma.technologyImprovementPlan.deleteMany({ where: { clientId } });

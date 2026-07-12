@@ -2,10 +2,10 @@ import {
   ClipboardCheck,
   CloudCog,
   Home,
-  LucideIcon,
   Network,
   RotateCcw,
   ShieldCheck,
+  type LucideIcon,
 } from "lucide-react";
 import type { ServicesCtaKey } from "./cta";
 

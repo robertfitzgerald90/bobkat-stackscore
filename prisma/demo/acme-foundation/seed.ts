@@ -14,6 +14,13 @@ import {
 import { clearAcmeFoundationDemo } from "./cleanup";
 import { ACME_CURATED_RECOMMENDATIONS } from "./recommendations";
 import {
+  seedAcmeBilling,
+  seedAcmeContacts,
+  seedAcmeDocuments,
+  seedAcmeNotes,
+  seedAcmeQbr,
+} from "./billing";
+import {
   ACME_BASELINE_ANSWER_OVERRIDES,
   ACME_BASELINE_PILLAR_TARGETS,
   ACME_CURRENT_ANSWER_OVERRIDES,
@@ -323,13 +330,17 @@ async function seedImprovementPlan(input: {
       id: ACME_DEMO.tipId,
       clientId: input.clientId,
       assessmentId: input.assessmentId,
-      status: "generated",
+      status: "approved",
       currentStep: "complete",
       version: 1,
-      title: "Acme Foundation 2026 Technology Improvement Plan",
+      title: "Acme Inc. 2026 Technology Improvement Plan",
       wizardState,
       executiveSummary: wizardState.executiveSummary,
       generatedAt: addDays(new Date(), -7),
+      publishedAt: addDays(new Date(), -10),
+      approvedAt: addDays(new Date(), -8),
+      approvedByUserId: input.adminUserId,
+      approvedByContactId: ACME_DEMO.billingContactId,
       createdByUserId: input.adminUserId,
     },
   });
@@ -534,9 +545,12 @@ async function seedClientTechnologies(input: { prisma: PrismaClient; clientId: s
 
 export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
   clientId: string;
+  companyName: string;
   demoEmail: string;
   baselineAssessmentId: string;
   currentAssessmentId: string;
+  tipId: string;
+  qbrId: string;
 }> {
   await clearAcmeFoundationDemo(prisma);
 
@@ -599,6 +613,13 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
       invitedAt: addMonths(new Date(), -8),
       onboardingCompletedAt: addMonths(new Date(), -7),
     },
+  });
+
+  await seedAcmeContacts({
+    prisma,
+    clientId: client.id,
+    clientUserId: clientUser.id,
+    demoEmail,
   });
 
   const baselineCompletedAt = addMonths(new Date(), -6);
@@ -694,6 +715,33 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
 
   await seedClientTechnologies({ prisma, clientId: client.id });
 
+  await seedAcmeQbr({
+    prisma,
+    clientId: client.id,
+    adminUserId: admin.id,
+  });
+
+  await seedAcmeDocuments({
+    prisma,
+    clientId: client.id,
+    adminUserId: admin.id,
+    currentAssessmentId: ACME_DEMO.currentAssessmentId,
+  });
+
+  await seedAcmeNotes({
+    prisma,
+    clientId: client.id,
+    adminUserId: admin.id,
+    currentAssessmentId: ACME_DEMO.currentAssessmentId,
+  });
+
+  await seedAcmeBilling({
+    prisma,
+    clientId: client.id,
+    adminUserId: admin.id,
+    demoEmail,
+  });
+
   await prisma.technologyProfile.update({
     where: { clientId: client.id },
     data: {
@@ -706,8 +754,11 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
 
   return {
     clientId: client.id,
+    companyName: ACME_DEMO.companyName,
     demoEmail,
     baselineAssessmentId: ACME_DEMO.baselineAssessmentId,
     currentAssessmentId: ACME_DEMO.currentAssessmentId,
+    tipId: ACME_DEMO.tipId,
+    qbrId: ACME_DEMO.qbrId,
   };
 }

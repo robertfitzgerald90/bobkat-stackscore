@@ -6,24 +6,28 @@ import { seedAcmeFoundationDemo } from "../prisma/demo/acme-foundation/seed";
 async function main() {
   assertDemoSeedAllowed();
 
-  console.log("Resetting Acme Foundation demo dataset...");
+  console.log("Resetting Acme Inc. demo dataset...");
   const result = await seedAcmeFoundationDemo(prisma);
 
   console.log("");
-  console.log("Acme Foundation demo seed complete.");
+  console.log("Acme Inc. demo seed complete.");
+  console.log(`Client: ${result.companyName}`);
   console.log(`Client ID: ${result.clientId}`);
   console.log(`Demo login email: ${result.demoEmail}`);
+  console.log(`Demo login password: ${process.env.DEMO_CLIENT_PASSWORD ?? "AcmeDemo2026!"}`);
   console.log(`Baseline assessment: ${result.baselineAssessmentId}`);
   console.log(`Current assessment: ${result.currentAssessmentId}`);
   console.log("");
-  console.log("Client routes:");
+  console.log("Staff routes:");
   console.log(`  /clients/${result.clientId}/technology-profile`);
+  console.log(`  /clients/${result.clientId}/billing`);
+  console.log(`  /clients/${result.clientId}/billing/invoices`);
+  console.log(`  /clients/${result.clientId}/improvement-plan/${result.tipId}`);
   console.log(`  /clients/${result.clientId}/recommendations`);
-  console.log(`  /clients/${result.clientId}/executive-reports`);
-  console.log(`  /assessments/${result.currentAssessmentId}/report`);
-  console.log(`  /api/v1/assessments/${result.currentAssessmentId}/export/pdf`);
+  console.log(`  /clients/${result.clientId}/projects`);
+  console.log(`  /clients/${result.clientId}/quarterly-review/${result.qbrId}`);
   console.log("");
-  console.log("Review guide: docs/review/ACME-FOUNDATION-CUSTOMER-PORTAL-REVIEW.md");
+  console.log("Client portal login: use demo email/password above");
 }
 
 main()
