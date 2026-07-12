@@ -533,19 +533,6 @@ const styles = StyleSheet.create({
     color: COLORS.navy,
     marginBottom: 8,
   },
-  ctaButton: {
-    marginTop: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    backgroundColor: COLORS.navy,
-    borderRadius: 4,
-    alignSelf: "flex-start",
-  },
-  ctaButtonText: {
-    fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-    color: "#FFFFFF",
-  },
   warningBox: {
     backgroundColor: COLORS.criticalBg,
     borderWidth: 1,
@@ -1128,9 +1115,6 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               {BRAND.email}
               {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
             </Text>
-            <View wrap={false} style={styles.ctaButton}>
-              <Text style={styles.ctaButtonText}>Schedule Your Assessment Review</Text>
-            </View>
           </View>
         </View>
       </Page>
