@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackAssessmentCheckoutStart } from "@/lib/analytics/marketing-events";
 import { toast } from "sonner";
 
 export function AssessmentPurchaseButton({
   className,
   label = "Purchase Full Technology Assessment",
+  source,
 }: {
   className?: string;
   label?: string;
+  source?: string;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -25,6 +28,7 @@ export function AssessmentPurchaseButton({
         return;
       }
 
+      trackAssessmentCheckoutStart({ source });
       window.location.href = data.url;
     } catch {
       toast.error("Unable to start checkout");

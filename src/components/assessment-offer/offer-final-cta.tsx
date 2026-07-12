@@ -25,6 +25,7 @@ export function OfferFinalCta() {
       <AssessmentPurchaseButton
         label="Start My Assessment"
         className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+        source="offer_final_cta"
       />
     </OfferCtaPanel>
   );

@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BRAND } from "@/lib/branding";
+import { trackSnapshotStart } from "@/lib/analytics/marketing-events";
 import {
   COMPANY_SIZE_OPTIONS,
   IT_MANAGEMENT_OPTIONS,
@@ -187,6 +188,10 @@ export function TechnologySnapshotWizard() {
 
   function handleNext() {
     if (phase === "intro") {
+      trackSnapshotStart({
+        trigger: "wizard_begin",
+        hasInvitationFlow: invitationFlow,
+      });
       setPhase("intake");
       return;
     }

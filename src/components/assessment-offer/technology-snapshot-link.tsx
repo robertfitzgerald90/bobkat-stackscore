@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { trackSnapshotStart } from "@/lib/analytics/marketing-events";
 import { buildTechnologySnapshotUrl } from "@/lib/assessment-invitation/snapshot-url";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +11,7 @@ type TechnologySnapshotLinkProps = {
   className?: string;
   prospectId?: string;
   campaignId?: string;
+  placement?: string;
 };
 
 export function TechnologySnapshotLink({
@@ -15,7 +19,16 @@ export function TechnologySnapshotLink({
   className,
   prospectId,
   campaignId,
+  placement,
 }: TechnologySnapshotLinkProps) {
+  function handleClick() {
+    trackSnapshotStart({
+      trigger: "cta_click",
+      placement,
+      hasInvitationFlow: Boolean(prospectId || campaignId),
+    });
+  }
+
   return (
     <Link
       href={buildTechnologySnapshotUrl({ prospectId, campaignId })}
@@ -24,6 +37,7 @@ export function TechnologySnapshotLink({
         "shadow-md transition-shadow hover:shadow-lg",
         className,
       )}
+      onClick={handleClick}
     >
       {label}
     </Link>

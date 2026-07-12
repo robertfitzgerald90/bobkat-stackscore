@@ -33,6 +33,7 @@ export function OfferHero() {
           <AssessmentPurchaseButton
             label="Start My Assessment"
             className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+            source="offer_hero"
           />
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
             <Lock className="h-3.5 w-3.5 shrink-0" />

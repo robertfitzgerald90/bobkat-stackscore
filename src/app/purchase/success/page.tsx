@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, Mail } from "lucide-react";
+import { PurchaseSuccessTracker } from "@/components/analytics/purchase-success-tracker";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-8 sm:px-6 sm:py-12">
+      <PurchaseSuccessTracker hasCheckoutSession={Boolean(sessionId)} />
       <div className="mx-auto flex min-w-0 max-w-lg flex-col items-center gap-6 text-center">
         <BrandLogo size={48} />
         <Card className="w-full min-w-0 shadow-sm">

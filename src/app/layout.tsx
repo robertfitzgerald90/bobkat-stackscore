@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -32,6 +34,8 @@ export default function RootLayout({
     <html lang="en" className="overflow-x-clip" suppressHydrationWarning>
       <body className={`${inter.variable} min-w-0 overflow-x-hidden font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

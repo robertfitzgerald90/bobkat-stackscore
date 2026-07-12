@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
@@ -10,7 +10,9 @@ import { TechnologySnapshotLink } from "@/components/assessment-offer/technology
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { SERVICES_CATALOG, type ServiceCatalogItem } from "@/lib/services/catalog";
-import { SERVICES_CTA_DESTINATIONS, type ServicesCtaKey } from "@/lib/services/cta";
+import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
+import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
+import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { cn } from "@/lib/utils";
 
 const navLinkClassName =
@@ -45,47 +47,10 @@ function ServicesNav() {
         <TechnologySnapshotLink
           label={SERVICES_CTA_DESTINATIONS.snapshot.label}
           className="h-9 shrink-0 px-3 text-xs sm:px-4 sm:text-sm"
+          placement="services_nav"
         />
       </div>
     </header>
-  );
-}
-
-function ServicesCtaLink({
-  cta,
-  label,
-  className,
-  variant = "default",
-}: {
-  cta: ServicesCtaKey;
-  label?: string;
-  className?: string;
-  variant?: "default" | "outline";
-}) {
-  const destination = SERVICES_CTA_DESTINATIONS[cta];
-  const isExternal = destination.href.startsWith("http");
-  const classNames = cn(
-    buttonVariants({ variant }),
-    variant === "default" && "shadow-md transition-shadow hover:shadow-lg",
-    className,
-  );
-
-  if (!isExternal) {
-    return (
-      <Link href={destination.href} className={classNames}>
-        {label ?? destination.label}
-      </Link>
-    );
-  }
-
-  return (
-    <a
-      href={destination.href}
-      className={classNames}
-    >
-      {label ?? destination.label}
-      <ExternalLink className="ml-1.5 h-4 w-4" aria-hidden />
-    </a>
   );
 }
 
@@ -97,7 +62,13 @@ function ServicesPrimaryCta({
   className?: string;
 }) {
   return (
-    <ServicesCtaLink cta={service.primaryCta} label={service.primaryCtaLabel} className={className} />
+    <ServicesCtaLink
+      cta={service.primaryCta}
+      label={service.primaryCtaLabel}
+      className={className}
+      serviceId={service.id}
+      placement="service_section_primary"
+    />
   );
 }
 
@@ -130,7 +101,9 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
 
   return (
     <OfferReveal>
-      <article
+      <SolutionViewTracker
+        solutionId={service.id}
+        solutionTitle={service.title}
         id={service.id}
         className="scroll-mt-24 rounded-2xl border border-border/60 bg-card p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-6 lg:p-8"
       >
@@ -178,6 +151,8 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
                   cta={service.secondaryCta}
                   className="h-11 w-full px-6 text-base sm:w-auto"
                   variant="outline"
+                  serviceId={service.id}
+                  placement="service_section_secondary"
                 />
               ) : null}
             </div>
@@ -195,7 +170,7 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-70" aria-hidden />
           </div>
         </div>
-      </article>
+      </SolutionViewTracker>
     </OfferReveal>
   );
 }
@@ -263,11 +238,13 @@ export function ServicesLanding() {
               <TechnologySnapshotLink
                 label={SERVICES_CTA_DESTINATIONS.snapshot.label}
                 className="h-11 w-full px-6 text-base sm:w-auto"
+                placement="services_hero"
               />
               <ServicesCtaLink
                 cta="purchaseAssessment"
                 label={SERVICES_CTA_DESTINATIONS.purchaseAssessment.label}
                 className="h-11 w-full px-6 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+                placement="services_hero"
               />
             </OfferReveal>
           </div>
@@ -318,19 +295,20 @@ export function ServicesLanding() {
                 <TechnologySnapshotLink
                   label="Start Free Snapshot"
                   className="h-10 w-full px-4"
+                  placement="services_positioning_snapshot"
                 />
               </PositioningCard>
               <PositioningCard
                 title="Purchase Comprehensive Assessment"
                 description="Unlock executive reporting, risk analysis, and a strategic roadmap powered by StackScore."
               >
-                <ServicesCtaLink cta="purchaseAssessment" label="Purchase Assessment" className="h-10 w-full px-4" />
+                <ServicesCtaLink cta="purchaseAssessment" label="Purchase Assessment" className="h-10 w-full px-4" placement="services_positioning_purchase" />
               </PositioningCard>
               <PositioningCard
                 title="Schedule Consultation"
                 description="Talk with Bobkat IT about managed services, projects, continuity planning, or home support."
               >
-                <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" />
+                <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" placement="services_positioning_consultation" />
               </PositioningCard>
             </div>
           </div>
@@ -343,16 +321,19 @@ export function ServicesLanding() {
           <TechnologySnapshotLink
             label="Start Free Snapshot"
             className="h-11 w-full px-8 text-base sm:w-auto"
+            placement="services_footer"
           />
           <ServicesCtaLink
             cta="purchaseAssessment"
             label="Purchase Assessment"
             className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+            placement="services_footer"
           />
           <ServicesCtaLink
             cta="generalConsultation"
             label="Schedule Consultation"
             className="h-11 w-full px-8 text-base sm:w-auto"
+            placement="services_footer"
           />
           <Link
             href="#services-catalog"
