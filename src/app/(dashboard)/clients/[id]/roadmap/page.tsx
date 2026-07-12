@@ -4,6 +4,7 @@ import { Calendar, FileText, Map } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { TipPlanList } from "@/components/technology-improvement-plan/tip-plan-list";
+import { BookingButton } from "@/components/support/booking-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
@@ -56,10 +57,10 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
               <FileText className="mr-2 h-4 w-4" />
               View Reports
             </Link>
-            <Link href="/support" className={buttonClassName({})}>
-              <Calendar className="mr-2 h-4 w-4" />
-              Schedule Strategy Session
-            </Link>
+            <BookingButton
+              label="primary"
+              icon={<Calendar className="mr-2 h-4 w-4" />}
+            />
           </CardContent>
         </Card>
       </div>

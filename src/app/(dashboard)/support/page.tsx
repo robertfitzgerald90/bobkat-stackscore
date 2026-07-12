@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { Calendar, Mail, MessageCircle } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { SupportAssessmentHelp } from "@/components/support/support-assessment-help";
+import { BookingButton } from "@/components/support/booking-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonClassName } from "@/components/ui/button";
 import { getBookingUrl, getSupportEmail } from "@/lib/support/config";
 
 export default async function SupportPage() {
@@ -26,7 +26,7 @@ export default async function SupportPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Calendar className="h-4 w-4 text-primary" />
-            Book a Strategy Session
+            Schedule Your Assessment Review
           </CardTitle>
           <CardDescription>
             Schedule time with a BobKat consultant to review your assessment results and build your
@@ -35,14 +35,7 @@ export default async function SupportPage() {
         </CardHeader>
         <CardContent>
           {bookingUrl ? (
-            <a
-              href={bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonClassName({})}
-            >
-              Request a Session
-            </a>
+            <BookingButton label="primary" icon={<Calendar className="mr-2 h-4 w-4" />} />
           ) : (
             <p className="text-sm text-muted-foreground">
               Online booking is not configured. Please email{" "}

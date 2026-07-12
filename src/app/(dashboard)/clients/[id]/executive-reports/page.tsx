@@ -7,6 +7,7 @@ import {
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
+import { BookingButton } from "@/components/support/booking-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
@@ -66,10 +67,11 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
                 <Download className="mr-2 h-4 w-4" />
                 Download Report
               </Link>
-              <Link href="/support" className={buttonClassName({ variant: "outline" })}>
-                <Calendar className="mr-2 h-4 w-4" />
-                Book Strategy Session
-              </Link>
+              <BookingButton
+                label="primary"
+                variant="outline"
+                icon={<Calendar className="mr-2 h-4 w-4" />}
+              />
             </CardContent>
           </Card>
         ) : (

@@ -267,7 +267,7 @@ export function AssessmentInvitationEmail({
             color: emailTokens.primary,
           }}
         >
-          Book a Consultation
+          Book a Meeting
         </Heading>
         <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
           After completing your assessment, {brand.companyName} can walk you through your results,

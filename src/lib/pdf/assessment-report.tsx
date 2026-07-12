@@ -1129,7 +1129,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
             </Text>
             <View wrap={false} style={styles.ctaButton}>
-              <Text style={styles.ctaButtonText}>Schedule a Remediation Planning Session</Text>
+              <Text style={styles.ctaButtonText}>Schedule Your Assessment Review</Text>
             </View>
           </View>
         </View>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import { Calendar, Download, FileText } from "lucide-react";
 import { AssessmentReportHero } from "@/components/assessments/assessment-report-hero";
 import { AssessmentReportToolbar } from "@/components/assessments/assessment-report-toolbar";
@@ -22,7 +21,7 @@ import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import { buildAssessmentReportSections } from "@/lib/reports/assessment-content";
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import type { RecommendationSummary } from "@/lib/assessments/results-summary";
-import { getBookingUrl } from "@/lib/support/config";
+import { BookingButton } from "@/components/support/booking-button";
 import { buttonClassName } from "@/components/ui/button";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
@@ -118,7 +117,6 @@ export function AssessmentReportPreview({
   isCustomerView = false,
 }: AssessmentReportPreviewProps) {
   const sections = buildAssessmentReportSections(data);
-  const bookingUrl = getBookingUrl();
 
   const pillarInsights = useMemo(
     () =>
@@ -432,29 +430,12 @@ export function AssessmentReportPreview({
                   <p className="report-prose-sm">
                     Meet with BobKat IT to walk through findings and align on priorities.
                   </p>
-                  {bookingUrl ? (
-                    <a
-                      href={bookingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={buttonClassName({
-                        size: "sm",
-                        className: "report-no-print mt-3",
-                      })}
-                    >
-                      Book Strategy Session
-                    </a>
-                  ) : (
-                    <Link
-                      href="/support"
-                      className={buttonClassName({
-                        size: "sm",
-                        className: "report-no-print mt-3",
-                      })}
-                    >
-                      Contact Support
-                    </Link>
-                  )}
+                  <BookingButton
+                    label="primary"
+                    size="sm"
+                    className="report-no-print mt-3"
+                    fallbackHref="/support"
+                  />
                 </div>
               </div>
               <div className="report-next-step">

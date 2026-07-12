@@ -10,6 +10,7 @@ import {
   Sparkles,
   TrendingUp,
 } from "lucide-react";
+import { BookingButton } from "@/components/support/booking-button";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -135,10 +136,10 @@ export function CustomerExecutiveDashboard({
                   Download Report
                 </Link>
               ) : null}
-              <Link href="/support" className={buttonClassName({})}>
-                <Calendar className="mr-2 h-4 w-4" />
-                Book Strategy Session
-              </Link>
+              <BookingButton
+                label="primary"
+                icon={<Calendar className="mr-2 h-4 w-4" />}
+              />
             </div>
           </CardContent>
         </Card>
