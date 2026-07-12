@@ -1,0 +1,854 @@
+/**
+ * Technology Improvement Plan — executive document layout (browser preview + print).
+ * Uses StackScore navy brand tokens from report-document-theme.
+ */
+
+.tip-executive-report {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.tip-executive-report .report-document-executive {
+  overflow: visible;
+  box-shadow: var(--report-shadow, 0 10px 40px rgba(8, 47, 91, 0.12));
+}
+
+.tip-executive-report .report-body-executive {
+  padding: 1.75rem 1.5rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .report-body-executive {
+    padding: 2rem 2rem 2.5rem;
+  }
+}
+
+/* Cover */
+.tip-executive-report .tip-report-cover {
+  background: linear-gradient(165deg, #082f5b 0%, #0a3d75 55%, #124a82 100%);
+  color: #ffffff;
+  padding: 2rem 1.5rem 2rem;
+  border-bottom: none;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-report-cover {
+    padding: 2.5rem 2rem 2.25rem;
+  }
+}
+
+.tip-executive-report .tip-report-cover-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.tip-executive-report .tip-report-cover-title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-report-cover-subtitle {
+  margin-top: 0.75rem;
+  max-width: 42rem;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.tip-executive-report .tip-report-cover-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-report-cover-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .tip-executive-report .tip-report-cover-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-report-cover-meta-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.tip-executive-report .tip-report-cover-meta-value {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-report-cover-confidential {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* Maturity hero — primary visual */
+.tip-executive-report .tip-maturity-hero {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.875rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  padding: 1.25rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-maturity-hero {
+    padding: 1.5rem;
+  }
+}
+
+.tip-executive-report .tip-maturity-hero-heading {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-maturity-compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-maturity-compare {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.tip-executive-report .tip-maturity-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 1.125rem 1.25rem;
+}
+
+.tip-executive-report .tip-maturity-card-projected {
+  border-color: rgba(8, 47, 91, 0.35);
+  background: linear-gradient(180deg, #eef4f8 0%, #ffffff 100%);
+  box-shadow: 0 4px 18px rgba(8, 47, 91, 0.08);
+}
+
+.tip-executive-report .tip-maturity-card-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-maturity-card-score {
+  margin-top: 0.375rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tip-executive-report .tip-maturity-card-rating {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-maturity-bar-track {
+  margin-top: 0.875rem;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--report-bar-track, #e2e8f0);
+}
+
+.tip-executive-report .tip-maturity-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+}
+
+.tip-executive-report .tip-maturity-delta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-maturity-delta {
+    padding: 0;
+  }
+}
+
+.tip-executive-report .tip-maturity-delta-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--report-status-strong, #059669);
+}
+
+.tip-executive-report .tip-maturity-delta-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+  text-align: center;
+}
+
+.tip-executive-report .tip-journey-strip {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+}
+
+.tip-executive-report .tip-journey-strip-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-journey-strip-track {
+  margin-top: 0.625rem;
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  background: #ffffff;
+}
+
+.tip-executive-report .tip-journey-strip-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-journey-strip-meta {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--report-muted, #64748b);
+}
+
+/* Executive prose */
+.tip-executive-report .tip-executive-prose {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--report-text, #1e293b);
+  max-width: 68ch;
+}
+
+.tip-executive-report .tip-executive-prose-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Business outcomes */
+.tip-executive-report .tip-outcome-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-outcome-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-outcome-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 7.5rem;
+  border: 1px solid #1e3a5f;
+  border-radius: 0.75rem;
+  background: var(--report-highlight-bg, #082f5b);
+  padding: 1.25rem;
+  color: #ffffff;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.tip-executive-report .tip-outcome-card-index {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tip-executive-report .tip-outcome-card-title {
+  margin-top: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-outcome-card-body {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Pillar scorecards */
+.tip-executive-report .tip-pillar-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-pillar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-pillar-scorecard {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 1rem 1.125rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.tip-executive-report .tip-pillar-scorecard-planned {
+  border-color: rgba(8, 47, 91, 0.3);
+  background: linear-gradient(180deg, #eef4f8 0%, #ffffff 100%);
+}
+
+.tip-executive-report .tip-pillar-scorecard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tip-executive-report .tip-pillar-scorecard-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-pillar-scorecard-score {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tip-executive-report .tip-pillar-scorecard-rating {
+  display: inline-block;
+  margin-top: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-pillar-scorecard-bar-track {
+  margin-top: 0.75rem;
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--report-bar-track, #e2e8f0);
+}
+
+.tip-executive-report .tip-pillar-scorecard-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+}
+
+.tip-executive-report .tip-pillar-scorecard-foot {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-pillar-scorecard-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(8, 47, 91, 0.25);
+  background: rgba(8, 47, 91, 0.08);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+/* Recommendations */
+.tip-executive-report .tip-recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tip-executive-report .tip-recommendation-card {
+  overflow: hidden;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.tip-executive-report .tip-recommendation-card-accent {
+  border-top: 3px solid var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-recommendation-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem 0.75rem;
+}
+
+.tip-executive-report .tip-recommendation-title {
+  flex: 1;
+  min-width: 12rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-recommendation-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  padding: 0 1.125rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-recommendation-meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-recommendation-meta-box {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.5rem;
+  background: var(--report-surface, #f8fafc);
+  padding: 0.625rem 0.75rem;
+}
+
+.tip-executive-report .tip-recommendation-meta-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-recommendation-meta-value {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-recommendation-body {
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+  background: var(--report-surface-muted, #f1f5f9);
+  padding: 0.875rem 1.125rem;
+}
+
+.tip-executive-report .tip-recommendation-field-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-recommendation-field-value {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--report-text, #1e293b);
+}
+
+/* Roadmap timeline */
+.tip-executive-report .tip-roadmap-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tip-executive-report .tip-roadmap-phase {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 1rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.tip-executive-report .tip-roadmap-phase-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.25rem;
+}
+
+.tip-executive-report .tip-roadmap-phase-dot {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid var(--report-border-light, #e2e8f0);
+  background: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-roadmap-phase-dot-active {
+  border-color: var(--report-accent, #082f5b);
+  background: var(--report-accent, #082f5b);
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-roadmap-phase-line {
+  flex: 1;
+  width: 2px;
+  min-height: 1rem;
+  margin-top: 0.25rem;
+  background: var(--report-border-light, #e2e8f0);
+}
+
+.tip-executive-report .tip-roadmap-phase-card {
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 1rem 1.125rem;
+}
+
+.tip-executive-report .tip-roadmap-phase-card-active {
+  border-color: rgba(8, 47, 91, 0.35);
+  background: linear-gradient(180deg, #eef4f8 0%, #ffffff 100%);
+}
+
+.tip-executive-report .tip-roadmap-phase-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tip-executive-report .tip-roadmap-phase-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-roadmap-phase-timeline {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-roadmap-phase-score-block {
+  text-align: right;
+}
+
+.tip-executive-report .tip-roadmap-phase-score {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tip-executive-report .tip-roadmap-phase-delta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--report-status-strong, #059669);
+}
+
+.tip-executive-report .tip-roadmap-initiatives {
+  margin: 0.875rem 0 0;
+  padding-left: 1.125rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--report-text, #1e293b);
+}
+
+.tip-executive-report .tip-roadmap-initiatives li + li {
+  margin-top: 0.375rem;
+}
+
+.tip-executive-report .tip-roadmap-objectives {
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+}
+
+.tip-executive-report .tip-roadmap-objectives-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-roadmap-objectives-list {
+  margin: 0.375rem 0 0;
+  padding-left: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--report-muted, #64748b);
+}
+
+/* Investment */
+.tip-executive-report .tip-investment-table {
+  overflow: hidden;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+}
+
+.tip-executive-report .tip-investment-table-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: 0.75rem;
+  background: var(--report-accent, #082f5b);
+  padding: 0.75rem 1rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-investment-table-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: 0.75rem;
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+}
+
+.tip-executive-report .tip-investment-table-row-alt {
+  background: var(--report-surface, #f8fafc);
+}
+
+.tip-executive-report .tip-investment-table-category {
+  font-weight: 600;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-investment-table-desc {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-investment-table-amount {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-text, #1e293b);
+}
+
+.tip-executive-report .tip-investment-total {
+  margin-top: 1rem;
+  border-radius: 0.75rem;
+  background: var(--report-accent, #082f5b);
+  padding: 1.25rem 1.5rem;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-investment-total-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.tip-executive-report .tip-investment-total-value {
+  margin-top: 0.375rem;
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tip-executive-report .tip-investment-total-caption {
+  margin-top: 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Approval */
+.tip-executive-report .tip-approval-block {
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+}
+
+.tip-executive-report .tip-signature-line {
+  margin-top: 2rem;
+  border-bottom: 1px solid var(--report-text, #1e293b);
+  width: min(100%, 16rem);
+  height: 0;
+}
+
+.tip-executive-report .tip-signature-label {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--report-muted, #64748b);
+}
+
+/* Journey closing */
+.tip-executive-report .tip-closing-hero {
+  border-radius: 0.75rem;
+  background: linear-gradient(165deg, #082f5b 0%, #0a3d75 100%);
+  padding: 1.5rem;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-closing-hero-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.tip-executive-report .tip-closing-hero-subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.tip-executive-report .tip-closing-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tip-executive-report .tip-closing-step {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.tip-executive-report .tip-closing-step-dot {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: 9999px;
+  background: rgba(125, 151, 172, 0.85);
+}
+
+.tip-executive-report .tip-closing-step-dot-active {
+  background: #ffffff;
+}
+
+.tip-executive-report .tip-closing-step-label {
+  font-size: 0.6875rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tip-executive-report .tip-closing-scores {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-closing-scores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Print */
+@media print {
+  .tip-executive-report .report-document-executive {
+    box-shadow: none;
+    border: none;
+  }
+
+  .tip-executive-report .tip-maturity-hero,
+  .tip-executive-report .tip-outcome-card,
+  .tip-executive-report .tip-pillar-scorecard,
+  .tip-executive-report .tip-recommendation-card,
+  .tip-executive-report .tip-roadmap-phase,
+  .tip-executive-report .tip-investment-total,
+  .tip-executive-report .tip-closing-hero {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .tip-executive-report .report-section-header,
+  .tip-executive-report .report-print-keep-with-next {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .tip-executive-report .tip-maturity-hero,
+  .tip-executive-report .tip-outcome-card,
+  .tip-executive-report .tip-pillar-scorecard,
+  .tip-executive-report .tip-recommendation-card,
+  .tip-executive-report .tip-roadmap-phase-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
