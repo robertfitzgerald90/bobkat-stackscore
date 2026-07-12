@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Calendar, Download, FileText } from "lucide-react";
+import { Calendar, FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { getLatestDraftAssessmentForClientUser } from "@/lib/auth/client-access";
 import {
   WorkspaceHubLinks,
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { BookingButton } from "@/components/support/booking-button";
+import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
+import { getBookingUrl } from "@/lib/support/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
@@ -40,6 +43,8 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
     const reportHref = client.technologyProfile?.currentAssessmentId
       ? `/assessments/${client.technologyProfile.currentAssessmentId}/report`
       : null;
+    const draftAssessment = await getLatestDraftAssessmentForClientUser(session.user.id);
+    const bookingUrl = getBookingUrl();
 
     return (
       <div className="mx-auto max-w-3xl space-y-8">
@@ -64,14 +69,16 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
             </CardHeader>
             <CardContent className="flex flex-col gap-3 sm:flex-row">
               <Link href={reportHref} className={buttonClassName({})}>
-                <Download className="mr-2 h-4 w-4" />
-                Download Report
+                <FileText className="mr-2 h-4 w-4" />
+                Review Assessment Report
               </Link>
-              <BookingButton
-                label="primary"
-                variant="outline"
-                icon={<Calendar className="mr-2 h-4 w-4" />}
-              />
+              {bookingUrl ? (
+                <BookingButton
+                  label="primary"
+                  variant="outline"
+                  icon={<Calendar className="mr-2 h-4 w-4" />}
+                />
+              ) : null}
             </CardContent>
           </Card>
         ) : (
@@ -82,9 +89,18 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
               <p className="mt-1 text-sm text-muted-foreground">
                 Complete your assessment to generate your executive report.
               </p>
-              <Link href="/assessment/start" className={buttonClassName({ className: "mt-6" })}>
-                Continue Assessment
-              </Link>
+              {draftAssessment ? (
+                <Link href="/assessment/start" className={buttonClassName({ className: "mt-6" })}>
+                  Resume Assessment
+                </Link>
+              ) : (
+                <Link
+                  href={customerAssessmentDashboardPath(id)}
+                  className={buttonClassName({ variant: "outline", className: "mt-6" })}
+                >
+                  Back to Assessment Dashboard
+                </Link>
+              )}
             </CardContent>
           </Card>
         )}

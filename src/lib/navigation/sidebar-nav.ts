@@ -4,7 +4,6 @@ import {
   ClipboardList,
   FileText,
   FolderKanban,
-  HelpCircle,
   LayoutDashboard,
   LayoutGrid,
   Lightbulb,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
 
 export type SidebarNavItem = {
   href: string;
@@ -39,11 +39,10 @@ function customerHref(clientId: string | null, path: string): string {
 export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[] {
   return [
     {
-      href: clientId ? `/clients/${clientId}/technology-profile` : "/dashboard",
-      label: "Dashboard",
+      href: clientId ? customerAssessmentDashboardPath(clientId) : "/dashboard",
+      label: "Assessment Dashboard",
       icon: LayoutDashboard,
     },
-    { href: "/assessment/start", label: "Assessment", icon: ClipboardList },
     {
       href: customerHref(clientId, "recommendations"),
       label: "Recommendations",
@@ -56,7 +55,6 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       icon: FileText,
       requiresClient: true,
     },
-    { href: "/support", label: "Support", icon: HelpCircle },
     { href: "/account", label: "Account", icon: UserCircle },
   ];
 }

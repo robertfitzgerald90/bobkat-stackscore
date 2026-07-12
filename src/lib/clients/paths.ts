@@ -33,6 +33,14 @@ export function clientTechnologyProfilePath(clientId: string) {
   return clientWorkspacePath(clientId);
 }
 
+/**
+ * Canonical customer assessment workspace route.
+ */
+export function customerAssessmentDashboardPath(clientId: string) {
+  return clientTechnologyProfilePath(clientId);
+}
+
+
 /** Client workspace with Immediate Focus in view (DOC-160 / DOC-161). */
 export function clientImmediateFocusPath(clientId: string) {
   return `${clientWorkspacePath(clientId)}#immediate-focus`;

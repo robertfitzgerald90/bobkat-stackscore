@@ -47,9 +47,10 @@ export async function SupportAssessmentHelp() {
         </Link>
       ) : null}
       {!draft && !reportHref ? (
-        <Link href="/assessment/start" className={buttonClassName({ variant: "outline" })}>
-          Start Assessment
-        </Link>
+        <p className="text-sm text-muted-foreground">
+          Your assessment will appear here once your workspace is ready. Visit the Assessment
+          Dashboard for your current status.
+        </p>
       ) : null}
     </div>
   );

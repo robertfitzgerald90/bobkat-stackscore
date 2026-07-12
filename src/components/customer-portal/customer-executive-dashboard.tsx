@@ -6,7 +6,8 @@ import {
   Calendar,
   CheckCircle2,
   ClipboardList,
-  Download,
+  FileText,
+  History,
   Sparkles,
   TrendingUp,
 } from "lucide-react";
@@ -16,9 +17,11 @@ import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
+import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { getBookingUrl } from "@/lib/support/config";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
 import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import { conciseFocusTitle } from "@/lib/client-workspace";
@@ -60,12 +63,23 @@ export function CustomerExecutiveDashboard({
   detail,
   companyName,
 }: CustomerExecutiveDashboardProps) {
-  const { profile, journeyScores, pillarInsights, openRecommendations, journey, draftAssessmentId } =
-    detail;
+  const {
+    profile,
+    client,
+    journeyScores,
+    pillarInsights,
+    openRecommendations,
+    journey,
+    draftAssessmentId,
+    scoreTrend,
+  } = detail;
+
   const score = profile.overallStackScore;
   const rating = score !== null ? getRating(score) : null;
   const hasCompletedAssessment = journey.assessmentsCompleted > 0;
   const assessmentInProgress = Boolean(draftAssessmentId);
+  const bookingUrl = getBookingUrl();
+  const nextAction = deriveCustomerNextAction(detail);
 
   const topStrengths = [...pillarInsights]
     .filter((p) => p.percentScore !== null)
@@ -85,18 +99,40 @@ export function CustomerExecutiveDashboard({
     ? `/assessments/${profile.currentAssessmentId}/report`
     : null;
 
+  const welcomeName = client.primaryContactName?.split(" ")[0] ?? "there";
+  const historicalAssessments = scoreTrend.filter((point) => point.assessmentId);
+
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <header className="space-y-2">
-        <p className="text-sm font-medium text-muted-foreground">Executive Dashboard</p>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{companyName}</h1>
+        <p className="text-sm font-medium text-muted-foreground">Assessment Dashboard</p>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          Welcome back, {welcomeName}
+        </h1>
         <p className="max-w-2xl text-muted-foreground">
-          Your technology health at a glance — where you stand, what matters most, and how BobKat
-          can help you improve.
+          {companyName} — your technology health at a glance, what to review next, and the actions
+          that matter most right now.
         </p>
       </header>
 
-      {assessmentInProgress && !hasCompletedAssessment ? (
+      {!hasCompletedAssessment && !assessmentInProgress ? (
+        <Card className="border-dashed shadow-sm">
+          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <ClipboardList className="mt-0.5 h-5 w-5 text-primary" />
+              <div>
+                <p className="font-semibold">Start your Technology Maturity Assessment</p>
+                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                  Complete the assessment to receive your StackScore, executive report, prioritized
+                  recommendations, and a clear view of your technology health.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {assessmentInProgress ? (
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
@@ -109,37 +145,40 @@ export function CustomerExecutiveDashboard({
               </div>
             </div>
             <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
-              Continue Assessment
+              Resume Assessment
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </CardContent>
         </Card>
       ) : null}
 
-      {hasCompletedAssessment ? (
+      {hasCompletedAssessment && nextAction ? (
         <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
           <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <Sparkles className="mt-0.5 h-6 w-6 text-primary" />
               <div>
                 <p className="text-lg font-semibold">Assessment complete</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Your executive report is ready. Review your results and schedule a strategy
-                  session with our team.
-                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{nextAction.description}</p>
+                {profile.lastAssessedAt ? (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Completed {formatDisplayDate(profile.lastAssessedAt)}
+                  </p>
+                ) : null}
               </div>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              {reportHref ? (
-                <Link href={reportHref} className={buttonClassName({ variant: "outline" })}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Report
-                </Link>
+              <Link href={nextAction.href} className={buttonClassName({})}>
+                <FileText className="mr-2 h-4 w-4" />
+                {nextAction.label}
+              </Link>
+              {bookingUrl ? (
+                <BookingButton
+                  label="primary"
+                  variant="outline"
+                  icon={<Calendar className="mr-2 h-4 w-4" />}
+                />
               ) : null}
-              <BookingButton
-                label="primary"
-                icon={<Calendar className="mr-2 h-4 w-4" />}
-              />
             </div>
           </CardContent>
         </Card>
@@ -253,7 +292,7 @@ export function CustomerExecutiveDashboard({
       <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Immediate Priorities</h2>
+            <h2 className="text-lg font-semibold">Top Priorities</h2>
             <p className="text-sm text-muted-foreground">
               The highest-impact opportunities identified in your assessment.
             </p>
@@ -269,8 +308,6 @@ export function CustomerExecutiveDashboard({
             icon={TrendingUp}
             title="Complete your assessment"
             message="Finish your assessment to see personalized priorities for your organization."
-            actionLabel="Continue Assessment"
-            actionHref="/assessment/start"
           />
         ) : priorities.length === 0 ? (
           <TpEmptyState
@@ -306,6 +343,45 @@ export function CustomerExecutiveDashboard({
           </div>
         )}
       </section>
+
+      {historicalAssessments.length > 1 ? (
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold">Assessment History</h2>
+            <p className="text-sm text-muted-foreground">
+              Previous assessments that shaped your current StackScore.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {historicalAssessments.map((entry) => (
+              <div
+                key={`${entry.assessmentId}-${entry.date}`}
+                className="flex items-center justify-between rounded-xl border border-border/60 bg-card px-4 py-3 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  <History className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">
+                      {entry.assessmentName ?? "Technology Maturity Assessment"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{entry.dateLabel}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={cn("text-lg font-bold tabular-nums", getScoreTextColorClass(entry.overallScore))}>
+                    {entry.overallScore}
+                  </p>
+                  {entry.assessmentId === profile.currentAssessmentId && reportHref ? (
+                    <Link href={reportHref} className="text-xs font-medium text-primary hover:underline">
+                      View report
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {journeyScores.projectedScore !== null && score !== null ? (
         <Card className="shadow-sm">

@@ -31,9 +31,7 @@ const CONSULTANT_NAV = [
 ] as const;
 
 const CUSTOMER_NAV = [
-  { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/assessment/start", label: "Assessment", icon: "ClipboardList" },
-  { href: "/support", label: "Support", icon: "HelpCircle" },
+  { href: "/dashboard", label: "Assessment Dashboard", icon: "LayoutDashboard" },
   { href: "/account", label: "Account", icon: "UserCircle" },
 ] as const;
 

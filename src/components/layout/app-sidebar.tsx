@@ -7,6 +7,8 @@ import {
   getSidebarNavForRole,
   resolveClientIdFromPathname,
 } from "@/lib/navigation/sidebar-nav";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { BRAND } from "@/lib/branding";
@@ -47,7 +49,11 @@ function SidebarNav({
   const pathClientId = resolveClientIdFromPathname(pathname);
   const effectiveClientId = pathClientId ?? clientId;
   const navItems = getSidebarNavForRole(role, effectiveClientId);
-  const logoHref = canAccessPortfolio(role) ? "/portfolio" : "/dashboard";
+  const logoHref = canAccessPortfolio(role)
+    ? "/portfolio"
+    : isCustomerMode(role) && effectiveClientId
+      ? customerAssessmentDashboardPath(effectiveClientId)
+      : "/dashboard";
 
   return (
     <>

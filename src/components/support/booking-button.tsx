@@ -8,7 +8,6 @@ import {
   getBookingUrl,
   resolveBookingLabel,
 } from "@/lib/support/config";
-import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 
 type ButtonVariantProps = VariantProps<typeof buttonVariants>;
@@ -37,19 +36,6 @@ export function BookingButton({
   const buttonClasses = buttonClassName({ variant, size, className });
 
   if (!bookingUrl) {
-    if (process.env.NODE_ENV === "development") {
-      return (
-        <span
-          aria-disabled="true"
-          title="Set NEXT_PUBLIC_CALCOM_BOOKING_URL to enable booking links."
-          className={cn(buttonClasses, "cursor-not-allowed opacity-50")}
-        >
-          {icon}
-          {resolvedLabel}
-        </span>
-      );
-    }
-
     if (fallbackHref) {
       return (
         <Link href={fallbackHref} className={buttonClasses}>

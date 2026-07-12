@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { Calendar, Download, FileText } from "lucide-react";
+import Link from "next/link";
+import { Calendar, Download, FileText, Lightbulb } from "lucide-react";
 import { AssessmentReportHero } from "@/components/assessments/assessment-report-hero";
 import { AssessmentReportToolbar } from "@/components/assessments/assessment-report-toolbar";
 import {
@@ -22,6 +23,8 @@ import { buildAssessmentReportSections } from "@/lib/reports/assessment-content"
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import type { RecommendationSummary } from "@/lib/assessments/results-summary";
 import { BookingButton } from "@/components/support/booking-button";
+import { getBookingUrl } from "@/lib/support/config";
+import { clientRecommendationsPath } from "@/lib/clients/paths";
 import { buttonClassName } from "@/components/ui/button";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
@@ -163,7 +166,10 @@ export function AssessmentReportPreview({
   const backHref = isCustomerView
     ? `/clients/${clientId}/technology-profile`
     : `/assessments/${assessmentId}/results`;
-  const backLabel = isCustomerView ? "Back to Dashboard" : "Back to Results";
+  const backLabel = isCustomerView ? "Back to Assessment Dashboard" : "Back to Results";
+  const bookingUrl = getBookingUrl();
+  const hasRecommendations = data.summary.recommendations.length > 0;
+  const recommendationsHref = clientRecommendationsPath(clientId);
 
   return (
     <ReportShell className="assessment-executive-report">
@@ -423,28 +429,44 @@ export function AssessmentReportPreview({
                 </div>
               </div>
               </ReportPrintLeadGroup>
-              <div className="report-next-step">
-                <Calendar className="report-next-step-icon" />
-                <div>
-                  <p className="report-next-step-title">Schedule a results review</p>
-                  <p className="report-prose-sm">
-                    Meet with BobKat IT to walk through findings and align on priorities.
-                  </p>
-                  <BookingButton
-                    label="primary"
-                    size="sm"
-                    className="report-no-print mt-3"
-                    fallbackHref="/support"
-                  />
+              {bookingUrl ? (
+                <div className="report-next-step">
+                  <Calendar className="report-next-step-icon" />
+                  <div>
+                    <p className="report-next-step-title">Schedule a results review</p>
+                    <p className="report-prose-sm">
+                      Meet with BobKat IT to walk through findings and align on priorities.
+                    </p>
+                    <BookingButton
+                      label="primary"
+                      size="sm"
+                      className="report-no-print mt-3"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="report-next-step">
-                <p className="report-next-step-title">Review your roadmap with BobKat IT</p>
-                <p className="report-prose-sm">
-                  Your consultant will help translate recommendations into a phased implementation
-                  plan tailored to your business goals and budget.
-                </p>
-              </div>
+              ) : null}
+              {isCustomerView && hasRecommendations ? (
+                <div className="report-next-step">
+                  <Lightbulb className="report-next-step-icon" />
+                  <div>
+                    <p className="report-next-step-title">Review your priorities</p>
+                    <p className="report-prose-sm">
+                      Explore the recommendations surfaced by your assessment and focus on what
+                      matters most.
+                    </p>
+                    <Link
+                      href={recommendationsHref}
+                      className={buttonClassName({
+                        variant: "outline",
+                        size: "sm",
+                        className: "report-no-print mt-3",
+                      })}
+                    >
+                      View Recommendations
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </ReportSection>
 
