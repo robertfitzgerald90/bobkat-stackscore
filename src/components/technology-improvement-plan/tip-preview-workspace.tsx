@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -22,6 +15,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { TipReportPreview } from "@/components/technology-improvement-plan/tip-report-preview";
+import { useTipReportPreviewControls } from "@/components/technology-improvement-plan/use-tip-report-preview-controls";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { BRAND } from "@/lib/branding";
@@ -31,13 +25,17 @@ import {
   evaluateTipReportReadiness,
   isTipReportReadyForGeneration,
 } from "@/lib/technology-improvement-plan/preview-readiness";
+import {
+  canGoToNextPage,
+  canGoToPreviousPage,
+  canZoomIn,
+  canZoomOut,
+  isEditableTarget,
+} from "@/lib/technology-improvement-plan/tip-preview-controls";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import type { TipPlanDetail } from "@/lib/technology-improvement-plan/types";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
-
-const ZOOM_STEPS = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5] as const;
-const DEFAULT_ZOOM_INDEX = 3;
 
 type TipPreviewWorkspaceProps = {
   plan: TipPlanDetail;
@@ -51,84 +49,6 @@ type TipPreviewWorkspaceProps = {
   onSaveDraft: () => Promise<void>;
   onGenerate: () => void;
 };
-
-function collectPreviewPages(root: HTMLElement): HTMLElement[] {
-  const pages: HTMLElement[] = [];
-  const cover = root.querySelector(".tip-report-cover");
-  if (cover instanceof HTMLElement) pages.push(cover);
-
-  const body = root.querySelector(".report-body-executive");
-  if (!(body instanceof HTMLElement)) return pages;
-
-  let buffer: HTMLElement[] = [];
-  const flush = () => {
-    if (buffer.length > 0) {
-      pages.push(buffer[0]);
-      buffer = [];
-    }
-  };
-
-  for (const child of Array.from(body.children)) {
-    if (!(child instanceof HTMLElement)) continue;
-    if (child.classList.contains("report-page-break")) {
-      flush();
-      continue;
-    }
-    buffer.push(child);
-  }
-  flush();
-
-  return pages;
-}
-
-function usePreviewPages(previewRef: RefObject<HTMLDivElement | null>) {
-  const [pages, setPages] = useState<HTMLElement[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const refreshPages = useCallback(() => {
-    const root = previewRef.current;
-    if (!root) return;
-    const nextPages = collectPreviewPages(root);
-    setPages(nextPages);
-    setCurrentPage((current) => Math.min(current, Math.max(0, nextPages.length - 1)));
-  }, [previewRef]);
-
-  useEffect(() => {
-    refreshPages();
-    const root = previewRef.current;
-    if (!root) return;
-
-    const observer = new ResizeObserver(() => refreshPages());
-    observer.observe(root);
-    return () => observer.disconnect();
-  }, [previewRef, refreshPages]);
-
-  const scrollToPage = useCallback(
-    (index: number) => {
-      const page = pages[index];
-      const scrollContainer = previewRef.current?.closest("[data-tip-preview-scroll]");
-      if (!page || !(scrollContainer instanceof HTMLElement)) return;
-
-      const containerTop = scrollContainer.getBoundingClientRect().top;
-      const pageTop = page.getBoundingClientRect().top;
-      scrollContainer.scrollTo({
-        top: scrollContainer.scrollTop + (pageTop - containerTop) - 12,
-        behavior: "smooth",
-      });
-      setCurrentPage(index);
-    },
-    [pages, previewRef],
-  );
-
-  return {
-    pages,
-    currentPage,
-    setCurrentPage,
-    scrollToPage,
-    refreshPages,
-    pageCount: Math.max(pages.length, 1),
-  };
-}
 
 export function TipPreviewWorkspace({
   plan,
@@ -146,10 +66,33 @@ export function TipPreviewWorkspace({
   const previewRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [zoomIndex, setZoomIndex] = useState(DEFAULT_ZOOM_INDEX);
-  const [fitWidth, setFitWidth] = useState(true);
-  const [fitWidthScale, setFitWidthScale] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const contentKey = useMemo(
+    () => `${plan.id}:${plan.version}:${executiveSummary}`,
+    [plan.id, plan.version, executiveSummary],
+  );
+
+  const {
+    currentPage,
+    totalPages,
+    fitMode,
+    effectiveZoom,
+    documentLoading,
+    documentError,
+    documentReady,
+    activePageIndex,
+    goToPreviousPage,
+    goToNextPage,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    enableFitWidth,
+  } = useTipReportPreviewControls({
+    previewRef,
+    scrollRef,
+    contentKey,
+  });
 
   const readinessItems = useMemo(
     () => evaluateTipReportReadiness(plan, executiveSummary),
@@ -157,37 +100,6 @@ export function TipPreviewWorkspace({
   );
   const readyForGeneration = isTipReportReadyForGeneration(readinessItems);
   const readyCount = countReadyReadinessItems(readinessItems);
-
-  const { currentPage, scrollToPage, pageCount, refreshPages } = usePreviewPages(previewRef);
-
-  const manualZoom = ZOOM_STEPS[zoomIndex] ?? 1;
-  const effectiveZoom = fitWidth ? fitWidthScale : manualZoom;
-
-  const updateFitWidthScale = useCallback(() => {
-    const scrollEl = scrollRef.current;
-    const previewEl = previewRef.current?.querySelector(".report-document-executive");
-    if (!(scrollEl instanceof HTMLElement) || !(previewEl instanceof HTMLElement)) return;
-
-    const available = scrollEl.clientWidth - 32;
-    const natural = previewEl.scrollWidth;
-    if (natural <= 0 || available <= 0) return;
-
-    setFitWidthScale(Math.min(1, available / natural));
-  }, []);
-
-  useEffect(() => {
-    updateFitWidthScale();
-    const scrollEl = scrollRef.current;
-    if (!scrollEl) return;
-
-    const observer = new ResizeObserver(() => updateFitWidthScale());
-    observer.observe(scrollEl);
-    return () => observer.disconnect();
-  }, [updateFitWidthScale, plan, executiveSummary]);
-
-  useEffect(() => {
-    refreshPages();
-  }, [plan, executiveSummary, refreshPages]);
 
   useEffect(() => {
     function onFullscreenChange() {
@@ -197,6 +109,68 @@ export function TipPreviewWorkspace({
     return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
   }, []);
 
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) return;
+
+      if (event.key === "ArrowLeft") {
+        if (documentReady && canGoToPreviousPage(currentPage)) {
+          event.preventDefault();
+          goToPreviousPage();
+        }
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        if (documentReady && canGoToNextPage(currentPage, totalPages)) {
+          event.preventDefault();
+          goToNextPage();
+        }
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && (event.key === "+" || event.key === "=")) {
+        if (documentReady && canZoomIn(effectiveZoom, fitMode)) {
+          event.preventDefault();
+          zoomIn();
+        }
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key === "-") {
+        if (documentReady && canZoomOut(effectiveZoom, fitMode)) {
+          event.preventDefault();
+          zoomOut();
+        }
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key === "0") {
+        if (documentReady) {
+          event.preventDefault();
+          resetZoom();
+        }
+      }
+    };
+
+    workspace.addEventListener("keydown", onKeyDown);
+    return () => workspace.removeEventListener("keydown", onKeyDown);
+  }, [
+    currentPage,
+    documentReady,
+    effectiveZoom,
+    fitMode,
+    goToNextPage,
+    goToPreviousPage,
+    resetZoom,
+    totalPages,
+    zoomIn,
+    zoomOut,
+  ]);
+
   const toggleFullscreen = async () => {
     if (!workspaceRef.current) return;
     if (document.fullscreenElement) {
@@ -204,16 +178,6 @@ export function TipPreviewWorkspace({
       return;
     }
     await workspaceRef.current.requestFullscreen();
-  };
-
-  const goToPreviousPage = () => {
-    const next = Math.max(0, currentPage - 1);
-    scrollToPage(next);
-  };
-
-  const goToNextPage = () => {
-    const next = Math.min(pageCount - 1, currentPage + 1);
-    scrollToPage(next);
   };
 
   const preparedDate = plan.generatedAt
@@ -309,8 +273,11 @@ export function TipPreviewWorkspace({
   return (
     <div
       ref={workspaceRef}
+      tabIndex={-1}
+      role="region"
+      aria-label="Executive report preview workspace"
       className={cn(
-        "flex min-h-[min(720px,calc(100vh-12rem))] flex-col overflow-hidden rounded-xl border border-border bg-background",
+        "flex min-h-[min(720px,calc(100vh-12rem))] flex-col overflow-hidden rounded-xl border border-border bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring",
         isFullscreen && "min-h-screen rounded-none border-0",
       )}
     >
@@ -351,21 +318,31 @@ export function TipPreviewWorkspace({
                 variant="outline"
                 size="icon-sm"
                 onClick={goToPreviousPage}
-                disabled={currentPage <= 0}
+                disabled={!documentReady || !canGoToPreviousPage(currentPage)}
                 aria-label="Previous page"
+                title="Previous page"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="min-w-[5.5rem] text-center text-xs text-muted-foreground">
-                Page {Math.min(currentPage + 1, pageCount)} of {pageCount}
+              <span
+                className="min-w-[5.5rem] text-center text-xs text-muted-foreground"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {documentReady
+                  ? `Page ${currentPage} of ${totalPages}`
+                  : documentLoading
+                    ? "Loading…"
+                    : "—"}
               </span>
               <Button
                 type="button"
                 variant="outline"
                 size="icon-sm"
                 onClick={goToNextPage}
-                disabled={currentPage >= pageCount - 1}
+                disabled={!documentReady || !canGoToNextPage(currentPage, totalPages)}
                 aria-label="Next page"
+                title="Next page"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -378,28 +355,27 @@ export function TipPreviewWorkspace({
                 type="button"
                 variant="outline"
                 size="icon-sm"
-                onClick={() => {
-                  setFitWidth(false);
-                  setZoomIndex((index) => Math.max(0, index - 1));
-                }}
-                disabled={fitWidth || zoomIndex <= 0}
+                onClick={zoomOut}
+                disabled={!documentReady || !canZoomOut(effectiveZoom, fitMode)}
                 aria-label="Zoom out"
+                title="Zoom out"
               >
                 <ZoomOut className="h-4 w-4" />
               </Button>
-              <span className="min-w-[3rem] text-center text-xs text-muted-foreground">
-                {Math.round(effectiveZoom * 100)}%
+              <span
+                className="min-w-[3rem] text-center text-xs text-muted-foreground tabular-nums"
+                aria-live="polite"
+              >
+                {documentReady ? `${Math.round(effectiveZoom * 100)}%` : "—"}
               </span>
               <Button
                 type="button"
                 variant="outline"
                 size="icon-sm"
-                onClick={() => {
-                  setFitWidth(false);
-                  setZoomIndex((index) => Math.min(ZOOM_STEPS.length - 1, index + 1));
-                }}
-                disabled={fitWidth || zoomIndex >= ZOOM_STEPS.length - 1}
+                onClick={zoomIn}
+                disabled={!documentReady || !canZoomIn(effectiveZoom, fitMode)}
                 aria-label="Zoom in"
+                title="Zoom in"
               >
                 <ZoomIn className="h-4 w-4" />
               </Button>
@@ -407,12 +383,12 @@ export function TipPreviewWorkspace({
 
             <Button
               type="button"
-              variant={fitWidth ? "secondary" : "outline"}
+              variant={fitMode === "fit-width" ? "secondary" : "outline"}
               size="sm"
-              onClick={() => {
-                setFitWidth(true);
-                updateFitWidthScale();
-              }}
+              onClick={enableFitWidth}
+              disabled={!documentReady}
+              aria-pressed={fitMode === "fit-width"}
+              title="Fit report width to preview area"
             >
               Fit Width
             </Button>
@@ -436,13 +412,31 @@ export function TipPreviewWorkspace({
           <div
             ref={scrollRef}
             data-tip-preview-scroll
-            className="min-h-0 flex-1 overflow-auto bg-muted/30 p-3 sm:p-4"
+            className="relative min-h-0 flex-1 overflow-auto bg-muted/30 p-3 sm:p-4"
           >
+            {documentLoading ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                Loading report preview…
+              </div>
+            ) : null}
+
+            {documentError ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center gap-2 px-4 text-center">
+                <p className="text-sm font-medium text-destructive">Preview unavailable</p>
+                <p className="text-sm text-muted-foreground">{documentError}</p>
+              </div>
+            ) : null}
+
             <div
-              className="mx-auto origin-top transition-transform duration-150"
+              className={cn(
+                "mx-auto origin-top transition-transform duration-150",
+                (documentLoading || documentError) && "pointer-events-none invisible absolute opacity-0",
+              )}
               style={{
                 transform: `scale(${effectiveZoom})`,
-                width: fitWidth ? `${100 / effectiveZoom}%` : undefined,
+                transformOrigin: "top center",
+                width: fitMode === "fit-width" ? `${100 / effectiveZoom}%` : undefined,
               }}
             >
               <div ref={previewRef}>
@@ -452,6 +446,7 @@ export function TipPreviewWorkspace({
                   isEditable={plan.isEditable}
                   executiveSummary={executiveSummary}
                   onExecutiveSummaryChange={onExecutiveSummaryChange}
+                  activePageIndex={activePageIndex}
                 />
               </div>
             </div>
@@ -486,10 +481,7 @@ export function TipPreviewWorkspace({
               "Save Draft"
             )}
           </Button>
-          <a
-            href={downloadUrl}
-            className={buttonClassName({ variant: "outline" })}
-          >
+          <a href={downloadUrl} className={buttonClassName({ variant: "outline" })}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </a>

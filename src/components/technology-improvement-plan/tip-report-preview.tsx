@@ -1,12 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { buildTipReportData } from "@/lib/technology-improvement-plan/report-data";
 import type { TipPlanDetail } from "@/lib/technology-improvement-plan/types";
 import {
   ReportBody,
   ReportDocument,
   ReportFooter,
-  ReportPageBreak,
   ReportShell,
 } from "@/components/reports";
 import {
@@ -27,7 +27,32 @@ type TipReportPreviewProps = {
   executiveSummary: string;
   onExecutiveSummaryChange?: (value: string) => void;
   isEditable?: boolean;
+  /** When set, only this page index (0-based) is visible in the Step 6 preview workspace. */
+  activePageIndex?: number | null;
 };
+
+function TipPreviewPage({
+  pageIndex,
+  activePageIndex,
+  children,
+}: {
+  pageIndex: number;
+  activePageIndex: number | null | undefined;
+  children: ReactNode;
+}) {
+  const hidden = activePageIndex != null && activePageIndex !== pageIndex;
+
+  return (
+    <div
+      data-report-preview-page
+      data-page-index={pageIndex}
+      className={hidden ? "hidden" : undefined}
+      aria-hidden={hidden}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function TipReportPreview({
   plan,
@@ -35,6 +60,7 @@ export function TipReportPreview({
   executiveSummary,
   onExecutiveSummaryChange,
   isEditable = false,
+  activePageIndex = null,
 }: TipReportPreviewProps) {
   const data = buildTipReportData(
     {
@@ -48,32 +74,36 @@ export function TipReportPreview({
   return (
     <ReportShell className="tip-executive-report">
       <ReportDocument className="report-document-executive" documentTheme>
-        <TipReportCover data={data} />
+        <TipPreviewPage pageIndex={0} activePageIndex={activePageIndex}>
+          <TipReportCover data={data} />
+        </TipPreviewPage>
 
         <ReportBody className="report-body-executive">
-          <TipExecutiveSummarySection
-            data={data}
-            executiveSummary={executiveSummary}
-            isEditable={isEditable}
-            onExecutiveSummaryChange={onExecutiveSummaryChange}
-          />
+          <TipPreviewPage pageIndex={1} activePageIndex={activePageIndex}>
+            <TipExecutiveSummarySection
+              data={data}
+              executiveSummary={executiveSummary}
+              isEditable={isEditable}
+              onExecutiveSummaryChange={onExecutiveSummaryChange}
+            />
 
-          <TipBusinessOutcomesSection data={data} />
-          <TipPillarScorecardsSection data={data} />
+            <TipBusinessOutcomesSection data={data} />
+            <TipPillarScorecardsSection data={data} />
+          </TipPreviewPage>
 
-          <ReportPageBreak />
+          <TipPreviewPage pageIndex={2} activePageIndex={activePageIndex}>
+            <TipRecommendationsSection data={data} />
+            <TipRoadmapSection data={data} />
+          </TipPreviewPage>
 
-          <TipRecommendationsSection data={data} />
-          <TipRoadmapSection data={data} />
+          <TipPreviewPage pageIndex={3} activePageIndex={activePageIndex}>
+            <TipInvestmentSection data={data} isAdmin={isAdmin} />
+            <TipApprovalSection clientName={data.clientName} />
 
-          <ReportPageBreak />
+            <TipJourneyClosingSection data={data} />
 
-          <TipInvestmentSection data={data} isAdmin={isAdmin} />
-          <TipApprovalSection clientName={data.clientName} />
-
-          <TipJourneyClosingSection data={data} />
-
-          <ReportFooter confidentialFor={data.clientName} documentTheme />
+            <ReportFooter confidentialFor={data.clientName} documentTheme />
+          </TipPreviewPage>
         </ReportBody>
       </ReportDocument>
     </ReportShell>
