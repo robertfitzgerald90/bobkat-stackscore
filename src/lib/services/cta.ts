@@ -3,9 +3,17 @@ export const SERVICES_CTA_DESTINATIONS = {
     label: "Start My Free Technology Snapshot",
     href: "/technology-snapshot",
   },
+  assessmentInvitation: {
+    label: "Start Technology Assessment",
+    href: "/assessment-invitation",
+  },
   purchaseAssessment: {
     label: "Purchase Technology Assessment",
     href: "/assessment-offer",
+  },
+  solutionsLanding: {
+    label: "Explore All Solutions",
+    href: "/solutions",
   },
   assessmentLearnMore: {
     label: "Learn More",
