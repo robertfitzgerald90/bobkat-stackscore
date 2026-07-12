@@ -9,6 +9,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const PUBLIC_CALLBACK_PREFIXES = [
+  "/login",
+  "/assessment-offer",
+  "/assessment-invitation",
+  "/services",
+  "/technology-snapshot",
+  "/purchase/success",
+  "/forgot-password",
+  "/reset-password",
+];
+
+function getSafeCallbackUrl(value: string | null): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/dashboard";
+  }
+
+  if (PUBLIC_CALLBACK_PREFIXES.some((prefix) => value.startsWith(prefix))) {
+    return "/dashboard";
+  }
+
+  return value;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,8 +63,8 @@ export function LoginForm() {
         return;
       }
 
-      const callbackUrl = searchParams.get("callbackUrl") ?? "/";
-      router.push(callbackUrl);
+      const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
+      router.replace(callbackUrl);
       router.refresh();
     } catch {
       setError("Unable to reach the server. Check your connection and try again.");

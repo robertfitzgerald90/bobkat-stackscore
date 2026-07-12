@@ -17,7 +17,8 @@ export const authConfig = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user?.id;
+      const isLoggedIn = Boolean(auth?.user?.id || auth?.user?.email);
+      const userRole = auth?.user?.role;
       const { pathname } = request.nextUrl;
       const isPublic =
         pathname.startsWith("/login") ||
@@ -25,9 +26,11 @@ export const authConfig = {
         pathname.startsWith("/technology-snapshot") ||
         pathname.startsWith("/assessment-offer") ||
         pathname.startsWith("/assessment-invitation") ||
+        pathname.startsWith("/services") ||
         pathname.startsWith("/forgot-password") ||
         pathname.startsWith("/reset-password") ||
         pathname.startsWith("/api/cron/communications") ||
+        pathname.startsWith("/api/checkout") ||
         pathname.startsWith("/api/v1/public/password-reset") ||
         pathname.startsWith("/purchase/success") ||
         pathname.startsWith("/api/auth") ||
@@ -36,7 +39,7 @@ export const authConfig = {
         pathname.startsWith("/api/v1/public/activate-account");
 
       if (pathname === "/login" && isLoggedIn) {
-        if (auth.user?.role === "client") {
+        if (userRole === "client") {
           return Response.redirect(new URL("/dashboard", request.nextUrl));
         }
         return Response.redirect(new URL("/dashboard", request.nextUrl));
@@ -45,7 +48,7 @@ export const authConfig = {
       if (isPublic) return true;
       if (!isLoggedIn) return false;
 
-      if (auth.user?.role === "client") {
+      if (userRole === "client") {
         const customerAllowedExact = new Set([
           "/dashboard",
           "/account",
