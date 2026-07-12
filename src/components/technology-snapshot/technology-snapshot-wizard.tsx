@@ -52,6 +52,53 @@ const EMPTY_INTAKE: IntakeForm = {
 
 type WizardPhase = "intro" | "intake" | "qualifier" | "pillar" | "results";
 
+type StepActionsProps = {
+  showBack?: boolean;
+  onBack: () => void;
+  onNext: () => void;
+  nextLabel: React.ReactNode;
+  submitting?: boolean;
+  nextDisabled?: boolean;
+};
+
+function StepActions({
+  showBack = true,
+  onBack,
+  onNext,
+  nextLabel,
+  submitting = false,
+  nextDisabled = false,
+}: StepActionsProps) {
+  return (
+    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {showBack ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={onBack}
+          disabled={submitting}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+      ) : null}
+      <Button
+        type="button"
+        className={cn("w-full sm:w-auto", !showBack && "sm:ml-auto")}
+        onClick={onNext}
+        disabled={submitting || nextDisabled}
+      >
+        {nextLabel}
+      </Button>
+    </div>
+  );
+}
+
+function StepSection({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-5">{children}</div>;
+}
+
 export function TechnologySnapshotWizard() {
   const searchParams = useSearchParams();
   const prospectId = searchParams.get("prospectId") ?? undefined;
@@ -202,10 +249,28 @@ export function TechnologySnapshotWizard() {
   }
 
   const showProgress = phase !== "intro" && phase !== "results";
-  const showNav = phase !== "results";
+
+  const nextLabel = submitting ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Calculating results…
+    </>
+  ) : phase === "intro" ? (
+    <>
+      Get started
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </>
+  ) : phase === "pillar" && pillarIndex === SNAPSHOT_QUESTIONS.length - 1 ? (
+    "View my results"
+  ) : (
+    <>
+      Continue
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </>
+  );
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+    <div className="w-full max-w-2xl">
       <header className="mb-6 flex flex-col items-center gap-3 text-center">
         <BrandLogo size={48} />
         <div className="min-w-0 space-y-1">
@@ -226,32 +291,41 @@ export function TechnologySnapshotWizard() {
         />
       ) : null}
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0">
         {phase === "intro" ? (
-          <Card className="shadow-sm">
-            <CardHeader className="text-center">
-              <CardTitle>See where your technology stands</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                Answer a few guided questions across eight technology pillars and receive an
-                immediate snapshot of your business technology health.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4 shrink-0" />
-                <span>Estimated completion: under {SNAPSHOT_ESTIMATED_MINUTES} minutes</span>
-              </div>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• One focused question at a time</li>
-                <li>• No login required</li>
-                <li>• Instant results with next-step guidance</li>
-              </ul>
-            </CardContent>
-          </Card>
+          <StepSection>
+            <Card className="shadow-sm">
+              <CardHeader className="text-center">
+                <CardTitle>See where your technology stands</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  Answer a few guided questions across eight technology pillars and receive an
+                  immediate snapshot of your business technology health.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 shrink-0" />
+                  <span>Estimated completion: under {SNAPSHOT_ESTIMATED_MINUTES} minutes</span>
+                </div>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li>• One focused question at a time</li>
+                  <li>• No login required</li>
+                  <li>• Instant results with next-step guidance</li>
+                </ul>
+              </CardContent>
+            </Card>
+            <StepActions
+              showBack={false}
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={nextLabel}
+            />
+          </StepSection>
         ) : null}
 
         {phase === "intake" ? (
-          <Card className="shadow-sm">
+          <StepSection>
+            <Card className="shadow-sm">
             <CardHeader>
               <CardTitle>Tell us about your business</CardTitle>
               <CardDescription>
@@ -344,11 +418,19 @@ export function TechnologySnapshotWizard() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+            <StepActions
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={nextLabel}
+              submitting={submitting}
+            />
+          </StepSection>
         ) : null}
 
         {phase === "qualifier" ? (
-          <Card className="shadow-sm">
+          <StepSection>
+            <Card className="shadow-sm">
             <CardHeader>
               <CardTitle>How is technology managed?</CardTitle>
               <CardDescription>
@@ -371,11 +453,19 @@ export function TechnologySnapshotWizard() {
                 );
               })}
             </CardContent>
-          </Card>
+            </Card>
+            <StepActions
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={nextLabel}
+              submitting={submitting}
+            />
+          </StepSection>
         ) : null}
 
         {phase === "pillar" && activeQuestion ? (
-          <Card className="shadow-sm">
+          <StepSection>
+            <Card className="shadow-sm">
             <CardHeader className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-primary">
                 {activeQuestion.pillarName}
@@ -404,7 +494,14 @@ export function TechnologySnapshotWizard() {
                 );
               })}
             </CardContent>
-          </Card>
+            </Card>
+            <StepActions
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={nextLabel}
+              submitting={submitting}
+            />
+          </StepSection>
         ) : null}
 
         {phase === "results" && result ? (
@@ -416,50 +513,6 @@ export function TechnologySnapshotWizard() {
           />
         ) : null}
       </div>
-
-      {showNav ? (
-        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-          {phase !== "intro" ? (
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full sm:w-auto"
-              onClick={handleBack}
-              disabled={submitting}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
-          <Button
-            type="button"
-            className="w-full sm:ml-auto sm:w-auto"
-            onClick={handleNext}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Calculating results…
-              </>
-            ) : phase === "intro" ? (
-              <>
-                Get started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            ) : phase === "pillar" && pillarIndex === SNAPSHOT_QUESTIONS.length - 1 ? (
-              "View my results"
-            ) : (
-              <>
-                Continue
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </div>
-      ) : null}
 
       <footer className="mt-8 text-center text-xs text-muted-foreground">
         Powered by {BRAND.companyName} · {BRAND.productName}

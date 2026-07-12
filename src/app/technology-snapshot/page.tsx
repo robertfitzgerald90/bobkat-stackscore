@@ -11,10 +11,12 @@ export const metadata: Metadata = {
 
 export default function TechnologySnapshotPage() {
   return (
-    <main className="min-h-screen bg-muted/30">
-      <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}>
-        <TechnologySnapshotWizard />
-      </Suspense>
+    <main className="min-h-screen bg-muted/30 px-4 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col justify-center sm:min-h-[calc(100dvh-5rem)]">
+        <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}>
+          <TechnologySnapshotWizard />
+        </Suspense>
+      </div>
     </main>
   );
 }
