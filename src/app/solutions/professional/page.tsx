@@ -1,18 +1,30 @@
 import type { Metadata } from "next";
-import { SolutionPlaceholderPage } from "@/components/solutions/solution-placeholder-page";
-import { BRAND } from "@/lib/branding";
+import { ProfessionalLanding } from "@/components/solutions/professional-landing";
 
 export const metadata: Metadata = {
-  title: `Bobkat Professional | ${BRAND.companyName}`,
+  title: "Bobkat Professional | Strategic IT for Growing Businesses",
   description:
-    "Bobkat Professional is a standardized technology solution for growing organizations that need strategic IT leadership.",
+    "Bobkat Professional provides strategic IT leadership, enterprise-inspired cybersecurity, centralized management, and proactive technology planning for growing organizations.",
+  alternates: {
+    canonical: "https://stackscore.bobkatit.com/solutions/professional",
+  },
+  openGraph: {
+    title: "Bobkat Professional | Strategic IT for Growing Businesses",
+    description:
+      "Strategic IT leadership, enterprise-inspired cybersecurity, centralized management, and proactive technology planning for growing organizations.",
+    url: "https://stackscore.bobkatit.com/solutions/professional",
+    type: "website",
+    images: [
+      {
+        url: "/solutions/professional/Professional Banner Image.png",
+        width: 1280,
+        height: 640,
+        alt: "Bobkat Professional strategic technology solution for growing businesses",
+      },
+    ],
+  },
 };
 
 export default function ProfessionalSolutionPage() {
-  return (
-    <SolutionPlaceholderPage
-      title="Bobkat Professional"
-      description="Strategic technology for growing organizations. A dedicated solution page will be added here."
-    />
-  );
+  return <ProfessionalLanding />;
 }

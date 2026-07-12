@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Document,
   Image,
@@ -20,18 +21,27 @@ import {
 } from "@/lib/pdf/invoice-pdf-data";
 import { COLORS, registerPdfFonts } from "@/lib/pdf/shared";
 import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
-import { PDF_LAYOUT } from "@/lib/pdf/shared/layout";
 import type { InvoiceStatus } from "@/generated/prisma/client";
 
 registerPdfFonts();
 
+/** Invoice-specific page metrics — tighter than report PDFs for one-page fit. */
+const INVOICE_PAGE = {
+  paddingTop: 36,
+  paddingBottom: 52,
+  paddingHorizontal: 40,
+  footerHeight: 38,
+} as const;
+
+const INVOICE_TAGLINE = "Technology made clear.";
+
 const styles = StyleSheet.create({
   page: {
-    paddingTop: PDF_LAYOUT.paddingTop,
-    paddingBottom: PDF_LAYOUT.paddingBottom,
-    paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
+    paddingTop: INVOICE_PAGE.paddingTop,
+    paddingBottom: INVOICE_PAGE.paddingBottom,
+    paddingHorizontal: INVOICE_PAGE.paddingHorizontal,
     fontFamily: "Helvetica",
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.slate,
     backgroundColor: COLORS.white,
   },
@@ -39,382 +49,334 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 18,
-    gap: 16,
+    marginBottom: 10,
   },
-  headerLeft: {
-    flex: 1,
-    minWidth: 0,
-  },
+  headerLeft: { flex: 1 },
   headerBrandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 8,
+    gap: 8,
+    marginBottom: 6,
   },
-  logo: {
-    width: 34,
-    height: 34,
-    objectFit: "contain",
-  },
+  logo: { width: 30, height: 30, objectFit: "contain" },
+  brandBlock: { flexDirection: "column" },
   brandName: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
+  },
+  brandTagline: {
+    fontSize: 7,
+    color: COLORS.muted,
+    marginTop: 1,
   },
   title: {
-    fontSize: 24,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    letterSpacing: 0.4,
-    marginBottom: 4,
-  },
-  invoiceNumber: {
-    fontSize: 10,
-    color: COLORS.muted,
-  },
-  headerRight: {
-    alignItems: "flex-end",
-    minWidth: 170,
-  },
-  balanceDueLabel: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 4,
-  },
-  balanceDueValue: {
     fontSize: 20,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
-    marginBottom: 8,
+    letterSpacing: 0.3,
+    marginBottom: 2,
   },
-  statusBadge: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  statusBadgeText: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-  },
-  metadataBlock: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 16,
-    backgroundColor: COLORS.white,
-  },
-  metadataGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  metadataItem: {
-    width: "31%",
-    minWidth: 120,
-  },
-  metadataLabel: {
+  invoiceNumber: { fontSize: 9, color: COLORS.muted },
+  headerRight: { alignItems: "flex-end", minWidth: 140 },
+  balanceDueLabel: {
     fontSize: 7,
     fontFamily: "Helvetica-Bold",
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.7,
-    marginBottom: 3,
+    marginBottom: 2,
   },
-  metadataValue: {
-    fontSize: 9,
-    color: COLORS.slate,
-    lineHeight: 1.4,
+  balanceDueValue: {
+    fontSize: 18,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 5,
   },
-  section: {
-    marginBottom: 16,
+  statusBadge: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
   },
-  sectionTitle: {
-    fontSize: 8,
+  statusBadgeText: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  metadataBlock: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  metadataItem: { width: "19%" },
+  metadataLabel: {
+    fontSize: 6,
     fontFamily: "Helvetica-Bold",
     color: COLORS.muted,
     textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 8,
+    letterSpacing: 0.6,
+    marginBottom: 2,
+  },
+  metadataValue: { fontSize: 8, color: COLORS.slate, lineHeight: 1.3 },
+  sectionLabel: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.7,
+    marginBottom: 5,
   },
   billToPanel: {
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    padding: 12,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    flexDirection: "row",
   },
+  billToLeft: { flex: 1, paddingRight: 10 },
+  billToDivider: {
+    width: 1,
+    backgroundColor: COLORS.border,
+    marginVertical: 2,
+  },
+  billToRight: { flex: 1, paddingLeft: 10 },
   billToPrimary: {
-    fontSize: 11,
+    fontSize: 10,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
     marginBottom: 2,
   },
-  billToLine: {
-    fontSize: 9,
-    color: COLORS.slate,
-    lineHeight: 1.5,
-  },
-  relatedRecord: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    fontSize: 8,
+  billToLine: { fontSize: 8, color: COLORS.slate, lineHeight: 1.4 },
+  relatedLabel: {
+    fontSize: 7,
     color: COLORS.muted,
-    lineHeight: 1.5,
+    marginBottom: 3,
+    lineHeight: 1.35,
+  },
+  relatedTitle: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    lineHeight: 1.35,
   },
   tableHeader: {
     flexDirection: "row",
     backgroundColor: COLORS.navy,
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 8,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
   },
   tableHeaderCell: {
     color: COLORS.white,
     fontFamily: "Helvetica-Bold",
-    fontSize: 8,
+    fontSize: 7,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  continuationHeaderWrap: {
-    position: "absolute",
-    top: PDF_LAYOUT.paddingTop,
-    left: PDF_LAYOUT.paddingHorizontal,
-    right: PDF_LAYOUT.paddingHorizontal,
-    flexDirection: "row",
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
-  continuationHeaderCell: {
-    color: COLORS.white,
-    fontFamily: "Helvetica-Bold",
-    fontSize: 8,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    backgroundColor: COLORS.navy,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    letterSpacing: 0.4,
   },
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    paddingVertical: 10,
+    paddingVertical: 6,
     paddingHorizontal: 8,
     alignItems: "flex-start",
+    backgroundColor: COLORS.white,
   },
-  tableRowAlt: {
-    backgroundColor: "#FAFBFC",
-  },
-  descCol: { width: "52%" },
-  qtyCol: { width: "10%", textAlign: "right" },
+  tableRowAlt: { backgroundColor: "#FAFBFC" },
+  descCol: { width: "54%" },
+  qtyCol: { width: "8%", textAlign: "center" },
   unitCol: { width: "18%", textAlign: "right" },
   amtCol: { width: "20%", textAlign: "right" },
   lineTitle: {
-    fontSize: 9,
+    fontSize: 8,
     fontFamily: "Helvetica-Bold",
-    color: COLORS.slate,
-    lineHeight: 1.45,
+    color: COLORS.navy,
+    lineHeight: 1.35,
   },
   lineDescription: {
-    marginTop: 3,
-    fontSize: 8,
+    marginTop: 2,
+    fontSize: 7,
     color: COLORS.muted,
-    lineHeight: 1.45,
+    lineHeight: 1.35,
   },
-  numericCell: {
-    fontSize: 9,
-    color: COLORS.slate,
-    lineHeight: 1.45,
-  },
+  numericCell: { fontSize: 8, color: COLORS.slate, lineHeight: 1.35 },
   amountCell: {
-    fontSize: 9,
+    fontSize: 8,
     fontFamily: "Helvetica-Bold",
     color: COLORS.slate,
-    lineHeight: 1.45,
+    lineHeight: 1.35,
   },
-  totalsWrap: {
-    marginTop: 14,
-    alignItems: "flex-end",
+  paymentTotalsRow: {
+    flexDirection: "row",
+    marginTop: 8,
+    gap: 10,
+    alignItems: "stretch",
   },
-  totalsPanel: {
-    width: 260,
+  paymentPanel: {
+    flex: 1,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    padding: 12,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.white,
+  },
+  paymentPanelAccent: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.navyLight,
+  },
+  panelHeading: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 4,
+  },
+  panelText: {
+    fontSize: 8,
+    color: COLORS.slate,
+    lineHeight: 1.4,
+    marginBottom: 3,
+  },
+  paymentLink: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    textDecoration: "none",
+    marginTop: 2,
+  },
+  totalsPanel: {
+    width: 210,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     backgroundColor: COLORS.white,
   },
   totalsSectionLabel: {
-    fontSize: 7,
+    fontSize: 6,
     fontFamily: "Helvetica-Bold",
     color: COLORS.muted,
     textTransform: "uppercase",
-    letterSpacing: 0.7,
-    marginBottom: 6,
-    marginTop: 4,
+    letterSpacing: 0.6,
+    marginBottom: 4,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
-    gap: 12,
+    marginBottom: 3,
+    gap: 8,
   },
-  totalLabel: {
-    fontSize: 9,
-    color: COLORS.muted,
-  },
+  totalLabel: { fontSize: 8, color: COLORS.muted },
   totalValue: {
-    fontSize: 9,
+    fontSize: 8,
     fontFamily: "Helvetica-Bold",
     color: COLORS.slate,
     textAlign: "right",
   },
   grandTotalRow: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 2,
-    borderTopColor: COLORS.navy,
+    marginTop: 5,
+    paddingTop: 5,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
   },
   grandTotalLabel: {
-    fontSize: 10,
+    fontSize: 8,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
   grandTotalValue: {
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
     textAlign: "right",
   },
-  paymentSection: {
-    marginTop: 16,
+  termsPanel: {
+    marginTop: 8,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    padding: 12,
-    backgroundColor: COLORS.navyLight,
+    borderRadius: 4,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.surface,
   },
-  paymentTitle: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    textTransform: "uppercase",
-    letterSpacing: 0.7,
-    marginBottom: 6,
-  },
-  paymentLine: {
-    fontSize: 9,
-    color: COLORS.slate,
-    lineHeight: 1.5,
-    marginBottom: 4,
-  },
-  paymentLink: {
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    textDecoration: "underline",
-    marginTop: 4,
-  },
-  notesSection: {
-    marginTop: 16,
+  notesPanel: {
+    marginTop: 8,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    paddingTop: 12,
+    paddingTop: 8,
   },
-  noteBlock: {
-    marginBottom: 10,
-  },
-  noteTitle: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.7,
-    marginBottom: 4,
-  },
-  noteText: {
-    fontSize: 9,
-    color: COLORS.slate,
-    lineHeight: 1.55,
-  },
+  noteText: { fontSize: 8, color: COLORS.slate, lineHeight: 1.45, marginBottom: 4 },
   thankYou: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.navy,
     fontFamily: "Helvetica-Bold",
-    lineHeight: 1.5,
+    lineHeight: 1.45,
+    marginTop: 2,
   },
   footer: {
     position: "absolute",
-    bottom: 24,
-    left: PDF_LAYOUT.paddingHorizontal,
-    right: PDF_LAYOUT.paddingHorizontal,
+    bottom: 20,
+    left: INVOICE_PAGE.paddingHorizontal,
+    right: INVOICE_PAGE.paddingHorizontal,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    paddingTop: 10,
+    paddingTop: 7,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    gap: 12,
-  },
-  footerLeft: {
-    width: "34%",
   },
   footerBrand: {
-    fontSize: 8,
+    fontSize: 7,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
-    marginBottom: 2,
+    marginBottom: 1,
   },
-  footerLine: {
-    fontSize: 7,
-    color: COLORS.muted,
-    lineHeight: 1.45,
-  },
-  footerCenter: {
-    width: "32%",
-    textAlign: "center",
-  },
+  footerLine: { fontSize: 6.5, color: COLORS.muted, lineHeight: 1.35 },
+  footerCenter: { width: "36%", textAlign: "center" },
   footerTagline: {
-    fontSize: 7,
+    fontSize: 6.5,
     color: COLORS.muted,
     fontStyle: "italic",
-    lineHeight: 1.45,
+    lineHeight: 1.35,
   },
-  footerRight: {
-    width: "24%",
-    alignItems: "flex-end",
-  },
+  footerRight: { width: "22%", alignItems: "flex-end" },
   watermark: {
     position: "absolute",
-    top: "42%",
-    left: "18%",
+    top: "40%",
+    left: "16%",
     transform: "rotate(-35deg)",
-    opacity: 0.06,
+    opacity: 0.05,
   },
   watermarkText: {
-    fontSize: 88,
+    fontSize: 72,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
-    letterSpacing: 8,
+    letterSpacing: 6,
   },
 });
 
@@ -423,7 +385,12 @@ export type { InvoicePdfData } from "@/lib/pdf/invoice-pdf-data";
 function StatusBadge({ status }: { status: InvoiceStatus }) {
   const badge = INVOICE_PDF_STATUS_BADGE[status];
   return (
-    <View style={[styles.statusBadge, { backgroundColor: badge.backgroundColor, borderColor: badge.borderColor }]}>
+    <View
+      style={[
+        styles.statusBadge,
+        { backgroundColor: badge.backgroundColor, borderColor: badge.borderColor },
+      ]}
+    >
       <Text style={[styles.statusBadgeText, { color: badge.color }]}>
         {formatInvoiceStatusLabel(status)}
       </Text>
@@ -451,35 +418,12 @@ function LineItemsTableHeader() {
   );
 }
 
-function ContinuationLineItemsHeader() {
-  return (
-    <View fixed style={styles.continuationHeaderWrap}>
-      <Text
-        style={[styles.continuationHeaderCell, styles.descCol, { borderTopLeftRadius: 4 }]}
-        render={({ pageNumber }) => (pageNumber > 1 ? "Description" : "")}
-      />
-      <Text
-        style={[styles.continuationHeaderCell, styles.qtyCol]}
-        render={({ pageNumber }) => (pageNumber > 1 ? "Qty" : "")}
-      />
-      <Text
-        style={[styles.continuationHeaderCell, styles.unitCol]}
-        render={({ pageNumber }) => (pageNumber > 1 ? "Rate" : "")}
-      />
-      <Text
-        style={[styles.continuationHeaderCell, styles.amtCol, { borderTopRightRadius: 4 }]}
-        render={({ pageNumber }) => (pageNumber > 1 ? "Amount" : "")}
-      />
-    </View>
-  );
-}
-
 function InvoiceFooter({ invoiceNumber }: { invoiceNumber: string }) {
   const websiteUrl = normalizeWebsiteUrl(BRAND.website);
 
   return (
     <View style={styles.footer} fixed>
-      <View style={styles.footerLeft}>
+      <View style={{ width: "34%" }}>
         <Text style={styles.footerBrand}>{BRAND.companyName}</Text>
         <Link src={websiteUrl} style={styles.footerLine}>
           {BRAND.website}
@@ -502,94 +446,120 @@ function InvoiceFooter({ invoiceNumber }: { invoiceNumber: string }) {
   );
 }
 
-function TotalsSection({ data }: { data: InvoicePdfData }) {
+function TotalsCard({ data }: { data: InvoicePdfData }) {
   const showSplitSummary =
     data.oneTimeSubtotalCents > 0 && data.recurringSubtotalCents > 0;
 
   return (
-    <View style={styles.totalsWrap} wrap={false} minPresenceAhead={140}>
-      <View style={styles.totalsPanel}>
-        {showSplitSummary ? (
-          <>
-            <Text style={styles.totalsSectionLabel}>Charge Summary</Text>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>One-time charges</Text>
-              <Text style={styles.totalValue}>
-                {formatInvoiceMoney(data.oneTimeSubtotalCents, data.currency)}
-              </Text>
-            </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Recurring charges</Text>
-              <Text style={styles.totalValue}>
-                {formatInvoiceMoney(data.recurringSubtotalCents, data.currency)}
-              </Text>
-            </View>
-          </>
-        ) : null}
+    <View style={styles.totalsPanel}>
+      {showSplitSummary ? (
+        <>
+          <Text style={styles.totalsSectionLabel}>Charge Summary</Text>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>One-time</Text>
+            <Text style={styles.totalValue}>
+              {formatInvoiceMoney(data.oneTimeSubtotalCents, data.currency)}
+            </Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Recurring</Text>
+            <Text style={styles.totalValue}>
+              {formatInvoiceMoney(data.recurringSubtotalCents, data.currency)}
+            </Text>
+          </View>
+        </>
+      ) : null}
 
+      <View style={styles.totalRow}>
+        <Text style={styles.totalLabel}>Subtotal</Text>
+        <Text style={styles.totalValue}>
+          {formatInvoiceMoney(data.subtotalCents, data.currency)}
+        </Text>
+      </View>
+
+      {data.discountCents > 0 ? (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Subtotal</Text>
+          <Text style={styles.totalLabel}>Discount</Text>
           <Text style={styles.totalValue}>
-            {formatInvoiceMoney(data.subtotalCents, data.currency)}
+            -{formatInvoiceMoney(data.discountCents, data.currency)}
           </Text>
         </View>
+      ) : null}
 
-        {data.discountCents > 0 ? (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Discount</Text>
-            <Text style={styles.totalValue}>
-              -{formatInvoiceMoney(data.discountCents, data.currency)}
-            </Text>
-          </View>
-        ) : null}
+      {data.taxCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Tax</Text>
+          <Text style={styles.totalValue}>{formatInvoiceMoney(data.taxCents, data.currency)}</Text>
+        </View>
+      ) : null}
 
-        {data.taxCents > 0 ? (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Tax</Text>
-            <Text style={styles.totalValue}>{formatInvoiceMoney(data.taxCents, data.currency)}</Text>
-          </View>
-        ) : null}
-
-        {data.depositAppliedCents > 0 ? (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Deposit applied</Text>
-            <Text style={styles.totalValue}>
-              -{formatInvoiceMoney(data.depositAppliedCents, data.currency)}
-            </Text>
-          </View>
-        ) : null}
-
-        {data.creditCents > 0 ? (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Credits</Text>
-            <Text style={styles.totalValue}>
-              -{formatInvoiceMoney(data.creditCents, data.currency)}
-            </Text>
-          </View>
-        ) : null}
-
-        {data.amountPaidCents > 0 ? (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Payments received</Text>
-            <Text style={styles.totalValue}>
-              -{formatInvoiceMoney(data.amountPaidCents, data.currency)}
-            </Text>
-          </View>
-        ) : null}
-
-        <View style={styles.grandTotalRow}>
-          <Text style={styles.grandTotalLabel}>Balance due</Text>
-          <Text style={styles.grandTotalValue}>
-            {formatInvoiceMoney(data.balanceDueCents, data.currency)}
+      {data.depositAppliedCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Deposit applied</Text>
+          <Text style={styles.totalValue}>
+            -{formatInvoiceMoney(data.depositAppliedCents, data.currency)}
           </Text>
         </View>
+      ) : null}
+
+      {data.creditCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Credits</Text>
+          <Text style={styles.totalValue}>
+            -{formatInvoiceMoney(data.creditCents, data.currency)}
+          </Text>
+        </View>
+      ) : null}
+
+      {data.amountPaidCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Payments received</Text>
+          <Text style={styles.totalValue}>
+            -{formatInvoiceMoney(data.amountPaidCents, data.currency)}
+          </Text>
+        </View>
+      ) : null}
+
+      <View style={styles.grandTotalRow}>
+        <Text style={styles.grandTotalLabel}>Balance due</Text>
+        <Text style={styles.grandTotalValue}>
+          {formatInvoiceMoney(data.balanceDueCents, data.currency)}
+        </Text>
       </View>
     </View>
   );
 }
 
+function SecurePaymentPanel({ data }: { data: InvoicePdfData }) {
+  if (!data.paymentUrl) return null;
+
+  return (
+    <View style={styles.paymentPanelAccent}>
+      <Text style={styles.panelHeading}>Secure Online Payment</Text>
+      <Text style={styles.panelText}>
+        Pay securely online using the link below. Payment is processed through Stripe.
+      </Text>
+      <Link src={data.paymentUrl} style={styles.paymentLink}>
+        Pay Invoice Online →
+      </Link>
+      {data.acceptedPaymentMethods ? (
+        <Text style={[styles.panelText, { marginTop: 4, fontSize: 7, color: COLORS.muted }]}>
+          {data.acceptedPaymentMethods}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function relatedRecordHeading(kind: "tip" | "project" | "deposit") {
+  if (kind === "tip") return "Related Technology Improvement Plan";
+  if (kind === "project") return "Related Project";
+  return "Related Deposit";
+}
+
 export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
   const websiteUrl = normalizeWebsiteUrl(BRAND.website);
+  const hasPaymentPanel = Boolean(data.paymentUrl);
 
   return (
     <Document title={`Invoice ${data.invoiceNumber}`} author={BRAND.companyName}>
@@ -605,7 +575,10 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
             <View style={styles.headerBrandRow}>
               {/* eslint-disable-next-line jsx-a11y/alt-text */}
               <Image src={getPdfLogoPath()} style={styles.logo} />
-              <Text style={styles.brandName}>{BRAND.companyName}</Text>
+              <View style={styles.brandBlock}>
+                <Text style={styles.brandName}>{BRAND.companyName}</Text>
+                <Text style={styles.brandTagline}>{INVOICE_TAGLINE}</Text>
+              </View>
             </View>
             <Text style={styles.title}>INVOICE</Text>
             <Text style={styles.invoiceNumber}>{data.invoiceNumber}</Text>
@@ -620,18 +593,16 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
         </View>
 
         <View style={styles.metadataBlock}>
-          <View style={styles.metadataGrid}>
-            <MetadataItem label="Invoice Number" value={data.invoiceNumber} />
-            <MetadataItem label="Issue Date" value={formatInvoiceDate(data.issueDate)} />
-            <MetadataItem label="Due Date" value={formatInvoiceDate(data.dueDate)} />
-            <MetadataItem label="Payment Terms" value={data.paymentTermsLabel} />
-            <MetadataItem label="Status" value={formatInvoiceStatusLabel(data.status)} />
-          </View>
+          <MetadataItem label="Invoice Number" value={data.invoiceNumber} />
+          <MetadataItem label="Issue Date" value={formatInvoiceDate(data.issueDate)} />
+          <MetadataItem label="Due Date" value={formatInvoiceDate(data.dueDate)} />
+          <MetadataItem label="Payment Terms" value={data.paymentTermsLabel} />
+          <MetadataItem label="Status" value={formatInvoiceStatusLabel(data.status)} />
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Bill To</Text>
-          <View style={styles.billToPanel}>
+        <Text style={styles.sectionLabel}>Bill To</Text>
+        <View style={styles.billToPanel}>
+          <View style={styles.billToLeft}>
             <Text style={styles.billToPrimary}>{data.billToCompanyName}</Text>
             {data.billToContactName ? (
               <Text style={styles.billToLine}>{data.billToContactName}</Text>
@@ -643,74 +614,76 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
                 {line}
               </Text>
             ))}
-            {data.relatedRecord ? (
-              <Text style={styles.relatedRecord}>
-                Related {data.relatedRecord.kind === "tip" ? "Technology Improvement Plan" : data.relatedRecord.kind === "project" ? "Project" : "Deposit"}:{" "}
-                {data.relatedRecord.label}
-              </Text>
-            ) : null}
           </View>
-        </View>
-
-        <View style={styles.section}>
-          <LineItemsTableHeader />
-          <ContinuationLineItemsHeader />
-          {data.lineItems.map((line, index) => (
-            <View
-              key={`${line.description}-${index}`}
-              style={[styles.tableRow, ...(index % 2 === 1 ? [styles.tableRowAlt] : [])]}
-              wrap={false}
-              minPresenceAhead={72}
-            >
-              <View style={styles.descCol}>
-                <Text style={styles.lineTitle}>{line.description}</Text>
-                {line.clientNote ? <Text style={styles.lineDescription}>{line.clientNote}</Text> : null}
+          {data.relatedRecord ? (
+            <>
+              <View style={styles.billToDivider} />
+              <View style={styles.billToRight}>
+                <Text style={styles.relatedLabel}>
+                  {relatedRecordHeading(data.relatedRecord.kind)}
+                </Text>
+                <Text style={styles.relatedTitle}>{data.relatedRecord.label}</Text>
               </View>
-              <Text style={[styles.numericCell, styles.qtyCol]}>{line.quantity}</Text>
-              <Text style={[styles.numericCell, styles.unitCol]}>
-                {formatInvoiceMoney(line.unitPriceCents, data.currency)}
-              </Text>
-              <Text style={[styles.amountCell, styles.amtCol]}>
-                {formatInvoiceMoney(line.amountCents, data.currency)}
-              </Text>
-            </View>
-          ))}
+            </>
+          ) : null}
         </View>
 
-        <TotalsSection data={data} />
+        <LineItemsTableHeader />
+        {data.lineItems.map((line, index) => (
+          <View
+            key={`${line.description}-${index}`}
+            style={[styles.tableRow, ...(index % 2 === 1 ? [styles.tableRowAlt] : [])]}
+            wrap={false}
+          >
+            <View style={styles.descCol}>
+              <Text style={styles.lineTitle}>{line.description}</Text>
+              {line.clientNote ? (
+                <Text style={styles.lineDescription}>{line.clientNote}</Text>
+              ) : null}
+            </View>
+            <Text style={[styles.numericCell, styles.qtyCol]}>{line.quantity}</Text>
+            <Text style={[styles.numericCell, styles.unitCol]}>
+              {formatInvoiceMoney(line.unitPriceCents, data.currency)}
+            </Text>
+            <Text style={[styles.amountCell, styles.amtCol]}>
+              {formatInvoiceMoney(line.amountCents, data.currency)}
+            </Text>
+          </View>
+        ))}
 
-        <View style={styles.paymentSection} wrap={false} minPresenceAhead={90}>
-          <Text style={styles.paymentTitle}>Payment Terms</Text>
-          <Text style={styles.paymentLine}>{data.paymentTermsLabel}</Text>
+        <View style={styles.paymentTotalsRow} wrap={false}>
+          {hasPaymentPanel ? (
+            <SecurePaymentPanel data={data} />
+          ) : (
+            <View style={styles.paymentPanel}>
+              <Text style={styles.panelHeading}>Payment</Text>
+              <Text style={styles.panelText}>
+                Please remit payment according to the terms below.
+              </Text>
+            </View>
+          )}
+          <TotalsCard data={data} />
+        </View>
+
+        <View style={styles.termsPanel}>
+          <Text style={styles.panelHeading}>Payment Terms</Text>
+          <Text style={styles.panelText}>{data.paymentTermsLabel}</Text>
           {data.dueDate ? (
-            <Text style={styles.paymentLine}>Payment due by {formatInvoiceDate(data.dueDate)}.</Text>
-          ) : null}
-          {data.paymentUrl ? (
-            <Link src={data.paymentUrl} style={styles.paymentLink}>
-              Pay Invoice Online
-            </Link>
-          ) : null}
-          {data.acceptedPaymentMethods ? (
-            <Text style={styles.paymentLine}>Accepted payment methods: {data.acceptedPaymentMethods}</Text>
+            <Text style={styles.panelText}>
+              Payment is due by {formatInvoiceDate(data.dueDate)}.
+            </Text>
           ) : null}
         </View>
 
-        <View style={styles.notesSection} wrap={false} minPresenceAhead={80}>
-          {data.clientNotes ? (
-            <View style={styles.noteBlock}>
-              <Text style={styles.noteTitle}>Invoice Notes</Text>
-              <Text style={styles.noteText}>{data.clientNotes}</Text>
-            </View>
-          ) : null}
-          {data.contextNote ? (
-            <View style={styles.noteBlock}>
-              <Text style={styles.noteText}>{data.contextNote}</Text>
-            </View>
-          ) : null}
+        <View style={styles.notesPanel}>
+          <Text style={styles.panelHeading}>Invoice Notes</Text>
+          {data.contextNote ? <Text style={styles.noteText}>{data.contextNote}</Text> : null}
+          {data.clientNotes ? <Text style={styles.noteText}>{data.clientNotes}</Text> : null}
           <Text style={styles.thankYou}>
-            Thank you for your business. {BRAND.companyName} appreciates the opportunity to support your technology goals.
+            Thank you for your business. {BRAND.companyName} appreciates the opportunity to support
+            your technology goals.
           </Text>
-          <Text style={[styles.noteText, { marginTop: 6 }]}>
+          <Text style={styles.noteText}>
             Questions about this invoice? Contact us at {BRAND.email}
             {BRAND.website ? ` or visit ${websiteUrl.replace(/^https?:\/\//, "")}` : ""}.
           </Text>

@@ -278,154 +278,164 @@ export function InvoiceDetailView({ clientId, invoiceId, isStaff }: InvoiceDetai
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Bill To
             </p>
-            <p className="mt-2 font-medium text-foreground">{invoice.client.companyName}</p>
-            {billToContactName ? <p className="text-sm text-foreground">{billToContactName}</p> : null}
-            {invoice.billToEmail ? (
-              <p className="text-sm text-muted-foreground">{invoice.billToEmail}</p>
-            ) : null}
-            {invoice.billToPhone ? (
-              <p className="text-sm text-muted-foreground">{invoice.billToPhone}</p>
-            ) : null}
-            {billToAddress.lines.map((line) => (
-              <p key={line} className="text-sm text-muted-foreground">
-                {line}
-              </p>
-            ))}
-            {relatedRecord ? (
-              <p className="mt-3 border-t border-border/60 pt-3 text-sm text-muted-foreground">
-                Related{" "}
-                {relatedRecord.kind === "tip"
-                  ? "Technology Improvement Plan"
-                  : relatedRecord.kind === "project"
-                    ? "Project"
-                    : "Deposit"}
-                : {relatedRecord.label}
-              </p>
-            ) : null}
+            <div className="mt-3 grid gap-4 md:grid-cols-[1fr_auto_1fr]">
+              <div>
+                <p className="font-medium text-foreground">{invoice.client.companyName}</p>
+                {billToContactName ? <p className="text-sm text-foreground">{billToContactName}</p> : null}
+                {invoice.billToEmail ? (
+                  <p className="text-sm text-muted-foreground">{invoice.billToEmail}</p>
+                ) : null}
+                {invoice.billToPhone ? (
+                  <p className="text-sm text-muted-foreground">{invoice.billToPhone}</p>
+                ) : null}
+                {billToAddress.lines.map((line) => (
+                  <p key={line} className="text-sm text-muted-foreground">
+                    {line}
+                  </p>
+                ))}
+              </div>
+              {relatedRecord ? (
+                <>
+                  <div className="hidden w-px bg-border md:block" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      Related{" "}
+                      {relatedRecord.kind === "tip"
+                        ? "Technology Improvement Plan"
+                        : relatedRecord.kind === "project"
+                          ? "Project"
+                          : "Deposit"}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-primary">{relatedRecord.label}</p>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Line Items</CardTitle>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-border/60">
             <table className="w-full min-w-[520px] text-sm">
               <thead>
-                <tr className="border-b bg-primary text-left text-primary-foreground">
-                  <th className="rounded-tl-md px-3 py-2 font-medium">Description</th>
-                  <th className="px-3 py-2 text-right font-medium">Qty</th>
+                <tr className="bg-primary text-left text-primary-foreground">
+                  <th className="px-3 py-2 font-medium">Description</th>
+                  <th className="px-3 py-2 text-center font-medium">Qty</th>
                   <th className="px-3 py-2 text-right font-medium">Rate</th>
-                  <th className="rounded-tr-md px-3 py-2 text-right font-medium">Amount</th>
+                  <th className="px-3 py-2 text-right font-medium">Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {invoice.lineItems.map((line) => (
-                  <tr key={line.id} className="border-b border-border/60">
-                    <td className="px-3 py-3">
-                      <p className="font-medium">{line.description}</p>
+                {invoice.lineItems.map((line, index) => (
+                  <tr
+                    key={line.id}
+                    className={index % 2 === 1 ? "border-b border-border/60 bg-muted/20" : "border-b border-border/60 bg-background"}
+                  >
+                    <td className="px-3 py-2.5">
+                      <p className="font-medium text-primary">{line.description}</p>
                       {line.clientNote ? (
-                        <p className="mt-1 text-xs text-muted-foreground">{line.clientNote}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{line.clientNote}</p>
                       ) : null}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums">{line.quantity}</td>
-                    <td className="px-3 py-3 text-right tabular-nums">
+                    <td className="px-3 py-2.5 text-center tabular-nums">{line.quantity}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums">
                       {formatBillingMoney(line.unitPriceCents)}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums font-medium">
+                    <td className="px-3 py-2.5 text-right tabular-nums font-medium">
                       {formatBillingMoney(line.amountCents)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            {showSplitSummary ? (
-              <>
-                <SummaryRow label="One-time charges" value={formatBillingMoney(oneTimeSubtotal)} />
-                <SummaryRow label="Recurring charges" value={formatBillingMoney(recurringSubtotal)} />
-              </>
-            ) : null}
-            <SummaryRow label="Subtotal" value={formatBillingMoney(invoice.subtotalCents)} />
-            {invoice.discountCents > 0 ? (
-              <SummaryRow label="Discount" value={`-${formatBillingMoney(invoice.discountCents)}`} />
-            ) : null}
-            {invoice.taxCents > 0 ? (
-              <SummaryRow label="Tax" value={formatBillingMoney(invoice.taxCents)} />
-            ) : null}
-            {invoice.depositAppliedCents > 0 ? (
-              <SummaryRow
-                label="Deposit applied"
-                value={`-${formatBillingMoney(invoice.depositAppliedCents)}`}
-              />
-            ) : null}
-            {invoice.creditCents > 0 ? (
-              <SummaryRow label="Credits" value={`-${formatBillingMoney(invoice.creditCents)}`} />
-            ) : null}
-            {invoice.amountPaidCents > 0 ? (
-              <SummaryRow
-                label="Payments received"
-                value={`-${formatBillingMoney(invoice.amountPaidCents)}`}
-              />
-            ) : null}
-            <SummaryRow
-              label="Balance due"
-              value={formatBillingMoney(invoice.balanceDueCents)}
-              bold
-              highlight
-            />
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
+            <div
+              className={`rounded-lg border border-border/60 p-4 ${paymentUrl ? "bg-primary/[0.04]" : "bg-background"}`}
+            >
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                {paymentUrl ? "Secure Online Payment" : "Payment"}
+              </p>
+              {paymentUrl ? (
+                <>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Pay securely online using the link below. Payment is processed through Stripe.
+                  </p>
+                  <a href={paymentUrl} className="mt-2 inline-flex text-sm font-medium text-primary hover:underline">
+                    Pay Invoice Online →
+                  </a>
+                  {acceptedPaymentMethods ? (
+                    <p className="mt-2 text-xs text-muted-foreground">{acceptedPaymentMethods}</p>
+                  ) : null}
+                </>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Please remit payment according to the terms below.
+                </p>
+              )}
+            </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Payment Terms</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <p>{formatPaymentTerms(invoice.paymentTermsDays)}</p>
+            <div className="rounded-lg border border-border/60 bg-background p-4 text-sm">
+              {showSplitSummary ? (
+                <>
+                  <SummaryRow label="One-time" value={formatBillingMoney(oneTimeSubtotal)} />
+                  <SummaryRow label="Recurring" value={formatBillingMoney(recurringSubtotal)} />
+                </>
+              ) : null}
+              <SummaryRow label="Subtotal" value={formatBillingMoney(invoice.subtotalCents)} />
+              {invoice.discountCents > 0 ? (
+                <SummaryRow label="Discount" value={`-${formatBillingMoney(invoice.discountCents)}`} />
+              ) : null}
+              {invoice.taxCents > 0 ? (
+                <SummaryRow label="Tax" value={formatBillingMoney(invoice.taxCents)} />
+              ) : null}
+              {invoice.depositAppliedCents > 0 ? (
+                <SummaryRow
+                  label="Deposit applied"
+                  value={`-${formatBillingMoney(invoice.depositAppliedCents)}`}
+                />
+              ) : null}
+              {invoice.creditCents > 0 ? (
+                <SummaryRow label="Credits" value={`-${formatBillingMoney(invoice.creditCents)}`} />
+              ) : null}
+              {invoice.amountPaidCents > 0 ? (
+                <SummaryRow
+                  label="Payments received"
+                  value={`-${formatBillingMoney(invoice.amountPaidCents)}`}
+                />
+              ) : null}
+              <SummaryRow
+                label="Balance due"
+                value={formatBillingMoney(invoice.balanceDueCents)}
+                bold
+                highlight
+              />
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Payment Terms
+            </p>
+            <p className="mt-2">{formatPaymentTerms(invoice.paymentTermsDays)}</p>
             {invoice.dueDate ? (
               <p className="text-muted-foreground">
-                Payment due by {formatInvoiceDate(new Date(invoice.dueDate))}.
+                Payment is due by {formatInvoiceDate(new Date(invoice.dueDate))}.
               </p>
             ) : null}
-            {paymentUrl ? (
-              <a href={paymentUrl} className="inline-flex font-medium text-primary hover:underline">
-                Pay Invoice Online
-              </a>
-            ) : null}
-            {acceptedPaymentMethods ? (
-              <p className="text-muted-foreground">Accepted payment methods: {acceptedPaymentMethods}</p>
-            ) : null}
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Notes</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            {invoice.clientNotes ? <p>{invoice.clientNotes}</p> : null}
-            {contextNote ? <p className="text-muted-foreground">{contextNote}</p> : null}
-            {!invoice.clientNotes && !contextNote ? (
-              <p className="text-muted-foreground">No client-facing notes on this invoice.</p>
-            ) : null}
-            <p className="font-medium text-primary">
+          <div className="border-t border-border/60 pt-4 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Invoice Notes
+            </p>
+            {contextNote ? <p className="mt-2 text-muted-foreground">{contextNote}</p> : null}
+            {invoice.clientNotes ? <p className="mt-2">{invoice.clientNotes}</p> : null}
+            <p className="mt-2 font-medium text-primary">
               Thank you for your business. We appreciate the opportunity to support your technology goals.
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
