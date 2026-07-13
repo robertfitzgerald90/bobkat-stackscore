@@ -78,7 +78,7 @@ export function ProjectAdminActions({
 
   return (
     <>
-      <div className="space-y-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+      <div className="space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 p-5">
         <div>
           <p className="text-sm font-medium text-destructive">Admin Record Management</p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -86,14 +86,14 @@ export function ProjectAdminActions({
             confirmation.
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <div className="flex flex-col gap-2">
           {!isCancelled ? (
-            <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelling} className="w-full sm:w-auto">
+            <Button variant="outline" onClick={handleCancel} disabled={cancelling} className="w-full">
               <Archive className="mr-2 h-4 w-4" />
               Cancel Project
             </Button>
           ) : null}
-          <Button variant="destructive" size="sm" onClick={openDeleteDialog} className="w-full sm:w-auto">
+          <Button variant="destructive" onClick={openDeleteDialog} className="w-full">
             <Trash2 className="mr-2 h-4 w-4" />
             Permanently Delete
           </Button>

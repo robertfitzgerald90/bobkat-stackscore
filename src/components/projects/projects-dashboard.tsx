@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -412,7 +413,7 @@ export function ProjectsDashboard({
       </Card>
 
       <Sheet open={!!selectedProject} onOpenChange={(open) => !open && closeProject()}>
-        <SheetContent className="w-full max-w-[100vw] overflow-y-auto sm:max-w-lg">
+        <SheetContent size="wide">
           {selectedProject ? (
             <>
               <SheetHeader>
@@ -422,126 +423,128 @@ export function ProjectsDashboard({
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="mt-6 space-y-6 px-1">
-                <div className="grid min-w-0 gap-3 rounded-lg border border-border/60 bg-muted/15 p-4 text-sm">
-                  <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
-                    <span className="shrink-0 text-muted-foreground">Source Recommendation</span>
-                    <span className="min-w-0 break-words text-left font-medium sm:text-right">
-                      {selectedProject.recommendationTitle}
-                    </span>
+              <SheetBody>
+                <div className="space-y-6 pb-2">
+                  <div className="grid min-w-0 gap-4 rounded-lg border border-border/60 bg-muted/15 p-5 text-sm">
+                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
+                      <span className="shrink-0 text-muted-foreground">Source Recommendation</span>
+                      <span className="min-w-0 break-words font-medium">
+                        {selectedProject.recommendationTitle}
+                      </span>
+                    </div>
+                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
+                      <span className="shrink-0 text-muted-foreground">Estimated Score Impact</span>
+                      <span className="font-medium tabular-nums">
+                        {selectedProject.estimatedImpactPoints !== null
+                          ? `+${selectedProject.estimatedImpactPoints} pts`
+                          : "—"}
+                      </span>
+                    </div>
+                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
+                      <span className="text-muted-foreground">Created</span>
+                      <span>{formatDisplayDate(selectedProject.createdAt)}</span>
+                    </div>
+                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
+                      <span className="text-muted-foreground">Completed</span>
+                      <span>{formatDisplayDate(selectedProject.completedAt)}</span>
+                    </div>
                   </div>
-                  <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
-                    <span className="shrink-0 text-muted-foreground">Estimated Score Impact</span>
-                    <span className="font-medium tabular-nums sm:text-right">
-                      {selectedProject.estimatedImpactPoints !== null
-                        ? `+${selectedProject.estimatedImpactPoints} pts`
-                        : "—"}
-                    </span>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="project-status">Status</Label>
+                    <Select
+                      value={editStatus}
+                      items={PROJECT_STATUS_LABELS}
+                      onValueChange={(value) => setEditStatus((value ?? editStatus) as ProjectStatus)}
+                    >
+                      <SelectTrigger id="project-status" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ALL_PROJECT_STATUSES.map((status) => (
+                          <SelectItem key={status} value={status}>
+                            {PROJECT_STATUS_LABELS[status]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">Created</span>
-                    <span>{formatDisplayDate(selectedProject.createdAt)}</span>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="project-notes">Notes</Label>
+                    <textarea
+                      id="project-notes"
+                      value={editNotes}
+                      onChange={(event) => setEditNotes(event.target.value)}
+                      rows={8}
+                      placeholder="Implementation notes, scheduling details, or client context..."
+                      className={cn(
+                        "flex min-h-[12.5rem] w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
+                        "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
+                      )}
+                    />
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">Completed</span>
-                    <span>
-                      {formatDisplayDate(selectedProject.completedAt)}
-                    </span>
+
+                  <div className="space-y-2">
+                    <Button onClick={saveProject} disabled={saving} className="w-full">
+                      <Save className="mr-2 h-4 w-4" />
+                      {saving ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Link
+                        href={`/assessments/${selectedProject.assessmentId}/results`}
+                        className={buttonClassName({ variant: "outline", className: "w-full" })}
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View Assessment
+                      </Link>
+                      <Link
+                        href={clientTechnologyProfilePath(selectedProject.clientId)}
+                        className={buttonClassName({ variant: "ghost", className: "w-full" })}
+                      >
+                        View Client
+                      </Link>
+                    </div>
                   </div>
+
+                  {editStatus === "completed" ? (
+                    <p className="text-xs text-muted-foreground">
+                      Completing this project will mark the linked recommendation as completed and
+                      remove its points from projected score calculations.
+                    </p>
+                  ) : null}
+
+                  {isAdmin && selectedProject ? (
+                    <ProjectAdminActions
+                      projectId={selectedProject.id}
+                      projectTitle={selectedProject.title}
+                      status={selectedProject.status}
+                      onUpdated={() => {
+                        router.refresh();
+                        const response = fetch(`/api/v1/projects/${selectedProject.id}`)
+                          .then((res) => res.json())
+                          .then((updated) => {
+                            setProjects((current) =>
+                              current.map((project) =>
+                                project.id === updated.id ? updated : project,
+                              ),
+                            );
+                            setSelectedProject(updated);
+                            setEditStatus(updated.status);
+                          });
+                        void response;
+                      }}
+                      onDeleted={() => {
+                        setProjects((current) =>
+                          current.filter((project) => project.id !== selectedProject.id),
+                        );
+                        closeProject();
+                        router.refresh();
+                      }}
+                    />
+                  ) : null}
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="project-status">Status</Label>
-                  <Select
-                    value={editStatus}
-                    items={PROJECT_STATUS_LABELS}
-                    onValueChange={(value) => setEditStatus((value ?? editStatus) as ProjectStatus)}
-                  >
-                    <SelectTrigger id="project-status">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ALL_PROJECT_STATUSES.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {PROJECT_STATUS_LABELS[status]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="project-notes">Notes</Label>
-                  <textarea
-                    id="project-notes"
-                    value={editNotes}
-                    onChange={(event) => setEditNotes(event.target.value)}
-                    rows={5}
-                    placeholder="Implementation notes, scheduling details, or client context..."
-                    className={cn(
-                      "flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm",
-                      "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
-                    )}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                  <Button onClick={saveProject} disabled={saving} className="w-full sm:w-auto">
-                    <Save className="mr-2 h-4 w-4" />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Button>
-                  <Link
-                    href={`/assessments/${selectedProject.assessmentId}/results`}
-                    className={buttonClassName({ variant: "outline", className: "w-full sm:w-auto" })}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Assessment
-                  </Link>
-                  <Link
-                    href={clientTechnologyProfilePath(selectedProject.clientId)}
-                    className={buttonClassName({ variant: "ghost", className: "w-full sm:w-auto" })}
-                  >
-                    View Client
-                  </Link>
-                </div>
-
-                {editStatus === "completed" ? (
-                  <p className="text-xs text-muted-foreground">
-                    Completing this project will mark the linked recommendation as completed and
-                    remove its points from projected score calculations.
-                  </p>
-                ) : null}
-
-                {isAdmin && selectedProject ? (
-                  <ProjectAdminActions
-                    projectId={selectedProject.id}
-                    projectTitle={selectedProject.title}
-                    status={selectedProject.status}
-                    onUpdated={() => {
-                      router.refresh();
-                      const response = fetch(`/api/v1/projects/${selectedProject.id}`)
-                        .then((res) => res.json())
-                        .then((updated) => {
-                          setProjects((current) =>
-                            current.map((project) =>
-                              project.id === updated.id ? updated : project,
-                            ),
-                          );
-                          setSelectedProject(updated);
-                          setEditStatus(updated.status);
-                        });
-                      void response;
-                    }}
-                    onDeleted={() => {
-                      setProjects((current) =>
-                        current.filter((project) => project.id !== selectedProject.id),
-                      );
-                      closeProject();
-                      router.refresh();
-                    }}
-                  />
-                ) : null}
-              </div>
+              </SheetBody>
             </>
           ) : null}
         </SheetContent>
