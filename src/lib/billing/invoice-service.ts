@@ -1,4 +1,5 @@
 import type {
+  InvoiceDocumentType,
   InvoiceLineCategory,
   InvoiceSourceType,
   InvoiceStatus,
@@ -11,14 +12,17 @@ import {
   computeLineAmount,
   deriveInvoiceStatus,
 } from "@/lib/billing/calculations";
+import type { BudgetaryOptions } from "@/lib/billing/invoice-builder";
 import { nextInvoiceNumber } from "@/lib/billing/invoice-number";
 import { dollarsToCents } from "@/lib/billing/money";
 import { getTipPlan } from "@/lib/technology-improvement-plan/service";
 import { computeInvestmentView } from "@/lib/technology-improvement-plan/pricing";
 
 export type CreateInvoiceLineInput = {
+  itemName?: string;
   description: string;
   quantity?: number;
+  unit?: string;
   unitPriceCents: number;
   category?: InvoiceLineCategory;
   taxable?: boolean;
@@ -27,12 +31,19 @@ export type CreateInvoiceLineInput = {
   projectId?: string;
   recommendationId?: string;
   recurringServiceId?: string;
+  catalogSourceType?: string;
+  catalogSourceId?: string;
+  sortOrder?: number;
 };
 
 export type CreateInvoiceInput = {
   clientId: string;
   createdByUserId: string;
   sourceType?: InvoiceSourceType;
+  documentType?: InvoiceDocumentType;
+  title?: string;
+  clientDescription?: string;
+  expirationDate?: Date;
   tipId?: string;
   projectId?: string;
   depositId?: string;
@@ -44,8 +55,16 @@ export type CreateInvoiceInput = {
   lineItems: CreateInvoiceLineInput[];
   discountCents?: number;
   taxCents?: number;
+  shippingCents?: number;
+  contingencyCents?: number;
+  budgetaryOptions?: BudgetaryOptions & {
+    estimatedLowCents?: number | null;
+    estimatedHighCents?: number | null;
+    disclaimer?: string;
+  };
   creditCents?: number;
   depositAppliedCents?: number;
+  onlinePaymentEnabled?: boolean;
 };
 
 const invoiceInclude = {
@@ -116,8 +135,10 @@ export async function createInvoice(input: CreateInvoiceInput) {
     const quantity = line.quantity ?? 1;
     const amountCents = computeLineAmount(quantity, line.unitPriceCents);
     return {
-      sortOrder: index,
+      sortOrder: line.sortOrder ?? index,
+      itemName: line.itemName,
       description: line.description,
+      unit: line.unit,
       quantity,
       unitPriceCents: line.unitPriceCents,
       amountCents,
@@ -128,6 +149,8 @@ export async function createInvoice(input: CreateInvoiceInput) {
       projectId: line.projectId,
       recommendationId: line.recommendationId,
       recurringServiceId: line.recurringServiceId,
+      catalogSourceType: line.catalogSourceType,
+      catalogSourceId: line.catalogSourceId,
     };
   });
 
@@ -135,9 +158,15 @@ export async function createInvoice(input: CreateInvoiceInput) {
     lineItems: lineRows.map((l) => ({ amountCents: l.amountCents })),
     discountCents: input.discountCents,
     taxCents: input.taxCents,
+    shippingCents: input.shippingCents,
+    contingencyCents: input.contingencyCents,
     creditCents: input.creditCents,
     depositAppliedCents: input.depositAppliedCents,
   });
+
+  const documentType = input.documentType ?? "standard";
+  const onlinePaymentEnabled =
+    input.onlinePaymentEnabled ?? (documentType !== "budgetary");
 
   const invoice = await prisma.invoice.create({
     data: {
@@ -145,18 +174,26 @@ export async function createInvoice(input: CreateInvoiceInput) {
       invoiceNumber,
       status: "draft",
       sourceType: input.sourceType ?? "manual",
+      documentType,
+      title: input.title,
+      clientDescription: input.clientDescription,
+      expirationDate: input.expirationDate,
       tipId: input.tipId,
       projectId: input.projectId,
       depositId: input.depositId,
       paymentTermsDays,
       issueDate,
-      dueDate,
+      dueDate: documentType === "budgetary" ? null : dueDate,
       clientNotes: input.clientNotes,
       internalNotes: input.internalNotes,
       billToName: client.billingProfile?.billingCompanyName ?? client.companyName,
       billToEmail: client.billingProfile?.billingEmail ?? client.primaryContactEmail,
       billToPhone: client.billingProfile?.billingPhone ?? client.primaryContactPhone,
       createdByUserId: input.createdByUserId,
+      onlinePaymentEnabled,
+      budgetaryOptionsJson: input.budgetaryOptions
+        ? (input.budgetaryOptions as Prisma.InputJsonValue)
+        : undefined,
       ...totals,
       lineItems: { create: lineRows },
     },
@@ -272,6 +309,8 @@ export async function updateDraftInvoice(
     dueDate: Date;
     discountCents: number;
     taxCents: number;
+    shippingCents: number;
+    contingencyCents: number;
     creditCents: number;
     depositAppliedCents: number;
     status: InvoiceStatus;
@@ -295,8 +334,10 @@ export async function updateDraftInvoice(
         prisma.invoiceLineItem.create({
           data: {
             invoiceId,
-            sortOrder: index,
+            sortOrder: line.sortOrder ?? index,
+            itemName: line.itemName,
             description: line.description,
+            unit: line.unit,
             quantity: line.quantity ?? 1,
             unitPriceCents: line.unitPriceCents,
             amountCents: computeLineAmount(line.quantity ?? 1, line.unitPriceCents),
@@ -307,6 +348,8 @@ export async function updateDraftInvoice(
             projectId: line.projectId,
             recommendationId: line.recommendationId,
             recurringServiceId: line.recurringServiceId,
+            catalogSourceType: line.catalogSourceType,
+            catalogSourceId: line.catalogSourceId,
           },
         }),
       ),
@@ -317,6 +360,8 @@ export async function updateDraftInvoice(
     lineItems,
     discountCents: patch.discountCents ?? existing.discountCents,
     taxCents: patch.taxCents ?? existing.taxCents,
+    shippingCents: patch.shippingCents ?? existing.shippingCents,
+    contingencyCents: patch.contingencyCents ?? existing.contingencyCents,
     creditCents: patch.creditCents ?? existing.creditCents,
     depositAppliedCents: patch.depositAppliedCents ?? existing.depositAppliedCents,
     amountPaidCents: existing.amountPaidCents,
@@ -380,6 +425,10 @@ export async function duplicateInvoice(invoiceId: string, clientId: string, user
     clientId,
     createdByUserId: userId,
     sourceType: source.sourceType,
+    documentType: source.documentType,
+    title: source.title ?? undefined,
+    clientDescription: source.clientDescription ?? undefined,
+    expirationDate: source.expirationDate ?? undefined,
     tipId: source.tipId ?? undefined,
     projectId: source.projectId ?? undefined,
     clientNotes: source.clientNotes ?? undefined,
@@ -387,11 +436,20 @@ export async function duplicateInvoice(invoiceId: string, clientId: string, user
     paymentTermsDays: source.paymentTermsDays,
     discountCents: source.discountCents,
     taxCents: source.taxCents,
+    shippingCents: source.shippingCents,
+    contingencyCents: source.contingencyCents,
+    budgetaryOptions:
+      source.budgetaryOptionsJson && typeof source.budgetaryOptionsJson === "object"
+        ? (source.budgetaryOptionsJson as BudgetaryOptions)
+        : undefined,
     creditCents: source.creditCents,
     depositAppliedCents: source.depositAppliedCents,
+    onlinePaymentEnabled: source.onlinePaymentEnabled,
     lineItems: source.lineItems.map((line) => ({
+      itemName: line.itemName ?? undefined,
       description: line.description,
       quantity: Number(line.quantity),
+      unit: line.unit ?? undefined,
       unitPriceCents: line.unitPriceCents,
       category: line.category,
       taxable: line.taxable,
@@ -400,6 +458,8 @@ export async function duplicateInvoice(invoiceId: string, clientId: string, user
       projectId: line.projectId ?? undefined,
       recommendationId: line.recommendationId ?? undefined,
       recurringServiceId: line.recurringServiceId ?? undefined,
+      catalogSourceType: line.catalogSourceType ?? undefined,
+      catalogSourceId: line.catalogSourceId ?? undefined,
     })),
   });
 }
@@ -419,6 +479,8 @@ export async function refreshInvoicePaymentState(invoiceId: string) {
     lineItems: [{ amountCents: invoice.subtotalCents }],
     discountCents: invoice.discountCents,
     taxCents: invoice.taxCents,
+    shippingCents: invoice.shippingCents,
+    contingencyCents: invoice.contingencyCents,
     creditCents: invoice.creditCents,
     depositAppliedCents: invoice.depositAppliedCents,
     amountPaidCents,
@@ -430,6 +492,8 @@ export async function refreshInvoicePaymentState(invoiceId: string) {
     totals.totalCents,
     amountPaidCents,
     invoice.dueDate,
+    new Date(),
+    { documentType: invoice.documentType },
   ) as InvoiceStatus;
 
   return prisma.invoice.update({
@@ -448,6 +512,7 @@ export async function markInvoicesOverdue(clientId?: string) {
   const invoices = await prisma.invoice.findMany({
     where: {
       ...(clientId ? { clientId } : {}),
+      documentType: { not: "budgetary" },
       dueDate: { lt: now },
       balanceDueCents: { gt: 0 },
       status: { in: ["sent", "viewed", "partially_paid"] },

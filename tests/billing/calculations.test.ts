@@ -12,17 +12,19 @@ import {
 } from "@/lib/billing/access";
 
 describe("computeInvoiceTotals", () => {
-  it("calculates subtotal, discounts, and balance", () => {
+  it("calculates subtotal, discounts, shipping, contingency, and balance", () => {
     const totals = computeInvoiceTotals({
       lineItems: [{ amountCents: 10000 }, { amountCents: 5000 }],
       discountCents: 1000,
       taxCents: 500,
+      shippingCents: 250,
+      contingencyCents: 750,
       depositAppliedCents: 2000,
       amountPaidCents: 3000,
     });
     expect(totals.subtotalCents).toBe(15000);
-    expect(totals.totalCents).toBe(12500);
-    expect(totals.balanceDueCents).toBe(9500);
+    expect(totals.totalCents).toBe(13500);
+    expect(totals.balanceDueCents).toBe(10500);
   });
 });
 

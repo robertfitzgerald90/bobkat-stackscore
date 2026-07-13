@@ -1,11 +1,14 @@
 import type { InvoiceLineKind, InvoiceStatus } from "@/generated/prisma/client";
 import { INVOICE_STATUS_LABELS } from "@/lib/billing/labels";
+import { DEFAULT_BUDGETARY_DISCLAIMER } from "@/lib/billing/invoice-builder";
 import { formatMoney } from "@/lib/billing/money";
 
 export type InvoicePdfLineItem = {
+  itemName: string | null;
   description: string;
   clientNote: string | null;
   quantity: string;
+  unit: string | null;
   unitPriceCents: number;
   amountCents: number;
   lineKind: InvoiceLineKind;
@@ -22,9 +25,13 @@ export type InvoicePdfRelatedRecord = {
 
 export type InvoicePdfData = {
   invoiceNumber: string;
+  documentType: "standard" | "budgetary" | "labor";
+  title: string | null;
+  clientDescription: string | null;
   status: InvoiceStatus;
   issueDate: Date | null;
   dueDate: Date | null;
+  expirationDate: Date | null;
   paymentTermsDays: number;
   billToCompanyName: string;
   billToContactName: string | null;
@@ -33,12 +40,17 @@ export type InvoicePdfData = {
   billToAddress: InvoicePdfAddress;
   relatedRecord: InvoicePdfRelatedRecord | null;
   clientNotes: string | null;
+  budgetaryDisclaimer: string | null;
+  estimatedLowCents: number | null;
+  estimatedHighCents: number | null;
   currency: string;
   subtotalCents: number;
   oneTimeSubtotalCents: number;
   recurringSubtotalCents: number;
   discountCents: number;
   taxCents: number;
+  shippingCents: number;
+  contingencyCents: number;
   creditCents: number;
   depositAppliedCents: number;
   totalCents: number;
@@ -49,10 +61,16 @@ export type InvoicePdfData = {
   paymentUrl: string | null;
   acceptedPaymentMethods: string | null;
   contextNote: string | null;
+  totalLabel: string;
+  balanceLabel: string;
 };
 
 export type InvoicePdfSource = {
   invoiceNumber: string;
+  documentType?: "standard" | "budgetary" | "labor";
+  title?: string | null;
+  clientDescription?: string | null;
+  expirationDate?: Date | null;
   status: InvoiceStatus;
   issueDate: Date | null;
   dueDate: Date | null;
@@ -67,6 +85,9 @@ export type InvoicePdfSource = {
   subtotalCents: number;
   discountCents: number;
   taxCents: number;
+  shippingCents?: number;
+  contingencyCents?: number;
+  budgetaryOptionsJson?: unknown;
   creditCents: number;
   depositAppliedCents: number;
   totalCents: number;
@@ -81,8 +102,10 @@ export type InvoicePdfSource = {
   project?: { title: string } | null;
   deposit?: { label: string } | null;
   lineItems: Array<{
+    itemName?: string | null;
     description: string;
     clientNote?: string | null;
+    unit?: string | null;
     quantity: unknown;
     unitPriceCents: number;
     amountCents: number;
@@ -191,10 +214,15 @@ export function resolveAcceptedPaymentMethods(
 export function resolvePaymentUrl(
   invoice: Pick<
     InvoicePdfSource,
-    "onlinePaymentEnabled" | "stripePaymentLinkUrl" | "balanceDueCents" | "status"
+    | "onlinePaymentEnabled"
+    | "stripePaymentLinkUrl"
+    | "balanceDueCents"
+    | "status"
+    | "documentType"
   >,
 ): string | null {
   if (
+    invoice.documentType === "budgetary" ||
     !invoice.onlinePaymentEnabled ||
     !invoice.stripePaymentLinkUrl ||
     invoice.balanceDueCents <= 0 ||
@@ -207,11 +235,28 @@ export function resolvePaymentUrl(
   return invoice.stripePaymentLinkUrl;
 }
 
+function readBudgetaryOptions(json: unknown): {
+  disclaimer?: string;
+  estimatedLowCents?: number | null;
+  estimatedHighCents?: number | null;
+} {
+  if (!json || typeof json !== "object") return {};
+  return json as {
+    disclaimer?: string;
+    estimatedLowCents?: number | null;
+    estimatedHighCents?: number | null;
+  };
+}
+
 export function mapInvoiceToPdfData(invoice: InvoicePdfSource): InvoicePdfData {
+  const documentType = invoice.documentType ?? "standard";
+  const budgetaryOptions = readBudgetaryOptions(invoice.budgetaryOptionsJson);
   const lineItems: InvoicePdfLineItem[] = invoice.lineItems.map((line) => ({
+    itemName: line.itemName ?? null,
     description: line.description,
     clientNote: line.clientNote ?? null,
     quantity: formatInvoiceQuantity(line.quantity),
+    unit: line.unit ?? null,
     unitPriceCents: line.unitPriceCents,
     amountCents: line.amountCents,
     lineKind: line.lineKind,
@@ -232,9 +277,13 @@ export function mapInvoiceToPdfData(invoice: InvoicePdfSource): InvoicePdfData {
 
   return {
     invoiceNumber: invoice.invoiceNumber,
+    documentType,
+    title: invoice.title ?? null,
+    clientDescription: invoice.clientDescription ?? null,
     status: invoice.status,
     issueDate: invoice.issueDate,
     dueDate: invoice.dueDate,
+    expirationDate: invoice.expirationDate ?? null,
     paymentTermsDays: invoice.paymentTermsDays,
     billToCompanyName: invoice.client.companyName,
     billToContactName,
@@ -243,12 +292,20 @@ export function mapInvoiceToPdfData(invoice: InvoicePdfSource): InvoicePdfData {
     billToAddress: parseBillToAddress(invoice.billToAddressJson),
     relatedRecord,
     clientNotes: invoice.clientNotes,
+    budgetaryDisclaimer:
+      documentType === "budgetary"
+        ? budgetaryOptions.disclaimer?.trim() || DEFAULT_BUDGETARY_DISCLAIMER
+        : null,
+    estimatedLowCents: budgetaryOptions.estimatedLowCents ?? null,
+    estimatedHighCents: budgetaryOptions.estimatedHighCents ?? null,
     currency: invoice.currency,
     subtotalCents: invoice.subtotalCents,
     oneTimeSubtotalCents,
     recurringSubtotalCents,
     discountCents: invoice.discountCents,
     taxCents: invoice.taxCents,
+    shippingCents: invoice.shippingCents ?? 0,
+    contingencyCents: invoice.contingencyCents ?? 0,
     creditCents: invoice.creditCents,
     depositAppliedCents: invoice.depositAppliedCents,
     totalCents: invoice.totalCents,
@@ -262,6 +319,8 @@ export function mapInvoiceToPdfData(invoice: InvoicePdfSource): InvoicePdfData {
       relatedRecord,
       depositAppliedCents: invoice.depositAppliedCents,
     }),
+    totalLabel: documentType === "budgetary" ? "Estimated Total" : "Total Due",
+    balanceLabel: documentType === "budgetary" ? "Estimated Total" : "Balance Due",
   };
 }
 

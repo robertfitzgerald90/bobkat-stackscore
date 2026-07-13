@@ -1540,6 +1540,12 @@ model QuarterlyReviewReminder {
 
 // ─── Billing module ───────────────────────────────────────────────────────────
 
+enum InvoiceDocumentType {
+  standard
+  budgetary
+  labor
+}
+
 enum InvoiceStatus {
   draft
   ready_to_send
@@ -1706,6 +1712,13 @@ model Invoice {
   invoiceNumber         String            @unique
   status                InvoiceStatus     @default(draft)
   sourceType            InvoiceSourceType @default(manual)
+  documentType          InvoiceDocumentType @default(standard)
+  title                 String?
+  clientDescription     String?           @db.Text
+  expirationDate        DateTime?
+  shippingCents         Int               @default(0)
+  contingencyCents      Int               @default(0)
+  budgetaryOptionsJson  Json?
   currency              String            @default("usd")
   subtotalCents         Int               @default(0)
   discountCents         Int               @default(0)
@@ -1763,13 +1776,17 @@ model InvoiceLineItem {
   id                  String              @id @default(uuid())
   invoiceId           String
   sortOrder           Int                 @default(0)
+  itemName            String?
   description         String
+  unit                String?
   quantity            Decimal             @db.Decimal(12, 4) @default(1)
   unitPriceCents      Int
   amountCents         Int
   category            InvoiceLineCategory @default(other)
   lineKind            InvoiceLineKind     @default(one_time)
   taxable             Boolean             @default(false)
+  catalogSourceType   String?
+  catalogSourceId     String?
   servicePeriodStart  DateTime?
   servicePeriodEnd    DateTime?
   internalCostCents   Int?

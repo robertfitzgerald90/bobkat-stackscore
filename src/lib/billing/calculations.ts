@@ -5,6 +5,8 @@ export type InvoiceTotalsInput = {
   lineItems: Pick<InvoiceLineItem, "amountCents">[];
   discountCents?: number;
   taxCents?: number;
+  shippingCents?: number;
+  contingencyCents?: number;
   creditCents?: number;
   depositAppliedCents?: number;
   amountPaidCents?: number;
@@ -14,6 +16,8 @@ export type InvoiceTotals = {
   subtotalCents: number;
   discountCents: number;
   taxCents: number;
+  shippingCents: number;
+  contingencyCents: number;
   creditCents: number;
   depositAppliedCents: number;
   totalCents: number;
@@ -25,13 +29,21 @@ export function computeInvoiceTotals(input: InvoiceTotalsInput): InvoiceTotals {
   const subtotalCents = input.lineItems.reduce((sum, line) => sum + line.amountCents, 0);
   const discountCents = input.discountCents ?? 0;
   const taxCents = input.taxCents ?? 0;
+  const shippingCents = input.shippingCents ?? 0;
+  const contingencyCents = input.contingencyCents ?? 0;
   const creditCents = input.creditCents ?? 0;
   const depositAppliedCents = input.depositAppliedCents ?? 0;
   const amountPaidCents = input.amountPaidCents ?? 0;
 
   const totalCents = Math.max(
     0,
-    subtotalCents - discountCents + taxCents - creditCents - depositAppliedCents,
+    subtotalCents -
+      discountCents +
+      taxCents +
+      shippingCents +
+      contingencyCents -
+      creditCents -
+      depositAppliedCents,
   );
   const balanceDueCents = Math.max(0, totalCents - amountPaidCents);
 
@@ -39,6 +51,8 @@ export function computeInvoiceTotals(input: InvoiceTotalsInput): InvoiceTotals {
     subtotalCents,
     discountCents,
     taxCents,
+    shippingCents,
+    contingencyCents,
     creditCents,
     depositAppliedCents,
     totalCents,
@@ -58,8 +72,13 @@ export function deriveInvoiceStatus(
   amountPaidCents: number,
   dueDate: Date | null,
   now = new Date(),
+  options?: { documentType?: string },
 ): string {
   if (currentStatus === "voided" || currentStatus === "refunded") return currentStatus;
+  if (options?.documentType === "budgetary") {
+    if (amountPaidCents > 0 && balanceDueCents <= 0) return "paid";
+    return currentStatus === "draft" || currentStatus === "ready_to_send" ? currentStatus : "sent";
+  }
   if (totalCents === 0 && amountPaidCents === 0) return currentStatus;
   if (balanceDueCents <= 0 && amountPaidCents > 0) return "paid";
   if (amountPaidCents > 0 && balanceDueCents > 0) return "partially_paid";

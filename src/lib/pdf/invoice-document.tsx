@@ -78,6 +78,8 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   invoiceNumber: { fontSize: 9, color: COLORS.muted },
+  invoiceTitle: { marginTop: 4, fontSize: 11, fontWeight: 700, color: COLORS.navy },
+  invoiceSubtitle: { marginTop: 2, fontSize: 8.5, color: COLORS.muted, lineHeight: 1.35 },
   headerRight: { alignItems: "flex-end", minWidth: 140 },
   balanceDueLabel: {
     fontSize: 7,
@@ -493,6 +495,24 @@ function TotalsCard({ data }: { data: InvoicePdfData }) {
         </View>
       ) : null}
 
+      {data.shippingCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Shipping / Other</Text>
+          <Text style={styles.totalValue}>
+            {formatInvoiceMoney(data.shippingCents, data.currency)}
+          </Text>
+        </View>
+      ) : null}
+
+      {data.contingencyCents > 0 ? (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Contingency</Text>
+          <Text style={styles.totalValue}>
+            {formatInvoiceMoney(data.contingencyCents, data.currency)}
+          </Text>
+        </View>
+      ) : null}
+
       {data.depositAppliedCents > 0 ? (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Deposit applied</Text>
@@ -521,9 +541,13 @@ function TotalsCard({ data }: { data: InvoicePdfData }) {
       ) : null}
 
       <View style={styles.grandTotalRow}>
-        <Text style={styles.grandTotalLabel}>Balance due</Text>
+        <Text style={styles.grandTotalLabel}>{data.totalLabel}</Text>
         <Text style={styles.grandTotalValue}>
-          {formatInvoiceMoney(data.balanceDueCents, data.currency)}
+          {data.documentType === "budgetary" &&
+          data.estimatedLowCents !== null &&
+          data.estimatedHighCents !== null
+            ? `${formatInvoiceMoney(data.estimatedLowCents, data.currency)} – ${formatInvoiceMoney(data.estimatedHighCents, data.currency)}`
+            : formatInvoiceMoney(data.balanceDueCents, data.currency)}
         </Text>
       </View>
     </View>
@@ -580,11 +604,17 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
                 <Text style={styles.brandTagline}>{INVOICE_TAGLINE}</Text>
               </View>
             </View>
-            <Text style={styles.title}>INVOICE</Text>
+            <Text style={styles.title}>
+              {data.documentType === "budgetary" ? "BUDGETARY INVOICE" : "INVOICE"}
+            </Text>
             <Text style={styles.invoiceNumber}>{data.invoiceNumber}</Text>
+            {data.title ? <Text style={styles.invoiceTitle}>{data.title}</Text> : null}
+            {data.clientDescription ? (
+              <Text style={styles.invoiceSubtitle}>{data.clientDescription}</Text>
+            ) : null}
           </View>
           <View style={styles.headerRight}>
-            <Text style={styles.balanceDueLabel}>Balance Due</Text>
+            <Text style={styles.balanceDueLabel}>{data.balanceLabel}</Text>
             <Text style={styles.balanceDueValue}>
               {formatInvoiceMoney(data.balanceDueCents, data.currency)}
             </Text>
@@ -595,7 +625,14 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
         <View style={styles.metadataBlock}>
           <MetadataItem label="Invoice Number" value={data.invoiceNumber} />
           <MetadataItem label="Issue Date" value={formatInvoiceDate(data.issueDate)} />
-          <MetadataItem label="Due Date" value={formatInvoiceDate(data.dueDate)} />
+          {data.documentType === "budgetary" ? (
+            <MetadataItem
+              label="Expiration Date"
+              value={formatInvoiceDate(data.expirationDate)}
+            />
+          ) : (
+            <MetadataItem label="Due Date" value={formatInvoiceDate(data.dueDate)} />
+          )}
           <MetadataItem label="Payment Terms" value={data.paymentTermsLabel} />
           <MetadataItem label="Status" value={formatInvoiceStatusLabel(data.status)} />
         </View>
@@ -636,12 +673,15 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
             wrap={false}
           >
             <View style={styles.descCol}>
-              <Text style={styles.lineTitle}>{line.description}</Text>
-              {line.clientNote ? (
+              <Text style={styles.lineTitle}>{line.itemName ?? line.description}</Text>
+              {line.clientNote && line.clientNote !== line.description ? (
                 <Text style={styles.lineDescription}>{line.clientNote}</Text>
               ) : null}
             </View>
-            <Text style={[styles.numericCell, styles.qtyCol]}>{line.quantity}</Text>
+            <Text style={[styles.numericCell, styles.qtyCol]}>
+              {line.quantity}
+              {line.unit ? ` ${line.unit}` : ""}
+            </Text>
             <Text style={[styles.numericCell, styles.unitCol]}>
               {formatInvoiceMoney(line.unitPriceCents, data.currency)}
             </Text>
@@ -677,6 +717,9 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
 
         <View style={styles.notesPanel}>
           <Text style={styles.panelHeading}>Invoice Notes</Text>
+          {data.budgetaryDisclaimer ? (
+            <Text style={styles.noteText}>{data.budgetaryDisclaimer}</Text>
+          ) : null}
           {data.contextNote ? <Text style={styles.noteText}>{data.contextNote}</Text> : null}
           {data.clientNotes ? <Text style={styles.noteText}>{data.clientNotes}</Text> : null}
           <Text style={styles.thankYou}>
