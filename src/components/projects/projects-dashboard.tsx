@@ -423,30 +423,32 @@ export function ProjectsDashboard({
                 </SheetDescription>
               </SheetHeader>
 
-              <SheetBody>
-                <div className="space-y-6 pb-2">
-                  <div className="grid min-w-0 gap-4 rounded-lg border border-border/60 bg-muted/15 p-5 text-sm">
-                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
-                      <span className="shrink-0 text-muted-foreground">Source Recommendation</span>
-                      <span className="min-w-0 break-words font-medium">
+              <SheetBody className="flex flex-col">
+                <div className="flex min-h-full flex-1 flex-col gap-4 pb-2">
+                  <div className="rounded-lg border border-border/60 bg-muted/15 p-3.5 text-sm">
+                    <div className="space-y-1">
+                      <span className="text-xs text-muted-foreground">Source Recommendation</span>
+                      <p className="break-words font-medium leading-snug">
                         {selectedProject.recommendationTitle}
-                      </span>
+                      </p>
                     </div>
-                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
-                      <span className="shrink-0 text-muted-foreground">Estimated Score Impact</span>
-                      <span className="font-medium tabular-nums">
-                        {selectedProject.estimatedImpactPoints !== null
-                          ? `+${selectedProject.estimatedImpactPoints} pts`
-                          : "—"}
-                      </span>
-                    </div>
-                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
-                      <span className="text-muted-foreground">Created</span>
-                      <span>{formatDisplayDate(selectedProject.createdAt)}</span>
-                    </div>
-                    <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
-                      <span className="text-muted-foreground">Completed</span>
-                      <span>{formatDisplayDate(selectedProject.completedAt)}</span>
+                    <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5">
+                      <div className="space-y-0.5">
+                        <span className="text-xs text-muted-foreground">Impact</span>
+                        <p className="font-medium tabular-nums">
+                          {selectedProject.estimatedImpactPoints !== null
+                            ? `+${selectedProject.estimatedImpactPoints} pts`
+                            : "—"}
+                        </p>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="text-xs text-muted-foreground">Created</span>
+                        <p>{formatDisplayDate(selectedProject.createdAt)}</p>
+                      </div>
+                      <div className="col-span-2 space-y-0.5">
+                        <span className="text-xs text-muted-foreground">Completed</span>
+                        <p>{formatDisplayDate(selectedProject.completedAt)}</p>
+                      </div>
                     </div>
                   </div>
 
@@ -468,18 +470,23 @@ export function ProjectsDashboard({
                         ))}
                       </SelectContent>
                     </Select>
+                    {editStatus === "completed" ? (
+                      <p className="text-xs text-muted-foreground">
+                        Completing this project will mark the linked recommendation as completed and
+                        remove its points from projected score calculations.
+                      </p>
+                    ) : null}
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="flex min-h-0 flex-1 flex-col gap-2">
                     <Label htmlFor="project-notes">Notes</Label>
                     <textarea
                       id="project-notes"
                       value={editNotes}
                       onChange={(event) => setEditNotes(event.target.value)}
-                      rows={8}
                       placeholder="Implementation notes, scheduling details, or client context..."
                       className={cn(
-                        "flex min-h-[12.5rem] w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
+                        "flex min-h-[16rem] w-full flex-1 resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
                         "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
                       )}
                     />
@@ -506,13 +513,6 @@ export function ProjectsDashboard({
                       </Link>
                     </div>
                   </div>
-
-                  {editStatus === "completed" ? (
-                    <p className="text-xs text-muted-foreground">
-                      Completing this project will mark the linked recommendation as completed and
-                      remove its points from projected score calculations.
-                    </p>
-                  ) : null}
 
                   {isAdmin && selectedProject ? (
                     <ProjectAdminActions
