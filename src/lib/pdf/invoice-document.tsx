@@ -173,14 +173,16 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: COLORS.navy,
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
     paddingVertical: 6,
     paddingHorizontal: 8,
     borderTopLeftRadius: 3,
     borderTopRightRadius: 3,
   },
   tableHeaderCell: {
-    color: COLORS.white,
+    color: COLORS.muted,
     fontFamily: "Helvetica-Bold",
     fontSize: 7,
     textTransform: "uppercase",
@@ -237,11 +239,13 @@ const styles = StyleSheet.create({
   paymentPanelAccent: {
     flex: 1,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.accentBorder,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.accent,
     borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 10,
-    backgroundColor: COLORS.navyLight,
+    backgroundColor: COLORS.surface,
   },
   panelHeading: {
     fontSize: 7,
@@ -435,10 +439,10 @@ function InvoiceFooter({ invoiceNumber }: { invoiceNumber: string }) {
         </Link>
       </View>
       <View style={styles.footerCenter}>
-        <Text style={styles.footerTagline}>Reduce complexity. Increase capability.</Text>
+        <Text style={styles.footerTagline}>Powered by {BRAND.productName}</Text>
+        <Text style={[styles.footerLine, { marginTop: 2 }]}>{invoiceNumber}</Text>
       </View>
       <View style={styles.footerRight}>
-        <Text style={styles.footerLine}>{invoiceNumber}</Text>
         <Text
           style={styles.footerLine}
           render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}

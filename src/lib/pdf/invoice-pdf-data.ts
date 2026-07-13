@@ -336,15 +336,15 @@ export const INVOICE_PDF_STATUS_BADGE: Record<
   InvoiceStatus,
   { backgroundColor: string; color: string; borderColor: string }
 > = {
-  draft: { backgroundColor: "#F1F5F9", color: "#475569", borderColor: "#CBD5E1" },
-  ready_to_send: { backgroundColor: "#F8FAFC", color: "#334155", borderColor: "#E2E8F0" },
-  sent: { backgroundColor: "#EEF4F8", color: "#082F5B", borderColor: "#CBD5E1" },
-  viewed: { backgroundColor: "#EEF4F8", color: "#082F5B", borderColor: "#CBD5E1" },
-  partially_paid: { backgroundColor: "#FFFBEB", color: "#B45309", borderColor: "#FDE68A" },
-  paid: { backgroundColor: "#F0FDF4", color: "#15803D", borderColor: "#BBF7D0" },
+  draft: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
+  ready_to_send: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
+  sent: { backgroundColor: "#EFF6FF", color: "#0F2744", borderColor: "#BFDBFE" },
+  viewed: { backgroundColor: "#EFF6FF", color: "#0F2744", borderColor: "#BFDBFE" },
+  partially_paid: { backgroundColor: "#FFFBEB", color: "#D97706", borderColor: "#FDE68A" },
+  paid: { backgroundColor: "#F0FDF4", color: "#16A34A", borderColor: "#BBF7D0" },
   overdue: { backgroundColor: "#FEF2F2", color: "#DC2626", borderColor: "#FECACA" },
-  voided: { backgroundColor: "#F8FAFC", color: "#64748B", borderColor: "#E2E8F0" },
-  refunded: { backgroundColor: "#F8FAFC", color: "#64748B", borderColor: "#E2E8F0" },
+  voided: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
+  refunded: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
 };
 
 export function normalizeWebsiteUrl(website: string): string {

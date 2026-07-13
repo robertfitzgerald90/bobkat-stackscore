@@ -1,6 +1,5 @@
 import {
   Document,
-  Image,
   Page,
   StyleSheet,
   Text,
@@ -11,16 +10,16 @@ import type { RecommendationSummary } from "@/lib/assessments/results-summary";
 import { BRAND } from "@/lib/branding";
 import {
   COLORS,
-  PDF_RATING_BAR as RATING_BAR,
+  PDF_SCORE_BAR,
   PDF_TARGET_SCORE as TARGET_SCORE,
   PdfBulletSection,
   PdfClosingHero,
+  PdfCoverPage,
   PdfFlowSection,
   PdfMiniScoreBar,
-  PdfPageFooter,
+  PdfReportFooter,
   PdfPriorityBadge,
   PdfScoreGauge,
-  getPdfLogoPath,
   PDF_LAYOUT,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
@@ -572,7 +571,7 @@ function CategoryScoreCard({
       <View style={styles.categoryProgressWrap}>
         <View style={styles.progressTrack}>
           <View
-            style={[styles.progressFill, { width: fillWidth, backgroundColor: RATING_BAR[rating] }]}
+            style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
           />
         </View>
       </View>
@@ -826,51 +825,24 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       subject={BRAND.reportTitle}
     >
       <Page size="LETTER" style={styles.coverPage} wrap={false}>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
-        <View style={styles.coverHero}>
-          <Text style={styles.coverProduct}>Bobkat {BRAND.productName}</Text>
-          <Text style={styles.coverSubtitle}>{BRAND.reportTitle}</Text>
-        </View>
-
-        <View style={styles.coverBody}>
-          <View style={styles.coverBrandRow}>
-            {/* eslint-disable-next-line jsx-a11y/alt-text */}
-            <Image src={getPdfLogoPath()} style={styles.coverBrandLogo} />
-            <View>
-              <Text style={styles.coverPreparedBy}>{BRAND.companyName}</Text>
-              <Text style={styles.coverFinePrint}>Technology maturity assessment partner</Text>
-            </View>
-          </View>
-
-          <Text style={styles.coverClientName}>{clientName}</Text>
-
-          <View style={styles.coverMetaBlock}>
-            <Text style={styles.coverMetaLabel}>Assessment Type</Text>
-            <Text style={styles.coverMetaValue}>{assessmentTypeLabel}</Text>
-          </View>
-          <View style={styles.coverMetaBlock}>
-            <Text style={styles.coverMetaLabel}>Assessment</Text>
-            <Text style={styles.coverMetaValue}>{assessmentName}</Text>
-          </View>
-          <View style={styles.coverMetaBlock}>
-            <Text style={styles.coverMetaLabel}>Assessment Date</Text>
-            <Text style={styles.coverMetaValue}>{assessmentDate}</Text>
-          </View>
-
-          <View style={styles.coverPreparedRow}>
-            <View>
-              <Text style={styles.coverPreparedBy}>Prepared by {BRAND.companyName}</Text>
-              <Text style={styles.coverFinePrint}>
-                Confidential executive deliverable for remediation planning
-              </Text>
-            </View>
-          </View>
-        </View>
+        <PdfCoverPage
+          eyebrow={`Bobkat ${BRAND.productName}`}
+          title={BRAND.reportTitle}
+          subtitle="Executive technology maturity assessment and remediation roadmap"
+          clientName={clientName}
+          meta={[
+            { label: "Assessment Type", value: assessmentTypeLabel },
+            { label: "Assessment", value: assessmentName },
+            { label: "Assessment Date", value: assessmentDate },
+          ]}
+          confidentialNotice="Confidential executive deliverable"
+        />
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <PdfFlowSection
           title="Recommendation Summary"
@@ -887,6 +859,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               label="Projected StackScore"
               ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
               variant="accent"
+              barVariant="improvement"
             />
           </View>
 
@@ -927,7 +900,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <PdfFlowSection
           title="Technology Maturity Roadmap"
@@ -973,7 +946,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <PdfFlowSection
           title="Executive Summary"
@@ -990,6 +963,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               label="Projected StackScore"
               ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
               variant="accent"
+              barVariant="improvement"
             />
           </View>
 
@@ -1015,7 +989,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <PdfFlowSection
           title="Technology Pillars"
@@ -1037,7 +1011,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <PdfFlowSection
           title="Detailed Recommendations"
@@ -1063,7 +1037,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfPageFooter generatedDate={generatedDate} />
+        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
 
         <View>
           <PdfClosingHero

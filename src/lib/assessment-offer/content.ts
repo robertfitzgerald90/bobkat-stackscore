@@ -6,7 +6,6 @@ import {
   Layers,
   Lightbulb,
   Map,
-  Video,
 } from "lucide-react";
 
 export type OfferFeature = {
@@ -146,12 +145,6 @@ export const OFFER_FEATURES: OfferFeature[] = [
     title: "Executive Report",
     description:
       "A polished, shareable deliverable ready for leadership meetings and board conversations.",
-  },
-  {
-    icon: Video,
-    title: "Review Session",
-    description:
-      "Walk through results with a Bobkat IT consultant and align on next steps for your business.",
   },
 ];
 

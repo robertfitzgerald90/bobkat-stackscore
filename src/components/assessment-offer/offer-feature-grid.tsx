@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { OfferFeature } from "@/lib/assessment-offer/content";
 import { OfferReveal } from "./offer-reveal";
 import { OfferSectionHeader } from "./offer-section-header";
@@ -10,6 +11,7 @@ type OfferFeatureGridProps = {
   features: OfferFeature[];
   columns?: 2 | 3 | 4;
   sectionClassName?: string;
+  afterContent?: ReactNode;
 };
 
 const columnClassName: Record<NonNullable<OfferFeatureGridProps["columns"]>, string> = {
@@ -26,6 +28,7 @@ export function OfferFeatureGrid({
   features,
   columns = 3,
   sectionClassName = "bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24",
+  afterContent,
 }: OfferFeatureGridProps) {
   return (
     <section id={id} className={sectionClassName}>
@@ -50,6 +53,8 @@ export function OfferFeatureGrid({
             );
           })}
         </div>
+
+        {afterContent}
       </div>
     </section>
   );
