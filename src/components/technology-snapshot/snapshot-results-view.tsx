@@ -7,15 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
+import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import {
   FULL_ASSESSMENT_BENEFITS,
 } from "@/lib/technology-snapshot/display";
 import type { SnapshotClassification } from "@/lib/technology-snapshot/types";
 import { cn } from "@/lib/utils";
 
-const PURCHASE_URL =
-  process.env.NEXT_PUBLIC_ASSESSMENT_PURCHASE_URL ??
-  "https://bobkatit.com/technology-assessment";
+const PURCHASE_URL = SERVICES_CTA_DESTINATIONS.assessmentLearnMore.href;
 
 const CLASSIFICATION_VARIANT: Record<
   SnapshotClassification,
