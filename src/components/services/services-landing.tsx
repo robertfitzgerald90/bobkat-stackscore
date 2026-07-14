@@ -61,9 +61,10 @@ function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; 
   );
 }
 
-function ServiceSection({ service, index }: { service: ServiceCatalogItem; index: number }) {
+function ServiceSection({ service }: { service: ServiceCatalogItem }) {
   const Icon = service.icon;
-  const imageFirst = service.imagePosition === "left" || (!service.imagePosition && index % 2 === 1);
+  const imageFirst = service.imagePosition === "left";
+  const imageFit = service.image.fit ?? "cover";
 
   return (
     <OfferReveal>
@@ -124,14 +125,22 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
             </div>
           </div>
 
-          <div className={cn("group relative overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm", imageFirst && "lg:order-1")}>
+          <div
+            className={cn(
+              "group relative overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm",
+              imageFirst && "lg:order-1",
+            )}
+          >
             <Image
               src={service.image.src}
               alt={service.image.alt}
               width={1024}
               height={682}
               sizes="(min-width: 1024px) 44vw, 100vw"
-              className="aspect-[3/2] h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              className={cn(
+                "aspect-[3/2] h-auto w-full transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+                imageFit === "contain" ? "object-contain p-3 sm:p-4" : "object-cover",
+              )}
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-70" aria-hidden />
           </div>
@@ -277,8 +286,8 @@ export function ServicesLanding() {
               description="Browse Bobkat IT services, compare entry points, and take the next step that fits your organization."
             />
             <div className="grid gap-6">
-              {SERVICES_CATALOG.map((service, index) => (
-                <ServiceSection key={service.id} service={service} index={index} />
+              {SERVICES_CATALOG.map((service) => (
+                <ServiceSection key={service.id} service={service} />
               ))}
             </div>
           </div>

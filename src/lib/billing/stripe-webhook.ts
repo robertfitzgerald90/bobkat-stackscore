@@ -6,9 +6,34 @@ import {
   isStripeWebhookProcessed,
   markStripeWebhookProcessed,
 } from "@/lib/billing/stripe-checkout";
+import { getStripe } from "@/lib/stripe/client";
+import {
+  isStackScoreVcioProduct,
+  STACKSCORE_VCIO_SERVICE_TYPE,
+} from "@/lib/stripe/products";
+import {
+  fulfillVcioCheckoutSession,
+  syncVcioSubscriptionFromStripe,
+} from "@/lib/vcio/subscriptions";
+import {
+  markVcioInvoiceActionRequired,
+  markVcioInvoicePaymentFailed,
+  syncVcioInvoiceFromStripe,
+} from "@/lib/vcio/invoices";
 
 export type InvoiceWebhookResult =
-  | { handled: true; outcome: "paid" | "failed" | "refunded" | "disputed" | "skipped" }
+  | {
+      handled: true;
+      outcome:
+        | "paid"
+        | "failed"
+        | "refunded"
+        | "disputed"
+        | "skipped"
+        | "subscription_synced"
+        | "invoice_synced"
+        | "action_required";
+    }
   | { handled: false };
 
 export async function handleBillingStripeEvent(event: Stripe.Event): Promise<InvoiceWebhookResult> {
@@ -19,8 +44,24 @@ export async function handleBillingStripeEvent(event: Stripe.Event): Promise<Inv
   switch (event.type) {
     case "checkout.session.completed":
       return handleCheckoutCompleted(event);
+    case "checkout.session.async_payment_succeeded":
+      return handleCheckoutAsyncSucceeded(event);
     case "checkout.session.async_payment_failed":
       return handleCheckoutFailed(event);
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted":
+    case "customer.subscription.paused":
+    case "customer.subscription.resumed":
+      return handleSubscriptionEvent(event);
+    case "invoice.created":
+    case "invoice.finalized":
+    case "invoice.paid":
+      return handleInvoiceSynced(event);
+    case "invoice.payment_failed":
+      return handleInvoicePaymentFailed(event);
+    case "invoice.payment_action_required":
+      return handleInvoicePaymentActionRequired(event);
     case "payment_intent.payment_failed":
       return handlePaymentIntentFailed(event);
     case "charge.refunded":
@@ -34,6 +75,12 @@ export async function handleBillingStripeEvent(event: Stripe.Event): Promise<Inv
 
 async function handleCheckoutCompleted(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const session = event.data.object as Stripe.Checkout.Session;
+  if (isStackScoreVcioProduct(session.metadata?.productType)) {
+    await fulfillVcioCheckoutSession(session);
+    await markStripeWebhookProcessed(event.id, event.type, event);
+    return { handled: true, outcome: "subscription_synced" };
+  }
+
   if (session.metadata?.productType !== "stackscore_invoice") {
     return { handled: false };
   }
@@ -84,8 +131,23 @@ async function handleCheckoutCompleted(event: Stripe.Event): Promise<InvoiceWebh
   return { handled: true, outcome: "paid" };
 }
 
+async function handleCheckoutAsyncSucceeded(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const session = event.data.object as Stripe.Checkout.Session;
+  if (isStackScoreVcioProduct(session.metadata?.productType)) {
+    await fulfillVcioCheckoutSession(session);
+    await markStripeWebhookProcessed(event.id, event.type, event);
+    return { handled: true, outcome: "subscription_synced" };
+  }
+  return { handled: false };
+}
+
 async function handleCheckoutFailed(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const session = event.data.object as Stripe.Checkout.Session;
+  if (isStackScoreVcioProduct(session.metadata?.productType)) {
+    await markStripeWebhookProcessed(event.id, event.type, event);
+    return { handled: true, outcome: "failed" };
+  }
+
   if (session.metadata?.productType !== "stackscore_invoice") {
     return { handled: false };
   }
@@ -104,6 +166,88 @@ async function handleCheckoutFailed(event: Stripe.Event): Promise<InvoiceWebhook
 
   await markStripeWebhookProcessed(event.id, event.type, event);
   return { handled: true, outcome: "failed" };
+}
+
+function isVcioSubscription(subscription: Stripe.Subscription): boolean {
+  const priceId = subscription.items.data[0]?.price.id;
+  return (
+    isStackScoreVcioProduct(subscription.metadata?.productType) ||
+    subscription.metadata?.serviceType === STACKSCORE_VCIO_SERVICE_TYPE ||
+    (Boolean(process.env.STRIPE_VCIO_PRICE_ID) && priceId === process.env.STRIPE_VCIO_PRICE_ID)
+  );
+}
+
+async function retrieveExpandedSubscription(subscriptionId: string) {
+  const stripe = getStripe();
+  return stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ["items.data.price.product", "latest_invoice"],
+  });
+}
+
+async function handleSubscriptionEvent(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const subscription = event.data.object as Stripe.Subscription;
+  const expanded = await retrieveExpandedSubscription(subscription.id);
+  if (!isVcioSubscription(expanded)) {
+    return { handled: false };
+  }
+
+  await syncVcioSubscriptionFromStripe(expanded, {
+    stripeEventCreatedAt: new Date(event.created * 1000),
+  });
+  await markStripeWebhookProcessed(event.id, event.type, event);
+  return { handled: true, outcome: "subscription_synced" };
+}
+
+async function syncSubscriptionForInvoice(invoice: Stripe.Invoice) {
+  const invoiceWithSubscription = invoice as Stripe.Invoice & {
+    subscription?: string | { id: string } | null;
+  };
+  const subscriptionId =
+    typeof invoiceWithSubscription.subscription === "string"
+      ? invoiceWithSubscription.subscription
+      : invoiceWithSubscription.subscription?.id;
+
+  if (!subscriptionId) return;
+  const local = await prisma.subscription.findUnique({
+    where: { providerSubscriptionId: subscriptionId },
+    select: { id: true },
+  });
+  if (local) return;
+
+  const expanded = await retrieveExpandedSubscription(subscriptionId);
+  if (isVcioSubscription(expanded)) {
+    await syncVcioSubscriptionFromStripe(expanded);
+  }
+}
+
+async function handleInvoiceSynced(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const invoice = event.data.object as Stripe.Invoice;
+  await syncSubscriptionForInvoice(invoice);
+  const result = await syncVcioInvoiceFromStripe(invoice);
+  if (result.outcome !== "synced") return { handled: false };
+
+  await markStripeWebhookProcessed(event.id, event.type, event);
+  return { handled: true, outcome: "invoice_synced" };
+}
+
+async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const invoice = event.data.object as Stripe.Invoice;
+  await syncSubscriptionForInvoice(invoice);
+  const result = await markVcioInvoicePaymentFailed(invoice);
+  if (result.outcome !== "synced") return { handled: false };
+
+  await markStripeWebhookProcessed(event.id, event.type, event);
+  return { handled: true, outcome: "failed" };
+}
+
+async function handleInvoicePaymentActionRequired(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const invoice = event.data.object as Stripe.Invoice;
+  await syncSubscriptionForInvoice(invoice);
+  const result = await markVcioInvoiceActionRequired(invoice);
+  if (result.outcome !== "synced") return { handled: false };
+
+  await markStripeWebhookProcessed(event.id, event.type, event);
+  return { handled: true, outcome: "action_required" };
 }
 
 async function handlePaymentIntentFailed(event: Stripe.Event): Promise<InvoiceWebhookResult> {

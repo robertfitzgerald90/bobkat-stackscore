@@ -41,6 +41,46 @@ export function registerClientPortalCommands(): void {
       },
     },
     {
+      id: "nav:customer:vcio",
+      category: "navigation",
+      title: "vCIO Dashboard",
+      subtitle: "Strategic technology advisory workspace",
+      icon: "LayoutGrid",
+      keywords: ["vcio", "strategy", "advisory"],
+      permissions: { roles: ["client"], requiresClient: true },
+      favoriteKey: "nav:customer:vcio",
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? `/clients/${clientId}/vcio` : null;
+      },
+    },
+    {
+      id: "nav:customer:roadmap",
+      category: "navigation",
+      title: "Roadmap",
+      subtitle: "Technology roadmap and planning",
+      icon: "Map",
+      keywords: ["roadmap", "plan", "strategy"],
+      permissions: { roles: ["client"], requiresClient: true },
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? `/clients/${clientId}/roadmap` : null;
+      },
+    },
+    {
+      id: "nav:customer:quarterly-reviews",
+      category: "navigation",
+      title: "Quarterly Reviews",
+      subtitle: "vCIO review history",
+      icon: "CalendarDays",
+      keywords: ["quarterly", "review", "qbr"],
+      permissions: { roles: ["client"], requiresClient: true },
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? `/clients/${clientId}/quarterly-reviews` : null;
+      },
+    },
+    {
       id: "nav:customer:reports",
       category: "deliverables",
       title: "Reports",
@@ -52,6 +92,19 @@ export function registerClientPortalCommands(): void {
       resolveHrefFromContext: (context) => {
         const clientId = clientIdFrom(context);
         return clientId ? clientWorkspaceExecutiveReportsPath(clientId) : null;
+      },
+    },
+    {
+      id: "nav:customer:subscription-billing",
+      category: "account",
+      title: "Subscription & Billing",
+      subtitle: "Manage subscription and invoices",
+      icon: "WalletCards",
+      keywords: ["billing", "subscription", "stripe", "invoice"],
+      permissions: { roles: ["client"], requiresClient: true },
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? `/clients/${clientId}/billing` : null;
       },
     },
     {

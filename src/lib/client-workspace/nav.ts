@@ -5,8 +5,10 @@
 
 export const CLIENT_WORKSPACE_SECTIONS = [
   "overview",
+  "vcio",
   "journey",
   "roadmap",
+  "quarterly-reviews",
   "projects",
   "assessments",
   "recommendations",
@@ -31,15 +33,17 @@ export type ClientWorkspaceNavItem = {
 /** DOC-201 navigation order and labels. */
 export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "overview", label: "Overview", isOverview: true },
+  { section: "vcio", label: "vCIO Dashboard" },
   { section: "journey", label: "Technology Journey" },
   { section: "roadmap", label: "Roadmap" },
+  { section: "quarterly-reviews", label: "Quarterly Reviews" },
   { section: "projects", label: "Projects" },
   { section: "assessments", label: "Assessments" },
   { section: "recommendations", label: "Recommendations" },
   { section: "assets", label: "Technology Stack" },
   { section: "documents", label: "Documents" },
   { section: "contacts", label: "Contacts" },
-  { section: "billing", label: "Billing" },
+  { section: "billing", label: "Subscription & Billing" },
   { section: "executive-reports", label: "Executive Reports" },
   { section: "risks", label: "Risks" },
   { section: "activity", label: "Activity" },
@@ -48,6 +52,9 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
 /** Sections reachable by customer portal users (matches sidebar). */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
+  "vcio",
+  "roadmap",
+  "quarterly-reviews",
   "recommendations",
   "executive-reports",
   "billing",
@@ -72,6 +79,10 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
+    case "vcio":
+      return `/clients/${clientId}/vcio`;
+    case "quarterly-reviews":
+      return `/clients/${clientId}/quarterly-reviews`;
     case "journey":
     case "roadmap":
     case "projects":
@@ -102,6 +113,8 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
     return "overview";
   }
   if (rest.startsWith("/journey")) return "journey";
+  if (rest.startsWith("/vcio")) return "vcio";
+  if (rest.startsWith("/quarterly-reviews")) return "quarterly-reviews";
   if (rest.startsWith("/recommendations")) return "recommendations";
   if (rest.startsWith("/roadmap") || rest.startsWith("/improvement-plan")) {
     return "roadmap";

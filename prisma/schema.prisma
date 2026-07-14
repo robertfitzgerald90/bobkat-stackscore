@@ -260,6 +260,7 @@ model User {
   invoicesCreated              Invoice[] @relation("InvoiceCreatedBy")
   billingPaymentsRecorded        BillingPayment[] @relation("BillingPaymentRecordedBy")
   billingAuditEvents             BillingAuditEvent[] @relation("BillingAuditActor")
+  vcioQuarterlyReviewsCreated    VcioQuarterlyReview[] @relation("VcioQuarterlyReviewCreatedBy")
 }
 
 model Client {
@@ -314,6 +315,10 @@ model Client {
   billingPayments       BillingPayment[]
   billingDeposits       BillingDeposit[]
   recurringServices     RecurringService[]
+  subscriptions          Subscription[]
+  subscriptionInvoices   SubscriptionInvoice[]
+  vcioOnboarding         VcioOnboarding?
+  vcioQuarterlyReviews   VcioQuarterlyReview[]
 }
 
 model AssessmentCategory {
@@ -1685,9 +1690,49 @@ enum BillingAuditAction {
   deposit_applied
 }
 
+enum BillingProvider {
+  stripe
+}
+
+enum ServiceType {
+  stackscore_vcio
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  past_due
+  unpaid
+  canceled
+  incomplete
+  incomplete_expired
+  paused
+  unknown
+}
+
+enum BillingInterval {
+  month
+  year
+  custom
+}
+
+enum VcioOnboardingStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum VcioReviewStatus {
+  draft
+  scheduled
+  in_review
+  completed
+}
+
 model ClientBillingProfile {
   id                     String   @id @default(uuid())
   clientId               String   @unique
+  stripeCustomerId       String?  @unique
   billingCompanyName     String?
   billingEmail           String?
   billingPhone           String?
@@ -1704,6 +1749,8 @@ model ClientBillingProfile {
   updatedAt              DateTime @updatedAt
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
 }
 
 model Invoice {
@@ -1906,10 +1953,142 @@ model RecurringService {
 
   client    Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
   lineItems InvoiceLineItem[]
+  subscriptions Subscription[]
 
   @@index([clientId])
   @@index([status])
   @@index([nextBillingDate])
+}
+
+model Subscription {
+  id                        String             @id @default(uuid())
+  clientId                  String
+  recurringServiceId        String?
+  provider                  BillingProvider    @default(stripe)
+  providerCustomerId        String
+  providerSubscriptionId    String             @unique
+  providerPriceId           String
+  providerProductId         String?
+  serviceType               ServiceType
+  billingInterval           BillingInterval    @default(month)
+  amountCents               Int
+  currency                  String             @default("usd")
+  status                    SubscriptionStatus @default(incomplete)
+  rawStatus                 String
+  currentPeriodStart        DateTime?
+  currentPeriodEnd          DateTime?
+  cancelAtPeriodEnd         Boolean            @default(false)
+  canceledAt                DateTime?
+  endedAt                   DateTime?
+  trialStart                DateTime?
+  trialEnd                  DateTime?
+  latestInvoiceProviderId   String?
+  lastPaymentAt             DateTime?
+  paymentFailedAt           DateTime?
+  paymentActionRequiredAt   DateTime?
+  lastStripeEventCreatedAt  DateTime?
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+
+  client                  Client                @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  recurringService        RecurringService?      @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
+  invoices                SubscriptionInvoice[]
+  vcioOnboarding          VcioOnboarding?
+  vcioQuarterlyReviews    VcioQuarterlyReview[]
+
+  @@index([clientId])
+  @@index([serviceType])
+  @@index([status])
+  @@index([providerCustomerId])
+  @@index([currentPeriodEnd])
+  @@index([latestInvoiceProviderId])
+}
+
+model SubscriptionInvoice {
+  id                         String       @id @default(uuid())
+  subscriptionId             String
+  clientId                   String
+  provider                   BillingProvider @default(stripe)
+  providerInvoiceId          String       @unique
+  providerPaymentIntentId    String?
+  number                     String?
+  amountDueCents             Int          @default(0)
+  amountPaidCents            Int          @default(0)
+  currency                   String       @default("usd")
+  status                     String
+  invoiceDate                DateTime?
+  dueDate                    DateTime?
+  paidAt                     DateTime?
+  hostedInvoiceUrl           String?      @db.Text
+  invoicePdfUrl              String?      @db.Text
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  client       Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([clientId])
+  @@index([status])
+  @@index([invoiceDate])
+}
+
+model VcioOnboarding {
+  id                         String               @id @default(uuid())
+  clientId                   String               @unique
+  subscriptionId             String?              @unique
+  status                     VcioOnboardingStatus @default(not_started)
+  baselineRequired           Boolean              @default(true)
+  businessInfoJson           Json?
+  leadershipJson             Json?
+  environmentJson            Json?
+  planningJson               Json?
+  assessmentStatus           String?
+  strategySessionScheduledAt DateTime?
+  completedAt                DateTime?
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+}
+
+model VcioQuarterlyReview {
+  id                         String           @id @default(uuid())
+  clientId                   String
+  subscriptionId             String?
+  reviewPeriodStart          DateTime
+  reviewPeriodEnd            DateTime
+  reviewDate                 DateTime?
+  status                     VcioReviewStatus @default(draft)
+  executiveSummary           String?          @db.Text
+  scoreMovementJson          Json?
+  completedProjectsJson      Json?
+  openRisksJson              Json?
+  nextQuarterPrioritiesJson  Json?
+  budgetSummaryJson          Json?
+  plannedInvestmentsJson     Json?
+  meetingNotes               String?          @db.Text
+  internalNotes              String?          @db.Text
+  linkedReportDocumentId     String?
+  linkedRoadmapId            String?
+  nextReviewDate             DateTime?
+  createdByUserId            String?
+  completedAt                DateTime?
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime         @updatedAt
+
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  createdBy    User?         @relation("VcioQuarterlyReviewCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([reviewDate])
+  @@index([nextReviewDate])
 }
 
 model InvoiceDelivery {

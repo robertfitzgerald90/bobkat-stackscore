@@ -2,6 +2,7 @@ export type StripeConfig = {
   secretKey: string;
   webhookSecret: string | undefined;
   assessmentPriceId: string;
+  vcioPriceId: string | undefined;
 };
 
 export function getStripeConfig(): StripeConfig {
@@ -19,6 +20,7 @@ export function getStripeConfig(): StripeConfig {
     secretKey,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET?.trim() || undefined,
     assessmentPriceId,
+    vcioPriceId: process.env.STRIPE_VCIO_PRICE_ID?.trim() || undefined,
   };
 }
 
@@ -28,4 +30,12 @@ export function requireStripeWebhookSecret(): string {
     throw new Error("STRIPE_WEBHOOK_SECRET is not configured");
   }
   return secret;
+}
+
+export function requireVcioPriceId(): string {
+  const priceId = process.env.STRIPE_VCIO_PRICE_ID?.trim();
+  if (!priceId) {
+    throw new Error("STRIPE_VCIO_PRICE_ID is not configured");
+  }
+  return priceId;
 }

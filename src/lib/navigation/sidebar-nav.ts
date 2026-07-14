@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
+  CalendarDays,
   ClipboardList,
   FileText,
   FolderKanban,
@@ -15,6 +16,7 @@ import {
   Users,
   Camera,
   Library,
+  WalletCards,
 } from "lucide-react";
 import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
@@ -50,9 +52,33 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       requiresClient: true,
     },
     {
+      href: customerHref(clientId, "vcio"),
+      label: "vCIO Dashboard",
+      icon: LayoutGrid,
+      requiresClient: true,
+    },
+    {
+      href: customerHref(clientId, "roadmap"),
+      label: "Roadmap",
+      icon: Map,
+      requiresClient: true,
+    },
+    {
+      href: customerHref(clientId, "quarterly-reviews"),
+      label: "Quarterly Reviews",
+      icon: CalendarDays,
+      requiresClient: true,
+    },
+    {
       href: customerHref(clientId, "executive-reports"),
       label: "Reports",
       icon: FileText,
+      requiresClient: true,
+    },
+    {
+      href: customerHref(clientId, "billing"),
+      label: "Subscription & Billing",
+      icon: WalletCards,
       requiresClient: true,
     },
     { href: "/account", label: "Account", icon: UserCircle },
@@ -78,6 +104,7 @@ export function getConsultantSidebarNav(
       icon: Lightbulb,
     },
     { href: clientScoped("roadmap"), label: "Roadmaps", icon: Map },
+    { href: clientScoped("vcio"), label: "vCIO Clients", icon: LayoutGrid },
     {
       href: clientScoped("executive-reports"),
       label: "Reports",

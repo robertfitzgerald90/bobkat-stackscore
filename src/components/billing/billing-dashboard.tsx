@@ -89,8 +89,8 @@ export function BillingDashboard({ clientId, isStaff }: BillingDashboardProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="page-title">Billing</h2>
-          <p className="page-description">Invoices, payments, deposits, and recurring services</p>
+          <h2 className="page-title">Subscription & Billing</h2>
+          <p className="page-description">Subscriptions, invoices, payments, deposits, and recurring services</p>
         </div>
         {isStaff ? (
           <div className="flex flex-wrap gap-2">

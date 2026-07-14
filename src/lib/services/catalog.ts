@@ -20,10 +20,11 @@ export type ServiceCatalogItem = {
   primaryCtaLabel: string;
   primaryCta: ServicesCtaKey;
   secondaryCta?: ServicesCtaKey;
-  imagePosition?: "left" | "right";
+  imagePosition: "left" | "right";
   image: {
     src: string;
     alt: string;
+    fit?: "cover" | "contain";
   };
   icon: LucideIcon;
 };
@@ -65,12 +66,13 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       "Direct Access to a Strategic IT Advisor",
     ],
     primaryCtaLabel: "Start vCIO Service",
-    primaryCta: "generalConsultation",
-    secondaryCta: "assessmentLearnMore",
-    imagePosition: "right",
+    primaryCta: "vcioOffer",
+    secondaryCta: "generalConsultation",
+    imagePosition: "left",
     image: {
-      src: "/images/executive-dashboard.png",
-      alt: "StackScore executive dashboard showing assessment results and strategic next steps",
+      src: "/services/stackscore-vcio.png",
+      alt: "StackScore vCIO strategic technology advisory and client portal",
+      fit: "contain",
     },
     icon: BarChart3,
   },
@@ -88,7 +90,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Schedule Consultation",
     primaryCta: "managedItConsultation",
-    imagePosition: "left",
+    imagePosition: "right",
     image: {
       // TODO: Replace this static graphic with a $15/device/month version; the current image includes baked-in $500/month pricing.
       src: "/services/managed-it-services.png",
@@ -110,7 +112,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Discuss Your Project",
     primaryCta: "networkInfrastructureConsultation",
-    imagePosition: "right",
+    imagePosition: "left",
     image: {
       src: "/services/network-infrastructure-deployment.png",
       alt: "Bobkat IT Network Infrastructure and Deployment service preview",
@@ -131,7 +133,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Schedule Consultation",
     primaryCta: "backupDisasterRecoveryConsultation",
-    imagePosition: "left",
+    imagePosition: "right",
     image: {
       src: "/services/backup-disaster-recovery.png",
       alt: "Bobkat IT Backup and Disaster Recovery service preview",
@@ -152,7 +154,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Discuss Your Project",
     primaryCta: "technologyImplementationConsultation",
-    imagePosition: "right",
+    imagePosition: "left",
     image: {
       src: "/services/technology-implementation.png",
       alt: "Bobkat IT Technology Implementation service preview",
@@ -173,7 +175,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Book Residential Support",
     primaryCta: "residentialSupport",
-    imagePosition: "left",
+    imagePosition: "right",
     image: {
       src: "/services/residential-it-support.png",
       alt: "Bobkat IT Residential IT Support service preview",
@@ -208,7 +210,7 @@ export const SERVICES_PRICING: ServicePricingItem[] = [
     description:
       "Ongoing technology strategy, quarterly reviews, roadmap management, and direct advisor access.",
     ctaLabel: "Get Started",
-    cta: "generalConsultation",
+    cta: "vcioOffer",
     badge: "Strategic Partnership",
   },
   {

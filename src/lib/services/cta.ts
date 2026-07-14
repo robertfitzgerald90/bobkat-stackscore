@@ -19,6 +19,10 @@ export const SERVICES_CTA_DESTINATIONS = {
     label: "Learn More",
     href: "/assessment-offer",
   },
+  vcioOffer: {
+    label: "Learn More",
+    href: "/vcio-offer",
+  },
   generalConsultation: {
     label: "Schedule Consultation",
     href: "https://cal.com/bobkat-it/bobkat-it-free-consult",
