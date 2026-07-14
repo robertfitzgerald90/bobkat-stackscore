@@ -18,6 +18,7 @@ import { listPendingQueueItems } from "@/lib/communications/queue/service";
 import { listQuarterlyReviewReminders } from "@/lib/communications/quarterly-review/reminders";
 import { ensureTemplateVersionsSeeded } from "@/lib/communications/template-versions";
 import { CommunicationsUpcomingActions } from "@/components/communications/communications-upcoming-actions";
+import { getAutomationsForTemplate, getTemplateAutomationStatus } from "@/lib/communications/automation-registry";
 
 export default async function CommunicationsOverviewPage() {
   const session = await auth();
@@ -56,6 +57,9 @@ export default async function CommunicationsOverviewPage() {
       subject: template.subject,
       lastUpdated: template.lastUpdated,
       previewable: isTemplatePreviewable(template),
+      triggerEvents: getAutomationsForTemplate(template.key).map((automation) => automation.event),
+      automationStatus: getTemplateAutomationStatus(template.key),
+      lastTestSent: null,
     }));
 
   return (

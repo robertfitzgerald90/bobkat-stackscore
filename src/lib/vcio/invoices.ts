@@ -373,6 +373,8 @@ export async function markVcioInvoicePaymentFailed(
       userId: client.users[0]?.id ?? null,
       to: client.primaryContactEmail,
       gracePeriodDays: getVcioPaymentGracePeriodDays(),
+      idempotencyKey: `payment-failed:${result.invoice.id}:${result.invoice.attemptCount ?? 1}`,
+      relatedEntityId: result.invoice.id,
     });
     await sendVcioAdminNotification({
       subject: "StackScore vCIO payment failed",

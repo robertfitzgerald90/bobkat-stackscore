@@ -33,7 +33,17 @@ export type TemplateLibraryItem = {
   subject: string;
   lastUpdated: string;
   previewable: boolean;
+  triggerEvents: string[];
+  automationStatus: string;
+  lastTestSent: string | null;
 };
+
+function automationLabel(status: string) {
+  return status
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 
 export function TemplateLibraryView({ templates }: { templates: TemplateLibraryItem[] }) {
   const [query, setQuery] = useState("");
@@ -107,8 +117,11 @@ export function TemplateLibraryView({ templates }: { templates: TemplateLibraryI
                 <TableHead>Category</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Subject</TableHead>
+                <TableHead>Trigger Event</TableHead>
+                <TableHead>Automation</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="w-28" />
+                <TableHead>Last Test</TableHead>
+                <TableHead className="w-48">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,18 +143,40 @@ export function TemplateLibraryView({ templates }: { templates: TemplateLibraryI
                   <TableCell className="max-w-xs text-sm text-secondary-token">
                     {template.subject}
                   </TableCell>
+                  <TableCell className="max-w-[220px] text-xs text-muted-foreground">
+                    {template.triggerEvents.length > 0 ? template.triggerEvents.join(", ") : "None"}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    <span className="rounded-full border border-border bg-muted/40 px-2 py-1 text-xs font-medium">
+                      {automationLabel(template.automationStatus)}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(template.lastUpdated).toLocaleDateString()}
                   </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {template.lastTestSent ? new Date(template.lastTestSent).toLocaleDateString() : "Never"}
+                  </TableCell>
                   <TableCell>
                     {template.previewable ? (
-                      <Link
-                        href={`/admin/communications/templates/${template.key}`}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-accent-blue hover:underline"
-                      >
-                        <Eye className="size-4" />
-                        Preview
-                      </Link>
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <Link
+                          href={`/admin/communications/templates/${template.key}`}
+                          className="inline-flex items-center gap-1 font-medium text-accent-blue hover:underline"
+                        >
+                          <Eye className="size-4" />
+                          Preview
+                        </Link>
+                        <Link href={`/admin/communications/templates/${template.key}`} className="font-medium text-accent-blue hover:underline">
+                          Send Test
+                        </Link>
+                        <Link href={`/admin/communications/automations?template=${template.key}`} className="font-medium text-accent-blue hover:underline">
+                          Automation
+                        </Link>
+                        <Link href={`/admin/communications/history?templateKey=${template.key}`} className="font-medium text-accent-blue hover:underline">
+                          History
+                        </Link>
+                      </div>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
                         <Mail className="size-4" />

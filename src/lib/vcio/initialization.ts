@@ -4,12 +4,15 @@ import { getAppUrl } from "@/lib/stripe/app-url";
 import { recordBillingAudit } from "@/lib/billing/audit";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
+import { buildActivationUrls } from "@/lib/email/templates/assessment-purchase";
+import { BRAND } from "@/lib/branding";
+import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
+import { dispatchCommunication } from "@/lib/communications/dispatcher";
 import {
   calculateOnboardingPercentage,
   detectVcioCustomerType,
   getClientSuccessDashboardPath,
 } from "@/lib/vcio/onboarding";
-import { sendVcioWelcomeEmail } from "@/lib/vcio/emails";
 
 export type VcioInitializationSource = "STRIPE" | "ADMIN_TEST" | "MANUAL";
 
@@ -49,6 +52,88 @@ function defaultInitializationKey(clientId: string, subscriptionId: string | nul
 
 function defaultWelcomeKey(clientId: string, subscriptionId: string | null, source: string) {
   return `vcio-welcome:${clientId}:${subscriptionId ?? source.toLowerCase()}:1`;
+}
+
+function buildVcioWelcomeContext(input: {
+  customerType: VcioCustomerType;
+  clientName?: string | null;
+  organizationName: string;
+  technologyScore?: string | null;
+  activationToken?: string;
+  onboardingUrl: string;
+  dashboardUrl: string;
+  roadmapUrl: string;
+  strategySessionUrl: string;
+}) {
+  const primaryHref = input.activationToken
+    ? buildActivationUrls(input.activationToken).activationUrl
+    : input.onboardingUrl;
+  const scenario =
+    input.customerType === "managed_services_client"
+      ? {
+          heroTitle: "Your StackScore vCIO Service Is Active",
+          heroDescription:
+            "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
+          paragraphs: [
+            "Your organization is already configured, so there is no lengthy setup process.",
+            "Next, review your roadmap, share current priorities, and schedule your first strategy session.",
+          ],
+          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Schedule your strategy session"],
+          ctaLabel: "Review Roadmap",
+          primaryHref: input.roadmapUrl,
+        }
+      : input.customerType === "assessment_customer"
+        ? {
+            heroTitle: "Welcome Back to StackScore vCIO",
+            heroDescription:
+              "Your existing assessment has been connected and your advisory roadmap is ready.",
+            paragraphs: [
+              "We connected your existing technology assessment, recommendations, improvement plan, and current projects.",
+              "Complete the quick setup to tell us what has changed since your assessment, then schedule your first strategy session.",
+            ],
+            summaryItems: [
+              `Technology Score: ${input.technologyScore ?? "Available in your dashboard"}`,
+              "Recommendations are available",
+              "Your roadmap is ready for review",
+            ],
+            ctaLabel: "Complete Quick Setup",
+            primaryHref,
+          }
+        : {
+            heroTitle: "Welcome to StackScore vCIO",
+            heroDescription:
+              "Your strategic technology advisory service is active. Let's prepare your first planning session.",
+            paragraphs: [
+              "StackScore vCIO gives your organization ongoing technology advisory, quarterly planning, roadmap management, executive reporting, and direct access to Bobkat IT.",
+              "Activate or sign in, complete onboarding, and schedule your initial strategy session.",
+            ],
+            summaryItems: [
+              "Activate or sign in to StackScore",
+              "Complete onboarding",
+              "Schedule your initial strategy session",
+            ],
+            ctaLabel: input.activationToken ? "Activate StackScore" : "Complete Onboarding",
+            primaryHref,
+          };
+
+  return {
+    clientName: input.clientName ?? "there",
+    organizationName: input.organizationName,
+    technologyScore: input.technologyScore ?? "",
+    roadmapUrl: input.roadmapUrl,
+    dashboardUrl: input.dashboardUrl,
+    onboardingUrl: input.onboardingUrl,
+    strategySessionUrl: input.strategySessionUrl,
+    supportEmail: BRAND.email,
+    currentYear: String(new Date().getFullYear()),
+    heroTitle: scenario.heroTitle,
+    heroDescription: scenario.heroDescription,
+    paragraphs: scenario.paragraphs,
+    summaryTitle: "Your next steps",
+    summaryItems: scenario.summaryItems,
+    primaryCta: { label: scenario.ctaLabel, href: scenario.primaryHref },
+    secondaryCta: { label: "Schedule Strategy Session", href: input.strategySessionUrl },
+  };
 }
 
 export async function initializeVcioClient(
@@ -152,27 +237,41 @@ export async function initializeVcioClient(
       : input.welcomeRecipientEmail ?? client.primaryContactEmail;
     if (!recipient) throw new Error("Welcome email recipient is required");
 
-    const result = await sendVcioWelcomeEmail({
-      clientId: client.id,
-      userId: client.users[0]?.id ?? null,
-      to: normalizePurchaserEmail(recipient),
-      clientName: client.primaryContactName,
-      organizationName: client.companyName,
-      customerType,
-      technologyScore: client.technologyProfile?.overallStackScore?.toString() ?? null,
-      activationToken: input.activationToken,
-      onboardingUrl,
-      dashboardUrl,
-      roadmapUrl: `${appUrl}/clients/${client.id}/roadmap`,
-      strategySessionUrl: input.isTest ? `${appUrl}/admin/communications/testing` : undefined,
+    const normalizedRecipient = normalizePurchaserEmail(recipient);
+    const result = await dispatchCommunication({
+      event: "VCIO_SUBSCRIPTION_ACTIVATED",
+      organizationId: client.id,
+      relatedEntityType: "Subscription",
+      relatedEntityId: input.subscriptionId ?? null,
+      recipientEmail: normalizedRecipient,
+      recipientName: client.primaryContactName,
+      idempotencyKey: welcomeEmailIdempotencyKey,
+      triggeredBy: input.source,
+      sendType: input.isTest ? "TEST" : input.source === "MANUAL" ? "MANUAL" : "AUTOMATED",
       isTest: input.isTest ?? false,
       createdByUserId: input.actorUserId ?? null,
-      idempotencyKey: welcomeEmailIdempotencyKey,
+      context: buildVcioWelcomeContext({
+        customerType,
+        clientName: client.primaryContactName,
+        organizationName: client.companyName,
+        technologyScore: client.technologyProfile?.overallStackScore?.toString() ?? null,
+        activationToken: input.activationToken,
+        onboardingUrl,
+        dashboardUrl,
+        roadmapUrl: `${appUrl}/clients/${client.id}/roadmap`,
+        strategySessionUrl: input.isTest
+          ? `${appUrl}/admin/communications/testing`
+          : SERVICES_CTA_DESTINATIONS.generalConsultation.href,
+      }),
     });
-    welcomeEmailStatus = result.status;
-    welcomeEmailRecipient = normalizePurchaserEmail(recipient);
+    if (result.status !== "sent") {
+      throw new Error(`vCIO welcome email was not sent: ${result.reason}`);
+    }
+    welcomeEmailStatus = result.result.status;
+    welcomeEmailRecipient = normalizedRecipient;
     welcomeEmailSentAt = new Date();
-    welcomeEmailMessageId = result.messageId !== "untracked" ? result.messageId : null;
+    welcomeEmailMessageId =
+      result.result.messageId !== "untracked" ? result.result.messageId : null;
     await prisma.vcioOnboarding.update({
       where: { clientId: client.id },
       data: {

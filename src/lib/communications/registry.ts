@@ -156,6 +156,29 @@ const EMAIL_009: EmailTemplateDefinition = {
 export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
   EMAIL_001,
   workflowTemplate({
+    key: "LEGACY-ASSESSMENT-READY",
+    documentId: "LEGACY-ASSESSMENT-READY",
+    name: "Assessment Ready",
+    description:
+      "Sent after assessment checkout fulfillment when the purchaser already has access and can start the assessment.",
+    category: "assessment",
+    status: "active",
+    subject: "Your StackScore Assessment is Ready",
+    previewText: "Sign in to begin your Technology Maturity Assessment.",
+    lastUpdated: LAST_UPDATED,
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "Your StackScore Assessment is Ready",
+      previewText: "Sign in to begin your Technology Maturity Assessment.",
+    },
+    sampleData: {
+      heroTitle: "Your Assessment is Ready",
+      paragraphs: ["Your Technology Maturity Assessment workspace is ready."],
+      primaryCta: { label: "Start Assessment", href: PREVIEW_PROTECTED_URL },
+    },
+  }),
+  workflowTemplate({
     key: "EMAIL-002",
     documentId: "EMAIL-002",
     name: "Assessment Complete",
@@ -376,6 +399,76 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
     },
     sampleData: buildVcioWelcomeSampleData(),
   }),
+  workflowTemplate({
+    key: "VCIO-PAYMENT-FAILED",
+    documentId: "VCIO-PAYMENT-FAILED",
+    name: "vCIO Payment Failed",
+    description: "Notifies a customer that a StackScore vCIO subscription payment failed.",
+    category: "billing",
+    status: "active",
+    subject: "Action needed: StackScore vCIO payment failed",
+    previewText: "Update your billing details to keep vCIO advisory access active.",
+    lastUpdated: LAST_UPDATED,
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName", "billingUrl"],
+    defaults: {
+      subject: "Action needed: StackScore vCIO payment failed",
+      previewText: "Update your billing details to keep vCIO advisory access active.",
+    },
+    sampleData: {
+      heroTitle: "Payment Action Needed",
+      paragraphs: ["We could not process your latest StackScore vCIO subscription payment."],
+      primaryCta: { label: "Manage Billing", href: PREVIEW_PROTECTED_URL },
+    },
+  }),
+  workflowTemplate({
+    key: "VCIO-CANCELLATION-SCHEDULED",
+    documentId: "VCIO-CANCELLATION-SCHEDULED",
+    name: "vCIO Cancellation Scheduled",
+    description: "Confirms that a StackScore vCIO subscription is scheduled to cancel.",
+    category: "billing",
+    status: "active",
+    subject: "StackScore vCIO cancellation scheduled",
+    previewText: "Your advisory access continues until the end of the current period.",
+    lastUpdated: LAST_UPDATED,
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName", "cancellationDate"],
+    defaults: {
+      subject: "StackScore vCIO cancellation scheduled",
+      previewText: "Your advisory access continues until the end of the current period.",
+    },
+    sampleData: {
+      heroTitle: "Cancellation Scheduled",
+      paragraphs: [
+        "Your StackScore vCIO subscription is scheduled to cancel at the end of the current paid period.",
+      ],
+      primaryCta: { label: "Manage Subscription", href: PREVIEW_PROTECTED_URL },
+    },
+  }),
+  workflowTemplate({
+    key: "VCIO-SUBSCRIPTION-ENDED",
+    documentId: "VCIO-SUBSCRIPTION-ENDED",
+    name: "vCIO Subscription Ended",
+    description: "Notifies a customer that their StackScore vCIO subscription has ended.",
+    category: "billing",
+    status: "active",
+    subject: "StackScore vCIO subscription ended",
+    previewText: "Historical records are preserved and advisory features may be read-only.",
+    lastUpdated: LAST_UPDATED,
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName"],
+    defaults: {
+      subject: "StackScore vCIO subscription ended",
+      previewText: "Historical records are preserved and advisory features may be read-only.",
+    },
+    sampleData: {
+      heroTitle: "Subscription Ended",
+      paragraphs: [
+        "Your StackScore vCIO subscription has ended. Historical records are preserved.",
+      ],
+      primaryCta: { label: "Reactivate StackScore vCIO", href: PREVIEW_PROTECTED_URL },
+    },
+  }),
 ];
 
 export function getEmailTemplate(key: string): EmailTemplateDefinition | undefined {
@@ -400,6 +493,7 @@ export const CATEGORY_LABELS: Record<EmailTemplateCategory, string> = {
   review: "Review",
   lifecycle: "Client Lifecycle",
   invitation: "Invitation",
+  billing: "Billing",
 };
 
 export const STATUS_LABELS: Record<EmailTemplateStatus, string> = {

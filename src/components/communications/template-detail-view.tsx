@@ -20,6 +20,7 @@ import type {
   TemplateValidationIssue,
   TemplateVersionView,
 } from "@/lib/communications/types";
+import type { CommunicationAutomationDefinition } from "@/lib/communications/automation-registry";
 
 type TemplateDetailViewProps = {
   template: {
@@ -49,8 +50,20 @@ type TemplateDetailViewProps = {
     history: TemplateVersionView[];
   };
   isAdmin: boolean;
+  defaultTestRecipient: string;
   sampleProfiles: SampleProfileView[];
   initialValidation: TemplateValidationIssue[];
+  automations: CommunicationAutomationDefinition[];
+  recentSends: Array<{
+    id: string;
+    eventKey: string | null;
+    sendType: string;
+    recipientEmail: string;
+    subject: string;
+    status: string;
+    occurredAt: string;
+    isTest: boolean;
+  }>;
 };
 
 export function TemplateDetailView({
@@ -58,8 +71,11 @@ export function TemplateDetailView({
   preview,
   versionState,
   isAdmin,
+  defaultTestRecipient,
   sampleProfiles,
   initialValidation,
+  automations,
+  recentSends,
 }: TemplateDetailViewProps) {
   const [sendOpen, setSendOpen] = useState(false);
   const [subject, setSubject] = useState(versionState.draft?.subject ?? template.subject);
@@ -166,6 +182,60 @@ export function TemplateDetailView({
             <Meta label="Required variables" value={template.requiredVariables.join(", ") || "None"} />
             <Meta label="Optional variables" value={template.optionalVariables.join(", ") || "None"} />
             <Meta label="Shared components" value={template.sharedComponents.join(", ")} />
+          </CommunicationsPanel>
+
+          <CommunicationsPanel title="Automation Mapping">
+            {automations.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No verified automation mapping is registered for this template.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {automations.map((automation) => (
+                  <div key={automation.event} className="rounded-lg border border-border/70 p-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-medium">{automation.event}</p>
+                      <StatusPill tone={automation.status === "connected" ? "success" : "warning"}>
+                        {automation.status.replaceAll("_", " ")}
+                      </StatusPill>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">{automation.description}</p>
+                    <Meta label="Trigger source" value={automation.triggerSource} />
+                    <Meta label="Recipient" value={automation.recipient} />
+                    <Meta label="Idempotency" value={automation.idempotencyKey} />
+                    <Meta label="Manual resend" value={automation.manualResend ? "Eligible" : "Not eligible"} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </CommunicationsPanel>
+
+          <CommunicationsPanel title="Recent Sends">
+            {recentSends.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No sends recorded for this template yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentSends.map((send) => (
+                  <Link
+                    key={send.id}
+                    href={`/admin/communications/history/${send.id}`}
+                    className="block rounded-lg border border-border/70 p-3 text-sm hover:bg-muted/30"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-medium">{send.recipientEmail}</p>
+                      <StatusPill tone={send.status === "SENT" ? "success" : send.status === "FAILED" ? "warning" : "neutral"}>
+                        {send.status}
+                      </StatusPill>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{send.subject}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {send.sendType} · {send.eventKey ?? "No event"} ·{" "}
+                      {new Date(send.occurredAt).toLocaleString()}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </CommunicationsPanel>
 
           {isAdmin && template.previewable ? (
@@ -317,6 +387,7 @@ export function TemplateDetailView({
           onOpenChange={setSendOpen}
           templateKey={template.key}
           templateName={template.name}
+          defaultRecipient={defaultTestRecipient}
           sampleProfiles={sampleProfiles}
         />
       ) : null}

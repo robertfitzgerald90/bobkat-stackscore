@@ -462,6 +462,9 @@ export async function syncVcioSubscriptionFromStripe(
         ctaHref: `${appUrl}/portal/billing`,
         templateKey: "VCIO-CANCELLATION-SCHEDULED",
         workflow: "vcio_cancellation_scheduled",
+        eventKey: "VCIO_CANCELLATION_SCHEDULED",
+        idempotencyKey: `cancellation-scheduled:${localSubscription.id}:${localSubscription.currentPeriodEnd?.toISOString() ?? "unknown"}`,
+        relatedEntityId: localSubscription.id,
       });
       await sendVcioAdminNotification({
         subject: "StackScore vCIO cancellation scheduled",
@@ -482,6 +485,9 @@ export async function syncVcioSubscriptionFromStripe(
         ctaHref: `${appUrl}/vcio-offer`,
         templateKey: "VCIO-SUBSCRIPTION-ENDED",
         workflow: "vcio_subscription_ended",
+        eventKey: "VCIO_SUBSCRIPTION_ENDED",
+        idempotencyKey: `subscription-ended:${localSubscription.id}:${localSubscription.endedAt?.toISOString() ?? "unknown"}`,
+        relatedEntityId: localSubscription.id,
       });
     }
   }

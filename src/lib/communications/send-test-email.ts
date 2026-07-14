@@ -96,6 +96,15 @@ function buildSampleOverrides(input: SendTestEmailInput): Record<string, unknown
   };
 }
 
+function missingRequiredFields(templateKey: string, data: Record<string, unknown>) {
+  const template = getEmailTemplate(templateKey);
+  if (!template) return [];
+  return template.requiredVariables.filter((field) => {
+    const value = data[field];
+    return value === undefined || value === null || value === "";
+  });
+}
+
 export async function sendCommunicationTestEmail(
   input: SendTestEmailInput,
 ): Promise<SendTestEmailResult> {
@@ -110,6 +119,14 @@ export async function sendCommunicationTestEmail(
   }
 
   const sampleOverrides = buildSampleOverrides(input);
+  const mergedData = {
+    ...(template.sampleData as Record<string, unknown>),
+    ...sampleOverrides,
+  };
+  const missing = missingRequiredFields(input.templateKey, mergedData);
+  if (missing.length > 0) {
+    throw new Error(`Missing required merge fields: ${missing.join(", ")}`);
+  }
   const rendered = await renderCommunicationTemplate(input.templateKey, sampleOverrides, {
     isTest: true,
     useSampleDefaults: true,
@@ -118,11 +135,14 @@ export async function sendCommunicationTestEmail(
   try {
     const result = await recordAndSendCommunication({
       to: email,
-      subject: rendered.subject,
+      subject: `[TEST] ${rendered.subject}`,
       html: rendered.html,
       text: rendered.text,
       previewText: rendered.previewText,
       templateKey: input.templateKey,
+      eventKey: "MANUAL_TEST_SEND",
+      sendType: "TEST",
+      triggeredBy: "admin_test_send",
       recipientName: input.firstName,
       isTest: true,
       createdByUserId: input.sentByUserId,

@@ -31,6 +31,10 @@ export type CommunicationHistoryRow = {
   templateKey: string;
   templateName: string;
   subject: string;
+  eventKey: string | null;
+  sendType: string;
+  idempotencyKey: string | null;
+  triggeredBy: string | null;
   status: CommunicationMessageStatus;
   statusLabel: string;
   deliveredAt: string | null;
@@ -122,6 +126,10 @@ export async function queryCommunicationHistory(filters: CommunicationHistoryFil
       templateKey: record.templateKey,
       templateName: getEmailTemplate(record.templateKey)?.name ?? record.templateKey,
       subject: record.subject,
+      eventKey: record.eventKey,
+      sendType: record.isTest ? "TEST" : record.sendType,
+      idempotencyKey: record.idempotencyKey,
+      triggeredBy: record.triggeredBy,
       status: record.status,
       statusLabel: statusLabel(record.status),
       deliveredAt: record.deliveredAt?.toISOString() ?? null,

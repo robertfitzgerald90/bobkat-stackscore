@@ -985,6 +985,12 @@ model CommunicationMessage {
   templateVersion   Int?
   subject           String
   previewText       String?                    @db.Text
+  eventKey          String?
+  sendType          String                     @default("AUTOMATED")
+  idempotencyKey    String?                    @unique
+  triggeredBy       String?
+  relatedEntityType String?
+  relatedEntityId   String?
   recipientEmail    String
   recipientName     String?
   senderEmail       String
@@ -1029,6 +1035,8 @@ model CommunicationMessage {
 
   @@index([clientId])
   @@index([templateKey])
+  @@index([eventKey])
+  @@index([sendType])
   @@index([status])
   @@index([isTest])
   @@index([sentAt])

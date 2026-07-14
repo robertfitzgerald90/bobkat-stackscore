@@ -198,6 +198,8 @@ export async function sendVcioPaymentFailedEmail(input: {
   userId?: string | null;
   to: string;
   gracePeriodDays: number;
+  idempotencyKey?: string;
+  relatedEntityId?: string | null;
 }) {
   const billingUrl = `${getAppUrl()}/portal/billing`;
   const title = "Action needed: StackScore vCIO payment failed";
@@ -216,6 +218,12 @@ export async function sendVcioPaymentFailedEmail(input: {
     html,
     text: `${title}\n\nManage billing: ${billingUrl}`,
     templateKey: "VCIO-PAYMENT-FAILED",
+    eventKey: "VCIO_PAYMENT_FAILED",
+    sendType: "AUTOMATED",
+    idempotencyKey: input.idempotencyKey ?? null,
+    triggeredBy: "Stripe invoice.payment_failed",
+    relatedEntityType: "SubscriptionInvoice",
+    relatedEntityId: input.relatedEntityId ?? null,
     clientId: input.clientId,
     userId: input.userId ?? null,
     metadata: { workflow: "vcio_payment_failed" },
@@ -232,6 +240,9 @@ export async function sendVcioLifecycleEmail(input: {
   ctaHref: string;
   templateKey: string;
   workflow: string;
+  eventKey?: string;
+  idempotencyKey?: string;
+  relatedEntityId?: string | null;
 }) {
   const html = htmlShell(
     input.subject,
@@ -244,6 +255,12 @@ export async function sendVcioLifecycleEmail(input: {
     html,
     text: `${input.subject}\n\n${input.message}\n\n${input.ctaHref}`,
     templateKey: input.templateKey,
+    eventKey: input.eventKey ?? null,
+    sendType: "AUTOMATED",
+    idempotencyKey: input.idempotencyKey ?? null,
+    triggeredBy: "Stripe subscription synchronization service",
+    relatedEntityType: "Subscription",
+    relatedEntityId: input.relatedEntityId ?? null,
     clientId: input.clientId,
     userId: input.userId ?? null,
     metadata: { workflow: input.workflow },

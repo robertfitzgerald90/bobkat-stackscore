@@ -12,6 +12,17 @@ import {
 } from "@/lib/communications/workflows/registry";
 import { prisma } from "@/lib/db";
 
+const WORKFLOW_EVENT_KEYS: Record<string, string> = {
+  assessment_complete: "ASSESSMENT_COMPLETE",
+  roadmap_published: "ROADMAP_READY",
+  proposal_published: "PROPOSAL_READY",
+  project_batch_created: "PROJECTS_SHARED",
+  project_completed: "PROJECT_COMPLETED",
+  quarterly_review: "QUARTERLY_REVIEW_REMINDER",
+  password_reset: "PASSWORD_RESET_REQUESTED",
+  assessment_invitation: "ASSESSMENT_INVITATION_SENT",
+};
+
 export type EnqueueCommunicationInput = {
   workflowKey: CommunicationWorkflowKey;
   clientId?: string | null;
@@ -125,6 +136,21 @@ async function processQueueItem(queueItemId: string, actorUserId?: string) {
         text: rendered.text,
         previewText: rendered.previewText,
         templateKey: item.templateKey,
+        eventKey: WORKFLOW_EVENT_KEYS[item.workflowKey] ?? item.workflowKey,
+        sendType: item.autoSend ? "AUTOMATED" : "MANUAL",
+        idempotencyKey: `${WORKFLOW_EVENT_KEYS[item.workflowKey] ?? item.workflowKey}:${item.id}:${recipient.email}`,
+        triggeredBy: item.autoSend ? "communication_queue_auto_send" : "communication_queue_manual_send",
+        relatedEntityType: item.assessmentId
+          ? "Assessment"
+          : item.tipId
+            ? "TechnologyImprovementPlan"
+            : Array.isArray(item.projectIdsJson)
+              ? "Project"
+              : "CommunicationQueueItem",
+        relatedEntityId:
+          item.assessmentId ??
+          item.tipId ??
+          (Array.isArray(item.projectIdsJson) ? String(item.projectIdsJson[0]) : item.id),
         recipientName: recipient.name ?? null,
         clientId: item.clientId,
         userId: recipient.userId ?? null,

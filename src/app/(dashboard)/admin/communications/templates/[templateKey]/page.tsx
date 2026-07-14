@@ -9,6 +9,8 @@ import { buildPreviewTemplateData } from "@/lib/communications/preview-data";
 import { listSampleProfiles } from "@/lib/communications/sample-profiles";
 import { getDefaultSharedComponents } from "@/lib/communications/template-content";
 import { getTemplateVersionState } from "@/lib/communications/template-versions";
+import { getAutomationsForTemplate } from "@/lib/communications/automation-registry";
+import { prisma } from "@/lib/db";
 import {
   getEmailTemplate,
   isTemplatePreviewable,
@@ -36,6 +38,24 @@ export default async function CommunicationsTemplateDetailPage({ params }: PageP
     getTemplateVersionState(templateKey),
     listSampleProfiles(templateKey),
   ]);
+  const automations = getAutomationsForTemplate(templateKey);
+  const recentSends = await prisma.communicationMessage.findMany({
+    where: { templateKey },
+    orderBy: { createdAt: "desc" },
+    take: 8,
+    select: {
+      id: true,
+      eventKey: true,
+      sendType: true,
+      recipientEmail: true,
+      subject: true,
+      status: true,
+      sentAt: true,
+      failedAt: true,
+      createdAt: true,
+      isTest: true,
+    },
+  });
 
   let preview: { html: string; text: string; subject: string } | null = null;
 
@@ -70,8 +90,20 @@ export default async function CommunicationsTemplateDetailPage({ params }: PageP
       preview={preview}
       versionState={versionState}
       isAdmin={isAdmin}
+      defaultTestRecipient={session.user.email ?? ""}
       sampleProfiles={sampleProfiles}
       initialValidation={initialValidation}
+      automations={automations}
+      recentSends={recentSends.map((send) => ({
+        id: send.id,
+        eventKey: send.eventKey,
+        sendType: send.sendType,
+        recipientEmail: send.recipientEmail,
+        subject: send.subject,
+        status: send.status,
+        occurredAt: (send.sentAt ?? send.failedAt ?? send.createdAt).toISOString(),
+        isTest: send.isTest,
+      }))}
     />
   );
 }

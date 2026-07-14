@@ -23,6 +23,12 @@ export type OutboundCommunicationInput = {
   previewText?: string | null;
   templateKey: string;
   templateVersion?: number | null;
+  eventKey?: string | null;
+  sendType?: "AUTOMATED" | "MANUAL" | "TEST";
+  idempotencyKey?: string | null;
+  triggeredBy?: string | null;
+  relatedEntityType?: string | null;
+  relatedEntityId?: string | null;
   recipientName?: string | null;
   isTest?: boolean;
   clientId?: string | null;
@@ -64,6 +70,26 @@ export async function recordAndSendCommunication(
   const templateVersion =
     input.templateVersion ?? (input.isTest ? null : await resolveTemplateVersion(input.templateKey));
 
+  if (input.idempotencyKey && !input.isTest) {
+    const existing = await prisma.communicationMessage.findUnique({
+      where: { idempotencyKey: input.idempotencyKey },
+      select: {
+        id: true,
+        providerMessageId: true,
+        status: true,
+      },
+    });
+    if (existing) {
+      return {
+        messageId: existing.id,
+        providerMessageId: existing.providerMessageId ?? undefined,
+        status: existing.status,
+        delivered: false,
+        provider: "resend",
+      };
+    }
+  }
+
   const message = await withCommunicationDbFallback(
     () =>
       prisma.communicationMessage.create({
@@ -72,6 +98,12 @@ export async function recordAndSendCommunication(
           templateVersion,
           subject: input.subject,
           previewText: input.previewText ?? null,
+          eventKey: input.eventKey ?? null,
+          sendType: input.sendType ?? (input.isTest ? "TEST" : "AUTOMATED"),
+          idempotencyKey: input.idempotencyKey ?? null,
+          triggeredBy: input.triggeredBy ?? null,
+          relatedEntityType: input.relatedEntityType ?? null,
+          relatedEntityId: input.relatedEntityId ?? null,
           recipientEmail: email,
           recipientName: input.recipientName ?? null,
           senderEmail: sender,

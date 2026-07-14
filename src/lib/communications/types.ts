@@ -9,7 +9,8 @@ export type EmailTemplateCategory =
   | "project"
   | "review"
   | "lifecycle"
-  | "invitation";
+  | "invitation"
+  | "billing";
 
 import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import type { TemplateVersionContent } from "@/lib/communications/template-content";
