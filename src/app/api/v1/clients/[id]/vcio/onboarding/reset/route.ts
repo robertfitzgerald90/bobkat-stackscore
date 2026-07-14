@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser, requireConsultantOrAdmin, unauthorized } from "@/lib/api/helpers";
-import { prisma } from "@/lib/db";
 import { detectVcioCustomerType } from "@/lib/vcio/onboarding";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
+import { initializeVcioClient } from "@/lib/vcio/initialization";
 
 type RouteProps = {
   params: Promise<{ id: string }>;
@@ -17,26 +17,14 @@ export async function POST(_request: NextRequest, { params }: RouteProps) {
   const { id: clientId } = await params;
   const customerType = await detectVcioCustomerType(clientId);
 
-  await prisma.vcioOnboarding.upsert({
-    where: { clientId },
-    create: {
-      clientId,
-      status: "not_started",
-      customerType,
-      currentStep: "welcome",
-      completionPercentage: 0,
-      resetAt: new Date(),
-      resetByUserId: user.id,
-    },
-    update: {
-      status: "not_started",
-      customerType,
-      currentStep: "welcome",
-      completionPercentage: 0,
-      completedAt: null,
-      resetAt: new Date(),
-      resetByUserId: user.id,
-    },
+  await initializeVcioClient({
+    organizationId: clientId,
+    source: "MANUAL",
+    sendWelcomeEmail: false,
+    scenarioOverride: customerType,
+    resetExisting: true,
+    actorUserId: user.id,
+    initializationIdempotencyKey: `vcio-onboarding:${clientId}:manual-reset:${Date.now()}`,
   });
 
   await recordOrganizationActivity({

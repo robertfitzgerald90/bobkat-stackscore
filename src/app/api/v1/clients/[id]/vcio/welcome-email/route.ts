@@ -11,9 +11,9 @@ import {
   generateActivationToken,
   normalizePurchaserEmail,
 } from "@/lib/stripe/fulfillment/helpers";
-import { sendVcioWelcomeEmail } from "@/lib/vcio/emails";
 import { detectVcioCustomerType } from "@/lib/vcio/onboarding";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
+import { initializeVcioClient } from "@/lib/vcio/initialization";
 
 type RouteProps = {
   params: Promise<{ id: string }>;
@@ -65,15 +65,16 @@ export async function POST(_request: NextRequest, { params }: RouteProps) {
   }
 
   const customerType = client.vcioOnboarding?.customerType ?? (await detectVcioCustomerType(clientId));
-  await sendVcioWelcomeEmail({
-    clientId,
-    userId: clientUser?.id ?? null,
-    to: recipientEmail,
-    clientName: client.primaryContactName,
-    organizationName: client.companyName,
-    customerType,
-    technologyScore: client.technologyProfile?.overallStackScore?.toString() ?? null,
+  await initializeVcioClient({
+    organizationId: clientId,
+    source: "MANUAL",
+    sendWelcomeEmail: true,
+    welcomeRecipientEmail: recipientEmail,
+    scenarioOverride: customerType,
+    actorUserId: user.id,
     activationToken,
+    welcomeIdempotencyKey: `vcio-welcome:${clientId}:manual:${Date.now()}`,
+    initializationIdempotencyKey: `vcio-onboarding:${clientId}:manual`,
   });
 
   await recordOrganizationActivity({

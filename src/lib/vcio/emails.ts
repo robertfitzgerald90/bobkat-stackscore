@@ -1,4 +1,7 @@
-import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
+import {
+  recordAndSendCommunication,
+  type OutboundCommunicationResult,
+} from "@/lib/communications/tracking/record-outbound";
 import { renderCommunicationTemplate } from "@/lib/communications/render-template";
 import { sendInternalNotificationEmail } from "@/lib/communications/workflows/internal-notify";
 import { buildActivationUrls } from "@/lib/email/templates/assessment-purchase";
@@ -30,7 +33,7 @@ export async function sendVcioSubscriptionReceivedEmail(input: {
   userId?: string | null;
   to: string;
   activationToken?: string;
-}) {
+}): Promise<OutboundCommunicationResult> {
   const appUrl = getAppUrl();
   const onboardingUrl = `${appUrl}/portal/vcio/onboarding`;
   const activationUrl = input.activationToken
@@ -48,7 +51,7 @@ export async function sendVcioSubscriptionReceivedEmail(input: {
     ].join(""),
   );
 
-  await recordAndSendCommunication({
+  return recordAndSendCommunication({
     to: input.to,
     subject: title,
     html,
@@ -69,12 +72,20 @@ export async function sendVcioWelcomeEmail(input: {
   customerType: VcioCustomerType;
   technologyScore?: string | null;
   activationToken?: string;
+  onboardingUrl?: string;
+  dashboardUrl?: string;
+  roadmapUrl?: string;
+  strategySessionUrl?: string;
+  isTest?: boolean;
+  createdByUserId?: string | null;
+  idempotencyKey?: string;
 }) {
   const appUrl = getAppUrl();
-  const onboardingUrl = `${appUrl}/portal/vcio/onboarding`;
-  const dashboardUrl = `${appUrl}/portal/vcio`;
-  const roadmapUrl = `${appUrl}/portal/roadmap`;
-  const strategySessionUrl = SERVICES_CTA_DESTINATIONS.generalConsultation.href;
+  const onboardingUrl = input.onboardingUrl ?? `${appUrl}/portal/vcio/onboarding`;
+  const dashboardUrl = input.dashboardUrl ?? `${appUrl}/portal/vcio`;
+  const roadmapUrl = input.roadmapUrl ?? `${appUrl}/portal/roadmap`;
+  const strategySessionUrl =
+    input.strategySessionUrl ?? SERVICES_CTA_DESTINATIONS.generalConsultation.href;
   const primaryHref = input.activationToken
     ? buildActivationUrls(input.activationToken).activationUrl
     : onboardingUrl;
@@ -160,9 +171,9 @@ export async function sendVcioWelcomeEmail(input: {
     { useSampleDefaults: true },
   );
 
-  await recordAndSendCommunication({
+  return recordAndSendCommunication({
     to: input.to,
-    subject: scenario.subject,
+    subject: input.isTest ? `[TEST] ${scenario.subject}` : scenario.subject,
     html: rendered.html,
     text: rendered.text,
     previewText: rendered.previewText,
@@ -170,10 +181,14 @@ export async function sendVcioWelcomeEmail(input: {
     clientId: input.clientId,
     userId: input.userId ?? null,
     recipientName: input.clientName ?? undefined,
+    isTest: input.isTest ?? false,
+    createdByUserId: input.createdByUserId ?? null,
     metadata: {
       workflow: "vcio_welcome",
       customerType: input.customerType,
       templateVersion: "EMAIL-010",
+      idempotencyKey: input.idempotencyKey,
+      testMode: input.isTest ?? false,
     },
   });
 }

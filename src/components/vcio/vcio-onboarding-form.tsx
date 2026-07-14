@@ -39,6 +39,7 @@ type VcioOnboardingFormProps = {
     projects: string[];
     improvementPlan: string | null;
   };
+  previewMode?: boolean;
 };
 
 function asRecord(value: unknown): OnboardingValue {
@@ -102,7 +103,12 @@ function customerTypeLabel(customerType: VcioCustomerType) {
   return "Brand New Customer";
 }
 
-export function VcioOnboardingForm({ clientId, initial, knownData }: VcioOnboardingFormProps) {
+export function VcioOnboardingForm({
+  clientId,
+  initial,
+  knownData,
+  previewMode = false,
+}: VcioOnboardingFormProps) {
   const [saving, setSaving] = useState(false);
   const [businessInfo, setBusinessInfo] = useState<OnboardingValue>(
     asRecord(initial?.businessInfoJson),
@@ -136,6 +142,10 @@ export function VcioOnboardingForm({ clientId, initial, knownData }: VcioOnboard
   }
 
   async function save(complete = false) {
+    if (previewMode) {
+      toast.info("Preview mode does not save onboarding changes.");
+      return;
+    }
     setSaving(true);
     try {
       const response = await fetch(`/api/v1/clients/${clientId}/vcio/onboarding`, {
@@ -359,9 +369,9 @@ export function VcioOnboardingForm({ clientId, initial, knownData }: VcioOnboard
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button type="button" variant="outline" onClick={() => void save(false)} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Save Progress
+          {previewMode ? "Preview Only" : "Save Progress"}
         </Button>
-        <Button type="button" onClick={() => void save(true)} disabled={saving}>
+        <Button type="button" onClick={() => void save(true)} disabled={saving || previewMode}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Complete Onboarding
         </Button>

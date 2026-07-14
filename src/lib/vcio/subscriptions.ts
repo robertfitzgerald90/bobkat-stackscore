@@ -22,6 +22,7 @@ import {
   VCIO_SERVICE_TYPE,
 } from "@/lib/vcio/constants";
 import { findClientIdByStripeCustomerId } from "@/lib/vcio/stripe-customers";
+import { initializeVcioClient } from "@/lib/vcio/initialization";
 
 type SyncResult =
   | {
@@ -116,40 +117,6 @@ async function ensureRecurringService(clientId: string) {
       startDate: new Date(),
       nextBillingDate: new Date(),
       status: "pending_activation",
-    },
-  });
-}
-
-async function ensureVcioOnboarding(input: {
-  clientId: string;
-  subscriptionId: string;
-}) {
-  const { calculateOnboardingPercentage, detectVcioCustomerType } = await import(
-    "@/lib/vcio/onboarding"
-  );
-  const completedAssessment = await prisma.assessment.findFirst({
-    where: { clientId: input.clientId, status: "completed" },
-    select: { id: true },
-  });
-  const customerType = await detectVcioCustomerType(input.clientId);
-
-  await prisma.vcioOnboarding.upsert({
-    where: { clientId: input.clientId },
-    create: {
-      clientId: input.clientId,
-      subscriptionId: input.subscriptionId,
-      status: "not_started",
-      customerType,
-      currentStep: "welcome",
-      completionPercentage: calculateOnboardingPercentage(customerType, "welcome", false),
-      baselineRequired: !completedAssessment,
-      assessmentStatus: completedAssessment ? "completed" : "baseline_required",
-    },
-    update: {
-      subscriptionId: input.subscriptionId,
-      customerType,
-      baselineRequired: !completedAssessment,
-      assessmentStatus: completedAssessment ? "completed" : "baseline_required",
     },
   });
 }
@@ -416,11 +383,6 @@ export async function syncVcioSubscriptionFromStripe(
     },
   });
 
-  await ensureVcioOnboarding({
-    clientId: resolved.clientId,
-    subscriptionId: localSubscription.id,
-  });
-
   await recordBillingAudit({
     clientId: resolved.clientId,
     action:
@@ -435,6 +397,23 @@ export async function syncVcioSubscriptionFromStripe(
       status,
     },
   });
+
+  if (
+    (status === "active" || status === "trialing") &&
+    previousSubscription?.status !== "active" &&
+    previousSubscription?.status !== "trialing"
+  ) {
+    await initializeVcioClient({
+      organizationId: resolved.clientId,
+      subscriptionId: localSubscription.id,
+      source: "STRIPE",
+      sendWelcomeEmail: !("manualReview" in resolved && resolved.manualReview),
+      welcomeRecipientEmail: resolved.purchaserEmail || undefined,
+      activationToken: "activationToken" in resolved ? resolved.activationToken : undefined,
+      initializationIdempotencyKey: `vcio-onboarding:${resolved.clientId}:${localSubscription.id}`,
+      welcomeIdempotencyKey: `vcio-welcome:${resolved.clientId}:${localSubscription.id}:1`,
+    });
+  }
 
   await recordOrganizationActivity({
     clientId: resolved.clientId,
@@ -465,28 +444,11 @@ export async function syncVcioSubscriptionFromStripe(
   });
 
   if (clientContact?.primaryContactEmail) {
-    const { sendVcioAdminNotification, sendVcioLifecycleEmail, sendVcioWelcomeEmail } = await import(
+    const { sendVcioAdminNotification, sendVcioLifecycleEmail } = await import(
       "@/lib/vcio/emails"
     );
     const appUrl = (await import("@/lib/stripe/app-url")).getAppUrl();
     const userId = clientContact.users[0]?.id ?? null;
-
-    if (
-      (status === "active" || status === "trialing") &&
-      previousSubscription?.status !== "active" &&
-      previousSubscription?.status !== "trialing"
-    ) {
-      await sendVcioWelcomeEmail({
-        clientId: resolved.clientId,
-        userId,
-        to: clientContact.primaryContactEmail,
-        clientName: clientContact.primaryContactName,
-        organizationName: clientContact.companyName,
-        customerType: clientContact.vcioOnboarding?.customerType ?? "brand_new",
-        technologyScore: clientContact.technologyProfile?.overallStackScore?.toString() ?? null,
-        activationToken: "activationToken" in resolved ? resolved.activationToken : undefined,
-      });
-    }
 
     if (localSubscription.cancelAtPeriodEnd && !previousSubscription?.cancelAtPeriodEnd) {
       await sendVcioLifecycleEmail({

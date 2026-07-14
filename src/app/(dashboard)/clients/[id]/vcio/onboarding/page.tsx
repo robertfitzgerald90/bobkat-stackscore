@@ -6,17 +6,28 @@ import { prisma } from "@/lib/db";
 import { getClientVcioEntitlement } from "@/lib/vcio/entitlements";
 import { buttonVariants } from "@/components/ui/button";
 import { detectVcioCustomerType } from "@/lib/vcio/onboarding";
+import type { VcioCustomerType } from "@/generated/prisma/client";
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ preview?: string; scenario?: string }>;
 };
 
-export default async function VcioOnboardingPage({ params }: PageProps) {
+function previewScenario(value: string | undefined): VcioCustomerType | null {
+  if (value === "assessment_customer" || value === "managed_services_client" || value === "brand_new") {
+    return value;
+  }
+  return null;
+}
+
+export default async function VcioOnboardingPage({ params, searchParams }: PageProps) {
   const { id: clientId } = await params;
+  const query = searchParams ? await searchParams : {};
   const user = await getSessionUserWithClient();
   if (!user) redirect("/login");
   const denied = await requireClientWorkspaceAccess(user, clientId);
   if (denied) redirect("/dashboard");
+  const previewMode = query.preview === "1" && user.role === "admin";
 
   const client = await prisma.client.findUnique({
     where: { id: clientId },
@@ -58,7 +69,7 @@ export default async function VcioOnboardingPage({ params }: PageProps) {
   if (!client) notFound();
 
   const entitlement = await getClientVcioEntitlement(clientId);
-  if (!entitlement.hasSubscription) {
+  if (!entitlement.hasSubscription && !previewMode) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
         <h1 className="page-title">StackScore vCIO Onboarding</h1>
@@ -75,7 +86,10 @@ export default async function VcioOnboardingPage({ params }: PageProps) {
   const onboarding = await prisma.vcioOnboarding.findUnique({
     where: { clientId },
   });
-  const detectedCustomerType = onboarding?.customerType ?? (await detectVcioCustomerType(clientId));
+  const detectedCustomerType =
+    (previewMode ? previewScenario(query.scenario) : null) ??
+    onboarding?.customerType ??
+    (await detectVcioCustomerType(clientId));
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -92,6 +106,12 @@ export default async function VcioOnboardingPage({ params }: PageProps) {
           Back to vCIO Dashboard
         </Link>
       </div>
+      {previewMode ? (
+        <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm font-medium text-warning">
+          PREVIEW MODE: this adaptive onboarding workflow is using the real UI with writes, emails,
+          scheduling, entitlement changes, and billing redirects disabled.
+        </div>
+      ) : null}
       <VcioOnboardingForm
         clientId={clientId}
         initial={
@@ -102,9 +122,9 @@ export default async function VcioOnboardingPage({ params }: PageProps) {
                 environmentJson: onboarding.environmentJson,
                 planningJson: onboarding.planningJson,
                 assessmentStatus: onboarding.assessmentStatus,
-                customerType: onboarding.customerType,
-                currentStep: onboarding.currentStep,
-                completionPercentage: onboarding.completionPercentage,
+                customerType: detectedCustomerType,
+                currentStep: previewMode ? "welcome" : onboarding.currentStep,
+                completionPercentage: previewMode ? 0 : onboarding.completionPercentage,
                 strategySessionScheduledAt:
                   onboarding.strategySessionScheduledAt?.toISOString() ?? null,
                 completedAt: onboarding.completedAt?.toISOString() ?? null,
@@ -139,6 +159,7 @@ export default async function VcioOnboardingPage({ params }: PageProps) {
             ? `${client.improvementPlans[0].title} (${client.improvementPlans[0].status})`
             : null,
         }}
+        previewMode={previewMode}
       />
     </div>
   );

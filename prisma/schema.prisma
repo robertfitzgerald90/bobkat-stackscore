@@ -2133,6 +2133,16 @@ model VcioOnboarding {
   customerType               VcioCustomerType     @default(brand_new)
   currentStep                String               @default("welcome")
   completionPercentage       Int                  @default(0)
+  initializationSource       String?
+  initializationIdempotencyKey String?
+  initializedAt              DateTime?
+  initializationError        String?              @db.Text
+  testInitiated              Boolean              @default(false)
+  welcomeEmailStatus         String?
+  welcomeEmailRecipient      String?
+  welcomeEmailSentAt         DateTime?
+  welcomeEmailMessageId      String?
+  welcomeEmailIdempotencyKey String?
   baselineRequired           Boolean              @default(true)
   businessInfoJson           Json?
   leadershipJson             Json?
@@ -2153,6 +2163,8 @@ model VcioOnboarding {
   @@index([status])
   @@index([customerType])
   @@index([resetByUserId])
+  @@index([initializationIdempotencyKey])
+  @@index([welcomeEmailIdempotencyKey])
 }
 
 model VcioQuarterlyReview {

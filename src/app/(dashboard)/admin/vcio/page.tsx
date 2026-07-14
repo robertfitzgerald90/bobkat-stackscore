@@ -98,9 +98,14 @@ export default async function AdminVcioPage({ searchParams }: PageProps) {
             Subscription, onboarding, review, risk, and project visibility for StackScore vCIO.
           </p>
         </div>
-        <Link href="/admin/billing" className={buttonVariants({ variant: "outline" })}>
-          Open Admin Billing
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/communications/testing" className={buttonVariants({ variant: "default" })}>
+            vCIO Onboarding Test
+          </Link>
+          <Link href="/admin/billing" className={buttonVariants({ variant: "outline" })}>
+            Open Admin Billing
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -150,9 +155,9 @@ export default async function AdminVcioPage({ searchParams }: PageProps) {
                 <th className="p-4 font-medium">Primary Contact</th>
                 <th className="p-4 font-medium">Subscription</th>
                 <th className="p-4 font-medium">Onboarding</th>
-                <th className="p-4 font-medium">Score</th>
-                <th className="p-4 font-medium">Risks</th>
-                <th className="p-4 font-medium">Projects</th>
+                <th className="p-4 font-medium">Verification</th>
+                <th className="p-4 font-medium">Welcome Email</th>
+                <th className="p-4 font-medium">Strategy</th>
                 <th className="p-4 font-medium">Next Review</th>
               </tr>
             </thead>
@@ -168,11 +173,53 @@ export default async function AdminVcioPage({ searchParams }: PageProps) {
                     <p>{subscription.client.primaryContactName}</p>
                     <p className="text-muted-foreground">{subscription.client.primaryContactEmail}</p>
                   </td>
-                  <td className="p-4">{subscription.status}</td>
-                  <td className="p-4">{subscription.vcioOnboarding?.status ?? "not_started"}</td>
-                  <td className="p-4">{subscription.client.technologyProfile?.overallStackScore?.toString() ?? "-"}</td>
-                  <td className="p-4">{subscription.client.technologyProfile?.criticalExposureCount ?? 0}</td>
-                  <td className="p-4">{subscription.client.projects.length}</td>
+                  <td className="p-4">
+                    <p>{subscription.status}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Entitlement: {["active", "trialing", "past_due"].includes(subscription.status) ? "Ready" : "Read-only"}
+                    </p>
+                  </td>
+                  <td className="p-4">
+                    <p>{subscription.vcioOnboarding?.status ?? "Onboarding Not Started"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {subscription.vcioOnboarding?.customerType ?? "Unknown"} · step{" "}
+                      {subscription.vcioOnboarding?.currentStep ?? "welcome"} ·{" "}
+                      {subscription.vcioOnboarding?.completionPercentage ?? 0}%
+                    </p>
+                  </td>
+                  <td className="p-4">
+                    <div className="space-y-1">
+                      <p>
+                        {subscription.vcioOnboarding?.initializationError
+                          ? "Initialization Failed"
+                          : subscription.vcioOnboarding?.initializedAt
+                            ? "Ready"
+                            : "Waiting for Subscription"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Source: {subscription.vcioOnboarding?.initializationSource ?? "none"}
+                      </p>
+                      <Link href={`/clients/${subscription.clientId}/vcio/onboarding`} className="text-xs text-primary hover:underline">
+                        Onboarding URL
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <p>{subscription.vcioOnboarding?.welcomeEmailStatus ? "Welcome Email Sent" : "Welcome Email Pending"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {subscription.vcioOnboarding?.welcomeEmailRecipient ?? "No recipient"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {subscription.vcioOnboarding?.welcomeEmailSentAt
+                        ? formatDisplayDate(subscription.vcioOnboarding.welcomeEmailSentAt)
+                        : "Not sent"}
+                    </p>
+                  </td>
+                  <td className="p-4">
+                    {subscription.vcioOnboarding?.strategySessionScheduledAt
+                      ? `Scheduled ${formatDisplayDate(subscription.vcioOnboarding.strategySessionScheduledAt)}`
+                      : "Not scheduled"}
+                  </td>
                   <td className="p-4">
                     {subscription.vcioQuarterlyReviews[0]?.nextReviewDate
                       ? formatDisplayDate(subscription.vcioQuarterlyReviews[0].nextReviewDate)
