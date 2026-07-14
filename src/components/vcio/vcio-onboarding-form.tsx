@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { VcioCustomerType } from "@/generated/prisma/client";
 
 type OnboardingValue = Record<string, string>;
 
@@ -17,9 +18,27 @@ type VcioOnboardingFormProps = {
     environmentJson: unknown;
     planningJson: unknown;
     assessmentStatus: string | null;
+    customerType: VcioCustomerType;
+    currentStep: string;
+    completionPercentage: number;
     strategySessionScheduledAt: string | null;
     completedAt: string | null;
-  } | null;
+  };
+  knownData: {
+    companyName: string;
+    primaryContactName: string;
+    primaryContactEmail: string;
+    employeeCount: number | null;
+    numberOfLocations: number | null;
+    deviceCount: number | null;
+    industry: string | null;
+    technologyScore: string | null;
+    openRecommendationCount: number;
+    criticalExposureCount: number;
+    recommendations: string[];
+    projects: string[];
+    improvementPlan: string | null;
+  };
 };
 
 function asRecord(value: unknown): OnboardingValue {
@@ -75,7 +94,15 @@ function TextArea({
   );
 }
 
-export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProps) {
+const steps = ["Welcome", "Business", "Goals", "Strategy Session", "Complete"] as const;
+
+function customerTypeLabel(customerType: VcioCustomerType) {
+  if (customerType === "managed_services_client") return "Existing Managed Services Client";
+  if (customerType === "assessment_customer") return "Existing Assessment Customer";
+  return "Brand New Customer";
+}
+
+export function VcioOnboardingForm({ clientId, initial, knownData }: VcioOnboardingFormProps) {
   const [saving, setSaving] = useState(false);
   const [businessInfo, setBusinessInfo] = useState<OnboardingValue>(
     asRecord(initial?.businessInfoJson),
@@ -93,6 +120,11 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
   const [strategySessionScheduledAt, setStrategySessionScheduledAt] = useState(
     initial?.strategySessionScheduledAt?.slice(0, 10) ?? "",
   );
+  const customerType = initial.customerType;
+  const currentStep = initial.currentStep ?? "welcome";
+  const isBrandNew = customerType === "brand_new";
+  const isAssessmentCustomer = customerType === "assessment_customer";
+  const isManagedServicesClient = customerType === "managed_services_client";
   const completed = Boolean(initial?.completedAt);
 
   function update(
@@ -116,6 +148,7 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
           planning,
           assessmentStatus,
           strategySessionScheduledAt: strategySessionScheduledAt || null,
+          currentStep,
           complete,
         }),
       });
@@ -135,6 +168,73 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
 
   return (
     <div className="space-y-6">
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-medium text-primary">{customerTypeLabel(customerType)}</p>
+              <h2 className="mt-1 text-xl font-semibold">
+                {isBrandNew ? "Welcome to StackScore vCIO" : "Welcome back."}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {isBrandNew
+                  ? "We will collect only the essentials needed to prepare your first strategy session."
+                  : isAssessmentCustomer
+                    ? "Your existing assessment, recommendations, roadmap, and projects are already connected."
+                    : "Your organization is already configured. We only need your current priorities."}
+              </p>
+            </div>
+            <div className="min-w-48">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Progress</span>
+                <span>{initial.completionPercentage}%</span>
+              </div>
+              <div className="mt-2 h-2 rounded-full bg-background">
+                <div
+                  className="h-2 rounded-full bg-primary"
+                  style={{ width: `${initial.completionPercentage}%` }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {steps.map((step, index) => (
+              <span key={step} className="inline-flex items-center gap-2">
+                <span className="rounded-full border border-border bg-background px-2 py-1">{step}</span>
+                {index < steps.length - 1 ? <span>→</span> : null}
+              </span>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {!isBrandNew ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>What we already know</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-border/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Organization</p>
+              <p className="mt-2 font-semibold">{knownData.companyName}</p>
+              <p className="text-sm text-muted-foreground">{knownData.primaryContactEmail}</p>
+            </div>
+            <div className="rounded-xl border border-border/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Technology Score</p>
+              <p className="mt-2 text-2xl font-semibold">{knownData.technologyScore ?? "Baseline needed"}</p>
+            </div>
+            <div className="rounded-xl border border-border/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Recommendations</p>
+              <p className="mt-2 text-2xl font-semibold">{knownData.openRecommendationCount}</p>
+            </div>
+            <div className="rounded-xl border border-border/60 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Current Projects</p>
+              <p className="mt-2 text-2xl font-semibold">{knownData.projects.length}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {completed ? (
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="flex items-start gap-3 p-5 text-sm">
@@ -149,6 +249,7 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
         </Card>
       ) : null}
 
+      {isBrandNew ? (
       <Card>
         <CardHeader>
           <CardTitle>Business Information</CardTitle>
@@ -164,7 +265,9 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
           <Field label="Locations" value={businessInfo.locations ?? ""} onChange={(value) => update(setBusinessInfo, "locations", value)} />
         </CardContent>
       </Card>
+      ) : null}
 
+      {isBrandNew ? (
       <Card>
         <CardHeader>
           <CardTitle>Technology Leadership</CardTitle>
@@ -177,7 +280,9 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
           <Field label="Existing MSP" value={leadership.managedServiceProvider ?? ""} onChange={(value) => update(setLeadership, "managedServiceProvider", value)} />
         </CardContent>
       </Card>
+      ) : null}
 
+      {isBrandNew ? (
       <Card>
         <CardHeader>
           <CardTitle>Current Environment</CardTitle>
@@ -191,18 +296,37 @@ export function VcioOnboardingForm({ clientId, initial }: VcioOnboardingFormProp
           <TextArea label="Current technology vendors" value={environment.vendors ?? ""} onChange={(value) => update(setEnvironment, "vendors", value)} />
         </CardContent>
       </Card>
+      ) : null}
 
       <Card>
         <CardHeader>
-          <CardTitle>Planning Information</CardTitle>
+          <CardTitle>
+            {isAssessmentCustomer
+              ? "What has changed since your assessment?"
+              : isManagedServicesClient
+                ? "Current priorities"
+                : "Planning Information"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <TextArea label="Current technology concerns" value={planning.concerns ?? ""} onChange={(value) => update(setPlanning, "concerns", value)} />
+          {isAssessmentCustomer ? (
+            <TextArea
+              label="What has changed?"
+              value={planning.changedSinceAssessment ?? ""}
+              onChange={(value) => update(setPlanning, "changedSinceAssessment", value)}
+              placeholder="New employees, locations, initiatives, budget changes, vendor changes, or business priorities"
+            />
+          ) : null}
+          <TextArea label="Business priorities" value={planning.concerns ?? ""} onChange={(value) => update(setPlanning, "concerns", value)} />
           <TextArea label="Current projects" value={planning.projects ?? ""} onChange={(value) => update(setPlanning, "projects", value)} />
-          <TextArea label="Planned growth" value={planning.growth ?? ""} onChange={(value) => update(setPlanning, "growth", value)} />
-          <TextArea label="Upcoming renewals" value={planning.renewals ?? ""} onChange={(value) => update(setPlanning, "renewals", value)} />
-          <TextArea label="Known compliance requirements" value={planning.compliance ?? ""} onChange={(value) => update(setPlanning, "compliance", value)} />
-          <TextArea label="Budget-planning preferences" value={planning.budgetPreferences ?? ""} onChange={(value) => update(setPlanning, "budgetPreferences", value)} />
+          <TextArea label="Upcoming initiatives" value={planning.growth ?? ""} onChange={(value) => update(setPlanning, "growth", value)} />
+          {isBrandNew || isAssessmentCustomer ? (
+            <>
+              <TextArea label="Upcoming renewals" value={planning.renewals ?? ""} onChange={(value) => update(setPlanning, "renewals", value)} />
+              <TextArea label="Known compliance requirements" value={planning.compliance ?? ""} onChange={(value) => update(setPlanning, "compliance", value)} />
+              <TextArea label="Budget-planning preferences" value={planning.budgetPreferences ?? ""} onChange={(value) => update(setPlanning, "budgetPreferences", value)} />
+            </>
+          ) : null}
         </CardContent>
       </Card>
 

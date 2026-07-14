@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     firstName: body.firstName ? String(body.firstName) : undefined,
     organizationName: body.organizationName ? String(body.organizationName) : undefined,
     assessmentName: body.assessmentName ? String(body.assessmentName) : undefined,
+    vcioCustomerType: body.vcioCustomerType ? String(body.vcioCustomerType) : undefined,
   };
 
   const data = resolveSampleData(
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
       firstName: data.firstName ? String(data.firstName) : undefined,
       organizationName: data.organizationName ? String(data.organizationName) : undefined,
       assessmentName: data.assessmentName ? String(data.assessmentName) : undefined,
+      vcioCustomerType: data.vcioCustomerType ? String(data.vcioCustomerType) : undefined,
       sentByUserId: user.id,
     });
 

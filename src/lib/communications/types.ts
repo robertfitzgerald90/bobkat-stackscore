@@ -8,6 +8,7 @@ export type EmailTemplateCategory =
   | "security"
   | "project"
   | "review"
+  | "lifecycle"
   | "invitation";
 
 import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";

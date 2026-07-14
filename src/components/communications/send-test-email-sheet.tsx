@@ -43,6 +43,7 @@ export function SendTestEmailSheet({
   const [firstName, setFirstName] = useState("Alex");
   const [organizationName, setOrganizationName] = useState("Northwind Professional Services");
   const [assessmentName, setAssessmentName] = useState("StackScore Technology Maturity Assessment");
+  const [vcioCustomerType, setVcioCustomerType] = useState("brand_new");
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
   const [preview, setPreview] = useState<{ html: string; text: string; subject: string } | null>(
     null,
@@ -56,6 +57,43 @@ export function SendTestEmailSheet({
   }, [open, defaultRecipient]);
 
   function buildSampleData() {
+    if (templateKey === "EMAIL-010") {
+      const base = {
+        firstName: firstName || undefined,
+        clientName: firstName || undefined,
+        organizationName: organizationName || undefined,
+        vcioCustomerType,
+      };
+      if (vcioCustomerType === "assessment_customer") {
+        return {
+          ...base,
+          heroTitle: "Welcome Back to StackScore vCIO",
+          heroDescription:
+            "Your existing assessment has been connected and your advisory roadmap is ready.",
+          paragraphs: [
+            "We connected your existing technology assessment, recommendations, improvement plan, and current projects.",
+            "Complete the quick setup to tell us what has changed since your assessment, then schedule your first strategy session.",
+          ],
+          summaryItems: ["Technology Score: 72", "Recommendations are available", "Your roadmap is ready for review"],
+          primaryCta: { label: "Complete Quick Setup", href: "https://app.stackscore.example/portal/vcio/onboarding" },
+        };
+      }
+      if (vcioCustomerType === "managed_services_client") {
+        return {
+          ...base,
+          heroTitle: "Your StackScore vCIO Service Is Active",
+          heroDescription:
+            "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
+          paragraphs: [
+            "Your organization is already configured, so there is no lengthy setup process.",
+            "Next, review your roadmap, share current priorities, and schedule your first strategy session.",
+          ],
+          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Schedule your strategy session"],
+          primaryCta: { label: "Review Roadmap", href: "https://app.stackscore.example/portal/roadmap" },
+        };
+      }
+      return base;
+    }
     return {
       firstName: firstName || undefined,
       organizationName: organizationName || undefined,
@@ -200,6 +238,22 @@ export function SendTestEmailSheet({
               onChange={(event) => setAssessmentName(event.target.value)}
             />
           </div>
+
+          {templateKey === "EMAIL-010" ? (
+            <div className="space-y-2">
+              <Label htmlFor="vcioCustomerType">Simulate customer type</Label>
+              <select
+                id="vcioCustomerType"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={vcioCustomerType}
+                onChange={(event) => setVcioCustomerType(event.target.value)}
+              >
+                <option value="brand_new">Brand New Customer</option>
+                <option value="assessment_customer">Existing Assessment Customer</option>
+                <option value="managed_services_client">Existing Managed Services Customer</option>
+              </select>
+            </div>
+          ) : null}
 
           {sampleProfiles.length > 0 ? (
             <div className="space-y-2">

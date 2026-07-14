@@ -4,6 +4,11 @@ import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/ap
 import { unauthorized } from "@/lib/api/helpers";
 import { prisma } from "@/lib/db";
 import { getClientVcioEntitlement } from "@/lib/vcio/entitlements";
+import {
+  calculateOnboardingPercentage,
+  detectVcioCustomerType,
+  nextOnboardingStep,
+} from "@/lib/vcio/onboarding";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -51,8 +56,18 @@ export async function PUT(request: Request, context: RouteContext) {
     planning?: unknown;
     assessmentStatus?: string;
     strategySessionScheduledAt?: string | null;
+    currentStep?: string;
     complete?: boolean;
   };
+  const customerType = await detectVcioCustomerType(clientId);
+  const currentStep = body.complete
+    ? "complete"
+    : nextOnboardingStep(customerType, body.currentStep ?? "welcome");
+  const completionPercentage = calculateOnboardingPercentage(
+    customerType,
+    currentStep,
+    Boolean(body.complete),
+  );
 
   const onboarding = await prisma.vcioOnboarding.upsert({
     where: { clientId },
@@ -60,6 +75,9 @@ export async function PUT(request: Request, context: RouteContext) {
       clientId,
       subscriptionId: entitlement.subscriptionId,
       status: body.complete ? "completed" : "in_progress",
+      customerType,
+      currentStep,
+      completionPercentage,
       baselineRequired: body.assessmentStatus !== "completed",
       businessInfoJson: (body.businessInfo ?? {}) as Prisma.InputJsonValue,
       leadershipJson: (body.leadership ?? {}) as Prisma.InputJsonValue,
@@ -74,6 +92,9 @@ export async function PUT(request: Request, context: RouteContext) {
     update: {
       subscriptionId: entitlement.subscriptionId,
       status: body.complete ? "completed" : "in_progress",
+      customerType,
+      currentStep,
+      completionPercentage,
       baselineRequired: body.assessmentStatus !== "completed",
       businessInfoJson: (body.businessInfo ?? {}) as Prisma.InputJsonValue,
       leadershipJson: (body.leadership ?? {}) as Prisma.InputJsonValue,

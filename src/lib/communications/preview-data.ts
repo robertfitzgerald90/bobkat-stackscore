@@ -1,5 +1,6 @@
 import {
   buildAccountActivationSampleData,
+  buildVcioWelcomeSampleData,
   mergeTemplateData,
 } from "@/lib/communications/sample-data";
 
@@ -12,6 +13,10 @@ export function buildPreviewTemplateData(
     return buildAccountActivationSampleData(
       overrides as Parameters<typeof buildAccountActivationSampleData>[0],
     );
+  }
+
+  if (templateKey === "EMAIL-010") {
+    return buildVcioWelcomeSampleData(overrides);
   }
 
   return mergeTemplateData({}, overrides);

@@ -3,6 +3,7 @@ import { getEmailTemplate } from "@/lib/communications/registry";
 import { renderCommunicationTemplate } from "@/lib/communications/render-template";
 import {
   buildAccountActivationSampleData,
+  buildVcioWelcomeSampleData,
   PREVIEW_ACTIVATION_URL,
 } from "@/lib/communications/sample-data";
 import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
@@ -16,6 +17,7 @@ export type SendTestEmailInput = {
   firstName?: string;
   organizationName?: string;
   assessmentName?: string;
+  vcioCustomerType?: string;
   sentByUserId: string;
 };
 
@@ -35,6 +37,56 @@ function buildSampleOverrides(input: SendTestEmailInput): Record<string, unknown
       assessmentName: input.assessmentName,
       activationUrl: PREVIEW_ACTIVATION_URL,
     });
+  }
+
+  if (input.templateKey === "EMAIL-010") {
+    const base = {
+      clientName: input.firstName,
+      organizationName: input.organizationName,
+    };
+    if (input.vcioCustomerType === "assessment_customer") {
+      return buildVcioWelcomeSampleData({
+        ...base,
+        heroTitle: "Welcome Back to StackScore vCIO",
+        heroDescription:
+          "Your existing assessment has been connected and your advisory roadmap is ready.",
+        paragraphs: [
+          "We connected your existing technology assessment, recommendations, improvement plan, and current projects.",
+          "Complete the quick setup to tell us what has changed since your assessment, then schedule your first strategy session.",
+        ],
+        summaryItems: [
+          "Technology Score: 72",
+          "Recommendations are available",
+          "Your roadmap is ready for review",
+        ],
+        primaryCta: {
+          label: "Complete Quick Setup",
+          href: "https://app.stackscore.example/portal/vcio/onboarding",
+        },
+      });
+    }
+    if (input.vcioCustomerType === "managed_services_client") {
+      return buildVcioWelcomeSampleData({
+        ...base,
+        heroTitle: "Your StackScore vCIO Service Is Active",
+        heroDescription:
+          "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
+        paragraphs: [
+          "Your organization is already configured, so there is no lengthy setup process.",
+          "Next, review your roadmap, share current priorities, and schedule your first strategy session.",
+        ],
+        summaryItems: [
+          "Review your roadmap",
+          "Begin quarterly planning",
+          "Schedule your strategy session",
+        ],
+        primaryCta: {
+          label: "Review Roadmap",
+          href: "https://app.stackscore.example/portal/roadmap",
+        },
+      });
+    }
+    return buildVcioWelcomeSampleData(base);
   }
 
   return {
@@ -77,6 +129,7 @@ export async function sendCommunicationTestEmail(
       metadata: {
         sampleFirstName: input.firstName,
         sampleOrganizationName: input.organizationName,
+        sampleVcioCustomerType: input.vcioCustomerType,
       },
     });
 

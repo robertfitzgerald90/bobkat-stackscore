@@ -124,10 +124,14 @@ async function ensureVcioOnboarding(input: {
   clientId: string;
   subscriptionId: string;
 }) {
+  const { calculateOnboardingPercentage, detectVcioCustomerType } = await import(
+    "@/lib/vcio/onboarding"
+  );
   const completedAssessment = await prisma.assessment.findFirst({
     where: { clientId: input.clientId, status: "completed" },
     select: { id: true },
   });
+  const customerType = await detectVcioCustomerType(input.clientId);
 
   await prisma.vcioOnboarding.upsert({
     where: { clientId: input.clientId },
@@ -135,11 +139,15 @@ async function ensureVcioOnboarding(input: {
       clientId: input.clientId,
       subscriptionId: input.subscriptionId,
       status: "not_started",
+      customerType,
+      currentStep: "welcome",
+      completionPercentage: calculateOnboardingPercentage(customerType, "welcome", false),
       baselineRequired: !completedAssessment,
       assessmentStatus: completedAssessment ? "completed" : "baseline_required",
     },
     update: {
       subscriptionId: input.subscriptionId,
+      customerType,
       baselineRequired: !completedAssessment,
       assessmentStatus: completedAssessment ? "completed" : "baseline_required",
     },
@@ -447,13 +455,17 @@ export async function syncVcioSubscriptionFromStripe(
   const clientContact = await prisma.client.findUnique({
     where: { id: resolved.clientId },
     select: {
+      companyName: true,
+      primaryContactName: true,
       primaryContactEmail: true,
+      technologyProfile: { select: { overallStackScore: true } },
+      vcioOnboarding: { select: { customerType: true } },
       users: { select: { id: true }, take: 1 },
     },
   });
 
   if (clientContact?.primaryContactEmail) {
-    const { sendVcioAdminNotification, sendVcioLifecycleEmail } = await import(
+    const { sendVcioAdminNotification, sendVcioLifecycleEmail, sendVcioWelcomeEmail } = await import(
       "@/lib/vcio/emails"
     );
     const appUrl = (await import("@/lib/stripe/app-url")).getAppUrl();
@@ -464,17 +476,15 @@ export async function syncVcioSubscriptionFromStripe(
       previousSubscription?.status !== "active" &&
       previousSubscription?.status !== "trialing"
     ) {
-      await sendVcioLifecycleEmail({
+      await sendVcioWelcomeEmail({
         clientId: resolved.clientId,
         userId,
         to: clientContact.primaryContactEmail,
-        subject: "StackScore vCIO workspace ready",
-        message:
-          "Your StackScore vCIO subscription is active and your advisory workspace is ready.",
-        ctaLabel: "Open vCIO Dashboard",
-        ctaHref: `${appUrl}/portal/vcio`,
-        templateKey: "VCIO-WORKSPACE-READY",
-        workflow: "vcio_workspace_ready",
+        clientName: clientContact.primaryContactName,
+        organizationName: clientContact.companyName,
+        customerType: clientContact.vcioOnboarding?.customerType ?? "brand_new",
+        technologyScore: clientContact.technologyProfile?.overallStackScore?.toString() ?? null,
+        activationToken: "activationToken" in resolved ? resolved.activationToken : undefined,
       });
     }
 
@@ -541,18 +551,9 @@ export async function fulfillVcioCheckoutSession(session: Stripe.Checkout.Sessio
 
   const result = await syncVcioSubscriptionFromStripe(subscription, { checkoutSession: session });
   if (result.outcome === "synced") {
-    const { sendVcioAdminNotification, sendVcioSubscriptionReceivedEmail } = await import(
+    const { sendVcioAdminNotification } = await import(
       "@/lib/vcio/emails"
     );
-
-    if (!result.manualReview && result.purchaserEmail) {
-      await sendVcioSubscriptionReceivedEmail({
-        clientId: result.clientId,
-        userId: result.userId,
-        to: result.purchaserEmail,
-        activationToken: result.activationToken,
-      });
-    }
 
     await sendVcioAdminNotification({
       subject: "New StackScore vCIO subscription",

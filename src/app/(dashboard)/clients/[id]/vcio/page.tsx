@@ -20,6 +20,8 @@ import {
 } from "@/lib/vcio/entitlements";
 import { formatDisplayDate } from "@/lib/display";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
+import { ResendVcioWelcomeButton } from "@/components/vcio/resend-vcio-welcome-button";
+import { ResetVcioOnboardingButton } from "@/components/vcio/reset-vcio-onboarding-button";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -143,6 +145,12 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
+          {user.role !== "client" ? (
+            <>
+              <ResendVcioWelcomeButton clientId={clientId} />
+              <ResetVcioOnboardingButton clientId={clientId} />
+            </>
+          ) : null}
           <Link href={`/clients/${clientId}/vcio/onboarding`} className={buttonVariants({ variant: "outline" })}>
             Complete Onboarding
           </Link>

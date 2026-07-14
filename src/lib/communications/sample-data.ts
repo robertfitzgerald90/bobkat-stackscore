@@ -74,6 +74,65 @@ export function buildPasswordResetSampleData(
   };
 }
 
+export function buildVcioWelcomeSampleData(
+  overrides: Partial<{
+    clientName: string;
+    organizationName: string;
+    technologyScore: string;
+    roadmapUrl: string;
+    dashboardUrl: string;
+    onboardingUrl: string;
+    strategySessionUrl: string;
+    supportEmail: string;
+    currentYear: string;
+    heroTitle: string;
+    heroDescription: string;
+    paragraphs: string[];
+    summaryTitle: string;
+    summaryItems: string[];
+    primaryCta: { label: string; href: string };
+    secondaryCta: { label: string; href: string };
+  }> = {},
+) {
+  const dashboardUrl = PREVIEW_PROTECTED_URL;
+  const onboardingUrl = "https://app.stackscore.example/portal/vcio/onboarding";
+  const strategySessionUrl = "https://cal.com/bobkat-it/bobkat-it-free-consult";
+
+  return {
+    clientName: "Alex",
+    organizationName: "Northwind Professional Services",
+    technologyScore: "72",
+    roadmapUrl: dashboardUrl,
+    dashboardUrl,
+    onboardingUrl,
+    strategySessionUrl,
+    supportEmail: BRAND.email,
+    currentYear: String(new Date().getFullYear()),
+    heroTitle: "Welcome to StackScore vCIO",
+    heroDescription:
+      "Your strategic technology advisory service is active. Let's turn your roadmap into measurable progress.",
+    paragraphs: [
+      "Welcome to StackScore vCIO. Bobkat IT will help you manage technology planning, executive reporting, roadmap progress, and quarterly reviews.",
+      "Complete your onboarding workflow so we can prepare your first strategy session with the right context.",
+    ],
+    summaryTitle: "What happens next",
+    summaryItems: [
+      "Complete your vCIO onboarding",
+      "Review your roadmap and recommendations",
+      "Schedule your first strategy session",
+    ],
+    primaryCta: {
+      label: "Complete Onboarding",
+      href: onboardingUrl,
+    },
+    secondaryCta: {
+      label: "Schedule Strategy Session",
+      href: strategySessionUrl,
+    },
+    ...overrides,
+  };
+}
+
 export function mergeTemplateData<T extends Record<string, unknown>>(
   defaults: T,
   overrides: Partial<T> = {},

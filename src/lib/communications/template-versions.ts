@@ -62,7 +62,7 @@ function buildInitialVersion(templateKey: string) {
 
 export async function ensureTemplateVersionsSeeded(userId: string): Promise<void> {
   await withCommunicationDbFallback(async () => {
-    const activeTemplates = ["EMAIL-001"];
+    const activeTemplates = ["EMAIL-001", "EMAIL-010"];
     for (const templateKey of activeTemplates) {
       const existing = await prisma.communicationTemplateVersion.findFirst({
         where: { templateKey, status: "published" },

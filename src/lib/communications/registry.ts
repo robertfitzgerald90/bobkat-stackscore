@@ -10,6 +10,7 @@ import {
   buildAccountActivationSampleData,
   buildAssessmentInvitationSampleData,
   buildPasswordResetSampleData,
+  buildVcioWelcomeSampleData,
   PREVIEW_PROTECTED_URL,
 } from "@/lib/communications/sample-data";
 import type {
@@ -345,6 +346,36 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
     },
   }),
   EMAIL_009,
+  workflowTemplate({
+    key: "EMAIL-010",
+    documentId: "EMAIL-010",
+    name: "StackScore vCIO Welcome",
+    description:
+      "Client lifecycle email sent when a StackScore vCIO subscription becomes active.",
+    category: "lifecycle",
+    status: "active",
+    subject: "Welcome to StackScore vCIO",
+    previewText: "Your vCIO service is active. Complete onboarding and schedule your strategy session.",
+    lastUpdated: LAST_UPDATED,
+    requiredVariables: ["primaryCta"],
+    optionalVariables: [
+      "clientName",
+      "organizationName",
+      "technologyScore",
+      "roadmapUrl",
+      "dashboardUrl",
+      "onboardingUrl",
+      "strategySessionUrl",
+      "supportEmail",
+      "currentYear",
+    ],
+    defaults: {
+      subject: "Welcome to StackScore vCIO",
+      previewText:
+        "Your vCIO service is active. Complete onboarding and schedule your strategy session.",
+    },
+    sampleData: buildVcioWelcomeSampleData(),
+  }),
 ];
 
 export function getEmailTemplate(key: string): EmailTemplateDefinition | undefined {
@@ -367,6 +398,7 @@ export const CATEGORY_LABELS: Record<EmailTemplateCategory, string> = {
   security: "Security",
   project: "Project",
   review: "Review",
+  lifecycle: "Client Lifecycle",
   invitation: "Invitation",
 };
 

@@ -261,6 +261,7 @@ model User {
   billingPaymentsRecorded                BillingPayment[]               @relation("BillingPaymentRecordedBy")
   billingAuditEvents                     BillingAuditEvent[]            @relation("BillingAuditActor")
   vcioQuarterlyReviewsCreated            VcioQuarterlyReview[]          @relation("VcioQuarterlyReviewCreatedBy")
+  vcioOnboardingResets                   VcioOnboarding[]               @relation("VcioOnboardingResetBy")
 }
 
 model Client {
@@ -1723,6 +1724,12 @@ enum VcioOnboardingStatus {
   completed
 }
 
+enum VcioCustomerType {
+  brand_new
+  assessment_customer
+  managed_services_client
+}
+
 enum VcioReviewStatus {
   draft
   scheduled
@@ -2107,6 +2114,9 @@ model VcioOnboarding {
   clientId                   String               @unique
   subscriptionId             String?              @unique
   status                     VcioOnboardingStatus @default(not_started)
+  customerType               VcioCustomerType     @default(brand_new)
+  currentStep                String               @default("welcome")
+  completionPercentage       Int                  @default(0)
   baselineRequired           Boolean              @default(true)
   businessInfoJson           Json?
   leadershipJson             Json?
@@ -2115,13 +2125,18 @@ model VcioOnboarding {
   assessmentStatus           String?
   strategySessionScheduledAt DateTime?
   completedAt                DateTime?
+  resetAt                    DateTime?
+  resetByUserId              String?
   createdAt                  DateTime             @default(now())
   updatedAt                  DateTime             @updatedAt
 
   client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
   subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  resetBy      User?         @relation("VcioOnboardingResetBy", fields: [resetByUserId], references: [id], onDelete: SetNull)
 
   @@index([status])
+  @@index([customerType])
+  @@index([resetByUserId])
 }
 
 model VcioQuarterlyReview {
