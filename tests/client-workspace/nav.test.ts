@@ -88,6 +88,7 @@ describe("getVisibleWorkspaceNav", () => {
       "vcio",
       "roadmap",
       "quarterly-reviews",
+      "projects",
       "recommendations",
       "billing",
       "executive-reports",

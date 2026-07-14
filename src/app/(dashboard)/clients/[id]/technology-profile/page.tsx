@@ -6,6 +6,10 @@ import { CustomerExecutiveDashboard } from "@/components/customer-portal/custome
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import {
+  canUseOngoingVcioFeatures,
+  getClientVcioEntitlement,
+} from "@/lib/vcio/entitlements";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -29,6 +33,10 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
   if (!detail || !client) notFound();
 
   if (isCustomerMode(session.user.role)) {
+    const entitlement = await getClientVcioEntitlement(id);
+    if (canUseOngoingVcioFeatures(entitlement.accessState)) {
+      redirect(`/clients/${id}/vcio`);
+    }
     return <CustomerExecutiveDashboard detail={detail} companyName={client.companyName} />;
   }
 

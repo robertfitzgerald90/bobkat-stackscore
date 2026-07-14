@@ -70,6 +70,12 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       requiresClient: true,
     },
     {
+      href: customerHref(clientId, "projects"),
+      label: "Projects",
+      icon: FolderKanban,
+      requiresClient: true,
+    },
+    {
       href: customerHref(clientId, "executive-reports"),
       label: "Reports",
       icon: FileText,

@@ -14,6 +14,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import { prisma } from "@/lib/db";
 import {
+  canUseOngoingVcioFeatures,
   formatVcioAccessState,
   getClientVcioEntitlement,
   type VcioAccessState,
@@ -24,6 +25,7 @@ import { ResendVcioWelcomeButton } from "@/components/vcio/resend-vcio-welcome-b
 import { ResetVcioOnboardingButton } from "@/components/vcio/reset-vcio-onboarding-button";
 import { VcioFeatureUnlocksPanel } from "@/components/vcio/vcio-feature-unlocks-panel";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
+import { getBookingUrl } from "@/lib/support/config";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -75,6 +77,15 @@ function AccessAlert({ state }: { state: VcioAccessState }) {
   );
 }
 
+function formatCurrencyFromCents(cents: number | null) {
+  if (cents === null) return null;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+}
+
+function currentQuarterLabel(date = new Date()) {
+  return `Q${Math.floor(date.getMonth() / 3) + 1} ${date.getFullYear()}`;
+}
+
 export default async function ClientVcioDashboardPage({ params }: PageProps) {
   const { id: clientId } = await params;
   const user = await getSessionUserWithClient();
@@ -82,12 +93,21 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
   const denied = await requireClientWorkspaceAccess(user, clientId);
   if (denied) redirect("/dashboard");
 
-  const [client, entitlement, latestSubscription, vcioFeatureAccess, planningNotes] = await Promise.all([
+  const [
+    client,
+    entitlement,
+    latestSubscription,
+    vcioFeatureAccess,
+    planningNotes,
+    completedRecommendations,
+    recentProjects,
+  ] = await Promise.all([
     prisma.client.findUnique({
       where: { id: clientId },
       select: {
         id: true,
         companyName: true,
+        primaryContactName: true,
         technologyProfile: {
           select: {
             overallStackScore: true,
@@ -100,13 +120,13 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         recommendations: {
           where: { status: { in: ["open", "accepted", "in_progress"] } },
           orderBy: [{ priority: "desc" }, { updatedAt: "desc" }],
-          take: 5,
-          select: { id: true, title: true, priority: true, status: true },
+          take: 10,
+          select: { id: true, title: true, priority: true, status: true, updatedAt: true },
         },
         projects: {
           where: { status: { in: ["approved", "scheduled", "in_progress"] } },
           orderBy: { updatedAt: "desc" },
-          take: 5,
+          take: 10,
           select: { id: true, title: true, status: true, completedAt: true, updatedAt: true },
         },
         assessments: {
@@ -128,6 +148,29 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             budgetAmountCents: true,
             budgetPeriod: true,
             technology: { select: { name: true, vendor: true } },
+          },
+        },
+        documents: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            title: true,
+            documentType: true,
+            fileUrl: true,
+            createdAt: true,
+          },
+        },
+        improvementPlans: {
+          orderBy: { updatedAt: "desc" },
+          take: 3,
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            generatedAt: true,
+            updatedAt: true,
+            wizardState: true,
           },
         },
         vcioOnboarding: {
@@ -176,12 +219,27 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         user: { select: { name: true } },
       },
     }),
+    prisma.assessmentRecommendation.findMany({
+      where: { clientId, status: "completed" },
+      orderBy: { completedAt: "desc" },
+      take: 5,
+      select: { id: true, title: true, completedAt: true, updatedAt: true },
+    }),
+    prisma.project.findMany({
+      where: { clientId },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      select: { id: true, title: true, status: true, completedAt: true, updatedAt: true },
+    }),
   ]);
 
   if (!client) notFound();
 
   const score = client.technologyProfile?.overallStackScore;
-  const nextReview = client.quarterlyBusinessReviews[0]?.reviewPeriodEnd ?? null;
+  const latestReview = client.quarterlyBusinessReviews[0] ?? null;
+  const previousGeneratedReview =
+    client.quarterlyBusinessReviews.find((review) => review.status === "generated") ?? null;
+  const nextReview = latestReview?.reviewPeriodEnd ?? null;
   const nextRecommendedAssessmentAt =
     client.technologyProfile?.nextRecommendedAssessmentAt?.toISOString() ?? null;
   const lastAssessedAt = client.technologyProfile?.lastAssessedAt ?? null;
@@ -226,15 +284,117 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
   ]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 10);
+  const strategySessions = planningNotes.filter((note) => note.noteType === "strategy_session");
+  const hasScheduledStrategySession = Boolean(
+    client.vcioOnboarding?.strategySessionScheduledAt ||
+      strategySessions.some((note) => note.scheduledAt && !note.completedAt),
+  );
+  const hasCompletedStrategySession = strategySessions.some((note) => note.completedAt);
+  const latestRoadmap = client.improvementPlans[0] ?? null;
+  const generatedRoadmap = client.improvementPlans.find((plan) =>
+    ["generated", "published", "approved"].includes(plan.status),
+  );
+  const latestExecutiveReport =
+    client.documents.find((document) =>
+      ["report", "quarterly_business_review", "technology_improvement_plan"].includes(
+        document.documentType,
+      ),
+    ) ?? null;
+  const upcomingRenewals = client.clientTechnologies.filter((technology) => {
+    if (!technology.renewalDate) return false;
+    return technology.renewalDate.getTime() >= Date.now();
+  });
+  const budgetTotalCents = client.clientTechnologies.reduce(
+    (total, technology) => total + (technology.budgetAmountCents ?? 0),
+    0,
+  );
+  const hasVendorInfo = client.clientTechnologies.some((technology) => technology.renewalDate);
+  const hasBudget = budgetTotalCents > 0;
+  const activeProjects = client.projects.filter((project) =>
+    ["approved", "scheduled", "in_progress"].includes(project.status),
+  );
+  const roadmapProgress =
+    client.recommendations.length + completedRecommendations.length > 0
+      ? Math.round(
+          (completedRecommendations.length /
+            (client.recommendations.length + completedRecommendations.length)) *
+            100,
+        )
+      : null;
+  const subscriptionActive = canUseOngoingVcioFeatures(entitlement.accessState);
+  const overallStatus = subscriptionActive
+    ? score !== null && score !== undefined
+      ? Number(score) >= 80
+        ? "Strong"
+        : Number(score) >= 60
+          ? "Stable with priorities"
+          : "Needs attention"
+      : "Baseline needed"
+    : formatVcioAccessState(entitlement.accessState);
+  const qbrStatus = latestReview
+    ? latestReview.status === "generated"
+      ? "Current review available"
+      : "Draft in progress"
+    : "Not scheduled";
+  const bookingUrl = getBookingUrl();
+  const recommendedAction = annualAssessmentDue
+    ? {
+        label: "Complete Annual Assessment",
+        description: "Your technology assessment is due for its annual refresh.",
+        href: "/assessment/start",
+      }
+    : !hasScheduledStrategySession && !hasCompletedStrategySession
+      ? {
+          label: "Schedule Strategy Session",
+          description: "Start your vCIO engagement with a strategy session with Bobkat IT.",
+          href: SERVICES_CTA_DESTINATIONS.generalConsultation.href,
+        }
+      : !generatedRoadmap
+        ? {
+            label: "Review Technology Roadmap",
+            description: "Review your roadmap so priorities and timing stay aligned.",
+            href: `/clients/${clientId}/roadmap`,
+          }
+        : !hasBudget
+          ? {
+              label: "Complete Budget Planning",
+              description: "Add budget details to technology lifecycle and vendor records.",
+              href: `/clients/${clientId}/assets`,
+            }
+          : previousGeneratedReview
+            ? {
+                label: "Review Quarterly Report",
+                description: "Your latest Quarterly Business Review is ready.",
+                href: `/clients/${clientId}/quarterly-review/${previousGeneratedReview.id}`,
+              }
+            : {
+                label: "Schedule Quarterly Review",
+                description: "Prepare the next executive review of progress and priorities.",
+                href: `/clients/${clientId}/quarterly-reviews`,
+              };
+  const checklist = [
+    { label: "Subscription Active", complete: subscriptionActive },
+    { label: "Schedule Strategy Session", complete: hasScheduledStrategySession || hasCompletedStrategySession },
+    { label: "Review Improvement Plan", complete: Boolean(latestRoadmap) },
+    { label: "Review Technology Roadmap", complete: Boolean(generatedRoadmap) },
+    {
+      label: "Upload Network Diagram",
+      complete: client.documents.some((document) => document.documentType === "diagram"),
+    },
+    { label: "Add Vendor Information", complete: hasVendorInfo },
+    { label: "Establish Technology Budget", complete: hasBudget },
+    { label: "Schedule Quarterly Review", complete: Boolean(latestReview) },
+  ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-primary">StackScore vCIO</p>
-          <h1 className="page-title">Strategic Technology Dashboard</h1>
+          <p className="text-sm font-medium text-primary">Client Success Dashboard</p>
+          <h1 className="page-title">Welcome back, {client.companyName}</h1>
           <p className="page-description">
-            Advisory status, roadmap execution, reviews, and billing signals for {client.companyName}.
+            Bobkat IT is actively managing your technology strategy, roadmap, reviews, and
+            planning priorities.
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -244,9 +404,11 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
               <ResetVcioOnboardingButton clientId={clientId} />
             </>
           ) : null}
-          <Link href={`/clients/${clientId}/vcio/onboarding`} className={buttonVariants({ variant: "outline" })}>
-            Complete Onboarding
-          </Link>
+          {client.vcioOnboarding?.status !== "completed" ? (
+            <Link href={`/clients/${clientId}/vcio/onboarding`} className={buttonVariants({ variant: "outline" })}>
+              Complete Onboarding
+            </Link>
+          ) : null}
           <a href={SERVICES_CTA_DESTINATIONS.generalConsultation.href} className={buttonVariants({ variant: "default" })}>
             Schedule Strategy Session
           </a>
@@ -255,28 +417,84 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
 
       <AccessAlert state={entitlement.accessState} />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4">
         <MetricCard
           label="Technology Maturity Score"
           value={score !== null && score !== undefined ? Number(score).toFixed(0) : "-"}
           sublabel={
             client.technologyProfile?.lastAssessedAt
               ? `Assessed ${formatDisplayDate(client.technologyProfile.lastAssessedAt)}`
-              : "No completed assessment yet"
+              : "Complete an assessment to establish a baseline"
           }
         />
+        <MetricCard label="Overall Status" value={overallStatus} />
+        <MetricCard label="Quarterly Review Status" value={qbrStatus} />
         <MetricCard
-          label="High-priority risks"
+          label="Latest Executive Report"
+          value={latestExecutiveReport ? "Available" : "Pending"}
+          sublabel={latestExecutiveReport?.title ?? "Complete assessment or QBR to generate reports"}
+        />
+      </div>
+
+      <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
+        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-sm font-medium text-primary">Next Recommended Action</p>
+            <h2 className="mt-1 text-xl font-semibold">{recommendedAction.label}</h2>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              {recommendedAction.description}
+            </p>
+          </div>
+          {recommendedAction.href.startsWith("http") ? (
+            <a href={recommendedAction.href} className={buttonVariants({ variant: "default" })}>
+              {recommendedAction.label}
+            </a>
+          ) : (
+            <Link href={recommendedAction.href} className={buttonVariants({ variant: "default" })}>
+              {recommendedAction.label}
+            </Link>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          label="Open Recommendations"
+          value={client.recommendations.length}
+          sublabel="Open, accepted, or in progress"
+        />
+        <MetricCard
+          label="Active Projects"
+          value={activeProjects.length}
+          sublabel="Approved, scheduled, or in progress"
+        />
+        <MetricCard
+          label="Roadmap Progress"
+          value={roadmapProgress !== null ? `${roadmapProgress}%` : "-"}
+          sublabel={latestRoadmap ? latestRoadmap.title : "Create a roadmap to track progress"}
+        />
+        <MetricCard
+          label="High Priority Risks"
           value={client.technologyProfile?.criticalExposureCount ?? 0}
           sublabel="Critical exposures from current profile"
         />
         <MetricCard
-          label="Recommendations in progress"
-          value={client.technologyProfile?.openRecommendationCount ?? client.recommendations.length}
-          sublabel="Open or accepted recommendations"
+          label="Upcoming Renewals"
+          value={upcomingRenewals.length}
+          sublabel="From vendor and lifecycle planning"
         />
         <MetricCard
-          label="Subscription status"
+          label="Technology Budget"
+          value={formatCurrencyFromCents(budgetTotalCents) ?? "-"}
+          sublabel={hasBudget ? "Tracked on technology records" : "Budget planning not established"}
+        />
+        <MetricCard
+          label="Quarterly Review"
+          value={currentQuarterLabel()}
+          sublabel={nextReview ? `Current period ends ${formatDisplayDate(nextReview)}` : "No review period yet"}
+        />
+        <MetricCard
+          label="Subscription"
           value={latestSubscription?.status ?? "none"}
           sublabel={
             latestSubscription?.currentPeriodEnd
@@ -285,6 +503,159 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           }
         />
       </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              Client Success Checklist
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {checklist.map((item) => (
+                <div key={item.label} className="flex items-center gap-3 text-sm">
+                  <span
+                    className={`flex h-5 w-5 items-center justify-center rounded-full border ${
+                      item.complete
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-muted"
+                    }`}
+                  >
+                    {item.complete ? <CheckCircle2 className="h-3 w-3" /> : null}
+                  </span>
+                  <span className={item.complete ? "font-medium" : "text-muted-foreground"}>
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-sm font-medium">Recent Reports</p>
+                {client.documents.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Reports and deliverables will appear after assessments, roadmaps, or QBRs are generated.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-2 text-sm">
+                    {client.documents.slice(0, 3).map((document) => (
+                      <li key={document.id}>
+                        <Link href={document.fileUrl} className="font-medium hover:underline">
+                          {document.title}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDisplayDate(document.createdAt)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Recent Projects</p>
+                {recentProjects.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Projects will appear once roadmap work is scoped or started.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-2 text-sm">
+                    {recentProjects.slice(0, 3).map((project) => (
+                      <li key={project.id}>
+                        <p className="font-medium">{project.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {project.status} · {formatDisplayDate(project.updatedAt)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Completed Recommendations</p>
+                {completedRecommendations.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Completed recommendations will appear as priorities are resolved.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-2 text-sm">
+                    {completedRecommendations.slice(0, 3).map((recommendation) => (
+                      <li key={recommendation.id}>
+                        <p className="font-medium">{recommendation.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {recommendation.completedAt
+                            ? formatDisplayDate(recommendation.completedAt)
+                            : formatDisplayDate(recommendation.updatedAt)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Recent Strategy Sessions</p>
+                {strategySessions.length === 0 ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Schedule a strategy session to begin quarterly planning.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-2 text-sm">
+                    {strategySessions.slice(0, 3).map((session) => (
+                      <li key={session.id}>
+                        <p className="font-medium">{session.title ?? "Strategy session"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {session.completedAt
+                            ? `Completed ${formatDisplayDate(session.completedAt)}`
+                            : session.scheduledAt
+                              ? `Scheduled ${formatDisplayDate(session.scheduledAt)}`
+                              : formatDisplayDate(session.createdAt)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          <a href={SERVICES_CTA_DESTINATIONS.generalConsultation.href} className={buttonVariants({ variant: "default" })}>
+            Schedule Strategy Session
+          </a>
+          <Link href={`/clients/${clientId}/roadmap`} className={buttonVariants({ variant: "outline" })}>
+            View Roadmap
+          </Link>
+          <Link href={`/clients/${clientId}/executive-reports`} className={buttonVariants({ variant: "outline" })}>
+            View Reports
+          </Link>
+          <Link href={`/clients/${clientId}/projects`} className={buttonVariants({ variant: "outline" })}>
+            Open Projects
+          </Link>
+          <Link href={`/clients/${clientId}/billing`} className={buttonVariants({ variant: "outline" })}>
+            Manage Subscription
+          </Link>
+          {bookingUrl ? (
+            <a href={bookingUrl} className={buttonVariants({ variant: "outline" })}>
+              Contact Bobkat IT
+            </a>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -393,15 +764,25 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
+            <p>Current quarter: {currentQuarterLabel()}</p>
+            <p>Next scheduled review: {nextReview ? formatDisplayDate(nextReview) : "Not scheduled"}</p>
             <p>
-              Next review: {nextReview ? formatDisplayDate(nextReview) : "Not scheduled"}
+              Previous review:{" "}
+              {previousGeneratedReview ? formatDisplayDate(previousGeneratedReview.generatedAt ?? previousGeneratedReview.reviewPeriodEnd) : "None yet"}
             </p>
             <p className="text-muted-foreground">
               Completed reviews will appear in the quarterly reviews workspace.
             </p>
-            <Link href={`/clients/${clientId}/quarterly-reviews`} className={buttonVariants({ variant: "outline" })}>
-              View Reviews
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link href={`/clients/${clientId}/quarterly-reviews`} className={buttonVariants({ variant: "outline" })}>
+                View Reviews
+              </Link>
+              {user.role !== "client" ? (
+                <Link href={`/clients/${clientId}/quarterly-review`} className={buttonVariants({ variant: "outline" })}>
+                  Generate Report
+                </Link>
+              ) : null}
+            </div>
           </CardContent>
         </Card>
 

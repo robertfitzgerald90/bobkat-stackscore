@@ -55,6 +55,7 @@ export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[
   "vcio",
   "roadmap",
   "quarterly-reviews",
+  "projects",
   "recommendations",
   "executive-reports",
   "billing",

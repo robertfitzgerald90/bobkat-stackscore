@@ -2,7 +2,6 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { WorkspaceProjectsList } from "@/components/client-workspace/workspace-projects-list";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { prisma } from "@/lib/db";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
@@ -12,7 +11,13 @@ export default async function ClientWorkspaceProjectsPage({ params }: PageProps)
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role === "client") redirect(clientTechnologyProfilePath(id));
+  if (session.user.role === "client") {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId !== id) notFound();
+  }
 
   const client = await prisma.client.findUnique({
     where: { id },
