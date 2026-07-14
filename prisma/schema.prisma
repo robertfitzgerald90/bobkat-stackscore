@@ -216,123 +216,123 @@ enum Visibility {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(technician)
-  isActive     Boolean  @default(true)
-  clientId     String?  @unique
-  invitedAt    DateTime?
+  id                    String    @id @default(uuid())
+  name                  String
+  email                 String    @unique
+  passwordHash          String
+  role                  UserRole  @default(technician)
+  isActive              Boolean   @default(true)
+  clientId              String?   @unique
+  invitedAt             DateTime?
   onboardingCompletedAt DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  client                 Client?                  @relation(fields: [clientId], references: [id])
-  assessments            Assessment[]             @relation("AssessorAssessments")
-  recommendationsCreated AssessmentRecommendation[] @relation("RecommendationCreator")
-  projectsAssigned       Project[]                @relation("ProjectAssignee")
-  documentsUploaded      Document[]
-  notes                  Note[]
-  improvementPlansCreated TechnologyImprovementPlan[]
-  quarterlyBusinessReviewsCreated QuarterlyBusinessReview[]
-  purchases              AssessmentPurchase[]
-  activationTokens       AccountActivationToken[]
-  passwordResetTokens    PasswordResetToken[]
-  communicationTestSends CommunicationTestSend[]
-  communicationBrandSettingsUpdates CommunicationBrandSettings[]
+  client                                 Client?                        @relation(fields: [clientId], references: [id])
+  assessments                            Assessment[]                   @relation("AssessorAssessments")
+  recommendationsCreated                 AssessmentRecommendation[]     @relation("RecommendationCreator")
+  projectsAssigned                       Project[]                      @relation("ProjectAssignee")
+  documentsUploaded                      Document[]
+  notes                                  Note[]
+  improvementPlansCreated                TechnologyImprovementPlan[]
+  quarterlyBusinessReviewsCreated        QuarterlyBusinessReview[]
+  purchases                              AssessmentPurchase[]
+  activationTokens                       AccountActivationToken[]
+  passwordResetTokens                    PasswordResetToken[]
+  communicationTestSends                 CommunicationTestSend[]
+  communicationBrandSettingsUpdates      CommunicationBrandSettings[]
   communicationTemplateVersionsPublished CommunicationTemplateVersion[] @relation("PublishedTemplateVersions")
-  communicationTemplateVersionsCreated CommunicationTemplateVersion[] @relation("CreatedTemplateVersions")
-  communicationSampleProfiles CommunicationSampleProfile[]
-  communicationMessagesCreated CommunicationMessage[] @relation("CommunicationMessagesCreated")
-  communicationMessagesReceived CommunicationMessage[] @relation("CommunicationMessagesReceived")
-  organizationActivityEvents OrganizationActivityEvent[] @relation("OrganizationActivitySubject")
-  organizationActivityActions OrganizationActivityEvent[] @relation("OrganizationActivityActor")
-  prospectsCreated           Prospect[] @relation("ProspectCreatedBy")
-  campaignsCreated           CommunicationCampaign[] @relation("CampaignCreatedBy")
-  campaignEvents             CampaignEvent[] @relation("CampaignEventActor")
-  campaignRecipients         CampaignRecipient[] @relation("CampaignRecipientUser")
-  tipsPublished                TechnologyImprovementPlan[] @relation("TipPublishedBy")
-  tipsApproved                 TechnologyImprovementPlan[] @relation("TipApprovedBy")
-  clientContacts               ClientContact[]
-  communicationQueueItemsCreated CommunicationQueueItem[] @relation("QueueCreatedBy")
-  communicationQueueItemsApproved CommunicationQueueItem[] @relation("QueueApprovedBy")
-  invoicesCreated              Invoice[] @relation("InvoiceCreatedBy")
-  billingPaymentsRecorded        BillingPayment[] @relation("BillingPaymentRecordedBy")
-  billingAuditEvents             BillingAuditEvent[] @relation("BillingAuditActor")
-  vcioQuarterlyReviewsCreated    VcioQuarterlyReview[] @relation("VcioQuarterlyReviewCreatedBy")
+  communicationTemplateVersionsCreated   CommunicationTemplateVersion[] @relation("CreatedTemplateVersions")
+  communicationSampleProfiles            CommunicationSampleProfile[]
+  communicationMessagesCreated           CommunicationMessage[]         @relation("CommunicationMessagesCreated")
+  communicationMessagesReceived          CommunicationMessage[]         @relation("CommunicationMessagesReceived")
+  organizationActivityEvents             OrganizationActivityEvent[]    @relation("OrganizationActivitySubject")
+  organizationActivityActions            OrganizationActivityEvent[]    @relation("OrganizationActivityActor")
+  prospectsCreated                       Prospect[]                     @relation("ProspectCreatedBy")
+  campaignsCreated                       CommunicationCampaign[]        @relation("CampaignCreatedBy")
+  campaignEvents                         CampaignEvent[]                @relation("CampaignEventActor")
+  campaignRecipients                     CampaignRecipient[]            @relation("CampaignRecipientUser")
+  tipsPublished                          TechnologyImprovementPlan[]    @relation("TipPublishedBy")
+  tipsApproved                           TechnologyImprovementPlan[]    @relation("TipApprovedBy")
+  clientContacts                         ClientContact[]
+  communicationQueueItemsCreated         CommunicationQueueItem[]       @relation("QueueCreatedBy")
+  communicationQueueItemsApproved        CommunicationQueueItem[]       @relation("QueueApprovedBy")
+  invoicesCreated                        Invoice[]                      @relation("InvoiceCreatedBy")
+  billingPaymentsRecorded                BillingPayment[]               @relation("BillingPaymentRecordedBy")
+  billingAuditEvents                     BillingAuditEvent[]            @relation("BillingAuditActor")
+  vcioQuarterlyReviewsCreated            VcioQuarterlyReview[]          @relation("VcioQuarterlyReviewCreatedBy")
 }
 
 model Client {
-  id                        String               @id @default(uuid())
-  companyName               String
-  primaryContactName        String
-  primaryContactEmail       String
-  primaryContactPhone       String?
-  primaryContactTitle       String?
-  industry                  String?
-  employeeCount             Int?
-  numberOfLocations         Int?
-  deviceCount               Int?
-  primaryBusinessGoal       PrimaryBusinessGoal?
-  highestTechnologyPriority String?
-  technologyVision          String?              @db.Text
-  complianceFramework       ComplianceFramework? @default(none)
-  complianceDetails         Json?
-  itSupportModel            ItSupportModel?
-  environmentType           EnvironmentType?
-  locationCity              String?
-  locationState             String?
-  status                    ClientStatus         @default(prospect)
-  notes                     String?              @db.Text
+  id                            String                   @id @default(uuid())
+  companyName                   String
+  primaryContactName            String
+  primaryContactEmail           String
+  primaryContactPhone           String?
+  primaryContactTitle           String?
+  industry                      String?
+  employeeCount                 Int?
+  numberOfLocations             Int?
+  deviceCount                   Int?
+  primaryBusinessGoal           PrimaryBusinessGoal?
+  highestTechnologyPriority     String?
+  technologyVision              String?                  @db.Text
+  complianceFramework           ComplianceFramework?     @default(none)
+  complianceDetails             Json?
+  itSupportModel                ItSupportModel?
+  environmentType               EnvironmentType?
+  locationCity                  String?
+  locationState                 String?
+  status                        ClientStatus             @default(prospect)
+  notes                         String?                  @db.Text
   projectCompletionNotification NotificationDeliveryMode @default(inherit)
-  quarterlyReviewAnchorAt   DateTime?
-  createdAt                 DateTime             @default(now())
-  updatedAt                 DateTime             @updatedAt
+  quarterlyReviewAnchorAt       DateTime?
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @updatedAt
 
-  assessments     Assessment[]
-  recommendations AssessmentRecommendation[]
-  projects        Project[]
-  scoreHistory       ClientScoreHistory[]
-  documents          Document[]
-  activityNotes      Note[]
-  technologyProfile  TechnologyProfile?
-  profileSnapshots   TechnologyProfileSnapshot[]
-  improvementPlans   TechnologyImprovementPlan[]
-  quarterlyBusinessReviews QuarterlyBusinessReview[]
-  users              User[]
-  purchases          AssessmentPurchase[]
-  clientTechnologies ClientTechnology[]
-  communicationMessages CommunicationMessage[]
+  assessments                Assessment[]
+  recommendations            AssessmentRecommendation[]
+  projects                   Project[]
+  scoreHistory               ClientScoreHistory[]
+  documents                  Document[]
+  activityNotes              Note[]
+  technologyProfile          TechnologyProfile?
+  profileSnapshots           TechnologyProfileSnapshot[]
+  improvementPlans           TechnologyImprovementPlan[]
+  quarterlyBusinessReviews   QuarterlyBusinessReview[]
+  users                      User[]
+  purchases                  AssessmentPurchase[]
+  clientTechnologies         ClientTechnology[]
+  communicationMessages      CommunicationMessage[]
   organizationActivityEvents OrganizationActivityEvent[]
-  prospect              Prospect?
-  campaignRecipients    CampaignRecipient[]
-  contacts              ClientContact[]
-  communicationQueueItems CommunicationQueueItem[]
-  quarterlyReviewReminders QuarterlyReviewReminder[]
-  billingProfile        ClientBillingProfile?
-  invoices              Invoice[]
-  billingPayments       BillingPayment[]
-  billingDeposits       BillingDeposit[]
-  recurringServices     RecurringService[]
-  subscriptions          Subscription[]
-  subscriptionInvoices   SubscriptionInvoice[]
-  vcioOnboarding         VcioOnboarding?
-  vcioQuarterlyReviews   VcioQuarterlyReview[]
+  prospect                   Prospect?
+  campaignRecipients         CampaignRecipient[]
+  contacts                   ClientContact[]
+  communicationQueueItems    CommunicationQueueItem[]
+  quarterlyReviewReminders   QuarterlyReviewReminder[]
+  billingProfile             ClientBillingProfile?
+  invoices                   Invoice[]
+  billingPayments            BillingPayment[]
+  billingDeposits            BillingDeposit[]
+  recurringServices          RecurringService[]
+  subscriptions              Subscription[]
+  subscriptionInvoices       SubscriptionInvoice[]
+  vcioOnboarding             VcioOnboarding?
+  vcioQuarterlyReviews       VcioQuarterlyReview[]
 }
 
 model AssessmentCategory {
-  id            String   @id @default(uuid())
-  code          String   @unique
-  name          String
-  description   String?  @db.Text
-  maxPoints     Int
-  displayOrder  Int
+  id             String   @id @default(uuid())
+  code           String   @unique
+  name           String
+  description    String?  @db.Text
+  maxPoints      Int
+  displayOrder   Int
   v2CategoryCode String?
   v2DisplayName  String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   questions       AssessmentQuestion[]
   categoryScores  AssessmentCategoryScore[]
@@ -342,26 +342,26 @@ model AssessmentCategory {
 }
 
 model AssessmentQuestion {
-  id                 String       @id @default(uuid())
-  code               String       @unique
-  v2QuestionId       String?      @unique
-  categoryId         String
-  questionText       String       @db.Text
-  helpText           String?      @db.Text
-  purpose            String?      @db.Text
-  capability         String?
-  responseType       ResponseType @default(ternary)
-  evidenceRequired   String?      @db.Text
-  relatedService     String?
-  relatedPlaybook    String?
-  relatedTechnologies String[]    @default([])
-  adminNotes         String?      @db.Text
-  weight             Int
-  displayOrder       Int
-  riskLevel          RiskLevel    @default(medium)
-  isActive           Boolean      @default(true)
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  id                  String       @id @default(uuid())
+  code                String       @unique
+  v2QuestionId        String?      @unique
+  categoryId          String
+  questionText        String       @db.Text
+  helpText            String?      @db.Text
+  purpose             String?      @db.Text
+  capability          String?
+  responseType        ResponseType @default(ternary)
+  evidenceRequired    String?      @db.Text
+  relatedService      String?
+  relatedPlaybook     String?
+  relatedTechnologies String[]     @default([])
+  adminNotes          String?      @db.Text
+  weight              Int
+  displayOrder        Int
+  riskLevel           RiskLevel    @default(medium)
+  isActive            Boolean      @default(true)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 
   category      AssessmentCategory   @relation(fields: [categoryId], references: [id])
   answerOptions AnswerOption[]
@@ -386,48 +386,48 @@ model AnswerOption {
 }
 
 model Assessment {
-  id                  String                @id @default(uuid())
-  clientId            String
-  assessorUserId      String
-  assessmentName      String
-  assessmentType      AssessmentType
-  status              AssessmentStatus      @default(draft)
+  id                   String               @id @default(uuid())
+  clientId             String
+  assessorUserId       String
+  assessmentName       String
+  assessmentType       AssessmentType
+  status               AssessmentStatus     @default(draft)
   scoringEngineVersion ScoringEngineVersion @default(v2)
-  assessmentDate      DateTime
-  overallScore        Decimal?         @db.Decimal(5, 2)
-  securityScore       Decimal?         @db.Decimal(5, 2)
-  backupScore         Decimal?         @db.Decimal(5, 2)
-  infrastructureScore Decimal?         @db.Decimal(5, 2)
-  endpointScore       Decimal?         @db.Decimal(5, 2)
-  documentationScore  Decimal?         @db.Decimal(5, 2)
-  bcdrScore           Decimal?         @db.Decimal(5, 2)
-  strategicScore      Decimal?         @db.Decimal(5, 2)
-  hasCriticalExposure Boolean          @default(false)
-  executiveSummary    String?          @db.Text
-  internalNotes       String?          @db.Text
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  completedAt         DateTime?
-  sourceAssessmentId  String?
+  assessmentDate       DateTime
+  overallScore         Decimal?             @db.Decimal(5, 2)
+  securityScore        Decimal?             @db.Decimal(5, 2)
+  backupScore          Decimal?             @db.Decimal(5, 2)
+  infrastructureScore  Decimal?             @db.Decimal(5, 2)
+  endpointScore        Decimal?             @db.Decimal(5, 2)
+  documentationScore   Decimal?             @db.Decimal(5, 2)
+  bcdrScore            Decimal?             @db.Decimal(5, 2)
+  strategicScore       Decimal?             @db.Decimal(5, 2)
+  hasCriticalExposure  Boolean              @default(false)
+  executiveSummary     String?              @db.Text
+  internalNotes        String?              @db.Text
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  completedAt          DateTime?
+  sourceAssessmentId   String?
 
-  client             Client                    @relation(fields: [clientId], references: [id])
-  assessor           User                      @relation("AssessorAssessments", fields: [assessorUserId], references: [id])
-  sourceAssessment   Assessment?               @relation("AssessmentReassessment", fields: [sourceAssessmentId], references: [id], onDelete: SetNull)
-  derivedAssessments Assessment[]              @relation("AssessmentReassessment")
-  responses          AssessmentResponse[]
-  categoryScores  AssessmentCategoryScore[]
-  recommendations AssessmentRecommendation[]
-  latestRecommendations AssessmentRecommendation[] @relation("RecommendationLatestAssessment")
-  recommendationTriggers RecommendationAssessmentTrigger[]
-  scoreHistory    ClientScoreHistory[]
-  documents              Document[]
-  notes                  Note[]
-  currentForProfiles     TechnologyProfile[]        @relation("ProfileCurrentAssessment")
-  profileSnapshots       TechnologyProfileSnapshot[]
-  improvementPlans       TechnologyImprovementPlan[]
-  purchase               AssessmentPurchase?
-  communicationMessages  CommunicationMessage[]
-  campaignRecipients     CampaignRecipient[]
+  client                  Client                            @relation(fields: [clientId], references: [id])
+  assessor                User                              @relation("AssessorAssessments", fields: [assessorUserId], references: [id])
+  sourceAssessment        Assessment?                       @relation("AssessmentReassessment", fields: [sourceAssessmentId], references: [id], onDelete: SetNull)
+  derivedAssessments      Assessment[]                      @relation("AssessmentReassessment")
+  responses               AssessmentResponse[]
+  categoryScores          AssessmentCategoryScore[]
+  recommendations         AssessmentRecommendation[]
+  latestRecommendations   AssessmentRecommendation[]        @relation("RecommendationLatestAssessment")
+  recommendationTriggers  RecommendationAssessmentTrigger[]
+  scoreHistory            ClientScoreHistory[]
+  documents               Document[]
+  notes                   Note[]
+  currentForProfiles      TechnologyProfile[]               @relation("ProfileCurrentAssessment")
+  profileSnapshots        TechnologyProfileSnapshot[]
+  improvementPlans        TechnologyImprovementPlan[]
+  purchase                AssessmentPurchase?
+  communicationMessages   CommunicationMessage[]
+  campaignRecipients      CampaignRecipient[]
   communicationQueueItems CommunicationQueueItem[]
 }
 
@@ -521,43 +521,43 @@ model RecommendationTemplate {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  category      AssessmentCategory @relation(fields: [categoryId], references: [id])
-  answerOptions AnswerOption[]
+  category        AssessmentCategory         @relation(fields: [categoryId], references: [id])
+  answerOptions   AnswerOption[]
   recommendations AssessmentRecommendation[]
 }
 
 model AssessmentRecommendation {
-  id                       String               @id @default(uuid())
-  assessmentId             String
-  clientId                 String
-  categoryId               String
-  recommendationTemplateId String?
-  consolidationGroupId     String?
-  dedupeKey                String
-  latestAssessmentId       String
-  lastTriggeredAt          DateTime             @default(now())
-  latestTriggerReason      String?              @db.Text
-  triggeredInLatestAssessment Boolean           @default(true)
-  isRecurrence             Boolean              @default(false)
-  recurrenceCount          Int                  @default(0)
-  title                    String
-  description              String               @db.Text
-  businessImpact           String               @db.Text
-  suggestedService         String?
-  priority                 Priority
-  status                   RecommendationStatus @default(open)
-  estimatedImpactPoints    Int
-  createdByUserId          String
-  createdAt                DateTime             @default(now())
-  updatedAt                DateTime             @updatedAt
-  completedAt              DateTime?
+  id                          String               @id @default(uuid())
+  assessmentId                String
+  clientId                    String
+  categoryId                  String
+  recommendationTemplateId    String?
+  consolidationGroupId        String?
+  dedupeKey                   String
+  latestAssessmentId          String
+  lastTriggeredAt             DateTime             @default(now())
+  latestTriggerReason         String?              @db.Text
+  triggeredInLatestAssessment Boolean              @default(true)
+  isRecurrence                Boolean              @default(false)
+  recurrenceCount             Int                  @default(0)
+  title                       String
+  description                 String               @db.Text
+  businessImpact              String               @db.Text
+  suggestedService            String?
+  priority                    Priority
+  status                      RecommendationStatus @default(open)
+  estimatedImpactPoints       Int
+  createdByUserId             String
+  createdAt                   DateTime             @default(now())
+  updatedAt                   DateTime             @updatedAt
+  completedAt                 DateTime?
 
-  assessment             Assessment              @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  latestAssessment       Assessment              @relation("RecommendationLatestAssessment", fields: [latestAssessmentId], references: [id])
-  client                 Client                  @relation(fields: [clientId], references: [id])
-  category               AssessmentCategory      @relation(fields: [categoryId], references: [id])
-  recommendationTemplate RecommendationTemplate? @relation(fields: [recommendationTemplateId], references: [id])
-  createdBy              User                    @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
+  assessment             Assessment                        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  latestAssessment       Assessment                        @relation("RecommendationLatestAssessment", fields: [latestAssessmentId], references: [id])
+  client                 Client                            @relation(fields: [clientId], references: [id])
+  category               AssessmentCategory                @relation(fields: [categoryId], references: [id])
+  recommendationTemplate RecommendationTemplate?           @relation(fields: [recommendationTemplateId], references: [id])
+  createdBy              User                              @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
   project                Project?
   triggers               RecommendationAssessmentTrigger[]
 
@@ -579,37 +579,37 @@ model RecommendationAssessmentTrigger {
 }
 
 model Project {
-  id                    String        @id @default(uuid())
-  clientId              String
-  recommendationId      String        @unique
-  assignedUserId        String?
-  title                 String
-  description           String?       @db.Text
-  status                ProjectStatus @default(proposed)
-  priority              Priority
-  categoryId            String
-  estimatedImpactPoints Int?
-  actualImpactPoints    Int?
-  estimatedCost         Decimal?      @db.Decimal(10, 2)
-  startDate             DateTime?
-  targetCompletionDate  DateTime?
-  completedAt           DateTime?
+  id                             String                    @id @default(uuid())
+  clientId                       String
+  recommendationId               String                    @unique
+  assignedUserId                 String?
+  title                          String
+  description                    String?                   @db.Text
+  status                         ProjectStatus             @default(proposed)
+  priority                       Priority
+  categoryId                     String
+  estimatedImpactPoints          Int?
+  actualImpactPoints             Int?
+  estimatedCost                  Decimal?                  @db.Decimal(10, 2)
+  startDate                      DateTime?
+  targetCompletionDate           DateTime?
+  completedAt                    DateTime?
   completionNotificationOverride NotificationDeliveryMode?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  createdAt                      DateTime                  @default(now())
+  updatedAt                      DateTime                  @updatedAt
 
-  client         Client                    @relation(fields: [clientId], references: [id])
-  recommendation AssessmentRecommendation? @relation(fields: [recommendationId], references: [id])
-  assignedUser   User?                     @relation("ProjectAssignee", fields: [assignedUserId], references: [id])
-  category       AssessmentCategory        @relation(fields: [categoryId], references: [id])
-  documents      Document[]
-  notes          Note[]
+  client                Client                    @relation(fields: [clientId], references: [id])
+  recommendation        AssessmentRecommendation? @relation(fields: [recommendationId], references: [id])
+  assignedUser          User?                     @relation("ProjectAssignee", fields: [assignedUserId], references: [id])
+  category              AssessmentCategory        @relation(fields: [categoryId], references: [id])
+  documents             Document[]
+  notes                 Note[]
   communicationMessages CommunicationMessage[]
-  invoiceLineItems InvoiceLineItem[]
-  billingDeposits BillingDeposit[]
-  invoices        Invoice[]
-  requiredDeposit BillingDeposit? @relation("ProjectRequiredDeposit", fields: [requiredDepositId], references: [id], onDelete: SetNull)
-  requiredDepositId String? @unique
+  invoiceLineItems      InvoiceLineItem[]
+  billingDeposits       BillingDeposit[]
+  invoices              Invoice[]
+  requiredDeposit       BillingDeposit?           @relation("ProjectRequiredDeposit", fields: [requiredDepositId], references: [id], onDelete: SetNull)
+  requiredDepositId     String?                   @unique
 }
 
 model ClientScoreHistory {
@@ -647,48 +647,48 @@ model Document {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
-  client     Client      @relation(fields: [clientId], references: [id])
-  assessment Assessment? @relation(fields: [assessmentId], references: [id])
-  project    Project?    @relation(fields: [projectId], references: [id])
-  tip        TechnologyImprovementPlan? @relation(fields: [tipId], references: [id])
-  quarterlyBusinessReview QuarterlyBusinessReview? @relation(fields: [qbrId], references: [id])
-  uploadedBy User        @relation(fields: [uploadedByUserId], references: [id])
+  client                  Client                     @relation(fields: [clientId], references: [id])
+  assessment              Assessment?                @relation(fields: [assessmentId], references: [id])
+  project                 Project?                   @relation(fields: [projectId], references: [id])
+  tip                     TechnologyImprovementPlan? @relation(fields: [tipId], references: [id])
+  quarterlyBusinessReview QuarterlyBusinessReview?   @relation(fields: [qbrId], references: [id])
+  uploadedBy              User                       @relation(fields: [uploadedByUserId], references: [id])
 }
 
 model TechnologyImprovementPlan {
-  id               String                          @id @default(uuid())
-  clientId         String
-  assessmentId     String?
-  status           TechnologyImprovementPlanStatus @default(draft)
-  currentStep      TipWorkflowStep                 @default(profile)
-  version          Int                             @default(1)
-  title            String
-  wizardState      Json
-  executiveSummary String?                         @db.Text
-  generatedAt      DateTime?
-  publishedAt      DateTime?
-  publishedByUserId  String?
-  approvedAt       DateTime?
-  approvedByUserId   String?
+  id                  String                          @id @default(uuid())
+  clientId            String
+  assessmentId        String?
+  status              TechnologyImprovementPlanStatus @default(draft)
+  currentStep         TipWorkflowStep                 @default(profile)
+  version             Int                             @default(1)
+  title               String
+  wizardState         Json
+  executiveSummary    String?                         @db.Text
+  generatedAt         DateTime?
+  publishedAt         DateTime?
+  publishedByUserId   String?
+  approvedAt          DateTime?
+  approvedByUserId    String?
   approvedByContactId String?
-  signatureJson      Json?
+  signatureJson       Json?
   revisionRequestedAt DateTime?
-  revisionNotes      String?                        @db.Text
-  createdByUserId    String
-  createdAt          DateTime                        @default(now())
-  updatedAt          DateTime                        @updatedAt
+  revisionNotes       String?                         @db.Text
+  createdByUserId     String
+  createdAt           DateTime                        @default(now())
+  updatedAt           DateTime                        @updatedAt
 
-  client     Client      @relation(fields: [clientId], references: [id])
-  assessment Assessment? @relation(fields: [assessmentId], references: [id])
-  createdBy  User        @relation(fields: [createdByUserId], references: [id])
-  publishedBy User?      @relation("TipPublishedBy", fields: [publishedByUserId], references: [id], onDelete: SetNull)
-  approvedBy User?      @relation("TipApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
-  approvedByContact ClientContact? @relation("TipApprovedByContact", fields: [approvedByContactId], references: [id], onDelete: SetNull)
-  document   Document?
-  communicationMessages CommunicationMessage[]
+  client                  Client                   @relation(fields: [clientId], references: [id])
+  assessment              Assessment?              @relation(fields: [assessmentId], references: [id])
+  createdBy               User                     @relation(fields: [createdByUserId], references: [id])
+  publishedBy             User?                    @relation("TipPublishedBy", fields: [publishedByUserId], references: [id], onDelete: SetNull)
+  approvedBy              User?                    @relation("TipApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  approvedByContact       ClientContact?           @relation("TipApprovedByContact", fields: [approvedByContactId], references: [id], onDelete: SetNull)
+  document                Document?
+  communicationMessages   CommunicationMessage[]
   communicationQueueItems CommunicationQueueItem[]
-  invoices   Invoice[]
-  billingDeposits BillingDeposit[]
+  invoices                Invoice[]
+  billingDeposits         BillingDeposit[]
 }
 
 model QuarterlyBusinessReview {
@@ -948,17 +948,17 @@ model AccountActivationToken {
 }
 
 model CommunicationTestSend {
-  id                    String                      @id @default(uuid())
-  templateKey           String
-  recipientEmail        String
-  providerMessageId     String?
-  status                CommunicationTestSendStatus
-  errorMessage          String?                     @db.Text
-  sentByUserId          String
-  communicationMessageId String?                    @unique
-  createdAt             DateTime                    @default(now())
+  id                     String                      @id @default(uuid())
+  templateKey            String
+  recipientEmail         String
+  providerMessageId      String?
+  status                 CommunicationTestSendStatus
+  errorMessage           String?                     @db.Text
+  sentByUserId           String
+  communicationMessageId String?                     @unique
+  createdAt              DateTime                    @default(now())
 
-  sentBy User @relation(fields: [sentByUserId], references: [id])
+  sentBy               User                  @relation(fields: [sentByUserId], references: [id])
   communicationMessage CommunicationMessage? @relation(fields: [communicationMessageId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
@@ -967,54 +967,54 @@ model CommunicationTestSend {
 }
 
 model CommunicationMessage {
-  id                 String                     @id @default(uuid())
-  provider           String                     @default("resend")
-  providerMessageId  String?                    @unique
-  channel            CommunicationChannel       @default(email)
-  templateKey        String
-  templateVersion    Int?
-  subject            String
-  previewText        String?                    @db.Text
-  recipientEmail     String
-  recipientName      String?
-  senderEmail        String
-  replyToEmail       String?
-  clientId           String?
-  userId             String?
-  assessmentId       String?
-  roadmapId          String?
-  proposalId         String?
-  projectId          String?
-  campaignId         String?
-  queueItemId        String?
-  status             CommunicationMessageStatus   @default(QUEUED)
-  sentAt             DateTime?
-  deliveredAt        DateTime?
-  firstOpenedAt      DateTime?
-  lastOpenedAt       DateTime?
-  openCount          Int                        @default(0)
-  firstClickedAt     DateTime?
-  lastClickedAt      DateTime?
-  clickCount         Int                        @default(0)
-  bouncedAt          DateTime?
-  failedAt           DateTime?
-  failureReason      String?                    @db.Text
-  isTest             Boolean                    @default(false)
-  metadataJson       Json?
-  createdByUserId    String?
-  createdAt          DateTime                   @default(now())
-  updatedAt          DateTime                   @updatedAt
+  id                String                     @id @default(uuid())
+  provider          String                     @default("resend")
+  providerMessageId String?                    @unique
+  channel           CommunicationChannel       @default(email)
+  templateKey       String
+  templateVersion   Int?
+  subject           String
+  previewText       String?                    @db.Text
+  recipientEmail    String
+  recipientName     String?
+  senderEmail       String
+  replyToEmail      String?
+  clientId          String?
+  userId            String?
+  assessmentId      String?
+  roadmapId         String?
+  proposalId        String?
+  projectId         String?
+  campaignId        String?
+  queueItemId       String?
+  status            CommunicationMessageStatus @default(QUEUED)
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  firstOpenedAt     DateTime?
+  lastOpenedAt      DateTime?
+  openCount         Int                        @default(0)
+  firstClickedAt    DateTime?
+  lastClickedAt     DateTime?
+  clickCount        Int                        @default(0)
+  bouncedAt         DateTime?
+  failedAt          DateTime?
+  failureReason     String?                    @db.Text
+  isTest            Boolean                    @default(false)
+  metadataJson      Json?
+  createdByUserId   String?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
 
-  client      Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  user        User?        @relation("CommunicationMessagesReceived", fields: [userId], references: [id], onDelete: SetNull)
-  assessment  Assessment?  @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
-  project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  createdBy   User?        @relation("CommunicationMessagesCreated", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  campaign    CommunicationCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  tip         TechnologyImprovementPlan? @relation(fields: [proposalId], references: [id], onDelete: SetNull)
-  queueItem   CommunicationQueueItem? @relation(fields: [queueItemId], references: [id], onDelete: SetNull)
-  events      CommunicationEvent[]
-  testSend    CommunicationTestSend?
+  client            Client?                    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  user              User?                      @relation("CommunicationMessagesReceived", fields: [userId], references: [id], onDelete: SetNull)
+  assessment        Assessment?                @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  project           Project?                   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdBy         User?                      @relation("CommunicationMessagesCreated", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  campaign          CommunicationCampaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  tip               TechnologyImprovementPlan? @relation(fields: [proposalId], references: [id], onDelete: SetNull)
+  queueItem         CommunicationQueueItem?    @relation(fields: [queueItemId], references: [id], onDelete: SetNull)
+  events            CommunicationEvent[]
+  testSend          CommunicationTestSend?
   campaignRecipient CampaignRecipient?
 
   @@index([clientId])
@@ -1078,30 +1078,30 @@ model OrganizationActivityEvent {
 }
 
 model CommunicationBrandSettings {
-  id                String   @id @default("default")
-  primaryLogoUrl    String?
-  secondaryLogoUrl  String?
-  primaryColor      String   @default("#082F5B")
-  secondaryColor    String   @default("#7D97AC")
-  accentColor       String   @default("#2563EB")
-  buttonPrimaryBg   String   @default("#082F5B")
-  buttonPrimaryText String   @default("#FFFFFF")
-  buttonSecondaryBg String @default("#F4F6F8")
-  buttonSecondaryText String @default("#082F5B")
-  fontFamilyHeading String   @default("Georgia, 'Times New Roman', serif")
-  fontFamilyBody    String   @default("Arial, Helvetica, sans-serif")
-  companyName       String   @default("Bobkat IT")
-  productName       String   @default("StackScore")
-  websiteUrl        String?
-  supportEmail      String?
-  supportPhone      String?
-  address           String?  @db.Text
-  copyrightText     String?
-  footerTagline     String?
-  socialLinks       Json     @default("[]")
-  componentSettings Json     @default("{}")
-  updatedAt         DateTime @updatedAt
-  updatedByUserId   String?
+  id                  String   @id @default("default")
+  primaryLogoUrl      String?
+  secondaryLogoUrl    String?
+  primaryColor        String   @default("#082F5B")
+  secondaryColor      String   @default("#7D97AC")
+  accentColor         String   @default("#2563EB")
+  buttonPrimaryBg     String   @default("#082F5B")
+  buttonPrimaryText   String   @default("#FFFFFF")
+  buttonSecondaryBg   String   @default("#F4F6F8")
+  buttonSecondaryText String   @default("#082F5B")
+  fontFamilyHeading   String   @default("Georgia, 'Times New Roman', serif")
+  fontFamilyBody      String   @default("Arial, Helvetica, sans-serif")
+  companyName         String   @default("Bobkat IT")
+  productName         String   @default("StackScore")
+  websiteUrl          String?
+  supportEmail        String?
+  supportPhone        String?
+  address             String?  @db.Text
+  copyrightText       String?
+  footerTagline       String?
+  socialLinks         Json     @default("[]")
+  componentSettings   Json     @default("{}")
+  updatedAt           DateTime @updatedAt
+  updatedByUserId     String?
 
   updatedBy User? @relation(fields: [updatedByUserId], references: [id])
 }
@@ -1159,36 +1159,36 @@ model TechnologyCategory {
 }
 
 model Technology {
-  id                 String                    @id @default(uuid())
-  slug               String                    @unique
-  name               String
-  vendor             String
-  productFamily      String
-  categoryId         String
-  summary            String                    @db.Text
-  purpose            String                    @db.Text
-  whySelected        String?                   @db.Text
-  businessValue      String?                   @db.Text
-  technicalOverview  String?                   @db.Text
-  standardDeployment String?                   @db.Text
-  supportScope       String?                   @db.Text
-  limitations        String?                   @db.Text
-  licensingNotes     String?                   @db.Text
-  securityNotes      String?                   @db.Text
-  operationalNotes   String?                   @db.Text
-  stackLayer         String?
-  standardStatus     TechnologyStandardStatus  @default(approved)
-  lifecycleStatus    TechnologyLifecycleStatus @default(current)
-  isFeatured         Boolean                   @default(false)
-  isActive           Boolean                   @default(true)
-  icon               String?
-  websiteUrl         String?
-  documentationUrl   String?
-  relatedPlaybookCount Int                     @default(0)
-  lastReviewedAt     DateTime?
-  nextReviewAt       DateTime?
-  createdAt          DateTime                  @default(now())
-  updatedAt          DateTime                  @updatedAt
+  id                   String                    @id @default(uuid())
+  slug                 String                    @unique
+  name                 String
+  vendor               String
+  productFamily        String
+  categoryId           String
+  summary              String                    @db.Text
+  purpose              String                    @db.Text
+  whySelected          String?                   @db.Text
+  businessValue        String?                   @db.Text
+  technicalOverview    String?                   @db.Text
+  standardDeployment   String?                   @db.Text
+  supportScope         String?                   @db.Text
+  limitations          String?                   @db.Text
+  licensingNotes       String?                   @db.Text
+  securityNotes        String?                   @db.Text
+  operationalNotes     String?                   @db.Text
+  stackLayer           String?
+  standardStatus       TechnologyStandardStatus  @default(approved)
+  lifecycleStatus      TechnologyLifecycleStatus @default(current)
+  isFeatured           Boolean                   @default(false)
+  isActive             Boolean                   @default(true)
+  icon                 String?
+  websiteUrl           String?
+  documentationUrl     String?
+  relatedPlaybookCount Int                       @default(0)
+  lastReviewedAt       DateTime?
+  nextReviewAt         DateTime?
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
 
   category           TechnologyCategory          @relation(fields: [categoryId], references: [id])
   capabilities       TechnologyCapability[]
@@ -1303,7 +1303,7 @@ model ClientTechnology {
 }
 
 model TechnologySnapshotLead {
-  id                String                        @id @default(uuid())
+  id                String                       @id @default(uuid())
   contactName       String
   companyName       String
   email             String
@@ -1315,10 +1315,10 @@ model TechnologySnapshotLead {
   totalScore        Int
   classification    String
   lowestPillars     Json
-  status            TechnologySnapshotLeadStatus  @default(new)
-  prospectId        String?                       @unique
-  createdAt         DateTime                      @default(now())
-  updatedAt         DateTime                      @updatedAt
+  status            TechnologySnapshotLeadStatus @default(new)
+  prospectId        String?                      @unique
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
 
   prospect Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
 
@@ -1345,10 +1345,10 @@ model Prospect {
   updatedAt       DateTime           @updatedAt
   lastContactAt   DateTime?
 
-  client             Client?             @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  createdBy          User?               @relation("ProspectCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  campaignRecipients CampaignRecipient[]
-  snapshotLead       TechnologySnapshotLead?
+  client                  Client?                  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdBy               User?                    @relation("ProspectCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  campaignRecipients      CampaignRecipient[]
+  snapshotLead            TechnologySnapshotLead?
   communicationQueueItems CommunicationQueueItem[]
 
   @@index([company])
@@ -1370,7 +1370,7 @@ model CommunicationCampaign {
   startedAt       DateTime?
   completedAt     DateTime?
 
-  createdBy  User                  @relation("CampaignCreatedBy", fields: [createdByUserId], references: [id])
+  createdBy  User                   @relation("CampaignCreatedBy", fields: [createdByUserId], references: [id])
   recipients CampaignRecipient[]
   events     CampaignEvent[]
   messages   CommunicationMessage[]
@@ -1411,15 +1411,15 @@ model CampaignRecipient {
 }
 
 model CampaignEvent {
-  id          String   @id @default(uuid())
-  campaignId  String
-  eventType   String
-  title       String
-  description String?  @db.Text
-  occurredAt  DateTime @default(now())
+  id           String   @id @default(uuid())
+  campaignId   String
+  eventType    String
+  title        String
+  description  String?  @db.Text
+  occurredAt   DateTime @default(now())
   metadataJson Json?
-  actorUserId String?
-  recipientId String?
+  actorUserId  String?
+  recipientId  String?
 
   campaign  CommunicationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   actor     User?                 @relation("CampaignEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
@@ -1459,10 +1459,10 @@ model ClientContact {
   createdAt                    DateTime @default(now())
   updatedAt                    DateTime @updatedAt
 
-  client       Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  user         User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  approvedTips TechnologyImprovementPlan[] @relation("TipApprovedByContact")
-  invoicesAsBillingContact Invoice[] @relation("InvoiceBillingContact")
+  client                   Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user                     User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  approvedTips             TechnologyImprovementPlan[] @relation("TipApprovedByContact")
+  invoicesAsBillingContact Invoice[]                   @relation("InvoiceBillingContact")
 
   @@unique([clientId, email])
   @@index([clientId])
@@ -1730,23 +1730,23 @@ enum VcioReviewStatus {
 }
 
 model ClientBillingProfile {
-  id                     String   @id @default(uuid())
-  clientId               String   @unique
-  stripeCustomerId       String?  @unique
-  billingCompanyName     String?
-  billingEmail           String?
-  billingPhone           String?
-  addressLine1           String?
-  addressLine2           String?
-  city                   String?
-  state                  String?
-  postalCode             String?
-  country                String?  @default("US")
-  paymentTermsDays       Int      @default(30)
+  id                      String   @id @default(uuid())
+  clientId                String   @unique
+  stripeCustomerId        String?  @unique
+  billingCompanyName      String?
+  billingEmail            String?
+  billingPhone            String?
+  addressLine1            String?
+  addressLine2            String?
+  city                    String?
+  state                   String?
+  postalCode              String?
+  country                 String?  @default("US")
+  paymentTermsDays        Int      @default(30)
   defaultBillingContactId String?
-  taxExempt              Boolean  @default(false)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  taxExempt               Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
@@ -1754,60 +1754,60 @@ model ClientBillingProfile {
 }
 
 model Invoice {
-  id                    String            @id @default(uuid())
-  clientId              String
-  invoiceNumber         String            @unique
-  status                InvoiceStatus     @default(draft)
-  sourceType            InvoiceSourceType @default(manual)
-  documentType          InvoiceDocumentType @default(standard)
-  title                 String?
-  clientDescription     String?           @db.Text
-  expirationDate        DateTime?
-  shippingCents         Int               @default(0)
-  contingencyCents      Int               @default(0)
-  budgetaryOptionsJson  Json?
-  currency              String            @default("usd")
-  subtotalCents         Int               @default(0)
-  discountCents         Int               @default(0)
-  taxCents              Int               @default(0)
-  creditCents           Int               @default(0)
-  depositAppliedCents   Int               @default(0)
-  totalCents            Int               @default(0)
-  amountPaidCents       Int               @default(0)
-  balanceDueCents       Int               @default(0)
-  issueDate             DateTime?
-  dueDate               DateTime?
-  paidAt                DateTime?
-  paymentTermsDays      Int               @default(30)
-  clientNotes           String?           @db.Text
-  internalNotes         String?           @db.Text
-  billToName            String?
-  billToEmail           String?
-  billToPhone           String?
-  billToAddressJson     Json?
-  billingContactId      String?
-  tipId                 String?
-  projectId             String?
-  depositId             String?
-  assessmentPurchaseId  String?           @unique
-  stripeCheckoutSessionId String?       @unique
+  id                      String              @id @default(uuid())
+  clientId                String
+  invoiceNumber           String              @unique
+  status                  InvoiceStatus       @default(draft)
+  sourceType              InvoiceSourceType   @default(manual)
+  documentType            InvoiceDocumentType @default(standard)
+  title                   String?
+  clientDescription       String?             @db.Text
+  expirationDate          DateTime?
+  shippingCents           Int                 @default(0)
+  contingencyCents        Int                 @default(0)
+  budgetaryOptionsJson    Json?
+  currency                String              @default("usd")
+  subtotalCents           Int                 @default(0)
+  discountCents           Int                 @default(0)
+  taxCents                Int                 @default(0)
+  creditCents             Int                 @default(0)
+  depositAppliedCents     Int                 @default(0)
+  totalCents              Int                 @default(0)
+  amountPaidCents         Int                 @default(0)
+  balanceDueCents         Int                 @default(0)
+  issueDate               DateTime?
+  dueDate                 DateTime?
+  paidAt                  DateTime?
+  paymentTermsDays        Int                 @default(30)
+  clientNotes             String?             @db.Text
+  internalNotes           String?             @db.Text
+  billToName              String?
+  billToEmail             String?
+  billToPhone             String?
+  billToAddressJson       Json?
+  billingContactId        String?
+  tipId                   String?
+  projectId               String?
+  depositId               String?
+  assessmentPurchaseId    String?             @unique
+  stripeCheckoutSessionId String?             @unique
   stripePaymentIntentId   String?
   stripePaymentLinkUrl    String?
-  onlinePaymentEnabled  Boolean           @default(true)
-  createdByUserId       String
-  voidedAt              DateTime?
-  voidedByUserId        String?
-  voidReason            String?           @db.Text
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  onlinePaymentEnabled    Boolean             @default(true)
+  createdByUserId         String
+  voidedAt                DateTime?
+  voidedByUserId          String?
+  voidReason              String?             @db.Text
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
 
-  client              Client                    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  billingContact      ClientContact?            @relation("InvoiceBillingContact", fields: [billingContactId], references: [id], onDelete: SetNull)
+  client              Client                     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  billingContact      ClientContact?             @relation("InvoiceBillingContact", fields: [billingContactId], references: [id], onDelete: SetNull)
   tip                 TechnologyImprovementPlan? @relation(fields: [tipId], references: [id], onDelete: SetNull)
   project             Project?                   @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  deposit             BillingDeposit?           @relation(fields: [depositId], references: [id], onDelete: SetNull)
-  assessmentPurchase  AssessmentPurchase?       @relation(fields: [assessmentPurchaseId], references: [id], onDelete: SetNull)
-  createdBy           User                      @relation("InvoiceCreatedBy", fields: [createdByUserId], references: [id])
+  deposit             BillingDeposit?            @relation(fields: [depositId], references: [id], onDelete: SetNull)
+  assessmentPurchase  AssessmentPurchase?        @relation(fields: [assessmentPurchaseId], references: [id], onDelete: SetNull)
+  createdBy           User                       @relation("InvoiceCreatedBy", fields: [createdByUserId], references: [id])
   lineItems           InvoiceLineItem[]
   deliveries          InvoiceDelivery[]
   paymentApplications PaymentApplication[]
@@ -1820,33 +1820,33 @@ model Invoice {
 }
 
 model InvoiceLineItem {
-  id                  String              @id @default(uuid())
-  invoiceId           String
-  sortOrder           Int                 @default(0)
-  itemName            String?
-  description         String
-  unit                String?
-  quantity            Decimal             @db.Decimal(12, 4) @default(1)
-  unitPriceCents      Int
-  amountCents         Int
-  category            InvoiceLineCategory @default(other)
-  lineKind            InvoiceLineKind     @default(one_time)
-  taxable             Boolean             @default(false)
-  catalogSourceType   String?
-  catalogSourceId     String?
-  servicePeriodStart  DateTime?
-  servicePeriodEnd    DateTime?
-  internalCostCents   Int?
-  clientNote          String?             @db.Text
-  recommendationId    String?
-  projectId           String?
-  recurringServiceId  String?
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  id                 String              @id @default(uuid())
+  invoiceId          String
+  sortOrder          Int                 @default(0)
+  itemName           String?
+  description        String
+  unit               String?
+  quantity           Decimal             @default(1) @db.Decimal(12, 4)
+  unitPriceCents     Int
+  amountCents        Int
+  category           InvoiceLineCategory @default(other)
+  lineKind           InvoiceLineKind     @default(one_time)
+  taxable            Boolean             @default(false)
+  catalogSourceType  String?
+  catalogSourceId    String?
+  servicePeriodStart DateTime?
+  servicePeriodEnd   DateTime?
+  internalCostCents  Int?
+  clientNote         String?             @db.Text
+  recommendationId   String?
+  projectId          String?
+  recurringServiceId String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
-  invoice           Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  project           Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  recurringService  RecurringService? @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
+  invoice          Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  project          Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  recurringService RecurringService? @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
 }
@@ -1883,11 +1883,11 @@ model BillingPayment {
 }
 
 model PaymentApplication {
-  id              String   @id @default(uuid())
-  paymentId       String
-  invoiceId       String
-  appliedCents    Int
-  createdAt       DateTime @default(now())
+  id           String   @id @default(uuid())
+  paymentId    String
+  invoiceId    String
+  appliedCents Int
+  createdAt    DateTime @default(now())
 
   payment BillingPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   invoice Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
@@ -1897,30 +1897,30 @@ model PaymentApplication {
 }
 
 model BillingDeposit {
-  id                String               @id @default(uuid())
-  clientId          String
-  depositType       BillingDepositType
-  status            BillingDepositStatus @default(not_requested)
-  label             String
-  amountCents       Int?
-  percentage        Decimal?             @db.Decimal(5, 2)
-  currency          String               @default("usd")
-  tipId             String?
-  projectId         String?
-  invoiceId         String?
+  id                 String               @id @default(uuid())
+  clientId           String
+  depositType        BillingDepositType
+  status             BillingDepositStatus @default(not_requested)
+  label              String
+  amountCents        Int?
+  percentage         Decimal?             @db.Decimal(5, 2)
+  currency           String               @default("usd")
+  tipId              String?
+  projectId          String?
+  invoiceId          String?
   appliedToInvoiceId String?
-  appliedAt         DateTime?
-  requestedAt       DateTime?
-  paidAt            DateTime?
-  notes             String?              @db.Text
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  appliedAt          DateTime?
+  requestedAt        DateTime?
+  paidAt             DateTime?
+  notes              String?              @db.Text
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
-  client            Client                     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  tip               TechnologyImprovementPlan? @relation(fields: [tipId], references: [id], onDelete: SetNull)
-  project           Project?                   @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  projectRequiring  Project?                   @relation("ProjectRequiredDeposit")
-  invoices          Invoice[]
+  client           Client                     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tip              TechnologyImprovementPlan? @relation(fields: [tipId], references: [id], onDelete: SetNull)
+  project          Project?                   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectRequiring Project?                   @relation("ProjectRequiredDeposit")
+  invoices         Invoice[]
 
   @@index([clientId])
   @@index([status])
@@ -1928,31 +1928,31 @@ model BillingDeposit {
 }
 
 model RecurringService {
-  id                   String                 @id @default(uuid())
-  clientId             String
-  serviceName          String
-  description          String?                @db.Text
-  quantity             Decimal                @db.Decimal(12, 4) @default(1)
-  unitPriceCents       Int
-  billingFrequency     BillingFrequency       @default(monthly)
-  customFrequencyDays  Int?
-  startDate            DateTime?
-  nextBillingDate      DateTime?
-  renewalDate          DateTime?
-  minimumTermMonths    Int?
-  autoRenew            Boolean                @default(true)
-  paymentMethodStatus  String?
-  relatedTechnology    String?
-  relatedAgreement     String?
-  status               RecurringServiceStatus @default(draft)
-  lastInvoiceDate      DateTime?
-  internalCostCents    Int?
-  internalMarginPercent Decimal?              @db.Decimal(5, 2)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  id                    String                 @id @default(uuid())
+  clientId              String
+  serviceName           String
+  description           String?                @db.Text
+  quantity              Decimal                @default(1) @db.Decimal(12, 4)
+  unitPriceCents        Int
+  billingFrequency      BillingFrequency       @default(monthly)
+  customFrequencyDays   Int?
+  startDate             DateTime?
+  nextBillingDate       DateTime?
+  renewalDate           DateTime?
+  minimumTermMonths     Int?
+  autoRenew             Boolean                @default(true)
+  paymentMethodStatus   String?
+  relatedTechnology     String?
+  relatedAgreement      String?
+  status                RecurringServiceStatus @default(draft)
+  lastInvoiceDate       DateTime?
+  internalCostCents     Int?
+  internalMarginPercent Decimal?               @db.Decimal(5, 2)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
-  client    Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  lineItems InvoiceLineItem[]
+  client        Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lineItems     InvoiceLineItem[]
   subscriptions Subscription[]
 
   @@index([clientId])
@@ -1961,40 +1961,40 @@ model RecurringService {
 }
 
 model Subscription {
-  id                        String             @id @default(uuid())
-  clientId                  String
-  recurringServiceId        String?
-  provider                  BillingProvider    @default(stripe)
-  providerCustomerId        String
-  providerSubscriptionId    String             @unique
-  providerPriceId           String
-  providerProductId         String?
-  serviceType               ServiceType
-  billingInterval           BillingInterval    @default(month)
-  amountCents               Int
-  currency                  String             @default("usd")
-  status                    SubscriptionStatus @default(incomplete)
-  rawStatus                 String
-  currentPeriodStart        DateTime?
-  currentPeriodEnd          DateTime?
-  cancelAtPeriodEnd         Boolean            @default(false)
-  canceledAt                DateTime?
-  endedAt                   DateTime?
-  trialStart                DateTime?
-  trialEnd                  DateTime?
-  latestInvoiceProviderId   String?
-  lastPaymentAt             DateTime?
-  paymentFailedAt           DateTime?
-  paymentActionRequiredAt   DateTime?
-  lastStripeEventCreatedAt  DateTime?
-  createdAt                 DateTime           @default(now())
-  updatedAt                 DateTime           @updatedAt
+  id                       String             @id @default(uuid())
+  clientId                 String
+  recurringServiceId       String?
+  provider                 BillingProvider    @default(stripe)
+  providerCustomerId       String
+  providerSubscriptionId   String             @unique
+  providerPriceId          String
+  providerProductId        String?
+  serviceType              ServiceType
+  billingInterval          BillingInterval    @default(month)
+  amountCents              Int
+  currency                 String             @default("usd")
+  status                   SubscriptionStatus @default(incomplete)
+  rawStatus                String
+  currentPeriodStart       DateTime?
+  currentPeriodEnd         DateTime?
+  cancelAtPeriodEnd        Boolean            @default(false)
+  canceledAt               DateTime?
+  endedAt                  DateTime?
+  trialStart               DateTime?
+  trialEnd                 DateTime?
+  latestInvoiceProviderId  String?
+  lastPaymentAt            DateTime?
+  paymentFailedAt          DateTime?
+  paymentActionRequiredAt  DateTime?
+  lastStripeEventCreatedAt DateTime?
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
 
-  client                  Client                @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  recurringService        RecurringService?      @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
-  invoices                SubscriptionInvoice[]
-  vcioOnboarding          VcioOnboarding?
-  vcioQuarterlyReviews    VcioQuarterlyReview[]
+  client               Client                @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  recurringService     RecurringService?     @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
+  invoices             SubscriptionInvoice[]
+  vcioOnboarding       VcioOnboarding?
+  vcioQuarterlyReviews VcioQuarterlyReview[]
 
   @@index([clientId])
   @@index([serviceType])
@@ -2005,24 +2005,24 @@ model Subscription {
 }
 
 model SubscriptionInvoice {
-  id                         String       @id @default(uuid())
-  subscriptionId             String
-  clientId                   String
-  provider                   BillingProvider @default(stripe)
-  providerInvoiceId          String       @unique
-  providerPaymentIntentId    String?
-  number                     String?
-  amountDueCents             Int          @default(0)
-  amountPaidCents            Int          @default(0)
-  currency                   String       @default("usd")
-  status                     String
-  invoiceDate                DateTime?
-  dueDate                    DateTime?
-  paidAt                     DateTime?
-  hostedInvoiceUrl           String?      @db.Text
-  invoicePdfUrl              String?      @db.Text
-  createdAt                  DateTime     @default(now())
-  updatedAt                  DateTime     @updatedAt
+  id                      String          @id @default(uuid())
+  subscriptionId          String
+  clientId                String
+  provider                BillingProvider @default(stripe)
+  providerInvoiceId       String          @unique
+  providerPaymentIntentId String?
+  number                  String?
+  amountDueCents          Int             @default(0)
+  amountPaidCents         Int             @default(0)
+  currency                String          @default("usd")
+  status                  String
+  invoiceDate             DateTime?
+  dueDate                 DateTime?
+  paidAt                  DateTime?
+  hostedInvoiceUrl        String?         @db.Text
+  invoicePdfUrl           String?         @db.Text
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
 
   subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   client       Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -2056,29 +2056,29 @@ model VcioOnboarding {
 }
 
 model VcioQuarterlyReview {
-  id                         String           @id @default(uuid())
-  clientId                   String
-  subscriptionId             String?
-  reviewPeriodStart          DateTime
-  reviewPeriodEnd            DateTime
-  reviewDate                 DateTime?
-  status                     VcioReviewStatus @default(draft)
-  executiveSummary           String?          @db.Text
-  scoreMovementJson          Json?
-  completedProjectsJson      Json?
-  openRisksJson              Json?
-  nextQuarterPrioritiesJson  Json?
-  budgetSummaryJson          Json?
-  plannedInvestmentsJson     Json?
-  meetingNotes               String?          @db.Text
-  internalNotes              String?          @db.Text
-  linkedReportDocumentId     String?
-  linkedRoadmapId            String?
-  nextReviewDate             DateTime?
-  createdByUserId            String?
-  completedAt                DateTime?
-  createdAt                  DateTime         @default(now())
-  updatedAt                  DateTime         @updatedAt
+  id                        String           @id @default(uuid())
+  clientId                  String
+  subscriptionId            String?
+  reviewPeriodStart         DateTime
+  reviewPeriodEnd           DateTime
+  reviewDate                DateTime?
+  status                    VcioReviewStatus @default(draft)
+  executiveSummary          String?          @db.Text
+  scoreMovementJson         Json?
+  completedProjectsJson     Json?
+  openRisksJson             Json?
+  nextQuarterPrioritiesJson Json?
+  budgetSummaryJson         Json?
+  plannedInvestmentsJson    Json?
+  meetingNotes              String?          @db.Text
+  internalNotes             String?          @db.Text
+  linkedReportDocumentId    String?
+  linkedRoadmapId           String?
+  nextReviewDate            DateTime?
+  createdByUserId           String?
+  completedAt               DateTime?
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
 
   client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
   subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
@@ -2092,20 +2092,20 @@ model VcioQuarterlyReview {
 }
 
 model InvoiceDelivery {
-  id              String                 @id @default(uuid())
-  invoiceId       String
-  channel         InvoiceDeliveryChannel @default(email)
-  status          InvoiceDeliveryStatus  @default(queued)
-  recipientEmail  String
-  ccEmailsJson    Json                   @default("[]")
-  subject         String?
-  messageId       String?
-  sentAt          DateTime?
-  deliveredAt     DateTime?
-  openedAt        DateTime?
-  failureReason   String?                @db.Text
-  metadataJson    Json?
-  createdAt       DateTime               @default(now())
+  id             String                 @id @default(uuid())
+  invoiceId      String
+  channel        InvoiceDeliveryChannel @default(email)
+  status         InvoiceDeliveryStatus  @default(queued)
+  recipientEmail String
+  ccEmailsJson   Json                   @default("[]")
+  subject        String?
+  messageId      String?
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  openedAt       DateTime?
+  failureReason  String?                @db.Text
+  metadataJson   Json?
+  createdAt      DateTime               @default(now())
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 

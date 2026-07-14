@@ -12,6 +12,10 @@ describe("Stripe integration routes", () => {
       resolve(process.cwd(), "src/app/api/webhooks/stripe/route.ts"),
       "utf8",
     );
+    const billingWebhook = readFileSync(
+      resolve(process.cwd(), "src/lib/billing/stripe-webhook.ts"),
+      "utf8",
+    );
 
     expect(checkout).toContain("checkout.sessions.create");
     expect(checkout).toContain("productType");
@@ -22,8 +26,10 @@ describe("Stripe integration routes", () => {
       "utf8",
     );
     expect(config).toContain("STRIPE_ASSESSMENT_PRICE_ID");
+    expect(config).toContain("STRIPE_VCIO_PRICE_ID");
     expect(webhook).toContain("constructEvent");
     expect(webhook).toContain("checkout.session.completed");
+    expect(billingWebhook).toContain("customer.subscription.updated");
   });
 
   it("allows public access to offer and success pages", () => {
@@ -33,6 +39,7 @@ describe("Stripe integration routes", () => {
     );
 
     expect(authConfig).toContain('pathname.startsWith("/assessment-offer")');
+    expect(authConfig).toContain('pathname.startsWith("/vcio-offer")');
     expect(authConfig).toContain('pathname.startsWith("/activate-account")');
     expect(authConfig).toContain('pathname.startsWith("/purchase/success")');
   });

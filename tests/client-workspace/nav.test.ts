@@ -10,6 +10,10 @@ describe("resolveClientWorkspaceNavHref", () => {
     expect(resolveClientWorkspaceNavHref("c1", "overview")).toBe(
       "/clients/c1/technology-profile",
     );
+    expect(resolveClientWorkspaceNavHref("c1", "vcio")).toBe("/clients/c1/vcio");
+    expect(resolveClientWorkspaceNavHref("c1", "quarterly-reviews")).toBe(
+      "/clients/c1/quarterly-reviews",
+    );
     expect(resolveClientWorkspaceNavHref("c1", "recommendations")).toBe(
       "/clients/c1/recommendations",
     );
@@ -45,6 +49,11 @@ describe("resolveActiveWorkspaceSection", () => {
       "recommendations",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/roadmap")).toBe("roadmap");
+    expect(resolveActiveWorkspaceSection("/clients/c1/vcio")).toBe("vcio");
+    expect(resolveActiveWorkspaceSection("/clients/c1/vcio/onboarding")).toBe("vcio");
+    expect(resolveActiveWorkspaceSection("/clients/c1/quarterly-reviews")).toBe(
+      "quarterly-reviews",
+    );
     expect(resolveActiveWorkspaceSection("/clients/c1/improvement-plan/tip-1")).toBe(
       "roadmap",
     );
@@ -74,11 +83,19 @@ describe("resolveActiveWorkspaceSection", () => {
 describe("getVisibleWorkspaceNav", () => {
   it("limits client-portal users to overview-oriented sections", () => {
     const sections = getVisibleWorkspaceNav("client").map((item) => item.section);
-    expect(sections).toEqual(["overview", "recommendations", "billing", "executive-reports"]);
+    expect(sections).toEqual([
+      "overview",
+      "vcio",
+      "roadmap",
+      "quarterly-reviews",
+      "recommendations",
+      "billing",
+      "executive-reports",
+    ]);
   });
 
   it("shows the full DOC-201 nav for internal roles", () => {
-    expect(getVisibleWorkspaceNav("admin")).toHaveLength(13);
+    expect(getVisibleWorkspaceNav("admin")).toHaveLength(15);
     expect(getVisibleWorkspaceNav("admin")[0]?.section).toBe("overview");
   });
 });

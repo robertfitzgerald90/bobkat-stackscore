@@ -47,9 +47,9 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     secondaryCta: "assessmentLearnMore",
     imagePosition: "right",
     image: {
-      // TODO: Replace this static graphic with a $1,500 version; the current image includes baked-in $500 pricing.
       src: "/services/technology-maturity-assessment.png",
       alt: "Bobkat IT Technology Maturity Assessment service preview",
+      fit: "contain",
     },
     icon: ClipboardCheck,
   },

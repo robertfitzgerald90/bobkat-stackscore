@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { recordBillingAudit } from "@/lib/billing/audit";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
+import { getVcioPaymentGracePeriodDays } from "@/lib/vcio/constants";
 
 type StripeInvoiceWithFields = Stripe.Invoice & {
   subscription?: string | { id: string } | null;
@@ -141,6 +142,30 @@ export async function markVcioInvoicePaymentFailed(invoice: Stripe.Invoice) {
       providerInvoiceId: invoice.id,
     },
   });
+
+  const client = await prisma.client.findUnique({
+    where: { id: result.invoice.clientId },
+    select: {
+      primaryContactEmail: true,
+      users: { select: { id: true }, take: 1 },
+    },
+  });
+  if (client?.primaryContactEmail) {
+    const { sendVcioAdminNotification, sendVcioPaymentFailedEmail } = await import(
+      "@/lib/vcio/emails"
+    );
+    await sendVcioPaymentFailedEmail({
+      clientId: result.invoice.clientId,
+      userId: client.users[0]?.id ?? null,
+      to: client.primaryContactEmail,
+      gracePeriodDays: getVcioPaymentGracePeriodDays(),
+    });
+    await sendVcioAdminNotification({
+      subject: "StackScore vCIO payment failed",
+      eventType: "vcio_payment_failed",
+      body: `A StackScore vCIO payment failed for client ${result.invoice.clientId}.`,
+    });
+  }
 
   return result;
 }

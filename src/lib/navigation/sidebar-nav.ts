@@ -104,7 +104,6 @@ export function getConsultantSidebarNav(
       icon: Lightbulb,
     },
     { href: clientScoped("roadmap"), label: "Roadmaps", icon: Map },
-    { href: clientScoped("vcio"), label: "vCIO Clients", icon: LayoutGrid },
     {
       href: clientScoped("executive-reports"),
       label: "Reports",
@@ -113,6 +112,8 @@ export function getConsultantSidebarNav(
     { href: "/technology-catalog", label: "Technology Catalog", icon: Library },
     { href: "/playbooks", label: "Playbooks", icon: BookOpen },
     { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/admin/vcio", label: "vCIO Clients", icon: LayoutGrid, staffOnly: true },
+    { href: "/admin/billing", label: "Billing", icon: WalletCards, adminOnly: true },
     { href: "/admin/users", label: "Users", icon: Shield, adminOnly: true },
     {
       href: "/admin/assessment-library",

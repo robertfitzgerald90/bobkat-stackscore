@@ -16,7 +16,9 @@ describe("getPageTitle", () => {
 
   it("returns DOC-201 section titles for workspace routes", () => {
     expect(getPageTitle("/clients/client-1/journey")).toBe("Technology Journey");
+    expect(getPageTitle("/clients/client-1/vcio")).toBe("vCIO Dashboard");
     expect(getPageTitle("/clients/client-1/roadmap")).toBe("Roadmap");
+    expect(getPageTitle("/clients/client-1/quarterly-reviews")).toBe("Quarterly Reviews");
     expect(getPageTitle("/clients/client-1/recommendations")).toBe("Recommendations");
     expect(getPageTitle("/clients/client-1/executive-reports")).toBe("Executive Reports");
   });
@@ -24,6 +26,7 @@ describe("getPageTitle", () => {
   it("returns specific titles for nested client routes", () => {
     expect(getPageTitle("/clients/client-1/assessments/history")).toBe("Assessment History");
     expect(getPageTitle("/clients/client-1/assessments/compare")).toBe("Compare Assessments");
+    expect(getPageTitle("/clients/client-1/vcio/onboarding")).toBe("vCIO Onboarding");
     expect(getPageTitle("/clients/client-1/improvement")).toBe("Improvement Dashboard");
     expect(getPageTitle("/clients/client-1/improvement-plan/tip-1")).toBe("Improvement Plan");
   });

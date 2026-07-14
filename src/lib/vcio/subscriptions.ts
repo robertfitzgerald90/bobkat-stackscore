@@ -24,7 +24,15 @@ import {
 import { findClientIdByStripeCustomerId } from "@/lib/vcio/stripe-customers";
 
 type SyncResult =
-  | { outcome: "synced"; subscription: Subscription; clientId: string }
+  | {
+      outcome: "synced";
+      subscription: Subscription;
+      clientId: string;
+      purchaserEmail: string;
+      userId: string | null;
+      activationToken?: string;
+      manualReview: boolean;
+    }
   | { outcome: "pending_client"; reason: string };
 
 type EnsureClientResult = {
@@ -327,6 +335,10 @@ export async function syncVcioSubscriptionFromStripe(
   const subWithPeriods = subscription as StripeSubscriptionWithPeriods;
   const status = normalizeStripeSubscriptionStatus(subscription.status);
   const recurringService = await ensureRecurringService(resolved.clientId);
+  const previousSubscription = await prisma.subscription.findUnique({
+    where: { providerSubscriptionId: subscription.id },
+    select: { status: true, cancelAtPeriodEnd: true },
+  });
 
   const localSubscription = await prisma.subscription.upsert({
     where: { providerSubscriptionId: subscription.id },
@@ -432,7 +444,85 @@ export async function syncVcioSubscriptionFromStripe(
     },
   });
 
-  return { outcome: "synced", subscription: localSubscription, clientId: resolved.clientId };
+  const clientContact = await prisma.client.findUnique({
+    where: { id: resolved.clientId },
+    select: {
+      primaryContactEmail: true,
+      users: { select: { id: true }, take: 1 },
+    },
+  });
+
+  if (clientContact?.primaryContactEmail) {
+    const { sendVcioAdminNotification, sendVcioLifecycleEmail } = await import(
+      "@/lib/vcio/emails"
+    );
+    const appUrl = (await import("@/lib/stripe/app-url")).getAppUrl();
+    const userId = clientContact.users[0]?.id ?? null;
+
+    if (
+      (status === "active" || status === "trialing") &&
+      previousSubscription?.status !== "active" &&
+      previousSubscription?.status !== "trialing"
+    ) {
+      await sendVcioLifecycleEmail({
+        clientId: resolved.clientId,
+        userId,
+        to: clientContact.primaryContactEmail,
+        subject: "StackScore vCIO workspace ready",
+        message:
+          "Your StackScore vCIO subscription is active and your advisory workspace is ready.",
+        ctaLabel: "Open vCIO Dashboard",
+        ctaHref: `${appUrl}/portal/vcio`,
+        templateKey: "VCIO-WORKSPACE-READY",
+        workflow: "vcio_workspace_ready",
+      });
+    }
+
+    if (localSubscription.cancelAtPeriodEnd && !previousSubscription?.cancelAtPeriodEnd) {
+      await sendVcioLifecycleEmail({
+        clientId: resolved.clientId,
+        userId,
+        to: clientContact.primaryContactEmail,
+        subject: "StackScore vCIO cancellation scheduled",
+        message:
+          "Your StackScore vCIO subscription is scheduled to cancel at the end of the current paid period. Access continues until that date.",
+        ctaLabel: "Manage Subscription",
+        ctaHref: `${appUrl}/portal/billing`,
+        templateKey: "VCIO-CANCELLATION-SCHEDULED",
+        workflow: "vcio_cancellation_scheduled",
+      });
+      await sendVcioAdminNotification({
+        subject: "StackScore vCIO cancellation scheduled",
+        eventType: "vcio_cancellation_scheduled",
+        body: `A StackScore vCIO cancellation was scheduled for client ${resolved.clientId}.`,
+      });
+    }
+
+    if (status === "canceled" && previousSubscription?.status !== "canceled") {
+      await sendVcioLifecycleEmail({
+        clientId: resolved.clientId,
+        userId,
+        to: clientContact.primaryContactEmail,
+        subject: "StackScore vCIO subscription ended",
+        message:
+          "Your StackScore vCIO subscription has ended. Historical records are preserved, and ongoing advisory features may be read-only.",
+        ctaLabel: "Reactivate StackScore vCIO",
+        ctaHref: `${appUrl}/vcio-offer`,
+        templateKey: "VCIO-SUBSCRIPTION-ENDED",
+        workflow: "vcio_subscription_ended",
+      });
+    }
+  }
+
+  return {
+    outcome: "synced",
+    subscription: localSubscription,
+    clientId: resolved.clientId,
+    purchaserEmail: resolved.purchaserEmail,
+    userId: resolved.userId,
+    activationToken: "activationToken" in resolved ? resolved.activationToken : undefined,
+    manualReview: "manualReview" in resolved ? resolved.manualReview : false,
+  };
 }
 
 export async function fulfillVcioCheckoutSession(session: Stripe.Checkout.Session) {
@@ -449,7 +539,28 @@ export async function fulfillVcioCheckoutSession(session: Stripe.Checkout.Sessio
     expand: ["items.data.price.product", "latest_invoice"],
   });
 
-  return syncVcioSubscriptionFromStripe(subscription, { checkoutSession: session });
+  const result = await syncVcioSubscriptionFromStripe(subscription, { checkoutSession: session });
+  if (result.outcome === "synced") {
+    const { sendVcioAdminNotification, sendVcioSubscriptionReceivedEmail } = await import(
+      "@/lib/vcio/emails"
+    );
+
+    if (!result.manualReview && result.purchaserEmail) {
+      await sendVcioSubscriptionReceivedEmail({
+        clientId: result.clientId,
+        userId: result.userId,
+        to: result.purchaserEmail,
+        activationToken: result.activationToken,
+      });
+    }
+
+    await sendVcioAdminNotification({
+      subject: "New StackScore vCIO subscription",
+      eventType: "vcio_subscription_created",
+      body: `A StackScore vCIO subscription was received for client ${result.clientId}. Manual review: ${result.manualReview ? "yes" : "no"}.`,
+    });
+  }
+  return result;
 }
 
 export async function findBlockingVcioSubscription(clientId: string) {

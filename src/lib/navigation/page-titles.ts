@@ -21,6 +21,8 @@ const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/assessments\/[^/]+$/, title: "Assessment" },
   { pattern: /^\/projects$/, title: "Projects" },
   { pattern: /^\/admin\/users$/, title: "Users" },
+  { pattern: /^\/admin\/vcio$/, title: "vCIO Clients" },
+  { pattern: /^\/admin\/billing$/, title: "Admin Billing" },
   { pattern: /^\/admin\/communications$/, title: "Communications" },
   { pattern: /^\/admin\/communications\/campaigns\/new$/, title: "New Campaign" },
   { pattern: /^\/admin\/communications\/campaigns\/[^/]+$/, title: "Campaign Detail" },
@@ -38,6 +40,8 @@ const CLIENT_SUBROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/clients\/[^/]+\/assessments\/compare$/, title: "Compare Assessments" },
   { pattern: /^\/clients\/[^/]+\/improvement-plan\/[^/]+$/, title: "Improvement Plan" },
   { pattern: /^\/clients\/[^/]+\/quarterly-review\/[^/]+$/, title: "Quarterly Review" },
+  { pattern: /^\/clients\/[^/]+\/quarterly-reviews$/, title: "Quarterly Reviews" },
+  { pattern: /^\/clients\/[^/]+\/vcio\/onboarding$/, title: "vCIO Onboarding" },
   { pattern: /^\/clients\/[^/]+\/progress-report$/, title: "Progress Report" },
   {
     pattern: /^\/clients\/[^/]+\/projects\/[^/]+\/completion-report$/,

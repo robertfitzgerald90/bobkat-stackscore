@@ -153,19 +153,35 @@ describe("resolveClientWorkspaceNavHref", () => {
 });
 
 describe("client workspace access", () => {
-  it("limits client-portal nav to overview, documents, and contacts", () => {
-    expect(CLIENT_VISIBLE_WORKSPACE_SECTIONS).toEqual(["overview", "documents", "contacts"]);
+  it("limits client-portal nav to customer-safe vCIO and deliverable sections", () => {
+    expect(CLIENT_VISIBLE_WORKSPACE_SECTIONS).toEqual([
+      "overview",
+      "vcio",
+      "roadmap",
+      "quarterly-reviews",
+      "recommendations",
+      "executive-reports",
+      "billing",
+    ]);
     expect(isClientVisibleWorkspaceSection("overview")).toBe(true);
-    expect(isClientVisibleWorkspaceSection("documents")).toBe(true);
-    expect(isClientVisibleWorkspaceSection("contacts")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("vcio")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("quarterly-reviews")).toBe(true);
     expect(isClientVisibleWorkspaceSection("journey")).toBe(false);
-    expect(isClientVisibleWorkspaceSection("recommendations")).toBe(false);
+    expect(isClientVisibleWorkspaceSection("documents")).toBe(false);
   });
 
   it("shows only client-visible items in nav for client role", () => {
     const labels = CLIENT_WORKSPACE_NAV.filter((item) =>
       isClientVisibleWorkspaceSection(item.section),
     ).map((item) => item.label);
-    expect(labels).toEqual(["Overview", "Documents", "Contacts"]);
+    expect(labels).toEqual([
+      "Overview",
+      "vCIO Dashboard",
+      "Roadmap",
+      "Quarterly Reviews",
+      "Recommendations",
+      "Subscription & Billing",
+      "Executive Reports",
+    ]);
   });
 });
