@@ -4,11 +4,33 @@ import type {
   AssessmentInvitationContext,
   AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
-import { BRAND } from "@/lib/branding";
+
+const title = "You've Been Invited | StackScore";
+const description =
+  "Start your free Technology Snapshot and discover strengths, risks, and practical technology insights.";
+const ogImageUrl = "https://stackscore.bobkatit.com/images/og/assessment-invitation.png";
 
 export const metadata: Metadata = {
-  title: `Assessment Invitation | ${BRAND.companyName}`,
-  description: `You've been invited to assess your technology with ${BRAND.productName}. Start with a free Technology Snapshot and discover strengths, risks, and practical improvements.`,
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: "https://stackscore.bobkatit.com/assessment-invitation",
+    type: "website",
+    images: [
+      {
+        url: ogImageUrl,
+        alt: "StackScore Technology Snapshot invitation",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [ogImageUrl],
+  },
 };
 
 type PageProps = {
