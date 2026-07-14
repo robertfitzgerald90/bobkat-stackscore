@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   ClipboardCheck,
   CloudCog,
   Home,
@@ -19,6 +20,7 @@ export type ServiceCatalogItem = {
   primaryCtaLabel: string;
   primaryCta: ServicesCtaKey;
   secondaryCta?: ServicesCtaKey;
+  imagePosition?: "left" | "right";
   image: {
     src: string;
     alt: string;
@@ -31,7 +33,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     id: "technology-maturity-assessment",
     title: "Technology Maturity Assessment",
     eyebrow: "Standardized Product",
-    price: "$500",
+    price: "$1,500 one-time",
     description:
       "Gain a complete understanding of your technology environment with a comprehensive assessment powered by StackScore.",
     highlights: [
@@ -42,27 +44,53 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     primaryCtaLabel: "Purchase Assessment",
     primaryCta: "purchaseAssessment",
     secondaryCta: "assessmentLearnMore",
+    imagePosition: "right",
     image: {
+      // TODO: Replace this static graphic with a $1,500 version; the current image includes baked-in $500 pricing.
       src: "/services/technology-maturity-assessment.png",
       alt: "Bobkat IT Technology Maturity Assessment service preview",
     },
     icon: ClipboardCheck,
   },
   {
+    id: "stackscore-vcio",
+    title: "StackScore vCIO",
+    eyebrow: "Ongoing Technology Advisory",
+    price: "$300/month",
+    description:
+      "Turn your technology assessment into an ongoing strategy. StackScore vCIO gives your business continued access to its technology roadmap, executive reporting, improvement tracking, and a dedicated strategic technology advisor.",
+    highlights: [
+      "Quarterly Technology Reviews",
+      "Technology Roadmap & Budget Planning",
+      "Direct Access to a Strategic IT Advisor",
+    ],
+    primaryCtaLabel: "Start vCIO Service",
+    primaryCta: "generalConsultation",
+    secondaryCta: "assessmentLearnMore",
+    imagePosition: "right",
+    image: {
+      src: "/images/executive-dashboard.png",
+      alt: "StackScore executive dashboard showing assessment results and strategic next steps",
+    },
+    icon: BarChart3,
+  },
+  {
     id: "managed-it-services",
     title: "Managed IT Services",
     eyebrow: "Ongoing IT Partnership",
-    price: "Starting at $500/month",
+    price: "Starting at $15/device/month",
     description:
-      "Proactive IT management that keeps your business secure, reliable, and productive.",
+      "Proactive IT management that keeps your devices secure, reliable, monitored, and up to date.",
     highlights: [
-      "Proactive Monitoring & Maintenance",
+      "Endpoint Monitoring & Maintenance",
+      "Patch Management & Remote Support",
       "Cybersecurity & Microsoft 365 Management",
-      "Dedicated Strategic IT Partner",
     ],
     primaryCtaLabel: "Schedule Consultation",
     primaryCta: "managedItConsultation",
+    imagePosition: "left",
     image: {
+      // TODO: Replace this static graphic with a $15/device/month version; the current image includes baked-in $500/month pricing.
       src: "/services/managed-it-services.png",
       alt: "Bobkat IT Managed IT Services service preview",
     },
@@ -82,6 +110,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Discuss Your Project",
     primaryCta: "networkInfrastructureConsultation",
+    imagePosition: "right",
     image: {
       src: "/services/network-infrastructure-deployment.png",
       alt: "Bobkat IT Network Infrastructure and Deployment service preview",
@@ -102,6 +131,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Schedule Consultation",
     primaryCta: "backupDisasterRecoveryConsultation",
+    imagePosition: "left",
     image: {
       src: "/services/backup-disaster-recovery.png",
       alt: "Bobkat IT Backup and Disaster Recovery service preview",
@@ -122,6 +152,7 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Discuss Your Project",
     primaryCta: "technologyImplementationConsultation",
+    imagePosition: "right",
     image: {
       src: "/services/technology-implementation.png",
       alt: "Bobkat IT Technology Implementation service preview",
@@ -142,10 +173,57 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     ],
     primaryCtaLabel: "Book Residential Support",
     primaryCta: "residentialSupport",
+    imagePosition: "left",
     image: {
       src: "/services/residential-it-support.png",
       alt: "Bobkat IT Residential IT Support service preview",
     },
     icon: Home,
+  },
+];
+
+export type ServicePricingItem = {
+  title: string;
+  price: string;
+  frequency?: string;
+  description: string;
+  ctaLabel: string;
+  cta: ServicesCtaKey;
+  badge?: string;
+};
+
+export const SERVICES_PRICING: ServicePricingItem[] = [
+  {
+    title: "Technology Assessment",
+    price: "$1,500",
+    frequency: "One-time",
+    description:
+      "Comprehensive assessment, executive report, risk analysis, and strategic roadmap.",
+    ctaLabel: "Purchase Assessment",
+    cta: "purchaseAssessment",
+  },
+  {
+    title: "StackScore vCIO",
+    price: "$300/month",
+    description:
+      "Ongoing technology strategy, quarterly reviews, roadmap management, and direct advisor access.",
+    ctaLabel: "Get Started",
+    cta: "generalConsultation",
+    badge: "Strategic Partnership",
+  },
+  {
+    title: "Managed IT Services",
+    price: "Starting at $15/device/month",
+    description: "Monitoring, maintenance, patching, support, and endpoint management.",
+    ctaLabel: "Schedule Consultation",
+    cta: "managedItConsultation",
+  },
+  {
+    title: "Backup & Disaster Recovery",
+    price: "Starting at $800/month",
+    description:
+      "Managed backups, monitoring, recovery planning, and business continuity support.",
+    ctaLabel: "Schedule Consultation",
+    cta: "backupDisasterRecoveryConsultation",
   },
 ];

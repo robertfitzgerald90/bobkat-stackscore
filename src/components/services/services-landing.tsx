@@ -9,7 +9,12 @@ import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { buttonVariants } from "@/components/ui/button";
-import { SERVICES_CATALOG, type ServiceCatalogItem } from "@/lib/services/catalog";
+import {
+  SERVICES_CATALOG,
+  SERVICES_PRICING,
+  type ServiceCatalogItem,
+  type ServicePricingItem,
+} from "@/lib/services/catalog";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
@@ -58,7 +63,7 @@ function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; 
 
 function ServiceSection({ service, index }: { service: ServiceCatalogItem; index: number }) {
   const Icon = service.icon;
-  const imageFirst = index % 2 === 1;
+  const imageFirst = service.imagePosition === "left" || (!service.imagePosition && index % 2 === 1);
 
   return (
     <OfferReveal>
@@ -132,6 +137,44 @@ function ServiceSection({ service, index }: { service: ServiceCatalogItem; index
           </div>
         </div>
       </SolutionViewTracker>
+    </OfferReveal>
+  );
+}
+
+function PricingCard({ item, index }: { item: ServicePricingItem; index: number }) {
+  const isHighlighted = Boolean(item.badge);
+
+  return (
+    <OfferReveal delayMs={index * 45}>
+      <div
+        className={cn(
+          "flex h-full flex-col rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none",
+          isHighlighted
+            ? "border-primary/25 bg-gradient-to-b from-primary/[0.08] to-card"
+            : "border-border/60 hover:border-primary/20",
+        )}
+      >
+        {item.badge ? (
+          <p className="mb-4 w-fit rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-primary">
+            {item.badge}
+          </p>
+        ) : null}
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
+        <p className="mt-4 text-2xl font-semibold text-primary">{item.price}</p>
+        {item.frequency ? (
+          <p className="mt-1 text-sm font-medium text-muted-foreground">{item.frequency}</p>
+        ) : null}
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {item.description}
+        </p>
+        <ServicesCtaLink
+          cta={item.cta}
+          label={item.ctaLabel}
+          className="mt-6 h-10 w-full px-4"
+          placement="services_pricing"
+          variant={isHighlighted ? "default" : "outline"}
+        />
+      </div>
     </OfferReveal>
   );
 }
@@ -271,6 +314,21 @@ export function ServicesLanding() {
               >
                 <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" placement="services_positioning_consultation" />
               </PositioningCard>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+          <div className="mx-auto max-w-6xl">
+            <OfferSectionHeader
+              eyebrow="Transparent Technology Pricing"
+              title="Transparent Technology Pricing"
+              description="Clear starting prices with no mystery. Every engagement is scoped around your environment, priorities, and business goals."
+            />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {SERVICES_PRICING.map((item, index) => (
+                <PricingCard key={item.title} item={item} index={index} />
+              ))}
             </div>
           </div>
         </section>
