@@ -40,9 +40,13 @@ function ServicesPrimaryCta({
 
 function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; index: number }) {
   const Icon = service.icon;
+  const centerOnLargeScreens = service.id === "residential-it-support";
 
   return (
-    <OfferReveal delayMs={index * 45}>
+    <OfferReveal
+      delayMs={index * 45}
+      className={centerOnLargeScreens ? "lg:col-start-2" : undefined}
+    >
       <a
         href={`#${service.id}`}
         className="group block h-full rounded-xl border border-border/60 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
