@@ -290,35 +290,36 @@ model Client {
   createdAt                     DateTime                 @default(now())
   updatedAt                     DateTime                 @updatedAt
 
-  assessments                Assessment[]
-  recommendations            AssessmentRecommendation[]
-  projects                   Project[]
-  scoreHistory               ClientScoreHistory[]
-  documents                  Document[]
-  activityNotes              Note[]
-  technologyProfile          TechnologyProfile?
-  profileSnapshots           TechnologyProfileSnapshot[]
-  improvementPlans           TechnologyImprovementPlan[]
-  quarterlyBusinessReviews   QuarterlyBusinessReview[]
-  users                      User[]
-  purchases                  AssessmentPurchase[]
-  clientTechnologies         ClientTechnology[]
-  communicationMessages      CommunicationMessage[]
-  organizationActivityEvents OrganizationActivityEvent[]
-  prospect                   Prospect?
-  campaignRecipients         CampaignRecipient[]
-  contacts                   ClientContact[]
-  communicationQueueItems    CommunicationQueueItem[]
-  quarterlyReviewReminders   QuarterlyReviewReminder[]
-  billingProfile             ClientBillingProfile?
-  invoices                   Invoice[]
-  billingPayments            BillingPayment[]
-  billingDeposits            BillingDeposit[]
-  recurringServices          RecurringService[]
-  subscriptions              Subscription[]
-  subscriptionInvoices       SubscriptionInvoice[]
-  vcioOnboarding             VcioOnboarding?
-  vcioQuarterlyReviews       VcioQuarterlyReview[]
+  assessments                 Assessment[]
+  recommendations             AssessmentRecommendation[]
+  projects                    Project[]
+  scoreHistory                ClientScoreHistory[]
+  documents                   Document[]
+  activityNotes               Note[]
+  technologyProfile           TechnologyProfile?
+  profileSnapshots            TechnologyProfileSnapshot[]
+  improvementPlans            TechnologyImprovementPlan[]
+  quarterlyBusinessReviews    QuarterlyBusinessReview[]
+  users                       User[]
+  purchases                   AssessmentPurchase[]
+  clientTechnologies          ClientTechnology[]
+  communicationMessages       CommunicationMessage[]
+  organizationActivityEvents  OrganizationActivityEvent[]
+  prospect                    Prospect?
+  campaignRecipients          CampaignRecipient[]
+  contacts                    ClientContact[]
+  communicationQueueItems     CommunicationQueueItem[]
+  quarterlyReviewReminders    QuarterlyReviewReminder[]
+  billingProfile              ClientBillingProfile?
+  invoices                    Invoice[]
+  billingPayments             BillingPayment[]
+  billingDeposits             BillingDeposit[]
+  recurringServices           RecurringService[]
+  subscriptions               Subscription[]
+  subscriptionInvoices        SubscriptionInvoice[]
+  subscriptionPaymentAttempts SubscriptionPaymentAttempt[]
+  vcioOnboarding              VcioOnboarding?
+  vcioQuarterlyReviews        VcioQuarterlyReview[]
 }
 
 model AssessmentCategory {
@@ -1729,6 +1730,16 @@ enum VcioReviewStatus {
   completed
 }
 
+enum PaymentAttemptStatus {
+  succeeded
+  failed
+  requires_action
+  processing
+  retrying
+  refunded
+  voided
+}
+
 model ClientBillingProfile {
   id                      String   @id @default(uuid())
   clientId                String   @unique
@@ -1990,9 +2001,10 @@ model Subscription {
   createdAt                DateTime           @default(now())
   updatedAt                DateTime           @updatedAt
 
-  client               Client                @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  recurringService     RecurringService?     @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
+  client               Client                       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  recurringService     RecurringService?            @relation(fields: [recurringServiceId], references: [id], onDelete: SetNull)
   invoices             SubscriptionInvoice[]
+  paymentAttempts      SubscriptionPaymentAttempt[]
   vcioOnboarding       VcioOnboarding?
   vcioQuarterlyReviews VcioQuarterlyReview[]
 
@@ -2005,32 +2017,89 @@ model Subscription {
 }
 
 model SubscriptionInvoice {
-  id                      String          @id @default(uuid())
-  subscriptionId          String
-  clientId                String
-  provider                BillingProvider @default(stripe)
-  providerInvoiceId       String          @unique
-  providerPaymentIntentId String?
-  number                  String?
-  amountDueCents          Int             @default(0)
-  amountPaidCents         Int             @default(0)
-  currency                String          @default("usd")
-  status                  String
-  invoiceDate             DateTime?
-  dueDate                 DateTime?
-  paidAt                  DateTime?
-  hostedInvoiceUrl        String?         @db.Text
-  invoicePdfUrl           String?         @db.Text
-  createdAt               DateTime        @default(now())
-  updatedAt               DateTime        @updatedAt
+  id                       String                @id @default(uuid())
+  subscriptionId           String
+  clientId                 String
+  provider                 BillingProvider       @default(stripe)
+  providerInvoiceId        String                @unique
+  providerPaymentIntentId  String?
+  number                   String?
+  amountDueCents           Int                   @default(0)
+  amountPaidCents          Int                   @default(0)
+  currency                 String                @default("usd")
+  status                   String
+  invoiceDate              DateTime?
+  dueDate                  DateTime?
+  paidAt                   DateTime?
+  attemptCount             Int                   @default(0)
+  nextPaymentAttemptAt     DateTime?
+  lastPaymentAttemptAt     DateTime?
+  lastPaymentAttemptStatus PaymentAttemptStatus?
+  failureCode              String?
+  failureDeclineCode       String?
+  failureMessage           String?               @db.Text
+  paymentMethodBrand       String?
+  paymentMethodLast4       String?
+  paymentMethodExpMonth    Int?
+  paymentMethodExpYear     Int?
+  hostedInvoiceUrl         String?               @db.Text
+  invoicePdfUrl            String?               @db.Text
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
 
-  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  client       Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  subscription    Subscription                 @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  client          Client                       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  paymentAttempts SubscriptionPaymentAttempt[]
 
   @@index([subscriptionId])
   @@index([clientId])
   @@index([status])
   @@index([invoiceDate])
+  @@index([lastPaymentAttemptStatus])
+}
+
+model SubscriptionPaymentAttempt {
+  id                      String               @id @default(uuid())
+  subscriptionId          String
+  subscriptionInvoiceId   String?
+  clientId                String
+  provider                BillingProvider      @default(stripe)
+  providerEventId         String?              @unique
+  providerInvoiceId       String
+  providerPaymentIntentId String?
+  providerChargeId        String?
+  serviceType             ServiceType
+  status                  PaymentAttemptStatus
+  attemptDate             DateTime
+  invoiceNumber           String?
+  amountCents             Int                  @default(0)
+  currency                String               @default("usd")
+  failureCode             String?
+  failureDeclineCode      String?
+  failureMessage          String?              @db.Text
+  attemptCount            Int                  @default(0)
+  nextPaymentAttemptAt    DateTime?
+  paymentMethodBrand      String?
+  paymentMethodLast4      String?
+  paymentMethodExpMonth   Int?
+  paymentMethodExpYear    Int?
+  hostedInvoiceUrl        String?              @db.Text
+  stripeCustomerId        String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  subscription        Subscription         @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  subscriptionInvoice SubscriptionInvoice? @relation(fields: [subscriptionInvoiceId], references: [id], onDelete: SetNull)
+  client              Client               @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerInvoiceId, attemptCount, status])
+  @@index([clientId])
+  @@index([subscriptionId])
+  @@index([subscriptionInvoiceId])
+  @@index([status])
+  @@index([attemptDate])
+  @@index([serviceType])
+  @@index([nextPaymentAttemptAt])
 }
 
 model VcioOnboarding {

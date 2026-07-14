@@ -51,6 +51,8 @@ The code handles these Stripe events through the existing verified webhook endpo
 - `invoice.paid`
 - `invoice.payment_failed`
 - `invoice.payment_action_required`
+- `invoice.voided`
+- `charge.refunded`
 
 Existing assessment and invoice payment events remain supported by the same webhook.
 
@@ -81,6 +83,8 @@ Do not activate production subscription sales until the migration, webhook handl
 - Existing Technology Assessment checkout still uses one-time payment mode and `STRIPE_ASSESSMENT_PRICE_ID`.
 - `invoice.paid` records subscription invoice history and clears payment failure state.
 - `invoice.payment_failed` marks the subscription past due and sends client/admin notifications.
+- `invoice.voided` records a voided payment activity entry.
+- `charge.refunded` records a refunded payment activity entry when linked to a vCIO subscription payment.
 - Past-due clients receive grace-period access based on `VCIO_PAYMENT_GRACE_PERIOD_DAYS`.
 - Ended clients retain historical records and read-only access behavior.
 - Clients cannot access another client's billing or vCIO workspace.

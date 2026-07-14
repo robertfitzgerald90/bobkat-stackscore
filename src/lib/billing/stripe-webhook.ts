@@ -18,6 +18,8 @@ import {
 import {
   markVcioInvoiceActionRequired,
   markVcioInvoicePaymentFailed,
+  markVcioInvoiceVoided,
+  markVcioPaymentAttemptRefundedFromCharge,
   syncVcioInvoiceFromStripe,
 } from "@/lib/vcio/invoices";
 
@@ -32,7 +34,8 @@ export type InvoiceWebhookResult =
         | "skipped"
         | "subscription_synced"
         | "invoice_synced"
-        | "action_required";
+        | "action_required"
+        | "voided";
     }
   | { handled: false };
 
@@ -62,6 +65,8 @@ export async function handleBillingStripeEvent(event: Stripe.Event): Promise<Inv
       return handleInvoicePaymentFailed(event);
     case "invoice.payment_action_required":
       return handleInvoicePaymentActionRequired(event);
+    case "invoice.voided":
+      return handleInvoiceVoided(event);
     case "payment_intent.payment_failed":
       return handlePaymentIntentFailed(event);
     case "charge.refunded":
@@ -223,7 +228,10 @@ async function syncSubscriptionForInvoice(invoice: Stripe.Invoice) {
 async function handleInvoiceSynced(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const invoice = event.data.object as Stripe.Invoice;
   await syncSubscriptionForInvoice(invoice);
-  const result = await syncVcioInvoiceFromStripe(invoice);
+  const result = await syncVcioInvoiceFromStripe(invoice, {
+    eventId: event.id,
+    eventType: event.type,
+  });
   if (result.outcome !== "synced") return { handled: false };
 
   await markStripeWebhookProcessed(event.id, event.type, event);
@@ -233,7 +241,7 @@ async function handleInvoiceSynced(event: Stripe.Event): Promise<InvoiceWebhookR
 async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const invoice = event.data.object as Stripe.Invoice;
   await syncSubscriptionForInvoice(invoice);
-  const result = await markVcioInvoicePaymentFailed(invoice);
+  const result = await markVcioInvoicePaymentFailed(invoice, { eventId: event.id });
   if (result.outcome !== "synced") return { handled: false };
 
   await markStripeWebhookProcessed(event.id, event.type, event);
@@ -243,11 +251,21 @@ async function handleInvoicePaymentFailed(event: Stripe.Event): Promise<InvoiceW
 async function handleInvoicePaymentActionRequired(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const invoice = event.data.object as Stripe.Invoice;
   await syncSubscriptionForInvoice(invoice);
-  const result = await markVcioInvoiceActionRequired(invoice);
+  const result = await markVcioInvoiceActionRequired(invoice, { eventId: event.id });
   if (result.outcome !== "synced") return { handled: false };
 
   await markStripeWebhookProcessed(event.id, event.type, event);
   return { handled: true, outcome: "action_required" };
+}
+
+async function handleInvoiceVoided(event: Stripe.Event): Promise<InvoiceWebhookResult> {
+  const invoice = event.data.object as Stripe.Invoice;
+  await syncSubscriptionForInvoice(invoice);
+  const result = await markVcioInvoiceVoided(invoice, { eventId: event.id });
+  if (result.outcome !== "synced") return { handled: false };
+
+  await markStripeWebhookProcessed(event.id, event.type, event);
+  return { handled: true, outcome: "voided" };
 }
 
 async function handlePaymentIntentFailed(event: Stripe.Event): Promise<InvoiceWebhookResult> {
@@ -283,6 +301,12 @@ async function handlePaymentIntentFailed(event: Stripe.Event): Promise<InvoiceWe
 
 async function handleChargeRefunded(event: Stripe.Event): Promise<InvoiceWebhookResult> {
   const charge = event.data.object as Stripe.Charge;
+  const vcioResult = await markVcioPaymentAttemptRefundedFromCharge(charge, { eventId: event.id });
+  if (vcioResult.outcome === "synced") {
+    await markStripeWebhookProcessed(event.id, event.type, event);
+    return { handled: true, outcome: "refunded" };
+  }
+
   const paymentIntentId =
     typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
 

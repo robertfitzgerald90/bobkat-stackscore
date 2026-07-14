@@ -12,6 +12,15 @@ type PageProps = {
 
 const statusFilters = ["active", "trialing", "past_due", "canceled", "incomplete"] as const;
 
+function isMissingVcioSchemaError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.includes("Subscription") ||
+    message.includes("VcioOnboarding") ||
+    message.includes("VcioQuarterlyReview")
+  );
+}
+
 export default async function AdminVcioPage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -22,33 +31,57 @@ export default async function AdminVcioPage({ searchParams }: PageProps) {
     ? (status as (typeof statusFilters)[number])
     : undefined;
 
-  const subscriptions = await prisma.subscription.findMany({
-    where: {
-      serviceType: "stackscore_vcio",
-      ...(safeStatus ? { status: safeStatus } : {}),
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      client: {
-        select: {
-          id: true,
-          companyName: true,
-          primaryContactName: true,
-          primaryContactEmail: true,
-          technologyProfile: { select: { overallStackScore: true, criticalExposureCount: true } },
-          projects: {
-            where: { status: { in: ["approved", "scheduled", "in_progress"] } },
-            select: { id: true },
+  let subscriptions;
+  try {
+    subscriptions = await prisma.subscription.findMany({
+      where: {
+        serviceType: "stackscore_vcio",
+        ...(safeStatus ? { status: safeStatus } : {}),
+      },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        client: {
+          select: {
+            id: true,
+            companyName: true,
+            primaryContactName: true,
+            primaryContactEmail: true,
+            technologyProfile: { select: { overallStackScore: true, criticalExposureCount: true } },
+            projects: {
+              where: { status: { in: ["approved", "scheduled", "in_progress"] } },
+              select: { id: true },
+            },
           },
         },
+        vcioOnboarding: true,
+        vcioQuarterlyReviews: {
+          orderBy: [{ nextReviewDate: "asc" }, { createdAt: "desc" }],
+          take: 1,
+        },
       },
-      vcioOnboarding: true,
-      vcioQuarterlyReviews: {
-        orderBy: [{ nextReviewDate: "asc" }, { createdAt: "desc" }],
-        take: 1,
-      },
-    },
-  });
+    });
+  } catch (error) {
+    if (!isMissingVcioSchemaError(error)) throw error;
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="page-title">vCIO Clients</h1>
+          <p className="page-description">
+            Subscription, onboarding, review, risk, and project visibility for StackScore vCIO.
+          </p>
+        </div>
+        <Card className="border-primary/25 bg-primary/5">
+          <CardContent className="p-6">
+            <p className="font-semibold">vCIO database migration required</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The vCIO admin page is deployed, but the database tables it uses are not available
+              yet. Deploy the Prisma migrations, then reopen this page.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const active = subscriptions.filter((subscription) =>
     ["active", "trialing"].includes(subscription.status),
