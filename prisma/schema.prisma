@@ -264,6 +264,7 @@ model User {
   billingAuditEvents                     BillingAuditEvent[]            @relation("BillingAuditActor")
   vcioQuarterlyReviewsCreated            VcioQuarterlyReview[]          @relation("VcioQuarterlyReviewCreatedBy")
   vcioOnboardingResets                   VcioOnboarding[]               @relation("VcioOnboardingResetBy")
+  snapshotLeadNotesAuthored            TechnologySnapshotLeadNote[]   @relation("SnapshotLeadNoteAuthor")
 }
 
 model Client {
@@ -323,6 +324,7 @@ model Client {
   subscriptionPaymentAttempts SubscriptionPaymentAttempt[]
   vcioOnboarding              VcioOnboarding?
   vcioQuarterlyReviews        VcioQuarterlyReview[]
+  snapshotLeads               TechnologySnapshotLead[]
 }
 
 model AssessmentCategory {
@@ -877,10 +879,13 @@ enum ManagedByType {
 enum TechnologySnapshotLeadStatus {
   new
   contacted
+  follow_up
   assessment_interested
+  assessment_invited
   assessment_purchased
   not_interested
   converted
+  archived
 }
 
 enum ProspectStatus {
@@ -1329,28 +1334,55 @@ model ClientTechnology {
 }
 
 model TechnologySnapshotLead {
-  id                String                       @id @default(uuid())
-  contactName       String
-  companyName       String
-  email             String
-  phone             String?
-  industry          String
-  companySize       String?
-  itManagementModel SnapshotItManagementModel
-  answers           Json
-  totalScore        Int
-  classification    String
-  lowestPillars     Json
-  status            TechnologySnapshotLeadStatus @default(new)
-  prospectId        String?                      @unique
-  createdAt         DateTime                     @default(now())
-  updatedAt         DateTime                     @updatedAt
+  id                    String                       @id @default(uuid())
+  contactName           String
+  firstName             String?
+  lastName              String?
+  companyName           String
+  email                 String
+  phone                 String?
+  industry              String
+  companySize           String?
+  itManagementModel     SnapshotItManagementModel
+  answers               Json
+  totalScore            Int
+  classification        String
+  lowestPillars         Json
+  status                TechnologySnapshotLeadStatus @default(new)
+  prospectId            String?                      @unique
+  clientId              String?
+  contactConsentAt      DateTime?
+  contactedAt           DateTime?
+  assessmentInvitedAt   DateTime?
+  convertedAt           DateTime?
+  archivedAt            DateTime?
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
 
-  prospect Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  prospect Prospect?                    @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  client   Client?                      @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  notes    TechnologySnapshotLeadNote[]
 
   @@index([status])
   @@index([createdAt])
   @@index([email])
+  @@index([clientId])
+  @@index([classification])
+}
+
+model TechnologySnapshotLeadNote {
+  id           String   @id @default(uuid())
+  leadId       String
+  authorUserId String
+  note         String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lead   TechnologySnapshotLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  author User                   @relation("SnapshotLeadNoteAuthor", fields: [authorUserId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([createdAt])
 }
 
 model Prospect {

@@ -6,11 +6,28 @@ import {
   requireAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
-import { updateTechnologySnapshotLeadStatus } from "@/lib/technology-snapshot/service";
+import {
+  buildSnapshotLeadDetailPayload,
+  getTechnologySnapshotLeadById,
+  updateTechnologySnapshotLeadStatus,
+} from "@/lib/technology-snapshot/service";
 import { updateSnapshotLeadStatusSchema } from "@/lib/technology-snapshot/schemas";
-import { prisma } from "@/lib/db";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, context: RouteContext) {
+  const user = await getSessionUser();
+  if (!user) return unauthorized();
+
+  const forbidden = requireAdmin(user);
+  if (forbidden) return forbidden;
+
+  const { id } = await context.params;
+  const lead = await getTechnologySnapshotLeadById(id);
+  if (!lead) return notFound("Snapshot lead not found");
+
+  return NextResponse.json(buildSnapshotLeadDetailPayload(lead));
+}
 
 export async function PATCH(request: Request, context: RouteContext) {
   const user = await getSessionUser();
@@ -33,7 +50,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid status update");
   }
 
-  const existing = await prisma.technologySnapshotLead.findUnique({ where: { id } });
+  const existing = await getTechnologySnapshotLeadById(id);
   if (!existing) return notFound("Snapshot lead not found");
 
   const updated = await updateTechnologySnapshotLeadStatus(id, parsed.data.status);

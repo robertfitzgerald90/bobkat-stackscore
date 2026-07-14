@@ -1,11 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
   CheckCircle2,
   ClipboardList,
   FolderKanban,
-  LineChart,
   WalletCards,
   type LucideIcon,
 } from "lucide-react";
@@ -18,6 +18,11 @@ import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { buttonVariants } from "@/components/ui/button";
 import { VcioCheckoutButton } from "@/components/vcio/vcio-checkout-button";
+import {
+  VCIO_OFFER_HERO_IMAGE,
+  VCIO_OFFER_PORTAL_IMAGE,
+  type VcioOfferImage,
+} from "@/lib/vcio/offer-content";
 import { cn } from "@/lib/utils";
 
 const receiveItems = [
@@ -152,53 +157,26 @@ function ChecklistSection({
   );
 }
 
-function PortalPreview() {
-  const metrics = [
-    { label: "Technology Score", value: "72" },
-    { label: "Active Recommendations", value: "18" },
-    { label: "Projects in Progress", value: "4" },
-    { label: "Next Quarterly Review", value: "Aug 15" },
-  ];
-
+function VcioOfferVisual({
+  image,
+  priority = false,
+  sizes = "(min-width: 1024px) 44vw, 100vw",
+}: {
+  image: VcioOfferImage;
+  priority?: boolean;
+  sizes?: string;
+}) {
   return (
-    <div className="rounded-2xl border border-primary/15 bg-[#061426] p-4 text-white shadow-sm sm:p-6">
-      <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">StackScore Portal</p>
-          <h3 className="mt-1 text-xl font-semibold">Executive Technology Workspace</h3>
-        </div>
-        <LineChart className="h-8 w-8 text-primary" aria-hidden />
-      </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        {metrics.map((metric) => (
-          <div key={metric.label} className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="text-xs uppercase tracking-wide text-slate-400">{metric.label}</p>
-            <p className="mt-2 text-2xl font-semibold">{metric.value}</p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.04] p-4">
-        <div className="flex items-center justify-between gap-4">
-          <p className="font-medium">Current-quarter priorities</p>
-          <span className="rounded-full bg-primary/20 px-3 py-1 text-xs text-primary">In progress</span>
-        </div>
-        <div className="mt-4 space-y-3">
-          {["MFA rollout", "Backup recovery test", "Network lifecycle plan"].map((item, index) => (
-            <div key={item}>
-              <div className="flex justify-between text-sm text-slate-300">
-                <span>{item}</span>
-                <span>{[80, 55, 35][index]}%</span>
-              </div>
-              <div className="mt-2 h-2 rounded-full bg-white/10">
-                <div
-                  className="h-2 rounded-full bg-primary"
-                  style={{ width: `${[80, 55, 35][index]}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted/30 shadow-sm">
+      <Image
+        src={image.src}
+        alt={image.alt}
+        width={image.width}
+        height={image.height}
+        priority={priority}
+        sizes={sizes}
+        className="h-auto w-full object-contain p-2 sm:p-3"
+      />
     </div>
   );
 }
@@ -268,7 +246,7 @@ export function VcioOfferLanding() {
               </OfferReveal>
             </div>
             <OfferReveal delayMs={120}>
-              <PortalPreview />
+              <VcioOfferVisual image={VCIO_OFFER_HERO_IMAGE} priority />
             </OfferReveal>
           </div>
         </section>
@@ -310,7 +288,10 @@ export function VcioOfferLanding() {
               description="StackScore keeps the advisory relationship grounded in real data, progress, reports, documents, and billing visibility."
             />
             <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-              <PortalPreview />
+              <VcioOfferVisual
+                image={VCIO_OFFER_PORTAL_IMAGE}
+                sizes="(min-width: 1024px) 40vw, 100vw"
+              />
               <FeatureGrid />
             </div>
           </div>

@@ -1,16 +1,38 @@
-import type { TechnologySnapshotLeadStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { buildContactName } from "@/lib/technology-snapshot/contact-helpers";
 import type { CreateSnapshotLeadInput } from "./schemas";
 import { buildSnapshotResult } from "./scoring";
 import type { SnapshotAnswers } from "./types";
+
+export {
+  addTechnologySnapshotLeadNote,
+  buildSnapshotLeadDetailPayload,
+  convertSnapshotLeadToClient,
+  getSnapshotLeadInvitationState,
+  getTechnologySnapshotLeadById,
+  getTechnologySnapshotLeadSummaryStats,
+  listTechnologySnapshotLeadsForAdmin,
+  previewSnapshotLeadConversion,
+  sendSnapshotLeadAssessmentInvitation,
+  updateTechnologySnapshotLeadStatus,
+} from "./lead-admin";
 
 export async function createTechnologySnapshotLead(input: CreateSnapshotLeadInput) {
   const answers = input.answers as SnapshotAnswers;
   const result = buildSnapshotResult(answers);
 
+  const firstName = input.firstName?.trim() || input.contactName?.trim().split(/\s+/)[0] || "";
+  const lastName =
+    input.lastName?.trim() ||
+    (input.contactName?.trim().split(/\s+/).slice(1).join(" ") ?? "");
+  const contactName =
+    input.contactName?.trim() || buildContactName(firstName, lastName);
+
   const lead = await prisma.technologySnapshotLead.create({
     data: {
-      contactName: input.contactName,
+      contactName,
+      firstName: firstName || null,
+      lastName: lastName || null,
       companyName: input.companyName,
       email: input.email.toLowerCase(),
       phone: input.phone?.trim() || null,
@@ -23,6 +45,7 @@ export async function createTechnologySnapshotLead(input: CreateSnapshotLeadInpu
       lowestPillars: result.lowestPillars,
       status: "new",
       prospectId: input.prospectId ?? null,
+      contactConsentAt: input.contactConsent ? new Date() : null,
     },
   });
 
@@ -40,17 +63,6 @@ export async function createTechnologySnapshotLead(input: CreateSnapshotLeadInpu
 }
 
 export async function listTechnologySnapshotLeads() {
-  return prisma.technologySnapshotLead.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-}
-
-export async function updateTechnologySnapshotLeadStatus(
-  id: string,
-  status: TechnologySnapshotLeadStatus,
-) {
-  return prisma.technologySnapshotLead.update({
-    where: { id },
-    data: { status },
-  });
+  const { listTechnologySnapshotLeadsForAdmin } = await import("./lead-admin");
+  return listTechnologySnapshotLeadsForAdmin();
 }

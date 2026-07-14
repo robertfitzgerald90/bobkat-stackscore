@@ -24,6 +24,7 @@ import {
   SNAPSHOT_ESTIMATED_MINUTES,
   SNAPSHOT_QUESTIONS,
 } from "@/lib/technology-snapshot/questions";
+import { SNAPSHOT_CONSENT_TEXT } from "@/lib/technology-snapshot/display";
 import type { SnapshotAnswerValue, SnapshotAnswers, SnapshotItManagementModel } from "@/lib/technology-snapshot/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -34,7 +35,8 @@ import {
 } from "./snapshot-results-view";
 
 type IntakeForm = {
-  contactName: string;
+  firstName: string;
+  lastName: string;
   companyName: string;
   email: string;
   phone: string;
@@ -43,7 +45,8 @@ type IntakeForm = {
 };
 
 const EMPTY_INTAKE: IntakeForm = {
-  contactName: "",
+  firstName: "",
+  lastName: "",
   companyName: "",
   email: "",
   phone: "",
@@ -136,8 +139,8 @@ export function TechnologySnapshotWizard() {
   }
 
   function validateIntake(): boolean {
-    if (!intake.contactName.trim()) {
-      toast.error("Contact name is required");
+    if (!intake.firstName.trim()) {
+      toast.error("First name is required");
       return false;
     }
     if (!intake.companyName.trim()) {
@@ -162,12 +165,17 @@ export function TechnologySnapshotWizard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...intake,
+          firstName: intake.firstName,
+          lastName: intake.lastName || undefined,
+          companyName: intake.companyName,
+          email: intake.email,
           phone: intake.phone || undefined,
+          industry: intake.industry,
           companySize: intake.companySize || undefined,
           itManagementModel,
           answers: finalAnswers,
           prospectId,
+          contactConsent: true,
         }),
       });
 
@@ -338,17 +346,30 @@ export function TechnologySnapshotWizard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="contactName">Contact name</Label>
-                <Input
-                  id="contactName"
-                  required
-                  autoComplete="name"
-                  value={intake.contactName}
-                  onChange={(event) =>
-                    setIntake((prev) => ({ ...prev, contactName: event.target.value }))
-                  }
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First name</Label>
+                  <Input
+                    id="firstName"
+                    required
+                    autoComplete="given-name"
+                    value={intake.firstName}
+                    onChange={(event) =>
+                      setIntake((prev) => ({ ...prev, firstName: event.target.value }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last name (optional)</Label>
+                  <Input
+                    id="lastName"
+                    autoComplete="family-name"
+                    value={intake.lastName}
+                    onChange={(event) =>
+                      setIntake((prev) => ({ ...prev, lastName: event.target.value }))
+                    }
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="companyName">Company name</Label>
@@ -422,6 +443,7 @@ export function TechnologySnapshotWizard() {
                   </Select>
                 </div>
               </div>
+              <p className="text-xs leading-relaxed text-muted-foreground">{SNAPSHOT_CONSENT_TEXT}</p>
             </CardContent>
             </Card>
             <StepActions

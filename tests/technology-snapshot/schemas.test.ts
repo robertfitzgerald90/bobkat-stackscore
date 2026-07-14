@@ -8,7 +8,8 @@ function validPayload() {
   );
 
   return {
-    contactName: "Jane Doe",
+    firstName: "Jane",
+    lastName: "Doe",
     companyName: "Acme Corp",
     email: "jane@acme.com",
     phone: "",
@@ -16,6 +17,7 @@ function validPayload() {
     companySize: "11–25 employees",
     itManagementModel: "outsourced" as const,
     answers,
+    contactConsent: true,
   };
 }
 
@@ -25,11 +27,29 @@ describe("createSnapshotLeadSchema", () => {
     expect(parsed.success).toBe(true);
   });
 
+  it("accepts legacy contactName submissions", () => {
+    const parsed = createSnapshotLeadSchema.safeParse({
+      ...validPayload(),
+      firstName: undefined,
+      contactName: "Jane Doe",
+    });
+    expect(parsed.success).toBe(true);
+  });
+
   it("requires all pillar answers", () => {
     const payload = validPayload();
     delete (payload.answers as Record<string, string>).identity_access;
 
     const parsed = createSnapshotLeadSchema.safeParse(payload);
+    expect(parsed.success).toBe(false);
+  });
+
+  it("requires first name or contact name", () => {
+    const parsed = createSnapshotLeadSchema.safeParse({
+      ...validPayload(),
+      firstName: "",
+      contactName: "",
+    });
     expect(parsed.success).toBe(false);
   });
 

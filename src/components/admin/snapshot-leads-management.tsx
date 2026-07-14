@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MessageSquare, Search } from "lucide-react";
+import {
+  SnapshotLeadActions,
+  SnapshotLeadPhoneCell,
+} from "@/components/admin/snapshot-lead-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -24,24 +31,67 @@ import type { TechnologySnapshotLead, TechnologySnapshotLeadStatus } from "@/gen
 import {
   ALL_SNAPSHOT_LEAD_STATUSES,
   formatSnapshotClassification,
-  IT_MANAGEMENT_LABELS,
   SNAPSHOT_LEAD_STATUS_LABELS,
+  SNAPSHOT_MAX_SCORE,
 } from "@/lib/technology-snapshot/display";
-import type { SnapshotItManagementModel } from "@/lib/technology-snapshot/types";
+import type { SnapshotLeadSummaryStats } from "@/lib/technology-snapshot/lead-admin";
+import { resolveLeadDisplayName } from "@/lib/technology-snapshot/contact-helpers";
 import { toast } from "sonner";
 
+type SnapshotLeadListItem = TechnologySnapshotLead & {
+  notes?: Array<{ id: string; note: string; createdAt: Date | string }>;
+};
+
 type SnapshotLeadsManagementProps = {
-  initialLeads: TechnologySnapshotLead[];
+  initialLeads: SnapshotLeadListItem[];
+  initialStats: SnapshotLeadSummaryStats;
 };
 
 function formatDate(value: Date | string) {
   return new Date(value).toLocaleString();
 }
 
-export function SnapshotLeadsManagement({ initialLeads }: SnapshotLeadsManagementProps) {
+const CLASSIFICATION_OPTIONS = [
+  { value: "all", label: "All risk levels" },
+  { value: "healthy", label: "Healthy" },
+  { value: "needs_attention", label: "Needs Attention" },
+  { value: "elevated_risk", label: "Elevated Risk" },
+  { value: "immediate_action", label: "Immediate Action" },
+];
+
+export function SnapshotLeadsManagement({
+  initialLeads,
+  initialStats,
+}: SnapshotLeadsManagementProps) {
   const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
+  const [stats] = useState(initialStats);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [classificationFilter, setClassificationFilter] = useState<string>("all");
+  const [contactedFilter, setContactedFilter] = useState<string>("all");
+
+  const filteredLeads = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return leads.filter((lead) => {
+      const matchesQuery =
+        !normalizedQuery ||
+        resolveLeadDisplayName(lead).toLowerCase().includes(normalizedQuery) ||
+        lead.companyName.toLowerCase().includes(normalizedQuery) ||
+        lead.email.toLowerCase().includes(normalizedQuery);
+
+      const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
+      const matchesClassification =
+        classificationFilter === "all" || lead.classification === classificationFilter;
+      const matchesContacted =
+        contactedFilter === "all" ||
+        (contactedFilter === "yes" ? lead.contactedAt != null : lead.contactedAt == null);
+
+      return matchesQuery && matchesStatus && matchesClassification && matchesContacted;
+    });
+  }, [classificationFilter, contactedFilter, leads, query, statusFilter]);
 
   async function updateStatus(id: string, status: TechnologySnapshotLeadStatus) {
     setUpdatingId(id);
@@ -60,140 +110,290 @@ export function SnapshotLeadsManagement({ initialLeads }: SnapshotLeadsManagemen
 
     const updated = (await response.json()) as TechnologySnapshotLead;
     setLeads((current) =>
-      current.map((lead) => (lead.id === updated.id ? updated : lead)),
+      current.map((lead) => (lead.id === updated.id ? { ...lead, ...updated } : lead)),
     );
     toast.success("Lead status updated");
     router.refresh();
   }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Snapshot Leads</CardTitle>
-        <CardDescription>
-          Public Technology Snapshot submissions for follow-up and conversion tracking.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {leads.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No snapshot leads yet.</p>
-        ) : (
-          <>
-            <div className="hidden min-w-0 md:block">
-              <div className="overflow-safe-x table-desktop">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Industry</TableHead>
-                      <TableHead>IT Model</TableHead>
-                      <TableHead>Classification</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {leads.map((lead) => (
-                      <TableRow key={lead.id}>
-                        <TableCell className="min-w-0 max-w-[160px] break-words font-medium">
-                          {lead.companyName}
-                        </TableCell>
-                        <TableCell className="min-w-0 break-words">{lead.contactName}</TableCell>
-                        <TableCell className="min-w-0 break-words">{lead.email}</TableCell>
-                        <TableCell className="min-w-0 break-words">{lead.industry}</TableCell>
-                        <TableCell className="min-w-0 break-words text-sm">
-                          {IT_MANAGEMENT_LABELS[lead.itManagementModel as SnapshotItManagementModel]}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {formatSnapshotClassification(lead.classification)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                          {formatDate(lead.createdAt)}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={lead.status}
-                            items={SNAPSHOT_LEAD_STATUS_LABELS}
-                            onValueChange={(value) =>
-                              updateStatus(
-                                lead.id,
-                                (value ?? lead.status) as TechnologySnapshotLeadStatus,
-                              )
-                            }
-                            disabled={updatingId === lead.id}
-                          >
-                            <SelectTrigger className="!w-full min-w-[160px] max-w-[200px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ALL_SNAPSHOT_LEAD_STATUSES.map((status) => (
-                                <SelectItem key={status} value={status}>
-                                  {SNAPSHOT_LEAD_STATUS_LABELS[status]}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
+  async function sendInvitation(id: string) {
+    const response = await fetch(`/api/v1/snapshot-leads/${id}/send-invitation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      toast.error(payload.error ?? "Unable to send invitation");
+      return;
+    }
 
-            <div className="space-y-3 md:hidden">
-              {leads.map((lead) => (
-                <MobileDataCard key={lead.id}>
-                  <p className="break-words font-semibold">{lead.companyName}</p>
-                  <MobileDataRow label="Contact">{lead.contactName}</MobileDataRow>
-                  <MobileDataRow label="Email">
-                    <span className="break-all">{lead.email}</span>
-                  </MobileDataRow>
-                  <MobileDataRow label="Industry">{lead.industry}</MobileDataRow>
-                  <MobileDataRow label="IT model">
-                    {IT_MANAGEMENT_LABELS[lead.itManagementModel as SnapshotItManagementModel]}
-                  </MobileDataRow>
-                  <MobileDataRow label="Classification">
-                    <Badge variant="outline">
-                      {formatSnapshotClassification(lead.classification)}
-                    </Badge>
-                  </MobileDataRow>
-                  <MobileDataRow label="Created">{formatDate(lead.createdAt)}</MobileDataRow>
-                  <div className="space-y-1.5 pt-1">
-                    <p className="text-xs text-muted-foreground">Status</p>
-                    <Select
-                      value={lead.status}
-                      items={SNAPSHOT_LEAD_STATUS_LABELS}
-                      onValueChange={(value) =>
-                        updateStatus(
-                          lead.id,
-                          (value ?? lead.status) as TechnologySnapshotLeadStatus,
-                        )
-                      }
-                      disabled={updatingId === lead.id}
-                    >
-                      <SelectTrigger className="!w-full min-w-0">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ALL_SNAPSHOT_LEAD_STATUSES.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {SNAPSHOT_LEAD_STATUS_LABELS[status]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </MobileDataCard>
-              ))}
+    setLeads((current) =>
+      current.map((lead) =>
+        lead.id === id
+          ? { ...lead, ...(payload.lead as TechnologySnapshotLead) }
+          : lead,
+      ),
+    );
+    toast.success("Assessment invitation sent");
+    router.refresh();
+  }
+
+  function openConvertDialog(leadId: string) {
+    router.push(`/snapshot-leads/${leadId}?convert=1`);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {[
+          { label: "New Leads", value: stats.newLeads },
+          { label: "Contacted", value: stats.contacted },
+          { label: "Assessment Invitations Sent", value: stats.assessmentInvitationsSent },
+          { label: "Converted", value: stats.converted },
+          { label: "Follow-Up Needed", value: stats.followUpNeeded },
+        ].map((item) => (
+          <Card key={item.label}>
+            <CardHeader className="pb-2">
+              <CardDescription>{item.label}</CardDescription>
+              <CardTitle className="text-2xl tabular-nums">{item.value}</CardTitle>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Snapshot Leads</CardTitle>
+          <CardDescription>
+            Public Technology Snapshot submissions for follow-up and conversion tracking.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-4">
+            <div className="relative md:col-span-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search name, company, or email"
+                className="pl-9"
+              />
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                {ALL_SNAPSHOT_LEAD_STATUSES.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {SNAPSHOT_LEAD_STATUS_LABELS[status]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={classificationFilter}
+              onValueChange={(value) => setClassificationFilter(value ?? "all")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Risk level" />
+              </SelectTrigger>
+              <SelectContent>
+                {CLASSIFICATION_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="max-w-xs">
+            <Select
+              value={contactedFilter}
+              onValueChange={(value) => setContactedFilter(value ?? "all")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Contacted" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All contact states</SelectItem>
+                <SelectItem value="yes">Contacted</SelectItem>
+                <SelectItem value="no">Not contacted</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {filteredLeads.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No snapshot leads match the current filters.</p>
+          ) : (
+            <>
+              <div className="hidden min-w-0 lg:block">
+                <div className="overflow-safe-x table-desktop">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Lead</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead className="hidden xl:table-cell">Email</TableHead>
+                        <TableHead className="hidden xl:table-cell">Phone</TableHead>
+                        <TableHead>Score</TableHead>
+                        <TableHead>Risk Level</TableHead>
+                        <TableHead className="hidden md:table-cell">Submitted</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredLeads.map((lead) => (
+                        <TableRow key={lead.id}>
+                          <TableCell className="min-w-0 max-w-[180px]">
+                            <div className="space-y-1">
+                              <Link
+                                href={`/snapshot-leads/${lead.id}`}
+                                className="break-words font-medium text-primary hover:underline"
+                              >
+                                {resolveLeadDisplayName(lead)}
+                              </Link>
+                              {lead.notes?.[0] ? (
+                                <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <MessageSquare className="h-3 w-3 shrink-0" />
+                                  <span className="line-clamp-1">{lead.notes[0].note}</span>
+                                </p>
+                              ) : null}
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-0 max-w-[160px] break-words">
+                            {lead.companyName}
+                          </TableCell>
+                          <TableCell className="hidden min-w-0 break-all xl:table-cell">
+                            <a href={`mailto:${lead.email}`} className="text-primary hover:underline">
+                              {lead.email}
+                            </a>
+                          </TableCell>
+                          <TableCell className="hidden xl:table-cell">
+                            <SnapshotLeadPhoneCell phone={lead.phone} />
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap tabular-nums">
+                            {lead.totalScore}/{SNAPSHOT_MAX_SCORE}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">
+                              {formatSnapshotClassification(lead.classification)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="hidden whitespace-nowrap text-sm text-muted-foreground md:table-cell">
+                            {formatDate(lead.createdAt)}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={lead.status}
+                              items={SNAPSHOT_LEAD_STATUS_LABELS}
+                              onValueChange={(value) =>
+                                updateStatus(
+                                  lead.id,
+                                  (value ?? lead.status) as TechnologySnapshotLeadStatus,
+                                )
+                              }
+                              disabled={updatingId === lead.id}
+                            >
+                              <SelectTrigger className="!w-full min-w-[140px] max-w-[180px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {ALL_SNAPSHOT_LEAD_STATUSES.map((status) => (
+                                  <SelectItem key={status} value={status}>
+                                    {SNAPSHOT_LEAD_STATUS_LABELS[status]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <SnapshotLeadActions
+                              lead={lead}
+                              onStatusChange={(status) => updateStatus(lead.id, status)}
+                              onSendInvitation={() => sendInvitation(lead.id)}
+                              onConvert={() => openConvertDialog(lead.id)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              <div className="space-y-3 lg:hidden">
+                {filteredLeads.map((lead) => (
+                  <MobileDataCard key={lead.id}>
+                    <Link
+                      href={`/snapshot-leads/${lead.id}`}
+                      className="break-words font-semibold text-primary hover:underline"
+                    >
+                      {resolveLeadDisplayName(lead)}
+                    </Link>
+                    <MobileDataRow label="Company">{lead.companyName}</MobileDataRow>
+                    <MobileDataRow label="Email">
+                      <a href={`mailto:${lead.email}`} className="break-all text-primary hover:underline">
+                        {lead.email}
+                      </a>
+                    </MobileDataRow>
+                    <MobileDataRow label="Phone">
+                      <SnapshotLeadPhoneCell phone={lead.phone} />
+                    </MobileDataRow>
+                    <MobileDataRow label="Score">
+                      {lead.totalScore}/{SNAPSHOT_MAX_SCORE}
+                    </MobileDataRow>
+                    <MobileDataRow label="Risk level">
+                      <Badge variant="outline">
+                        {formatSnapshotClassification(lead.classification)}
+                      </Badge>
+                    </MobileDataRow>
+                    <MobileDataRow label="Submitted">{formatDate(lead.createdAt)}</MobileDataRow>
+                    <div className="space-y-1.5 pt-1">
+                      <p className="text-xs text-muted-foreground">Status</p>
+                      <Select
+                        value={lead.status}
+                        items={SNAPSHOT_LEAD_STATUS_LABELS}
+                        onValueChange={(value) =>
+                          updateStatus(
+                            lead.id,
+                            (value ?? lead.status) as TechnologySnapshotLeadStatus,
+                          )
+                        }
+                        disabled={updatingId === lead.id}
+                      >
+                        <SelectTrigger className="!w-full min-w-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ALL_SNAPSHOT_LEAD_STATUSES.map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {SNAPSHOT_LEAD_STATUS_LABELS[status]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="pt-2">
+                      <SnapshotLeadActions
+                        lead={lead}
+                        compact
+                        onStatusChange={(status) => updateStatus(lead.id, status)}
+                        onSendInvitation={() => sendInvitation(lead.id)}
+                        onConvert={() => openConvertDialog(lead.id)}
+                      />
+                    </div>
+                  </MobileDataCard>
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

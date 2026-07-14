@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { listTechnologySnapshotLeads } from "@/lib/technology-snapshot/service";
 import { SnapshotLeadsManagement } from "@/components/admin/snapshot-leads-management";
+import {
+  getTechnologySnapshotLeadSummaryStats,
+  listTechnologySnapshotLeadsForAdmin,
+} from "@/lib/technology-snapshot/service";
 
 export default async function SnapshotLeadsPage() {
   const session = await auth();
@@ -9,7 +12,10 @@ export default async function SnapshotLeadsPage() {
     redirect("/dashboard");
   }
 
-  const leads = await listTechnologySnapshotLeads();
+  const [leads, stats] = await Promise.all([
+    listTechnologySnapshotLeadsForAdmin(),
+    getTechnologySnapshotLeadSummaryStats(),
+  ]);
 
   return (
     <div className="min-w-0 space-y-6">
@@ -19,7 +25,7 @@ export default async function SnapshotLeadsPage() {
           Technology Snapshot submissions from the public lead-generation experience.
         </p>
       </div>
-      <SnapshotLeadsManagement initialLeads={leads} />
+      <SnapshotLeadsManagement initialLeads={leads} initialStats={stats} />
     </div>
   );
 }
