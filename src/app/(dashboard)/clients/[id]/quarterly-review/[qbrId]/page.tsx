@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getQuarterlyBusinessReview } from "@/lib/qbr";
 import { QbrReviewWorkflow } from "@/components/qbr/qbr-review-workflow";
 import { QbrReportView } from "@/components/qbr/qbr-report-view";
+import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string; qbrId: string }> };
 
@@ -20,6 +21,7 @@ export default async function QuarterlyReviewDetailPage({ params }: PageProps) {
 
   const review = await getQuarterlyBusinessReview(clientId, qbrId, session.user.role);
   if (!review) notFound();
+  const qbrAccess = await getVcioFeatureAccess(clientId, "quarterly_business_reviews");
 
   if (session.user.role === "client") {
     return (
@@ -29,5 +31,12 @@ export default async function QuarterlyReviewDetailPage({ params }: PageProps) {
     );
   }
 
-  return <QbrReviewWorkflow clientId={clientId} initialReview={review} />;
+  return (
+    <QbrReviewWorkflow
+      clientId={clientId}
+      initialReview={review}
+      canEdit={qbrAccess.canEdit}
+      readOnlyReason={qbrAccess.reason}
+    />
+  );
 }

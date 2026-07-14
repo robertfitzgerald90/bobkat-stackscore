@@ -7,6 +7,7 @@ import {
   unauthorized,
 } from "@/lib/api/helpers";
 import { generateTipPlan } from "@/lib/technology-improvement-plan";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,8 @@ export async function POST(_request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const { id: clientId, tipId } = await context.params;
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "roadmap_collaboration");
+  if (vcioDenied) return vcioDenied;
 
   try {
     const plan = await generateTipPlan(clientId, tipId, user.id, user.role);

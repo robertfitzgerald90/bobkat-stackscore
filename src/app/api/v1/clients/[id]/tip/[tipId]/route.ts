@@ -8,6 +8,7 @@ import {
 } from "@/lib/api/helpers";
 import { getTipPlan, updateTipPlan } from "@/lib/technology-improvement-plan";
 import type { TipUpdatePayload } from "@/lib/technology-improvement-plan";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 export const runtime = "nodejs";
 
@@ -32,6 +33,9 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const { id: clientId, tipId } = await context.params;
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "roadmap_collaboration");
+  if (vcioDenied) return vcioDenied;
+
   const payload = (await request.json()) as TipUpdatePayload;
 
   try {

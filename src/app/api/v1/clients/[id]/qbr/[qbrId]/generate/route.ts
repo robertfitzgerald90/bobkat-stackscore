@@ -6,6 +6,7 @@ import {
   unauthorized,
 } from "@/lib/api/helpers";
 import { generateQuarterlyBusinessReview } from "@/lib/qbr";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,9 @@ export async function POST(_request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const { id: clientId, qbrId } = await context.params;
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "quarterly_business_reviews");
+  if (vcioDenied) return vcioDenied;
+
   const review = await generateQuarterlyBusinessReview(
     clientId,
     qbrId,

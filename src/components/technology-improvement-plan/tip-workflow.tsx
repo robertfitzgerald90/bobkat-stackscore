@@ -41,6 +41,8 @@ type TipWorkflowProps = {
   tipId: string;
   initialPlan: TipPlanDetail;
   isAdmin: boolean;
+  canEdit?: boolean;
+  readOnlyReason?: string | null;
 };
 
 function visibleSteps(isAdmin: boolean): TipWorkflowStep[] {
@@ -48,7 +50,14 @@ function visibleSteps(isAdmin: boolean): TipWorkflowStep[] {
   return TIP_WORKFLOW_STEPS.filter((step) => step !== "investment");
 }
 
-export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkflowProps) {
+export function TipWorkflow({
+  clientId,
+  tipId,
+  initialPlan,
+  isAdmin,
+  canEdit = true,
+  readOnlyReason = null,
+}: TipWorkflowProps) {
   const router = useRouter();
   const steps = useMemo(() => visibleSteps(isAdmin), [isAdmin]);
   const [plan, setPlan] = useState(initialPlan);
@@ -67,7 +76,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
     wizardState?: Partial<TipWizardState> | TipWizardState;
     executiveSummary?: string;
   }) => {
-    if (!plan.isEditable) return plan;
+    if (!plan.isEditable || !canEdit) return plan;
     setSaving(true);
     try {
       const response = await fetch(`/api/v1/clients/${clientId}/tip/${tipId}`, {
@@ -95,7 +104,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
   };
 
   const goToStep = async (step: TipWorkflowStep) => {
-    if (plan.isEditable) {
+    if (plan.isEditable && canEdit) {
       await savePlan({ currentStep: step, wizardState: plan.wizardState });
     }
     setActiveStep(step);
@@ -143,6 +152,10 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
   };
 
   const handleGenerate = async () => {
+    if (!canEdit) {
+      toast.error(readOnlyReason ?? "StackScore vCIO is read-only for this client.");
+      return;
+    }
     setGenerating(true);
     try {
       await savePlan({
@@ -176,6 +189,11 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
 
   return (
     <div className="space-y-6">
+      {!canEdit && readOnlyReason ? (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4 text-sm text-muted-foreground">{readOnlyReason}</CardContent>
+        </Card>
+      ) : null}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="page-title">{plan.title}</h2>
@@ -228,7 +246,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
       {activeStep === "recommendations" ? (
         <TipRecommendationsStep
           plan={plan}
-          isEditable={plan.isEditable}
+          isEditable={plan.isEditable && canEdit}
           onPlanChange={setPlan}
           onPersist={async (wizardState) => {
             const saved = await savePlan({ wizardState });
@@ -301,7 +319,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
                   <Input
                     type="number"
                     className="mt-1"
-                    disabled={!plan.isEditable}
+                    disabled={!plan.isEditable || !canEdit}
                     value={
                       field === "marginPercent"
                         ? plan.wizardState.investment.marginPercent
@@ -354,7 +372,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
                     (+{phase.scoreDelta})
                   </CardDescription>
                 </div>
-                {plan.isEditable ? (
+                {plan.isEditable && canEdit ? (
                   <div className="flex gap-1">
                     <Button
                       type="button"
@@ -405,8 +423,10 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
           generating={generating}
           onPrevious={goBack}
           onSaveDraft={async () => {
-            await savePlan({ currentStep: "preview", wizardState: plan.wizardState });
-            toast.success("Draft saved");
+            if (canEdit) {
+              await savePlan({ currentStep: "preview", wizardState: plan.wizardState });
+              toast.success("Draft saved");
+            }
           }}
           onGenerate={handleGenerate}
         />
@@ -445,7 +465,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
                 </div>
               </>
             ) : (
-              <Button type="button" onClick={handleGenerate} disabled={generating || saving}>
+              <Button type="button" onClick={handleGenerate} disabled={generating || saving || !canEdit}>
                 {generating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -470,7 +490,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
             <Button
               type="button"
               onClick={async () => {
-                if (plan.isEditable) {
+                if (plan.isEditable && canEdit) {
                   await savePlan({ currentStep: activeStep, wizardState: plan.wizardState });
                 }
                 await goNext();
@@ -481,7 +501,7 @@ export function TipWorkflow({ clientId, tipId, initialPlan, isAdmin }: TipWorkfl
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           ) : plan.status !== "generated" ? (
-            <Button type="button" onClick={handleGenerate} disabled={generating || saving}>
+            <Button type="button" onClick={handleGenerate} disabled={generating || saving || !canEdit}>
               {generating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

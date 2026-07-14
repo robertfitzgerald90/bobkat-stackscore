@@ -18,12 +18,12 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
   if (denied) redirect("/dashboard");
 
   const entitlement = await getClientVcioEntitlement(clientId);
-  const reviews = await prisma.vcioQuarterlyReview.findMany({
+  const reviews = await prisma.quarterlyBusinessReview.findMany({
     where: {
       clientId,
-      ...(user.role === "client" ? { status: "completed" as const } : {}),
+      ...(user.role === "client" ? { status: "generated" as const } : {}),
     },
-    orderBy: [{ reviewDate: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ reviewPeriodStart: "desc" }, { createdAt: "desc" }],
   });
 
   return (
@@ -66,11 +66,7 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
           {reviews.map((review) => (
             <Card key={review.id}>
               <CardHeader>
-                <CardTitle className="text-base">
-                  {review.reviewDate
-                    ? `Review ${formatDisplayDate(review.reviewDate)}`
-                    : `${review.status} review`}
-                </CardTitle>
+                <CardTitle className="text-base">{review.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <p className="text-muted-foreground">
@@ -78,11 +74,17 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
                   {formatDisplayDate(review.reviewPeriodEnd)}
                 </p>
                 {review.executiveSummary ? <p>{review.executiveSummary}</p> : null}
-                {review.nextReviewDate ? (
+                {review.generatedAt ? (
                   <p className="text-muted-foreground">
-                    Next review: {formatDisplayDate(review.nextReviewDate)}
+                    Generated: {formatDisplayDate(review.generatedAt)}
                   </p>
                 ) : null}
+                <Link
+                  href={`/clients/${clientId}/quarterly-review/${review.id}`}
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  {review.status === "generated" ? "View Review" : "Continue Draft"}
+                </Link>
               </CardContent>
             </Card>
           ))}

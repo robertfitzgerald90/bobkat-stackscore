@@ -7,6 +7,7 @@ import {
   unauthorized,
 } from "@/lib/api/helpers";
 import { deleteClientTechnology } from "@/lib/client-technology";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 type RouteContext = { params: Promise<{ id: string; deploymentId: string }> };
 
@@ -24,6 +25,8 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     select: { id: true },
   });
   if (!client) return notFound("Client not found");
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "technology_lifecycle");
+  if (vcioDenied) return vcioDenied;
 
   const removed = await deleteClientTechnology(clientId, deploymentId);
   if (!removed) return notFound("Deployment not found");

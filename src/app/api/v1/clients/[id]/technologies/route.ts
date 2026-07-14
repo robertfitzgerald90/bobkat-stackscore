@@ -12,6 +12,7 @@ import {
   createClientTechnology,
   getClientTechnologies,
 } from "@/lib/client-technology";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -57,6 +58,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
   const { id: clientId } = await context.params;
   const access = await assertClientAccess(clientId, user.id, user.role);
   if (!access) return notFound("Client not found");
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "technology_lifecycle");
+  if (vcioDenied) return vcioDenied;
 
   const body = await request.json().catch(() => null);
   if (!body?.technologyId) return badRequest("technologyId is required");

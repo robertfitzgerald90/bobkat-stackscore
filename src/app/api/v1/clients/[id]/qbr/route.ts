@@ -10,6 +10,7 @@ import {
   createQuarterlyBusinessReview,
   listQuarterlyBusinessReviews,
 } from "@/lib/qbr";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,9 @@ export async function POST(request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const { id: clientId } = await context.params;
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "quarterly_business_reviews");
+  if (vcioDenied) return vcioDenied;
+
   let reviewDate: Date | undefined;
   try {
     const body = (await request.json()) as { reviewDate?: string };

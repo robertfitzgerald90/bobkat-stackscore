@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getClientTechnologyProfileSummary } from "@/lib/client-technology";
 import { getActiveTechnologiesForAssignment } from "@/lib/technology-catalog";
 import { prisma } from "@/lib/db";
+import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -22,9 +23,10 @@ export default async function ClientTechnologyProfilePage({ params }: PageProps)
     }
   }
 
-  const [profile, catalogOptions] = await Promise.all([
+  const [profile, catalogOptions, lifecycleAccess] = await Promise.all([
     getClientTechnologyProfileSummary(clientId),
     session.user.role !== "client" ? getActiveTechnologiesForAssignment() : Promise.resolve([]),
+    getVcioFeatureAccess(clientId, "technology_lifecycle"),
   ]);
 
   if (!profile) notFound();
@@ -36,7 +38,8 @@ export default async function ClientTechnologyProfilePage({ params }: PageProps)
       deployments={profile.deployments}
       catalogOptions={catalogOptions}
       metrics={profile.metrics}
-      canManage={session.user.role !== "client"}
+      canManage={session.user.role !== "client" && lifecycleAccess.canEdit}
+      readOnlyReason={lifecycleAccess.reason}
     />
   );
 }

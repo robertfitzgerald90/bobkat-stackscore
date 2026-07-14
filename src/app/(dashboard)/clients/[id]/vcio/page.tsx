@@ -22,6 +22,8 @@ import { formatDisplayDate } from "@/lib/display";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { ResendVcioWelcomeButton } from "@/components/vcio/resend-vcio-welcome-button";
 import { ResetVcioOnboardingButton } from "@/components/vcio/reset-vcio-onboarding-button";
+import { VcioFeatureUnlocksPanel } from "@/components/vcio/vcio-feature-unlocks-panel";
+import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -80,7 +82,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
   const denied = await requireClientWorkspaceAccess(user, clientId);
   if (denied) redirect("/dashboard");
 
-  const [client, entitlement, latestSubscription] = await Promise.all([
+  const [client, entitlement, latestSubscription, vcioFeatureAccess, planningNotes] = await Promise.all([
     prisma.client.findUnique({
       where: { id: clientId },
       select: {
@@ -90,6 +92,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           select: {
             overallStackScore: true,
             lastAssessedAt: true,
+            nextRecommendedAssessmentAt: true,
             openRecommendationCount: true,
             criticalExposureCount: true,
           },
@@ -104,15 +107,44 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           where: { status: { in: ["approved", "scheduled", "in_progress"] } },
           orderBy: { updatedAt: "desc" },
           take: 5,
-          select: { id: true, title: true, status: true },
+          select: { id: true, title: true, status: true, completedAt: true, updatedAt: true },
+        },
+        assessments: {
+          where: { status: "completed" },
+          orderBy: { completedAt: "desc" },
+          take: 5,
+          select: { id: true, assessmentName: true, completedAt: true },
+        },
+        clientTechnologies: {
+          where: { isActive: true },
+          orderBy: [{ renewalDate: "asc" }, { updatedAt: "desc" }],
+          take: 9,
+          select: {
+            id: true,
+            displayName: true,
+            renewalDate: true,
+            warrantyExpiresAt: true,
+            plannedReplacementDate: true,
+            budgetAmountCents: true,
+            budgetPeriod: true,
+            technology: { select: { name: true, vendor: true } },
+          },
         },
         vcioOnboarding: {
           select: { status: true, completedAt: true, strategySessionScheduledAt: true },
         },
-        vcioQuarterlyReviews: {
-          orderBy: [{ reviewDate: "desc" }, { createdAt: "desc" }],
+        quarterlyBusinessReviews: {
+          orderBy: [{ reviewPeriodStart: "desc" }, { createdAt: "desc" }],
           take: 3,
-          select: { id: true, status: true, reviewDate: true, nextReviewDate: true, executiveSummary: true },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            reviewPeriodStart: true,
+            reviewPeriodEnd: true,
+            generatedAt: true,
+            executiveSummary: true,
+          },
         },
       },
     }),
@@ -127,12 +159,73 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         },
       },
     }),
+    getVcioFeatureAccess(clientId, "strategy_sessions"),
+    prisma.note.findMany({
+      where: { clientId, noteType: { in: ["executive", "strategy_session"] } },
+      orderBy: [{ scheduledAt: "desc" }, { createdAt: "desc" }],
+      take: 6,
+      select: {
+        id: true,
+        noteType: true,
+        title: true,
+        content: true,
+        scheduledAt: true,
+        completedAt: true,
+        actionItemsJson: true,
+        createdAt: true,
+        user: { select: { name: true } },
+      },
+    }),
   ]);
 
   if (!client) notFound();
 
   const score = client.technologyProfile?.overallStackScore;
-  const nextReview = client.vcioQuarterlyReviews.find((review) => review.nextReviewDate)?.nextReviewDate;
+  const nextReview = client.quarterlyBusinessReviews[0]?.reviewPeriodEnd ?? null;
+  const nextRecommendedAssessmentAt =
+    client.technologyProfile?.nextRecommendedAssessmentAt?.toISOString() ?? null;
+  const lastAssessedAt = client.technologyProfile?.lastAssessedAt ?? null;
+  const annualAssessmentDue = nextRecommendedAssessmentAt
+    ? new Date(nextRecommendedAssessmentAt).getTime() <= Date.now()
+    : lastAssessedAt
+      ? Date.now() - lastAssessedAt.getTime() >= 365 * 24 * 60 * 60 * 1000
+      : false;
+  const timeline = [
+    ...client.assessments
+      .filter((assessment) => assessment.completedAt)
+      .map((assessment) => ({
+        id: `assessment-${assessment.id}`,
+        label: assessment.assessmentName,
+        date: assessment.completedAt!.toISOString(),
+        type: "assessment" as const,
+      })),
+    ...client.projects
+      .filter((project) => project.completedAt)
+      .map((project) => ({
+        id: `project-${project.id}`,
+        label: project.title,
+        date: project.completedAt!.toISOString(),
+        type: "project" as const,
+      })),
+    ...client.quarterlyBusinessReviews
+      .filter((review) => review.generatedAt ?? review.reviewPeriodStart)
+      .map((review) => ({
+        id: `qbr-${review.id}`,
+        label: review.title,
+        date: (review.generatedAt ?? review.reviewPeriodStart).toISOString(),
+        type: "qbr" as const,
+      })),
+    ...client.clientTechnologies
+      .filter((technology) => technology.renewalDate || technology.plannedReplacementDate)
+      .map((technology) => ({
+        id: `technology-${technology.id}`,
+        label: `${technology.displayName ?? technology.technology.name} planning milestone`,
+        date: (technology.plannedReplacementDate ?? technology.renewalDate)!.toISOString(),
+        type: "technology" as const,
+      })),
+  ]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 10);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -244,6 +337,32 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           </CardContent>
         </Card>
       </div>
+
+      <VcioFeatureUnlocksPanel
+        clientId={clientId}
+        canEdit={vcioFeatureAccess.canEdit}
+        readOnlyReason={vcioFeatureAccess.reason}
+        initialNotes={planningNotes.map((note) => ({
+          ...note,
+          noteType: note.noteType === "strategy_session" ? "strategy_session" : "executive",
+          scheduledAt: note.scheduledAt?.toISOString() ?? null,
+          completedAt: note.completedAt?.toISOString() ?? null,
+          createdAt: note.createdAt.toISOString(),
+        }))}
+        timeline={timeline}
+        planningItems={client.clientTechnologies.map((technology) => ({
+          id: technology.id,
+          name: technology.displayName ?? technology.technology.name,
+          vendor: technology.technology.vendor,
+          renewalDate: technology.renewalDate?.toISOString() ?? null,
+          warrantyExpiresAt: technology.warrantyExpiresAt?.toISOString() ?? null,
+          plannedReplacementDate: technology.plannedReplacementDate?.toISOString() ?? null,
+          budgetAmountCents: technology.budgetAmountCents,
+          budgetPeriod: technology.budgetPeriod,
+        }))}
+        annualAssessmentDue={annualAssessmentDue}
+        nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>

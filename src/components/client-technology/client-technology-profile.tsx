@@ -15,6 +15,7 @@ import {
   formatHealthStatus,
   formatManagedBy,
 } from "@/lib/technology-catalog/labels";
+import { formatDisplayDate } from "@/lib/display";
 import type { ClientTechnologyRecord } from "@/lib/technology-catalog/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ type ClientTechnologyProfileProps = {
     atRiskCount: number;
   };
   canManage: boolean;
+  readOnlyReason?: string | null;
 };
 
 function healthBadgeVariant(status: string) {
@@ -63,6 +65,11 @@ function healthBadgeVariant(status: string) {
   return "border-border bg-muted/40 text-secondary-token";
 }
 
+function formatMoney(cents: number | null) {
+  if (cents === null) return null;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+}
+
 export function ClientTechnologyProfile({
   clientId,
   companyName,
@@ -70,6 +77,7 @@ export function ClientTechnologyProfile({
   catalogOptions,
   metrics,
   canManage,
+  readOnlyReason = null,
 }: ClientTechnologyProfileProps) {
   const [deployments, setDeployments] = useState(initialDeployments);
   const [assignOpen, setAssignOpen] = useState(false);
@@ -122,6 +130,12 @@ export function ClientTechnologyProfile({
         }
       />
 
+      {!canManage && readOnlyReason ? (
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">
+          {readOnlyReason}
+        </div>
+      ) : null}
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {metricCards.map((metric) => (
           <div key={metric.label} className="stat-card rounded-xl bg-card p-4">
@@ -173,11 +187,23 @@ export function ClientTechnologyProfile({
                       <p className="text-xs text-muted-foreground">
                         {deployment.technology.vendor} · {deployment.technology.categoryName}
                       </p>
+                      {deployment.vendorAccountReference ? (
+                        <p className="text-xs text-muted-foreground">
+                          Vendor ref: {deployment.vendorAccountReference}
+                        </p>
+                      ) : null}
                       <TechnologyStandardBadge status={deployment.technology.standardStatus} />
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-secondary-token">
-                    {deployment.technologyProduct?.name ?? "Platform-level"}
+                    <div>
+                      <p>{deployment.technologyProduct?.name ?? "Platform-level"}</p>
+                      {deployment.licenseCount ? (
+                        <p className="text-xs text-muted-foreground">
+                          {deployment.licenseCount} licenses
+                        </p>
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{formatDeploymentStatus(deployment.deploymentStatus)}</Badge>
@@ -191,7 +217,30 @@ export function ClientTechnologyProfile({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-secondary-token">
-                    {formatManagedBy(deployment.managedBy)}
+                    <div className="space-y-1">
+                      <p>{formatManagedBy(deployment.managedBy)}</p>
+                      {deployment.renewalDate ? (
+                        <p className="text-xs text-muted-foreground">
+                          Renewal {formatDisplayDate(deployment.renewalDate)}
+                        </p>
+                      ) : null}
+                      {deployment.warrantyExpiresAt ? (
+                        <p className="text-xs text-muted-foreground">
+                          Warranty {formatDisplayDate(deployment.warrantyExpiresAt)}
+                        </p>
+                      ) : null}
+                      {deployment.plannedReplacementDate ? (
+                        <p className="text-xs text-muted-foreground">
+                          Replace {formatDisplayDate(deployment.plannedReplacementDate)}
+                        </p>
+                      ) : null}
+                      {formatMoney(deployment.budgetAmountCents) ? (
+                        <p className="text-xs text-muted-foreground">
+                          Budget {formatMoney(deployment.budgetAmountCents)}
+                          {deployment.budgetPeriod ? ` / ${deployment.budgetPeriod}` : ""}
+                        </p>
+                      ) : null}
+                    </div>
                   </TableCell>
                   {canManage ? (
                     <TableCell>

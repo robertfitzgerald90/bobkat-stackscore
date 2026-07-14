@@ -42,6 +42,14 @@ function mapClientTechnology(
     vendorAccountReference: record.vendorAccountReference,
     implementationDate: record.implementationDate?.toISOString() ?? null,
     renewalDate: record.renewalDate?.toISOString() ?? null,
+    licenseCount: record.licenseCount,
+    licenseRenewalDate: record.licenseRenewalDate?.toISOString() ?? null,
+    purchaseDate: record.purchaseDate?.toISOString() ?? null,
+    warrantyExpiresAt: record.warrantyExpiresAt?.toISOString() ?? null,
+    plannedReplacementDate: record.plannedReplacementDate?.toISOString() ?? null,
+    budgetAmountCents: record.budgetAmountCents,
+    budgetPeriod: record.budgetPeriod,
+    budgetNotes: record.budgetNotes,
     reviewDate: record.reviewDate?.toISOString() ?? null,
     ownerName: record.ownerName,
     technicalOwnerName: record.technicalOwnerName,
@@ -119,6 +127,16 @@ export type CreateClientTechnologyInput = {
   healthStatus?: string;
   quantity?: number | null;
   quantityUnit?: string | null;
+  vendorAccountReference?: string | null;
+  renewalDate?: string | null;
+  licenseCount?: number | null;
+  licenseRenewalDate?: string | null;
+  purchaseDate?: string | null;
+  warrantyExpiresAt?: string | null;
+  plannedReplacementDate?: string | null;
+  budgetAmountCents?: number | null;
+  budgetPeriod?: string | null;
+  budgetNotes?: string | null;
   managedBy?: string;
   notes?: string | null;
 };
@@ -152,6 +170,18 @@ export async function createClientTechnology(clientId: string, input: CreateClie
       healthStatus: (input.healthStatus as never) ?? "unknown",
       quantity: input.quantity ?? null,
       quantityUnit: input.quantityUnit ?? null,
+      vendorAccountReference: input.vendorAccountReference ?? null,
+      renewalDate: input.renewalDate ? new Date(input.renewalDate) : null,
+      licenseCount: input.licenseCount ?? null,
+      licenseRenewalDate: input.licenseRenewalDate ? new Date(input.licenseRenewalDate) : null,
+      purchaseDate: input.purchaseDate ? new Date(input.purchaseDate) : null,
+      warrantyExpiresAt: input.warrantyExpiresAt ? new Date(input.warrantyExpiresAt) : null,
+      plannedReplacementDate: input.plannedReplacementDate
+        ? new Date(input.plannedReplacementDate)
+        : null,
+      budgetAmountCents: input.budgetAmountCents ?? null,
+      budgetPeriod: input.budgetPeriod ?? null,
+      budgetNotes: input.budgetNotes ?? null,
       managedBy: (input.managedBy as never) ?? "bobkat_it",
       notes: input.notes ?? null,
     },

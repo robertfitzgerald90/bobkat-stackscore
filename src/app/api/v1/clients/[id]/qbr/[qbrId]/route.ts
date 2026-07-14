@@ -11,6 +11,7 @@ import {
   getQuarterlyBusinessReview,
   updateQuarterlyBusinessReview,
 } from "@/lib/qbr";
+import { requireVcioFeatureWriteAccess } from "@/lib/vcio/feature-unlocks";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,9 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const { id: clientId, qbrId } = await context.params;
+  const vcioDenied = await requireVcioFeatureWriteAccess(clientId, "quarterly_business_reviews");
+  if (vcioDenied) return vcioDenied;
+
   let executiveSummary: string | null | undefined;
   try {
     const body = (await request.json()) as { executiveSummary?: string | null };

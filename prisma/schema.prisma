@@ -207,6 +207,8 @@ enum NoteType {
   assessment
   recommendation
   project
+  executive
+  strategy_session
   system
 }
 
@@ -719,8 +721,14 @@ model Note {
   userId       String
   noteType     NoteType   @default(general)
   visibility   Visibility @default(internal)
+  title        String?
   content      String     @db.Text
+  scheduledAt  DateTime?
+  completedAt  DateTime?
+  actionItemsJson Json?
+  metadataJson Json?
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   client     Client      @relation(fields: [clientId], references: [id])
   assessment Assessment? @relation(fields: [assessmentId], references: [id])
@@ -1287,6 +1295,14 @@ model ClientTechnology {
   vendorAccountReference String?
   implementationDate     DateTime?
   renewalDate            DateTime?
+  licenseCount           Int?
+  licenseRenewalDate     DateTime?
+  purchaseDate           DateTime?
+  warrantyExpiresAt      DateTime?
+  plannedReplacementDate DateTime?
+  budgetAmountCents      Int?
+  budgetPeriod           String?
+  budgetNotes            String?                          @db.Text
   reviewDate             DateTime?
   ownerName              String?
   technicalOwnerName     String?

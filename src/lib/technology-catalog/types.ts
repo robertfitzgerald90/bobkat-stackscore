@@ -120,6 +120,14 @@ export type ClientTechnologyRecord = {
   vendorAccountReference: string | null;
   implementationDate: string | null;
   renewalDate: string | null;
+  licenseCount: number | null;
+  licenseRenewalDate: string | null;
+  purchaseDate: string | null;
+  warrantyExpiresAt: string | null;
+  plannedReplacementDate: string | null;
+  budgetAmountCents: number | null;
+  budgetPeriod: string | null;
+  budgetNotes: string | null;
   reviewDate: string | null;
   ownerName: string | null;
   technicalOwnerName: string | null;

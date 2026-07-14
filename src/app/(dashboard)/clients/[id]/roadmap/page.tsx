@@ -10,6 +10,7 @@ import { buttonClassName } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
 import { listTipPlans } from "@/lib/technology-improvement-plan";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -67,7 +68,10 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
     );
   }
 
-  const plans = await listTipPlans(id);
+  const [plans, roadmapAccess] = await Promise.all([
+    listTipPlans(id),
+    getVcioFeatureAccess(id, "roadmap_collaboration"),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -80,6 +84,8 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
         clientName={client.companyName}
         initialPlans={plans}
         embedded
+        canCreate={roadmapAccess.canEdit}
+        readOnlyReason={roadmapAccess.reason}
       />
     </div>
   );

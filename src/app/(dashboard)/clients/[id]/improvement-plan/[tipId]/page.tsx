@@ -6,6 +6,7 @@ import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getTipPlan } from "@/lib/technology-improvement-plan";
 import { TipWorkflow } from "@/components/technology-improvement-plan/tip-workflow";
 import { buttonClassName } from "@/components/ui/button";
+import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string; tipId: string }> };
 
@@ -15,7 +16,10 @@ export default async function ImprovementPlanWizardPage({ params }: PageProps) {
   if (!session?.user) redirect("/login");
   if (session.user.role === "client") redirect(clientTechnologyProfilePath(id));
 
-  const plan = await getTipPlan(id, tipId, session.user.role);
+  const [plan, roadmapAccess] = await Promise.all([
+    getTipPlan(id, tipId, session.user.role),
+    getVcioFeatureAccess(id, "roadmap_collaboration"),
+  ]);
   if (!plan) notFound();
 
   return (
@@ -32,6 +36,8 @@ export default async function ImprovementPlanWizardPage({ params }: PageProps) {
         tipId={tipId}
         initialPlan={plan}
         isAdmin={session.user.role === "admin"}
+        canEdit={roadmapAccess.canEdit}
+        readOnlyReason={roadmapAccess.reason}
       />
     </div>
   );

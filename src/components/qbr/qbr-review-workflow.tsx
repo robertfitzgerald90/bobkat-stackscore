@@ -15,9 +15,16 @@ import { toast } from "sonner";
 type QbrReviewWorkflowProps = {
   clientId: string;
   initialReview: QbrDetail;
+  canEdit?: boolean;
+  readOnlyReason?: string | null;
 };
 
-export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflowProps) {
+export function QbrReviewWorkflow({
+  clientId,
+  initialReview,
+  canEdit = true,
+  readOnlyReason = null,
+}: QbrReviewWorkflowProps) {
   const router = useRouter();
   const [review, setReview] = useState(initialReview);
   const [executiveSummary, setExecutiveSummary] = useState(
@@ -103,7 +110,7 @@ export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflow
           </div>
           <p className="page-description">{review.reviewPeriodLabel}</p>
         </div>
-        {review.isEditable ? (
+        {review.isEditable && canEdit ? (
           <div className="flex flex-col gap-2 sm:flex-row">
             <Button
               type="button"
@@ -145,7 +152,13 @@ export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflow
         )}
       </div>
 
-      {review.isEditable ? (
+      {review.isEditable && !canEdit && readOnlyReason ? (
+        <Card className="border-primary/20 bg-primary/5 print:hidden">
+          <CardContent className="p-4 text-sm text-muted-foreground">{readOnlyReason}</CardContent>
+        </Card>
+      ) : null}
+
+      {review.isEditable && canEdit ? (
         <Card className="print:hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -166,7 +179,7 @@ export function QbrReviewWorkflow({ clientId, initialReview }: QbrReviewWorkflow
       <QbrReportView
         clientId={clientId}
         data={review.report}
-        isEditable={review.isEditable}
+        isEditable={review.isEditable && canEdit}
         executiveSummary={executiveSummary}
         onExecutiveSummaryChange={setExecutiveSummary}
         showActions={review.status === "generated"}

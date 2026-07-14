@@ -17,12 +17,16 @@ type QbrReviewListProps = {
   clientId: string;
   clientName: string;
   initialReviews: QbrSummary[];
+  canCreate?: boolean;
+  readOnlyReason?: string | null;
 };
 
 export function QbrReviewList({
   clientId,
   clientName,
   initialReviews,
+  canCreate = true,
+  readOnlyReason = null,
 }: QbrReviewListProps) {
   const router = useRouter();
   const [reviews] = useState(initialReviews);
@@ -63,7 +67,7 @@ export function QbrReviewList({
           <h2 className="page-title">Quarterly Business Reviews</h2>
           <p className="page-description">{clientName}</p>
         </div>
-        <Button type="button" onClick={startReview} disabled={creating}>
+        <Button type="button" onClick={startReview} disabled={creating || !canCreate}>
           {creating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -77,6 +81,12 @@ export function QbrReviewList({
           )}
         </Button>
       </div>
+
+      {!canCreate && readOnlyReason ? (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4 text-sm text-muted-foreground">{readOnlyReason}</CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>

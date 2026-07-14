@@ -57,6 +57,16 @@ export function AssignTechnologySheet({
   const [businessPurpose, setBusinessPurpose] = useState("");
   const [quantity, setQuantity] = useState("");
   const [quantityUnit, setQuantityUnit] = useState("");
+  const [vendorAccountReference, setVendorAccountReference] = useState("");
+  const [renewalDate, setRenewalDate] = useState("");
+  const [licenseCount, setLicenseCount] = useState("");
+  const [licenseRenewalDate, setLicenseRenewalDate] = useState("");
+  const [purchaseDate, setPurchaseDate] = useState("");
+  const [warrantyExpiresAt, setWarrantyExpiresAt] = useState("");
+  const [plannedReplacementDate, setPlannedReplacementDate] = useState("");
+  const [budgetAmount, setBudgetAmount] = useState("");
+  const [budgetPeriod, setBudgetPeriod] = useState("");
+  const [budgetNotes, setBudgetNotes] = useState("");
   const [notes, setNotes] = useState("");
 
   const selectedTechnology = useMemo(
@@ -71,6 +81,16 @@ export function AssignTechnologySheet({
       setBusinessPurpose("");
       setQuantity("");
       setQuantityUnit("");
+      setVendorAccountReference("");
+      setRenewalDate("");
+      setLicenseCount("");
+      setLicenseRenewalDate("");
+      setPurchaseDate("");
+      setWarrantyExpiresAt("");
+      setPlannedReplacementDate("");
+      setBudgetAmount("");
+      setBudgetPeriod("");
+      setBudgetNotes("");
       setNotes("");
     }
   }, [open]);
@@ -96,6 +116,16 @@ export function AssignTechnologySheet({
         businessPurpose: businessPurpose || null,
         quantity: quantity ? Number(quantity) : null,
         quantityUnit: quantityUnit || null,
+        vendorAccountReference: vendorAccountReference || null,
+        renewalDate: renewalDate || null,
+        licenseCount: licenseCount ? Number(licenseCount) : null,
+        licenseRenewalDate: licenseRenewalDate || null,
+        purchaseDate: purchaseDate || null,
+        warrantyExpiresAt: warrantyExpiresAt || null,
+        plannedReplacementDate: plannedReplacementDate || null,
+        budgetAmountCents: budgetAmount ? Math.round(Number(budgetAmount) * 100) : null,
+        budgetPeriod: budgetPeriod || null,
+        budgetNotes: budgetNotes || null,
         notes: notes || null,
       }),
     });
@@ -139,6 +169,105 @@ export function AssignTechnologySheet({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="vendorAccountReference">Vendor / account reference</Label>
+              <Input
+                id="vendorAccountReference"
+                value={vendorAccountReference}
+                onChange={(event) => setVendorAccountReference(event.target.value)}
+                placeholder="Account, agreement, or tenant ID"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="renewalDate">Renewal date</Label>
+              <Input
+                id="renewalDate"
+                type="date"
+                value={renewalDate}
+                onChange={(event) => setRenewalDate(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="licenseCount">License count</Label>
+              <Input
+                id="licenseCount"
+                type="number"
+                min={0}
+                value={licenseCount}
+                onChange={(event) => setLicenseCount(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="licenseRenewalDate">License renewal</Label>
+              <Input
+                id="licenseRenewalDate"
+                type="date"
+                value={licenseRenewalDate}
+                onChange={(event) => setLicenseRenewalDate(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="purchaseDate">Purchase date</Label>
+              <Input
+                id="purchaseDate"
+                type="date"
+                value={purchaseDate}
+                onChange={(event) => setPurchaseDate(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="warrantyExpiresAt">Warranty expiration</Label>
+              <Input
+                id="warrantyExpiresAt"
+                type="date"
+                value={warrantyExpiresAt}
+                onChange={(event) => setWarrantyExpiresAt(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="plannedReplacementDate">Planned replacement</Label>
+              <Input
+                id="plannedReplacementDate"
+                type="date"
+                value={plannedReplacementDate}
+                onChange={(event) => setPlannedReplacementDate(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="budgetAmount">Budget amount</Label>
+              <Input
+                id="budgetAmount"
+                type="number"
+                min={0}
+                step="0.01"
+                value={budgetAmount}
+                onChange={(event) => setBudgetAmount(event.target.value)}
+                placeholder="Monthly or annual amount"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="budgetPeriod">Budget period</Label>
+            <Input
+              id="budgetPeriod"
+              value={budgetPeriod}
+              onChange={(event) => setBudgetPeriod(event.target.value)}
+              placeholder="Monthly, annual, FY2026, renewal term..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="budgetNotes">Budget / lifecycle notes</Label>
+            <Input
+              id="budgetNotes"
+              value={budgetNotes}
+              onChange={(event) => setBudgetNotes(event.target.value)}
+              placeholder="Budget assumptions, lifecycle planning, or replacement context"
+            />
           </div>
 
           {selectedTechnology && selectedTechnology.products.length > 0 ? (

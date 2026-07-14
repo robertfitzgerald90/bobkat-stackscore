@@ -16,6 +16,8 @@ type TipPlanListProps = {
   initialPlans: TipPlanSummary[];
   /** When true, omit page title chrome (workspace section supplies it). */
   embedded?: boolean;
+  canCreate?: boolean;
+  readOnlyReason?: string | null;
 };
 
 export function TipPlanList({
@@ -23,6 +25,8 @@ export function TipPlanList({
   clientName,
   initialPlans,
   embedded = false,
+  canCreate = true,
+  readOnlyReason = null,
 }: TipPlanListProps) {
   const router = useRouter();
   const [plans] = useState(initialPlans);
@@ -60,7 +64,7 @@ export function TipPlanList({
             <p className="mt-1 text-sm text-muted-foreground">{clientName}</p>
           </div>
         )}
-        <Button type="button" onClick={startPlan} disabled={creating}>
+        <Button type="button" onClick={startPlan} disabled={creating || !canCreate}>
           {creating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -74,6 +78,12 @@ export function TipPlanList({
           )}
         </Button>
       </div>
+
+      {!canCreate && readOnlyReason ? (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4 text-sm text-muted-foreground">{readOnlyReason}</CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>
