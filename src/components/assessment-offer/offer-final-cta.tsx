@@ -1,13 +1,16 @@
+import Link from "next/link";
 import { Lock } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
-import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { buttonVariants } from "@/components/ui/button";
 import { OfferCtaPanel } from "./offer-cta-panel";
+import { cn } from "@/lib/utils";
 
 export function OfferFinalCta() {
   return (
     <OfferCtaPanel
-      headline="Ready to Take Control of Your Technology?"
-      supportingText="Whether you're looking to understand your current environment or build a long-term technology strategy, StackScore gives you the visibility, planning, and guidance needed to make smarter technology decisions."
+      eyebrow="Ready to get started?"
+      headline="Start Your Technology Maturity Assessment"
+      supportingText="Purchase your comprehensive Technology Maturity Assessment to establish your baseline, identify critical priorities, and receive a practical technology improvement roadmap."
       footnote={
         <>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -25,17 +28,16 @@ export function OfferFinalCta() {
     >
       <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
         <AssessmentPurchaseButton
-          label="Purchase Technology Assessment"
+          label="Purchase Assessment — $1,500"
           className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
           source="offer_final_cta"
         />
-        <ServicesCtaLink
-          cta="generalConsultation"
-          label="Schedule a Discovery Call"
-          variant="outline"
-          className="h-11 w-full px-8 text-base sm:w-auto"
-          placement="offer_final_cta_discovery"
-        />
+        <Link
+          href="#assessment-inclusions"
+          className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
+        >
+          Learn More About the Assessment
+        </Link>
       </div>
     </OfferCtaPanel>
   );

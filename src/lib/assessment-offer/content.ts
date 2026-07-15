@@ -37,11 +37,8 @@ export type AssessmentOfferShowcaseSection = {
   description: string;
   outcomes: string[];
   outcomesLabel?: string;
-  image?: OfferShowcaseScreenshot;
-  images?: OfferShowcaseScreenshot[];
+  image: OfferShowcaseScreenshot;
   imagePosition: "left" | "right";
-  frameTitle: string;
-  layout?: "default" | "product-first";
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -51,126 +48,97 @@ export type AssessmentOfferWorkflowStep = {
   icon: LucideIcon;
 };
 
+export const OFFER_HERO_SCREENSHOT: OfferShowcaseScreenshot = {
+  src: "/images/vcio/technology-maturity-overview.png",
+  width: 1837,
+  height: 337,
+  alt: "StackScore technology maturity overview showing executive technology health at a glance",
+};
+
 export const ASSESSMENT_OFFER_SHOWCASE_INTRO = {
   eyebrow: "Platform Walkthrough",
-  title: "See How StackScore Guides Your Technology Strategy",
+  title: "Technology clarity, built for leadership",
   description:
-    "From executive visibility to quarterly strategy, StackScore turns complex technology environments into clear business outcomes—so leadership always knows where you stand and what comes next.",
+    "One capability at a time—see how StackScore turns complex technology environments into clear executive decisions.",
 } as const;
 
 export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[] = [
   {
     id: "executive-visibility",
     eyebrow: "Executive Visibility",
-    heading: "Understand Your Technology at a Glance",
+    heading: "Understand Your Technology At A Glance",
     description:
-      "StackScore transforms technical complexity into an executive-friendly dashboard. Instantly understand your organization's technology health, business context, critical risks, maturity score, and recommended improvement path without digging through spreadsheets or reports.",
+      "The Technology Maturity Assessment transforms technical findings into executive-ready insights. Instantly understand your overall technology health, maturity score, projected improvements, and where your organization should focus first.",
     outcomes: [
-      "Executive technology health overview",
-      "Business context and maturity profile",
-      "Critical risk visibility",
-      "Technology StackScore",
-      "Immediate executive insights",
+      "Technology maturity score",
+      "Executive technology profile",
+      "Critical business risks",
+      "Improvement opportunities",
+      "Technology health overview",
     ],
     outcomesLabel: "Key outcomes",
     image: {
       src: "/images/vcio/technology-maturity-overview.png",
       width: 1837,
       height: 337,
-      alt: "StackScore executive technology maturity overview dashboard",
+      alt: "StackScore technology maturity overview with executive technology health insights",
     },
     imagePosition: "left",
-    frameTitle: "Executive Technology Dashboard",
   },
   {
     id: "measurable-progress",
     eyebrow: "Measurable Progress",
-    heading: "Track Technology Improvements Over Time",
+    heading: "Track Every Technology Improvement",
     description:
-      "Technology management isn't a one-time project. StackScore records every assessment, recommendation, project, quarterly review, and milestone so you always understand how your technology environment has evolved.",
+      "Every assessment, recommendation, project, report, and quarterly review becomes part of your organization's technology journey. StackScore records measurable progress so leadership can see exactly how technology improves over time.",
     outcomes: [
       "Initial, current, projected, and target scores",
-      "Historical assessments",
+      "Assessment history",
       "Project milestones",
       "Executive reporting timeline",
-      "Continuous technology improvement",
+      "Technology maturity evolution",
     ],
     outcomesLabel: "Key outcomes",
     image: {
-      src: "/images/vcio/tech-journey-card.png",
-      width: 533,
-      height: 531,
-      alt: "StackScore technology journey card showing score progression over time",
+      src: "/images/technology-journey.png",
+      width: 1971,
+      height: 1127,
+      alt: "StackScore technology journey showing measurable progress over time",
     },
     imagePosition: "right",
-    frameTitle: "Technology Maturity Platform",
   },
   {
-    id: "actionable-priorities",
-    eyebrow: "Actionable Priorities",
-    heading: "Know Exactly What Comes Next",
+    id: "executive-leadership",
+    eyebrow: "Executive Leadership",
+    heading: "Lead Technology With Confidence",
     description:
-      "Rather than overwhelming you with hundreds of technical tasks, StackScore automatically identifies and prioritizes the improvements that create the greatest business impact.",
+      "Your executive dashboard provides a complete operational snapshot of technology health, roadmap progress, active initiatives, quarterly review readiness, subscription status, budget visibility, and overall organizational readiness.",
     outcomes: [
-      "Immediate executive focus",
-      "Risk-based prioritization",
-      "Critical recommendations",
-      "Quarterly planning priorities",
-      "Strategic execution roadmap",
-    ],
-    outcomesLabel: "Key outcomes",
-    images: [
-      {
-        src: "/images/vcio/immediate-focus.png",
-        width: 1837,
-        height: 586,
-        alt: "StackScore immediate executive focus recommendations",
-      },
-      {
-        src: "/images/vcio/current-priorities.png",
-        width: 856,
-        height: 430,
-        alt: "StackScore current quarterly planning priorities",
-      },
-    ],
-    imagePosition: "left",
-    frameTitle: "Strategic Priorities",
-    layout: "product-first",
-  },
-  {
-    id: "ongoing-leadership",
-    eyebrow: "Ongoing Technology Leadership",
-    heading: "Manage Technology Beyond the Assessment",
-    description:
-      "The assessment establishes your baseline. The StackScore vCIO dashboard becomes your ongoing technology command center for quarterly reviews, budgeting, executive reporting, project tracking, subscription management, and long-term planning.",
-    outcomes: [
-      "Technology roadmap progress",
-      "Budget visibility",
-      "Quarterly review readiness",
-      "Active projects",
+      "Technology health",
+      "Roadmap progress",
       "Executive reporting",
-      "Subscription management",
+      "Quarterly review readiness",
+      "Business technology visibility",
     ],
     outcomesLabel: "Key outcomes",
     image: {
-      src: "/images/vcio/vcio-executive-summary.png",
-      width: 1748,
-      height: 450,
-      alt: "StackScore vCIO executive summary dashboard",
+      src: "/images/vcio/archive/vcio-dashboard1.png",
+      width: 1975,
+      height: 937,
+      alt: "StackScore executive leadership dashboard with technology health and roadmap progress",
     },
-    imagePosition: "right",
-    frameTitle: "Executive Technology Dashboard",
+    imagePosition: "left",
   },
   {
     id: "technology-lifecycle",
     eyebrow: "Technology Lifecycle",
-    heading: "Manage Vendors, Budgets, and Renewals",
+    heading: "Plan Technology Investments",
     description:
-      "Track hardware, software, vendors, subscriptions, renewal dates, and annual technology budgets from one centralized workspace. Never lose visibility into your technology investments.",
+      "Maintain complete visibility into vendors, hardware, software, budgets, subscriptions, renewals, and lifecycle planning from one centralized workspace.",
     outcomes: [
       "Vendor management",
       "Renewal tracking",
-      "Annual budgeting",
+      "Annual technology budgeting",
       "Lifecycle planning",
       "Technology inventory",
     ],
@@ -179,34 +147,31 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       src: "/images/vcio/budget-lifecycle-planning.png",
       width: 1734,
       height: 473,
-      alt: "StackScore budget and technology lifecycle planning workspace",
+      alt: "StackScore technology lifecycle planning with vendor, budget, and renewal visibility",
     },
-    imagePosition: "left",
-    frameTitle: "Technology Lifecycle",
-    layout: "product-first",
+    imagePosition: "right",
   },
   {
-    id: "quarterly-strategy",
-    eyebrow: "Quarterly Strategy",
-    heading: "Keep Technology Moving Forward",
+    id: "continuous-improvement",
+    eyebrow: "Continuous Improvement",
+    heading: "Turn Technology Into An Ongoing Strategy",
     description:
-      "Technology strategy doesn't stop after the assessment. Quarterly reviews ensure progress continues through executive reporting, roadmap updates, planning sessions, and measurable business outcomes.",
+      "Technology doesn't stop after the assessment. Schedule recurring executive reviews, monitor progress, generate reports, and keep technology aligned with business goals throughout the year.",
     outcomes: [
-      "Quarterly business reviews",
-      "Executive reporting",
-      "Strategy sessions",
-      "Report generation",
+      "Quarterly strategy sessions",
+      "Executive review reports",
       "Continuous improvement",
+      "Business alignment",
+      "Long-term planning",
     ],
     outcomesLabel: "Key outcomes",
     image: {
       src: "/images/vcio/quarterly-reviews.png",
       width: 565,
       height: 384,
-      alt: "StackScore quarterly strategy reviews and executive reporting",
+      alt: "StackScore quarterly reviews for ongoing technology strategy",
     },
-    imagePosition: "right",
-    frameTitle: "Quarterly Strategy",
+    imagePosition: "left",
   },
 ];
 

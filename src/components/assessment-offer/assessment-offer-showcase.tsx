@@ -21,16 +21,16 @@ function sectionBackground(index: number): SectionBackground {
 export function AssessmentOfferShowcase() {
   return (
     <div>
-      <section className="px-4 pb-8 pt-6 sm:px-6 sm:pb-12 md:pb-16">
+      <section className="px-4 pb-4 pt-2 sm:px-6 sm:pb-8">
         <div className="mx-auto max-w-6xl">
-          <OfferReveal className="mx-auto max-w-3xl text-center">
+          <OfferReveal className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               {ASSESSMENT_OFFER_SHOWCASE_INTRO.eyebrow}
             </p>
-            <h2 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem] lg:leading-tight">
+            <h2 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               {ASSESSMENT_OFFER_SHOWCASE_INTRO.title}
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-[1.05rem] sm:leading-7">
+            <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground">
               {ASSESSMENT_OFFER_SHOWCASE_INTRO.description}
             </p>
           </OfferReveal>
@@ -44,20 +44,20 @@ export function AssessmentOfferShowcase() {
           <section
             key={section.id}
             className={cn(
-              "relative px-4 py-16 sm:px-6 sm:py-20 md:py-24 lg:py-28",
-              background === "panel" && "bg-muted/35",
+              "relative px-4 py-[120px] sm:px-6 md:py-[140px] lg:py-[160px]",
+              background === "panel" && "bg-muted/30",
               background === "glow" && "bg-gradient-to-b from-primary/[0.04] via-background to-background",
             )}
           >
             {background === "glow" ? (
               <div
-                className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[70%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,_rgba(8,47,91,0.09)_0%,_transparent_72%)]"
+                className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[70%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,_rgba(8,47,91,0.08)_0%,_transparent_72%)]"
                 aria-hidden
               />
             ) : null}
 
             {background === "panel" ? (
-              <div className="mx-auto max-w-6xl rounded-3xl border border-border/40 bg-background/60 px-4 py-12 shadow-sm backdrop-blur-sm sm:px-8 sm:py-14 md:px-10 md:py-16">
+              <div className="mx-auto max-w-6xl rounded-3xl border border-border/40 bg-background/60 px-4 py-12 sm:px-8 sm:py-14 md:px-10">
                 <AssessmentFeatureShowcase section={section} index={index} priority={index === 0} />
               </div>
             ) : (

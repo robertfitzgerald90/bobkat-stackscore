@@ -1,19 +1,25 @@
 import { OfferReveal } from "./offer-reveal";
 
 type OfferCtaPanelProps = {
+  eyebrow?: string;
   headline: string;
   supportingText: string;
   children: React.ReactNode;
   footnote?: React.ReactNode;
 };
 
-export function OfferCtaPanel({ headline, supportingText, children, footnote }: OfferCtaPanelProps) {
+export function OfferCtaPanel({ eyebrow, headline, supportingText, children, footnote }: OfferCtaPanelProps) {
   return (
     <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
       <div className="mx-auto max-w-4xl">
         <OfferReveal>
           <div className="rounded-3xl border border-primary/15 bg-gradient-to-b from-primary/[0.07] via-primary/[0.03] to-transparent px-6 py-12 text-center shadow-[0_20px_50px_-20px_rgba(8,47,91,0.2)] sm:px-12 sm:py-14">
-            <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+            {eyebrow ? (
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{eyebrow}</p>
+            ) : null}
+            <h2
+              className={`text-balance text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl${eyebrow ? " mt-3" : ""}`}
+            >
               {headline}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-[1.05rem]">

@@ -60,10 +60,12 @@ function ReviewSessionPanel() {
 export function OfferFeatures() {
   return (
     <OfferFeatureGrid
+      id="assessment-inclusions"
       eyebrow="What's included"
       title="Everything you need to move from insight to action"
       features={OFFER_FEATURES}
       columns={3}
+      sectionClassName="scroll-mt-24 bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24"
       afterContent={<ReviewSessionPanel />}
     />
   );
