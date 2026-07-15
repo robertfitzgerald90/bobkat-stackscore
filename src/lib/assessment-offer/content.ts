@@ -30,7 +30,7 @@ export type OfferShowcaseScreenshot = {
   alt: string;
 };
 
-export type AssessmentOfferShowcasePreview = "technology-progress";
+export type AssessmentOfferShowcasePreview = "technology-progress" | "technology-maturity-profile";
 
 export type AssessmentOfferShowcaseSection = {
   id: string;
@@ -42,10 +42,12 @@ export type AssessmentOfferShowcaseSection = {
   image?: OfferShowcaseScreenshot;
   imagePosition: "left" | "right";
   imageEmphasis?: "compact" | "default" | "emphasized";
-  layout?: "split" | "stacked";
+  layout?: "split" | "stacked" | "feature-split";
   outcomesLayout?: "inline" | "grid";
   imageCaption?: string;
   preview?: AssessmentOfferShowcasePreview;
+  /** When plain, skips the heavy inner panel frame on panel-background sections. */
+  sectionStyle?: "default" | "plain";
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -102,15 +104,10 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       "Technology health overview",
     ],
     outcomesLabel: "Key outcomes",
-    image: {
-      src: "/images/vcio/technology-maturity-overview.png",
-      width: 1837,
-      height: 337,
-      alt: "StackScore technology maturity overview with executive technology health insights",
-    },
+    preview: "technology-maturity-profile",
+    layout: "feature-split",
     imagePosition: "right",
-    layout: "stacked",
-    imageCaption: "Example executive dashboard included with every Technology Maturity Assessment.",
+    sectionStyle: "plain",
   },
   {
     id: "actionable-priorities",

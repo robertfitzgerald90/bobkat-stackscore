@@ -39,6 +39,22 @@ describe("assessment offer landing page", () => {
     expect(showcase).toContain("lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]");
   });
 
+  it("uses live technology maturity profile preview in executive visibility section", () => {
+    const showcase = readFileSync(
+      resolve(process.cwd(), "src/components/assessment-offer/assessment-feature-showcase.tsx"),
+      "utf8",
+    );
+    const content = readFileSync(
+      resolve(process.cwd(), "src/lib/assessment-offer/content.ts"),
+      "utf8",
+    );
+
+    expect(content).toContain('preview: "technology-maturity-profile"');
+    expect(content).toContain('layout: "feature-split"');
+    expect(showcase).toContain("TechnologyMaturityProfilePreview");
+    expect(showcase).toContain("lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]");
+  });
+
   it("uses responsive layout utilities", () => {
     const hero = readFileSync(
       resolve(process.cwd(), "src/components/assessment-offer/offer-hero.tsx"),

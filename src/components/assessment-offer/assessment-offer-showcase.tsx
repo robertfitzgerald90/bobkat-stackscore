@@ -56,7 +56,7 @@ export function AssessmentOfferShowcase() {
               />
             ) : null}
 
-            {background === "panel" ? (
+            {background === "panel" && section.sectionStyle !== "plain" ? (
               <div
                 className={cn(
                   "mx-auto rounded-3xl border border-border/40 bg-background/60 px-4 py-12 sm:px-8 sm:py-14 md:px-10",
@@ -66,7 +66,16 @@ export function AssessmentOfferShowcase() {
                 <AssessmentFeatureShowcase section={section} index={index} priority={index === 0} />
               </div>
             ) : (
-              <div className={cn("mx-auto", section.layout === "stacked" || section.preview ? "max-w-7xl" : "max-w-6xl")}>
+              <div
+                className={cn(
+                  "mx-auto",
+                  section.layout === "stacked" ||
+                    section.layout === "feature-split" ||
+                    section.preview
+                    ? "max-w-7xl"
+                    : "max-w-6xl",
+                )}
+              >
                 <AssessmentFeatureShowcase section={section} index={index} priority={index === 0} />
               </div>
             )}

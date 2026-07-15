@@ -3,11 +3,13 @@
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import { TechnologyProgressPreview } from "@/components/product-previews/technology-progress-preview";
+import { TechnologyMaturityProfilePreview } from "@/components/product-previews/technology-maturity-profile-preview";
 import type {
   AssessmentOfferShowcaseSection,
   OfferShowcaseScreenshot,
 } from "@/lib/assessment-offer/content";
 import { technologyProgressSummaryDemoData } from "@/lib/demo-data/technology-progress-summary";
+import { technologyMaturityProfileDemoData } from "@/lib/demo-data/technology-maturity-profile";
 import { OfferReveal } from "./offer-reveal";
 import {
   PRODUCT_SCREENSHOT_CLASS,
@@ -63,7 +65,7 @@ export function ProductScreenshot({
 }
 
 function ShowcaseHeader({ section }: { section: AssessmentOfferShowcaseSection }) {
-  const isStacked = section.layout === "stacked";
+  const isWideCopy = section.layout === "stacked" || section.layout === "feature-split";
 
   return (
     <div>
@@ -74,7 +76,7 @@ function ShowcaseHeader({ section }: { section: AssessmentOfferShowcaseSection }
       <p
         className={cn(
           "mt-5 text-[0.95rem] leading-7 text-muted-foreground",
-          isStacked ? "max-w-[52ch]" : "max-w-[34ch] sm:max-w-[38ch]",
+          isWideCopy ? "max-w-[52ch]" : "max-w-[34ch] sm:max-w-[38ch]",
         )}
       >
         {section.description}
@@ -120,7 +122,11 @@ function ShowcaseCopy({ section, centered = false }: { section: AssessmentOfferS
     <div
       className={cn(
         "space-y-6",
-        section.layout === "stacked" ? "max-w-3xl" : centered ? "max-w-md lg:max-w-none" : "max-w-md",
+        section.layout === "stacked" || section.layout === "feature-split"
+          ? "max-w-3xl"
+          : centered
+            ? "max-w-md lg:max-w-none"
+            : "max-w-md",
       )}
     >
       <ShowcaseHeader section={section} />
@@ -138,6 +144,10 @@ function ShowcasePreview({
 }) {
   if (section.preview === "technology-progress") {
     return <TechnologyProgressPreview data={technologyProgressSummaryDemoData} />;
+  }
+
+  if (section.preview === "technology-maturity-profile") {
+    return <TechnologyMaturityProfilePreview data={technologyMaturityProfileDemoData} />;
   }
 
   if (!section.image) {
@@ -173,10 +183,38 @@ export function AssessmentFeatureShowcase({
   index,
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
+  const isFeatureSplit = section.layout === "feature-split";
   const isStacked = section.layout === "stacked";
   const isGridOutcomes = section.outcomesLayout === "grid";
   const imageFirst = section.imagePosition === "left";
   const emphasis = section.imageEmphasis ?? "default";
+
+  if (isFeatureSplit) {
+    const previewFirst = imageFirst;
+
+    return (
+      <article id={section.id} className="scroll-mt-24">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-12 xl:gap-14">
+          <OfferReveal
+            delayMs={index * 40}
+            className={cn("order-1 min-w-0", previewFirst ? "lg:order-2" : "lg:order-1")}
+          >
+            <div className="lg:flex lg:min-h-full lg:items-center">
+              <ShowcaseCopy section={section} centered />
+            </div>
+          </OfferReveal>
+
+          <OfferReveal
+            delayMs={index * 40 + 80}
+            variant="image"
+            className={cn("order-2 min-w-0", previewFirst ? "lg:order-1" : "lg:order-2")}
+          >
+            <ShowcasePreview section={section} priority={priority} />
+          </OfferReveal>
+        </div>
+      </article>
+    );
+  }
 
   if (isStacked) {
     return (
