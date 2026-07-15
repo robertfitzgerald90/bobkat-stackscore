@@ -1,12 +1,17 @@
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
+import { HERO_SCREENSHOT_CLASS } from "@/components/assessment-offer/product-screenshot-styles";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { buttonVariants } from "@/components/ui/button";
-import type { AssessmentInvitationPersonalization } from "@/lib/assessment-invitation/content";
-import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
+import type {
+  AssessmentInvitationContext,
+  AssessmentInvitationPersonalization,
+} from "@/lib/assessment-invitation/content";
+import { INVITATION_HERO_SCREENSHOT } from "@/lib/assessment-invitation/screenshots";
 import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type InvitationHeroProps = {
   personalization?: AssessmentInvitationPersonalization;
@@ -43,12 +48,12 @@ function InvitationPersonalizationBanner({
 
 export function InvitationHero({ personalization, invitationContext }: InvitationHeroProps) {
   return (
-    <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
+    <section className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 md:pb-24 md:pt-12">
       <OfferHeroBackground />
 
-      <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
         <OfferReveal>
-          <BrandLogo size={44} variant="stacked" className="mb-8" />
+          <BrandLogo size={44} variant="stacked" className="mb-6 sm:mb-8" />
         </OfferReveal>
 
         {personalization ? (
@@ -58,13 +63,13 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
         ) : null}
 
         <OfferReveal delayMs={60}>
-          <h1 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+          <h1 className="max-w-5xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.05]">
             You&apos;ve Been Invited to Assess Your Technology
           </h1>
         </OfferReveal>
 
         <OfferReveal delayMs={120}>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mt-6">
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg">
             Someone believes your organization could benefit from a clearer understanding of its
             technology environment.
           </p>
@@ -74,10 +79,10 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
           </p>
         </OfferReveal>
 
-        <OfferReveal delayMs={180} className="mt-8 flex w-full max-w-md flex-col items-center gap-3 sm:mt-10">
+        <OfferReveal delayMs={180} className="mt-8 flex w-full flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center">
           <TechnologySnapshotLink
             label="Start My Free Technology Snapshot"
-            className="h-11 w-full px-8 text-base sm:w-auto"
+            className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
             prospectId={invitationContext?.prospectId}
             campaignId={invitationContext?.campaignId}
           />
@@ -91,6 +96,25 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
             Learn About StackScore
           </a>
         </OfferReveal>
+
+        <div className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
+          <OfferReveal delayMs={240} variant="image">
+            <Image
+              src={INVITATION_HERO_SCREENSHOT.src}
+              alt={INVITATION_HERO_SCREENSHOT.alt}
+              width={INVITATION_HERO_SCREENSHOT.width}
+              height={INVITATION_HERO_SCREENSHOT.height}
+              priority
+              quality={100}
+              draggable={false}
+              sizes="(min-width: 1280px) 1280px, 100vw"
+              className={cn("h-auto w-full select-none", HERO_SCREENSHOT_CLASS)}
+            />
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Executive dashboard included with every StackScore assessment.
+            </p>
+          </OfferReveal>
+        </div>
       </div>
     </section>
   );

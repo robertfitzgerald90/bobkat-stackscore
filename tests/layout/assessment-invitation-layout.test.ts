@@ -13,14 +13,16 @@ describe("assessment invitation landing page", () => {
       "utf8",
     );
 
-    expect(landing).toContain("OfferFeatureGrid");
+    expect(landing).toContain("InvitationDiscoverSection");
     expect(landing).toContain("OfferTimeline");
+    expect(landing).toContain("InvitationWhySection");
     expect(landing).toContain("InvitationAboutBobkat");
     expect(landing).toContain("InvitationFinalCta");
     expect(hero).toContain("TechnologySnapshotLink");
     expect(hero).toContain("Been Invited to Assess Your Technology");
     expect(hero).toContain("Start My Free Technology Snapshot");
     expect(hero).not.toContain("AssessmentPurchaseButton");
+    expect(hero).toContain("max-w-7xl");
   });
 
   it("routes primary CTA to technology snapshot", () => {
@@ -29,7 +31,7 @@ describe("assessment invitation landing page", () => {
       "utf8",
     );
 
-    expect(snapshotLink).toContain('href="/technology-snapshot"');
+    expect(snapshotLink).toContain("buildTechnologySnapshotUrl");
   });
 
   it("allows public access to the invitation route", () => {

@@ -1,6 +1,5 @@
 import {
   Activity,
-  Eye,
   FileBarChart,
   Map,
   Route,
@@ -86,24 +85,6 @@ export const INVITATION_BENEFITS: OfferFeature[] = [
     title: "Technology roadmap planning",
     description:
       "Prioritized initiatives sequenced to reduce risk, improve reliability, and support growth.",
-  },
-  {
-    icon: ShieldAlert,
-    title: "Risk reduction",
-    description:
-      "Surface hidden weaknesses before they become costly outages, security incidents, or compliance gaps.",
-  },
-  {
-    icon: Eye,
-    title: "Operational visibility",
-    description:
-      "Gain a clearer picture of how your technology supports day-to-day operations and long-term goals.",
-  },
-  {
-    icon: Activity,
-    title: "Technology governance",
-    description:
-      "Establish consistent standards and accountability across your technology environment.",
   },
 ];
 
