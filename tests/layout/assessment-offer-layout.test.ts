@@ -20,6 +20,8 @@ describe("assessment offer landing page", () => {
     expect(landing).toContain("OfferFinalCta");
     expect(hero).toContain("Know Exactly Where Your Technology Stands");
     expect(hero).toContain("Start My Assessment");
+    expect(hero).toContain("AssessmentExecutiveOverviewPreview");
+    expect(hero).not.toContain("OFFER_HERO_SCREENSHOT");
   });
 
   it("uses responsive layout utilities", () => {

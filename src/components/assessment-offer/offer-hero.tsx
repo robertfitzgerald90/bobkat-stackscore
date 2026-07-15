@@ -1,12 +1,11 @@
-import Image from "next/image";
 import { Lock } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
-import { OFFER_HERO_SCREENSHOT } from "@/lib/assessment-offer/content";
+import { AssessmentExecutiveOverviewPreview } from "@/components/product-previews/assessment-executive-overview-preview";
 import { BRAND } from "@/lib/branding";
+import { assessmentExecutiveOverviewDemoData } from "@/lib/demo-data/assessment-executive-overview";
 import { OfferHeroBackground } from "./offer-hero-background";
 import { OfferReveal } from "./offer-reveal";
-import { HERO_SCREENSHOT_CLASS } from "./product-screenshot-styles";
 
 export function OfferHero() {
   return (
@@ -45,17 +44,7 @@ export function OfferHero() {
         </OfferReveal>
 
         <OfferReveal delayMs={240} variant="image" className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
-          <Image
-            src={OFFER_HERO_SCREENSHOT.src}
-            alt={OFFER_HERO_SCREENSHOT.alt}
-            width={OFFER_HERO_SCREENSHOT.width}
-            height={OFFER_HERO_SCREENSHOT.height}
-            priority
-            quality={100}
-            draggable={false}
-            sizes="(min-width: 1280px) 1280px, 100vw"
-            className={`h-auto w-full select-none ${HERO_SCREENSHOT_CLASS}`}
-          />
+          <AssessmentExecutiveOverviewPreview data={assessmentExecutiveOverviewDemoData} />
         </OfferReveal>
       </div>
     </section>
