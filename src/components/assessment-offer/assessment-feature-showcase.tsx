@@ -4,12 +4,14 @@ import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import { TechnologyProgressPreview } from "@/components/product-previews/technology-progress-preview";
 import { TechnologyMaturityProfilePreview } from "@/components/product-previews/technology-maturity-profile-preview";
+import { CurrentQuarterPrioritiesPreview } from "@/components/product-previews/current-quarter-priorities-preview";
 import type {
   AssessmentOfferShowcaseSection,
   OfferShowcaseScreenshot,
 } from "@/lib/assessment-offer/content";
 import { technologyProgressSummaryDemoData } from "@/lib/demo-data/technology-progress-summary";
 import { technologyMaturityProfileDemoData } from "@/lib/demo-data/technology-maturity-profile";
+import { currentQuarterPrioritiesDemoData } from "@/lib/demo-data/current-quarter-priorities";
 import { OfferReveal } from "./offer-reveal";
 import {
   PRODUCT_SCREENSHOT_CLASS,
@@ -150,6 +152,10 @@ function ShowcasePreview({
     return <TechnologyMaturityProfilePreview data={technologyMaturityProfileDemoData} />;
   }
 
+  if (section.preview === "current-quarter-priorities") {
+    return <CurrentQuarterPrioritiesPreview priorities={currentQuarterPrioritiesDemoData} />;
+  }
+
   if (!section.image) {
     return null;
   }
@@ -250,10 +256,15 @@ export function AssessmentFeatureShowcase({
   }
 
   const isProgressPreview = section.preview === "technology-progress";
+  const isPreviewLeft = Boolean(section.preview) && imageFirst;
   const copyBlock = (
     <OfferReveal
       delayMs={index * 40}
-      className={cn("order-1", imageFirst ? "lg:order-2" : "lg:order-1")}
+      className={cn(
+        "order-1",
+        imageFirst ? "lg:order-2" : "lg:order-1",
+        isPreviewLeft && "order-2 lg:order-2",
+      )}
     >
       <div
         className={cn(
@@ -270,7 +281,11 @@ export function AssessmentFeatureShowcase({
     <OfferReveal
       delayMs={index * 40 + 80}
       variant="image"
-      className={cn("order-2", imageFirst ? "lg:order-1" : "lg:order-2")}
+      className={cn(
+        "order-2",
+        imageFirst ? "lg:order-1" : "lg:order-2",
+        isPreviewLeft && "order-1 lg:order-1",
+      )}
     >
       <div
         className={cn(

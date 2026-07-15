@@ -30,7 +30,10 @@ export type OfferShowcaseScreenshot = {
   alt: string;
 };
 
-export type AssessmentOfferShowcasePreview = "technology-progress" | "technology-maturity-profile";
+export type AssessmentOfferShowcasePreview =
+  | "technology-progress"
+  | "technology-maturity-profile"
+  | "current-quarter-priorities";
 
 export type AssessmentOfferShowcaseSection = {
   id: string;
@@ -123,12 +126,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       "Strategic execution roadmap",
     ],
     outcomesLabel: "Key outcomes",
-    image: {
-      src: "/images/vcio/current-priorities.png",
-      width: 856,
-      height: 430,
-      alt: "StackScore current priorities showing what comes next for technology improvement",
-    },
+    preview: "current-quarter-priorities",
     imagePosition: "left",
   },
   {

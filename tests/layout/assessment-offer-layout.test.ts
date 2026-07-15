@@ -55,6 +55,20 @@ describe("assessment offer landing page", () => {
     expect(showcase).toContain("lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]");
   });
 
+  it("uses live current-quarter priorities preview in actionable priorities section", () => {
+    const showcase = readFileSync(
+      resolve(process.cwd(), "src/components/assessment-offer/assessment-feature-showcase.tsx"),
+      "utf8",
+    );
+    const content = readFileSync(
+      resolve(process.cwd(), "src/lib/assessment-offer/content.ts"),
+      "utf8",
+    );
+
+    expect(content).toContain('preview: "current-quarter-priorities"');
+    expect(showcase).toContain("CurrentQuarterPrioritiesPreview");
+  });
+
   it("uses responsive layout utilities", () => {
     const hero = readFileSync(
       resolve(process.cwd(), "src/components/assessment-offer/offer-hero.tsx"),

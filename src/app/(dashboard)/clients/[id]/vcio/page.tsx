@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   FileText,
   FolderKanban,
-  Lightbulb,
   WalletCards,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +23,7 @@ import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { ResendVcioWelcomeButton } from "@/components/vcio/resend-vcio-welcome-button";
 import { ResetVcioOnboardingButton } from "@/components/vcio/reset-vcio-onboarding-button";
 import { VcioFeatureUnlocksPanel } from "@/components/vcio/vcio-feature-unlocks-panel";
+import { CurrentQuarterPriorities } from "@/components/priorities/current-quarter-priorities";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 import { getBookingUrl } from "@/lib/support/config";
 
@@ -658,30 +658,13 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Lightbulb className="h-4 w-4 text-primary" />
-              Current-quarter priorities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {client.recommendations.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No open recommendations yet. Complete a baseline assessment to populate priorities.
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {client.recommendations.map((recommendation) => (
-                  <li key={recommendation.id} className="flex items-start justify-between gap-3 text-sm">
-                    <span className="font-medium">{recommendation.title}</span>
-                    <span className="text-muted-foreground">{recommendation.priority}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+        <CurrentQuarterPriorities
+          priorities={client.recommendations.map((recommendation) => ({
+            id: recommendation.id,
+            title: recommendation.title,
+            severity: recommendation.priority,
+          }))}
+        />
 
         <Card>
           <CardHeader>
