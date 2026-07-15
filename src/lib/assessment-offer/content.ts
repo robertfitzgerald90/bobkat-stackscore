@@ -41,6 +41,7 @@ export type AssessmentOfferShowcaseSection = {
   images?: OfferShowcaseScreenshot[];
   imagePosition: "left" | "right";
   frameTitle: string;
+  layout?: "default" | "product-first";
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -134,6 +135,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
     ],
     imagePosition: "left",
     frameTitle: "Strategic Priorities",
+    layout: "product-first",
   },
   {
     id: "ongoing-leadership",
@@ -181,6 +183,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
     },
     imagePosition: "left",
     frameTitle: "Technology Lifecycle",
+    layout: "product-first",
   },
   {
     id: "quarterly-strategy",
