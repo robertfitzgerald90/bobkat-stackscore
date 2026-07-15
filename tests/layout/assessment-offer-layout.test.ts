@@ -69,6 +69,20 @@ describe("assessment offer landing page", () => {
     expect(showcase).toContain("CurrentQuarterPrioritiesPreview");
   });
 
+  it("uses live technology lifecycle preview in technology lifecycle section", () => {
+    const showcase = readFileSync(
+      resolve(process.cwd(), "src/components/assessment-offer/assessment-feature-showcase.tsx"),
+      "utf8",
+    );
+    const content = readFileSync(
+      resolve(process.cwd(), "src/lib/assessment-offer/content.ts"),
+      "utf8",
+    );
+
+    expect(content).toContain('preview: "technology-lifecycle"');
+    expect(showcase).toContain("TechnologyLifecyclePreview");
+  });
+
   it("uses responsive layout utilities", () => {
     const hero = readFileSync(
       resolve(process.cwd(), "src/components/assessment-offer/offer-hero.tsx"),

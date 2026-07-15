@@ -5,6 +5,7 @@ import { CheckCircle2 } from "lucide-react";
 import { TechnologyProgressPreview } from "@/components/product-previews/technology-progress-preview";
 import { TechnologyMaturityProfilePreview } from "@/components/product-previews/technology-maturity-profile-preview";
 import { CurrentQuarterPrioritiesPreview } from "@/components/product-previews/current-quarter-priorities-preview";
+import { TechnologyLifecyclePreview } from "@/components/product-previews/technology-lifecycle-preview";
 import type {
   AssessmentOfferShowcaseSection,
   OfferShowcaseScreenshot,
@@ -12,6 +13,7 @@ import type {
 import { technologyProgressSummaryDemoData } from "@/lib/demo-data/technology-progress-summary";
 import { technologyMaturityProfileDemoData } from "@/lib/demo-data/technology-maturity-profile";
 import { currentQuarterPrioritiesDemoData } from "@/lib/demo-data/current-quarter-priorities";
+import { technologyLifecycleDemoData } from "@/lib/demo-data/technology-lifecycle";
 import { OfferReveal } from "./offer-reveal";
 import {
   PRODUCT_SCREENSHOT_CLASS,
@@ -156,6 +158,10 @@ function ShowcasePreview({
     return <CurrentQuarterPrioritiesPreview priorities={currentQuarterPrioritiesDemoData} />;
   }
 
+  if (section.preview === "technology-lifecycle") {
+    return <TechnologyLifecyclePreview items={technologyLifecycleDemoData} />;
+  }
+
   if (!section.image) {
     return null;
   }
@@ -244,7 +250,14 @@ export function AssessmentFeatureShowcase({
             </OfferReveal>
           )}
 
-          <OfferReveal delayMs={index * 40 + 100} variant="image" className="w-full min-w-0 pt-2 lg:pt-4">
+          <OfferReveal
+            delayMs={index * 40 + 100}
+            variant="image"
+            className={cn(
+              "w-full min-w-0",
+              section.preview === "technology-lifecycle" ? undefined : "pt-2 lg:pt-4",
+            )}
+          >
             <ShowcasePreview section={section} priority={priority} />
             {section.imageCaption ? (
               <p className="mt-4 text-center text-sm text-muted-foreground">{section.imageCaption}</p>

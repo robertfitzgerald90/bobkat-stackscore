@@ -5,6 +5,7 @@ import { CalendarDays, CheckCircle2, Loader2, NotebookPen, Plus } from "lucide-r
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TechnologyLifecyclePanel } from "@/components/technology-stack/technology-lifecycle-panel";
 import { formatDisplayDate } from "@/lib/display";
 
 type PlanningNote = {
@@ -48,10 +49,6 @@ type Props = {
   nextRecommendedAssessmentAt: string | null;
 };
 
-function formatMoney(cents: number | null) {
-  if (cents === null) return null;
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
-}
 
 function actionItems(value: unknown) {
   return Array.isArray(value) ? value.map((item) => String(item)).filter(Boolean) : [];
@@ -265,43 +262,18 @@ export function VcioFeatureUnlocksPanel({
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Budget, Vendor, and Lifecycle Planning</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {planningItems.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Add technologies in the Client Technology Profile to track vendors, renewals, licensing,
-              warranties, replacements, and budgets.
-            </p>
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {planningItems.map((item) => (
-                <div key={item.id} className="rounded-xl border border-border/60 p-3 text-sm">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-muted-foreground">{item.vendor}</p>
-                  <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-                    {item.renewalDate ? <p>Renewal: {formatDisplayDate(item.renewalDate)}</p> : null}
-                    {item.warrantyExpiresAt ? (
-                      <p>Warranty: {formatDisplayDate(item.warrantyExpiresAt)}</p>
-                    ) : null}
-                    {item.plannedReplacementDate ? (
-                      <p>Replacement: {formatDisplayDate(item.plannedReplacementDate)}</p>
-                    ) : null}
-                    {formatMoney(item.budgetAmountCents) ? (
-                      <p>
-                        Budget: {formatMoney(item.budgetAmountCents)}
-                        {item.budgetPeriod ? ` / ${item.budgetPeriod}` : ""}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <TechnologyLifecyclePanel
+        items={planningItems.map((item) => ({
+          id: item.id,
+          name: item.name,
+          provider: item.vendor,
+          renewalDate: item.renewalDate,
+          warrantyExpiresAt: item.warrantyExpiresAt,
+          plannedReplacementDate: item.plannedReplacementDate,
+          annualBudgetCents: item.budgetAmountCents,
+          budgetPeriod: item.budgetPeriod,
+        }))}
+      />
     </div>
   );
 }

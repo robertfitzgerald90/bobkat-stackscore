@@ -33,7 +33,8 @@ export type OfferShowcaseScreenshot = {
 export type AssessmentOfferShowcasePreview =
   | "technology-progress"
   | "technology-maturity-profile"
-  | "current-quarter-priorities";
+  | "current-quarter-priorities"
+  | "technology-lifecycle";
 
 export type AssessmentOfferShowcaseSection = {
   id: string;
@@ -143,12 +144,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       "Technology inventory",
     ],
     outcomesLabel: "Key outcomes",
-    image: {
-      src: "/images/vcio/budget-lifecycle-planning.png",
-      width: 1734,
-      height: 473,
-      alt: "StackScore budget and technology lifecycle planning workspace",
-    },
+    preview: "technology-lifecycle",
     imagePosition: "right",
     layout: "stacked",
     outcomesLayout: "grid",
