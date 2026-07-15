@@ -8,6 +8,7 @@ import type { TipWizardState } from "@/lib/technology-improvement-plan/types";
 import {
   ACME_DEMO,
   acmeDedupeKey,
+  type AcmeDemoRecKey,
   resolveDemoClientEmail,
   resolveDemoClientPassword,
 } from "./constants";
@@ -67,6 +68,14 @@ async function loadQuestionMaps(prisma: PrismaClient) {
 
   return { questionsByCode, questionsByPillar, categoryIdByPillar };
 }
+
+const COMPLETED_RECOMMENDATION_DATES: Partial<Record<AcmeDemoRecKey, string>> = {
+  "technology-documentation": "2026-03-18",
+  "incident-response": "2026-03-25",
+  "quarterly-reviews": "2026-04-01",
+  "technology-roadmap": "2026-04-08",
+  "wireless-segmentation": "2026-05-20",
+};
 
 async function applyAnswerPlan(
   prisma: PrismaClient,
@@ -158,15 +167,7 @@ async function seedCuratedRecommendations(input: {
         createdByUserId: input.adminUserId,
         completedAt:
           spec.status === "completed"
-            ? new Date(
-                {
-                  "technology-documentation": "2026-03-18",
-                  "incident-response": "2026-03-25",
-                  "quarterly-reviews": "2026-04-01",
-                  "technology-roadmap": "2026-04-08",
-                  "wireless-segmentation": "2026-05-20",
-                }[spec.key] ?? "2026-04-01",
-              )
+            ? new Date(COMPLETED_RECOMMENDATION_DATES[spec.key] ?? "2026-04-01")
             : null,
       },
     });
