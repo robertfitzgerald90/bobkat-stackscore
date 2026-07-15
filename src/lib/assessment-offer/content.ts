@@ -40,6 +40,8 @@ export type AssessmentOfferShowcaseSection = {
   image: OfferShowcaseScreenshot;
   imagePosition: "left" | "right";
   imageEmphasis?: "compact" | "default" | "emphasized";
+  layout?: "split" | "stacked";
+  imageCaption?: string;
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -108,7 +110,8 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       alt: "StackScore technology maturity overview with executive technology health insights",
     },
     imagePosition: "right",
-    imageEmphasis: "emphasized",
+    layout: "stacked",
+    imageCaption: "Example executive dashboard included with every Technology Maturity Assessment.",
   },
   {
     id: "actionable-priorities",

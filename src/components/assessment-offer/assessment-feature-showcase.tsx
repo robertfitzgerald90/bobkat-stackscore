@@ -52,6 +52,46 @@ export function ProductScreenshot({
   );
 }
 
+function ShowcaseCopy({ section }: { section: AssessmentOfferShowcaseSection }) {
+  return (
+    <div className={cn("space-y-6", section.layout === "stacked" ? "max-w-2xl" : "max-w-md")}>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
+        <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
+          {section.heading}
+        </h3>
+        <p
+          className={cn(
+            "mt-5 text-[0.95rem] leading-7 text-muted-foreground",
+            section.layout === "stacked" ? "max-w-[52ch]" : "max-w-[34ch] sm:max-w-[38ch]",
+          )}
+        >
+          {section.description}
+        </p>
+      </div>
+
+      {section.outcomes.length > 0 ? (
+        <div>
+          {section.outcomesLabel ? (
+            <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
+          ) : null}
+          <ul
+            className={cn("grid gap-2.5", section.outcomesLabel ? "mt-3" : undefined)}
+            aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
+          >
+            {section.outcomes.map((outcome) => (
+              <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                <span>{outcome}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 type AssessmentFeatureShowcaseProps = {
   section: AssessmentOfferShowcaseSection;
   index: number;
@@ -63,14 +103,37 @@ export function AssessmentFeatureShowcase({
   index,
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
+  const isStacked = section.layout === "stacked";
   const imageFirst = section.imagePosition === "left";
   const emphasis = section.imageEmphasis ?? "default";
-  const imageSizes =
-    emphasis === "compact"
+  const imageSizes = isStacked
+    ? "(min-width: 1024px) 1100px, 100vw"
+    : emphasis === "compact"
       ? "(min-width: 1024px) 32vw, 100vw"
       : emphasis === "emphasized"
         ? "(min-width: 1024px) 50vw, 100vw"
         : "(min-width: 1024px) 44vw, 100vw";
+
+  if (isStacked) {
+    return (
+      <article id={section.id} className="scroll-mt-24">
+        <div className="flex flex-col gap-12 lg:gap-16 xl:gap-20">
+          <OfferReveal delayMs={index * 40}>
+            <ShowcaseCopy section={section} />
+          </OfferReveal>
+
+          <OfferReveal delayMs={index * 40 + 80} variant="image">
+            <div className="w-full min-w-0">
+              <ProductScreenshot image={section.image} priority={priority} sizes={imageSizes} />
+              {section.imageCaption ? (
+                <p className="mt-4 text-center text-sm text-muted-foreground">{section.imageCaption}</p>
+              ) : null}
+            </div>
+          </OfferReveal>
+        </div>
+      </article>
+    );
+  }
 
   const copyBlock = (
     <OfferReveal
@@ -79,38 +142,10 @@ export function AssessmentFeatureShowcase({
     >
       <div
         className={cn(
-          "max-w-md space-y-6",
           imageFirst ? "lg:justify-self-end" : "lg:justify-self-start",
         )}
       >
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
-          <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
-            {section.heading}
-          </h3>
-          <p className="mt-5 max-w-[34ch] text-[0.95rem] leading-7 text-muted-foreground sm:max-w-[38ch]">
-            {section.description}
-          </p>
-        </div>
-
-        {section.outcomes.length > 0 ? (
-          <div>
-            {section.outcomesLabel ? (
-              <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
-            ) : null}
-            <ul
-              className={cn("grid gap-2.5", section.outcomesLabel ? "mt-3" : undefined)}
-              aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
-            >
-              {section.outcomes.map((outcome) => (
-                <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  <span>{outcome}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        <ShowcaseCopy section={section} />
       </div>
     </OfferReveal>
   );
