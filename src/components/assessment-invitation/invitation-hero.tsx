@@ -1,17 +1,15 @@
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
-import { HERO_SCREENSHOT_CLASS } from "@/components/assessment-offer/product-screenshot-styles";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
+import { ClientDashboardPreview } from "@/components/marketing/client-dashboard-preview";
 import { buttonVariants } from "@/components/ui/button";
 import type {
   AssessmentInvitationContext,
   AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
-import { INVITATION_HERO_SCREENSHOT } from "@/lib/assessment-invitation/screenshots";
 import { BRAND } from "@/lib/branding";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 type InvitationHeroProps = {
   personalization?: AssessmentInvitationPersonalization;
@@ -99,17 +97,7 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
 
         <div className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
           <OfferReveal delayMs={240} variant="image">
-            <Image
-              src={INVITATION_HERO_SCREENSHOT.src}
-              alt={INVITATION_HERO_SCREENSHOT.alt}
-              width={INVITATION_HERO_SCREENSHOT.width}
-              height={INVITATION_HERO_SCREENSHOT.height}
-              priority
-              quality={100}
-              draggable={false}
-              sizes="(min-width: 1280px) 1280px, 100vw"
-              className={cn("h-auto w-full select-none", HERO_SCREENSHOT_CLASS)}
-            />
+            <ClientDashboardPreview />
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Executive dashboard included with every StackScore assessment.
             </p>

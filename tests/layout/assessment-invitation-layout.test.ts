@@ -23,6 +23,8 @@ describe("assessment invitation landing page", () => {
     expect(hero).toContain("Start My Free Technology Snapshot");
     expect(hero).not.toContain("AssessmentPurchaseButton");
     expect(hero).toContain("max-w-7xl");
+    expect(hero).toContain("ClientDashboardPreview");
+    expect(hero).not.toContain("INVITATION_HERO_SCREENSHOT");
   });
 
   it("routes primary CTA to technology snapshot", () => {

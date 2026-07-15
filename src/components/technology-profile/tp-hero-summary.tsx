@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils";
 
 type TpHeroSummaryProps = {
   detail: TechnologyProfileDetail;
+  marketingPreview?: boolean;
 };
 
-export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
+export function TpHeroSummary({ detail, marketingPreview = false }: TpHeroSummaryProps) {
   const { profile, businessSnapshot, journeyScores, journey } = detail;
   const score = profile.overallStackScore;
   const hasAssessment = journey.assessmentsCompleted > 0;
@@ -33,7 +34,12 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
 
   return (
     <section className="overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background shadow-sm ring-1 ring-border/60">
-      <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-start">
+      <div
+        className={cn(
+          "grid lg:grid-cols-[1fr_auto] lg:items-start",
+          marketingPreview ? "gap-4 p-3 sm:p-4" : "gap-6 p-4 sm:p-6",
+        )}
+      >
         <div className="min-w-0 space-y-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -89,7 +95,10 @@ export function TpHeroSummary({ detail }: TpHeroSummaryProps) {
             </p>
             <p
               className={cn(
-                "text-4xl font-bold tabular-nums sm:text-5xl lg:text-6xl",
+                "font-bold tabular-nums",
+                marketingPreview
+                  ? "text-3xl sm:text-4xl lg:text-5xl"
+                  : "text-4xl sm:text-5xl lg:text-6xl",
                 getScoreTextColorClass(score),
               )}
             >
