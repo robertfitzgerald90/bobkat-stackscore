@@ -147,7 +147,7 @@ async function seedCuratedRecommendations(input: {
         categoryId,
         dedupeKey: acmeDedupeKey(spec.key),
         latestAssessmentId: input.assessmentId,
-        latestTriggerReason: "Acme Foundation demo seed",
+        latestTriggerReason: "Pinnacle Engineering demo seed",
         title: spec.title,
         description,
         businessImpact: spec.businessImpact,
@@ -156,7 +156,18 @@ async function seedCuratedRecommendations(input: {
         status: spec.status,
         estimatedImpactPoints: spec.estimatedImpactPoints,
         createdByUserId: input.adminUserId,
-        completedAt: spec.status === "completed" ? addDays(new Date(), -14) : null,
+        completedAt:
+          spec.status === "completed"
+            ? new Date(
+                {
+                  "technology-documentation": "2026-03-18",
+                  "incident-response": "2026-03-25",
+                  "quarterly-reviews": "2026-04-01",
+                  "technology-roadmap": "2026-04-08",
+                  "wireless-segmentation": "2026-05-20",
+                }[spec.key] ?? "2026-04-01",
+              )
+            : null,
       },
     });
 
@@ -181,33 +192,32 @@ async function seedProjects(input: {
   categoryIdByPillar: Map<TechnologyPillarCode, string>;
   recommendationIds: Map<string, string>;
 }) {
+  const m365RecId = input.recommendationIds.get("m365-security-baseline");
   const endpointRecId = input.recommendationIds.get("endpoint-management");
-  const backupRecId = input.recommendationIds.get("backup-recovery");
-  const adminControlsRecId = input.recommendationIds.get("admin-account-controls");
+  const backupRecId = input.recommendationIds.get("immutable-backup");
+  const networkRecId = input.recommendationIds.get("infrastructure-monitoring");
 
-  if (adminControlsRecId) {
+  if (m365RecId) {
     await input.prisma.project.create({
       data: {
         id: ACME_DEMO.projectM365Id,
         clientId: input.clientId,
-        recommendationId: adminControlsRecId,
+        recommendationId: m365RecId,
         assignedUserId: input.technicianId,
         title: "Microsoft 365 Security Baseline",
         description: [
-          "Scope: Microsoft 365 tenant security review, MFA enforcement, and baseline conditional access policies for Acme Foundation staff and volunteers.",
-          "Objectives: Reduce account takeover risk, standardize authentication, and improve visibility into admin roles.",
-          "Milestones: Tenant review completed · MFA rollout completed · Admin role review completed · Security defaults documented",
-          "Completion notes: Baseline policies deployed with executive approval. Remaining exceptions documented for shared event kiosk account.",
-          "Business outcomes: Improved security posture for donor communications and cloud file sharing without disrupting daily program work.",
+          "Scope: Microsoft 365 Business Premium security review, hybrid Entra ID controls, MFA enforcement, and baseline conditional access policies for Pinnacle Engineering office and field staff.",
+          "Objectives: Reduce account takeover risk, standardize authentication, and improve visibility into admin roles across both office locations.",
+          "Milestones: Tenant review completed · MFA rollout in progress · Conditional access rollout in progress · Admin role review pending",
+          "Progress: Approximately 70% complete.",
+          "Business outcomes: Improved security posture for project collaboration, Azure-hosted applications, and client communications.",
         ].join("\n\n"),
-        status: "completed",
-        priority: "high",
+        status: "in_progress",
+        priority: "critical",
         categoryId: input.categoryIdByPillar.get("productivity_collaboration")!,
-        estimatedImpactPoints: 10,
-        actualImpactPoints: 9,
-        startDate: addMonths(new Date(), -4),
-        targetCompletionDate: addMonths(new Date(), -2),
-        completedAt: addMonths(new Date(), -2),
+        estimatedImpactPoints: 5,
+        startDate: new Date("2026-02-03"),
+        targetCompletionDate: new Date("2026-08-15"),
       },
     });
   }
@@ -219,20 +229,20 @@ async function seedProjects(input: {
         clientId: input.clientId,
         recommendationId: endpointRecId,
         assignedUserId: input.technicianId,
-        title: "Endpoint Management Deployment",
+        title: "Endpoint Management Rollout",
         description: [
-          "Scope: Deploy centralized endpoint management across Houston office workstations and shared devices.",
-          "Progress: Approximately 60% complete.",
+          "Scope: Deploy NinjaOne RMM across Dallas headquarters and satellite office workstations, engineering laptops, and shared devices.",
+          "Progress: Approximately 55% complete.",
           "Milestones: Discovery completed · Policies designed · Pilot devices deployed · Full rollout pending · Reporting pending",
-          "Objectives: Provide patch visibility, device inventory, and remote support readiness for a 18-person nonprofit team.",
+          "Objectives: Provide patch visibility, device inventory, and remote support readiness for an 84-person engineering team.",
           "Expected business benefit: Fewer unmanaged endpoints and faster remediation when vulnerabilities are announced.",
         ].join("\n\n"),
         status: "in_progress",
         priority: "critical",
         categoryId: input.categoryIdByPillar.get("endpoint_management")!,
-        estimatedImpactPoints: 12,
-        startDate: addMonths(new Date(), -1),
-        targetCompletionDate: addMonths(new Date(), 2),
+        estimatedImpactPoints: 6,
+        startDate: new Date("2026-05-12"),
+        targetCompletionDate: new Date("2026-09-30"),
       },
     });
   }
@@ -244,18 +254,42 @@ async function seedProjects(input: {
         clientId: input.clientId,
         recommendationId: backupRecId,
         assignedUserId: input.technicianId,
-        title: "Backup and Recovery Standardization",
+        title: "Backup & Disaster Recovery Modernization",
         description: [
-          "Scope: Standardize backup coverage for Microsoft 365, shared file storage, and critical operational systems.",
-          "Expected timeline: Kickoff planned next month with completion targeted within 90 days.",
-          "Expected business benefit: Reliable recovery for donor records, grant files, and program documentation.",
-          "Related recommendations: Establish managed backup and recovery.",
+          "Scope: Modernize Synology and cloud backup coverage for Microsoft 365, project files, and Azure-hosted line-of-business applications with immutable retention.",
+          "Expected timeline: Kickoff scheduled for August 2026 with completion targeted within 90 days.",
+          "Expected business benefit: Reliable recovery for active project files, structural models, and client records.",
+          "Related recommendations: Establish immutable backup strategy.",
         ].join("\n\n"),
         status: "approved",
         priority: "critical",
         categoryId: input.categoryIdByPillar.get("data_protection_recovery")!,
-        estimatedImpactPoints: 11,
-        targetCompletionDate: addMonths(new Date(), 3),
+        estimatedImpactPoints: 6,
+        targetCompletionDate: new Date("2026-11-15"),
+      },
+    });
+  }
+
+  if (networkRecId) {
+    await input.prisma.project.create({
+      data: {
+        id: ACME_DEMO.projectNetworkId,
+        clientId: input.clientId,
+        recommendationId: networkRecId,
+        assignedUserId: input.technicianId,
+        title: "Network Monitoring Deployment",
+        description: [
+          "Scope: Deploy infrastructure availability monitoring for Ubiquiti UniFi gateways, switches, access points, Synology backup targets, and critical Azure services.",
+          "Expected timeline: Scheduled to begin August 2026 following monitoring target approval.",
+          "Expected business benefit: Earlier detection of outages affecting project delivery and remote collaboration.",
+          "Related recommendations: Deploy infrastructure availability monitoring.",
+        ].join("\n\n"),
+        status: "scheduled",
+        priority: "critical",
+        categoryId: input.categoryIdByPillar.get("security_operations")!,
+        estimatedImpactPoints: 5,
+        startDate: new Date("2026-08-01"),
+        targetCompletionDate: new Date("2026-10-15"),
       },
     });
   }
@@ -281,7 +315,7 @@ async function seedImprovementPlan(input: {
   const wizardState: TipWizardState = {
     ...baseState,
     executiveSummary:
-      "Acme Foundation is making measurable progress across identity, collaboration, and network fundamentals. The 2026 improvement plan prioritizes endpoint management, backup reliability, and operational visibility while sequencing governance improvements for the next 18 months.",
+      "Pinnacle Engineering is making measurable progress across identity, collaboration, and network fundamentals. The 2026 Technology Improvement Plan prioritizes endpoint management, immutable backup protection, and operational visibility while sequencing governance improvements across both office locations.",
     globalExecutiveNotes:
       "Published for client review. Internal pricing and margin details remain consultant-only inside StackScore.",
     roadmapPhases: [
@@ -292,8 +326,8 @@ async function seedImprovementPlan(input: {
         recommendationIds: [
           rec("endpoint-management"),
           rec("patch-management"),
-          rec("backup-recovery"),
-          rec("admin-account-controls"),
+          rec("immutable-backup"),
+          rec("m365-security-baseline"),
           rec("infrastructure-monitoring"),
         ],
       },
@@ -316,13 +350,13 @@ async function seedImprovementPlan(input: {
         recommendationIds: [
           rec("vendor-lifecycle"),
           rec("technology-roadmap"),
-          rec("backup-recovery"),
+          rec("immutable-backup"),
           rec("endpoint-management"),
           rec("quarterly-reviews"),
         ],
       },
     ],
-    frozenAt: new Date().toISOString(),
+    frozenAt: new Date("2026-04-08T16:00:00.000Z").toISOString(),
   };
 
   await input.prisma.technologyImprovementPlan.create({
@@ -333,12 +367,12 @@ async function seedImprovementPlan(input: {
       status: "approved",
       currentStep: "complete",
       version: 1,
-      title: "Acme Inc. 2026 Technology Improvement Plan",
+      title: "Pinnacle Engineering 2026 Technology Improvement Plan",
       wizardState,
       executiveSummary: wizardState.executiveSummary,
-      generatedAt: addDays(new Date(), -7),
-      publishedAt: addDays(new Date(), -10),
-      approvedAt: addDays(new Date(), -8),
+      generatedAt: new Date("2026-04-05"),
+      publishedAt: new Date("2026-04-06"),
+      approvedAt: new Date("2026-04-08"),
       approvedByUserId: input.adminUserId,
       approvedByContactId: ACME_DEMO.billingContactId,
       createdByUserId: input.adminUserId,
@@ -354,40 +388,39 @@ async function seedActivityTimeline(input: {
   baselineAssessmentId: string;
   currentAssessmentId: string;
 }) {
-  const now = new Date();
   const events = [
     {
-      occurredAt: addMonths(now, -8),
+      occurredAt: new Date("2025-10-01"),
       category: "ACCOUNT" as const,
       eventType: "account_created",
-      title: "Acme Foundation account created",
-      description: "Demo nonprofit client workspace provisioned for technology review.",
+      title: "Pinnacle Engineering account created",
+      description: "Demo client workspace provisioned for technology review.",
     },
     {
-      occurredAt: addMonths(now, -7),
+      occurredAt: new Date("2025-10-15"),
       category: "ACCOUNT" as const,
       eventType: "account_activated",
       title: "Client portal activated",
-      description: "Sarah Mitchell completed account activation.",
+      description: "James Whitfield completed account activation.",
       userId: input.clientUserId,
     },
     {
-      occurredAt: addMonths(now, -6),
+      occurredAt: new Date("2025-11-03"),
+      category: "BILLING" as const,
+      eventType: "vcio_subscription_created",
+      title: "StackScore vCIO subscription activated",
+      description: "Monthly vCIO advisory subscription started.",
+    },
+    {
+      occurredAt: new Date("2026-01-12"),
       category: "ASSESSMENT" as const,
       eventType: "assessment_completed",
       title: "Baseline assessment completed",
-      description: "Acme Foundation Baseline Assessment finalized.",
+      description: "Pinnacle Engineering Baseline Assessment finalized.",
       sourceRecordId: input.baselineAssessmentId,
     },
     {
-      occurredAt: addMonths(now, -5),
-      category: "PROJECT" as const,
-      eventType: "recommendation_accepted",
-      title: "Technology roadmap approved",
-      description: "Executive team accepted the strategic roadmap recommendation.",
-    },
-    {
-      occurredAt: addMonths(now, -4),
+      occurredAt: new Date("2026-02-03"),
       category: "PROJECT" as const,
       eventType: "project_created",
       title: "Microsoft 365 Security Baseline project started",
@@ -395,36 +428,44 @@ async function seedActivityTimeline(input: {
       sourceRecordId: ACME_DEMO.projectM365Id,
     },
     {
-      occurredAt: addMonths(now, -2),
-      category: "PROJECT" as const,
-      eventType: "project_completed",
-      title: "Microsoft 365 Security Baseline completed",
-      description: "MFA and admin controls baseline delivered.",
-      sourceRecordId: ACME_DEMO.projectM365Id,
-    },
-    {
-      occurredAt: addDays(now, -21),
-      category: "ASSESSMENT" as const,
-      eventType: "assessment_completed",
-      title: "Current assessment completed",
-      description: "Acme Foundation Technology Maturity Assessment finalized.",
-      sourceRecordId: input.currentAssessmentId,
-    },
-    {
-      occurredAt: addDays(now, -14),
+      occurredAt: new Date("2026-04-08"),
       category: "ROADMAP" as const,
       eventType: "roadmap_published",
-      title: "Technology improvement roadmap published",
-      description: "Acme Foundation 2026 Technology Improvement Plan published for client review.",
+      title: "Technology Improvement Plan published",
+      description: "Pinnacle Engineering 2026 Technology Improvement Plan published for client review.",
       sourceRecordId: ACME_DEMO.tipId,
     },
     {
-      occurredAt: addDays(now, -3),
+      occurredAt: new Date("2026-05-12"),
+      category: "PROJECT" as const,
+      eventType: "project_created",
+      title: "Endpoint Management Rollout started",
+      description: "NinjaOne RMM deployment kicked off.",
+      sourceRecordId: ACME_DEMO.projectEndpointId,
+    },
+    {
+      occurredAt: new Date("2026-06-05"),
+      category: "ROADMAP" as const,
+      eventType: "qbr_generated",
+      title: "Q2 2026 Quarterly Business Review generated",
+      description: "Executive review materials prepared for leadership.",
+      sourceRecordId: ACME_DEMO.qbrId,
+    },
+    {
+      occurredAt: new Date("2026-06-21"),
+      category: "ASSESSMENT" as const,
+      eventType: "assessment_completed",
+      title: "Current assessment completed",
+      description: "Pinnacle Engineering Technology Maturity Assessment finalized.",
+      sourceRecordId: input.currentAssessmentId,
+    },
+    {
+      occurredAt: new Date("2026-07-01"),
       category: "PROJECT" as const,
       eventType: "project_updated",
-      title: "Endpoint Management Deployment updated",
-      description: "Pilot deployment expanded to additional shared workstations.",
-      sourceRecordId: ACME_DEMO.projectEndpointId,
+      title: "Network Monitoring Deployment scheduled",
+      description: "Monitoring rollout scheduled for August 2026.",
+      sourceRecordId: ACME_DEMO.projectNetworkId,
     },
   ];
 
@@ -457,28 +498,32 @@ async function seedCommunicationRecords(input: {
   demoEmail: string;
   currentAssessmentId: string;
 }) {
-  const now = new Date();
   const messages = [
     {
       templateKey: "account-activation",
-      subject: "Welcome to StackScore — Activate your Acme Foundation account",
-      sentAt: addMonths(now, -7),
+      subject: "Welcome to StackScore — Activate your Pinnacle Engineering account",
+      sentAt: new Date("2025-10-10"),
+    },
+    {
+      templateKey: "vcio-welcome",
+      subject: "Welcome to StackScore vCIO",
+      sentAt: new Date("2025-11-04"),
     },
     {
       templateKey: "assessment-completed",
       subject: "Your Technology Maturity Assessment is complete",
-      sentAt: addDays(now, -21),
+      sentAt: new Date("2026-06-22"),
       assessmentId: input.currentAssessmentId,
     },
     {
       templateKey: "roadmap-ready",
-      subject: "Your Technology Improvement Roadmap is ready",
-      sentAt: addDays(now, -14),
+      subject: "Your Technology Improvement Plan is ready",
+      sentAt: new Date("2026-04-09"),
     },
     {
       templateKey: "project-created",
-      subject: "New project started: Endpoint Management Deployment",
-      sentAt: addMonths(now, -1),
+      subject: "New project started: Endpoint Management Rollout",
+      sentAt: new Date("2026-05-13"),
       projectId: ACME_DEMO.projectEndpointId,
     },
   ];
@@ -511,36 +556,200 @@ async function seedCommunicationRecords(input: {
 }
 
 async function seedClientTechnologies(input: { prisma: PrismaClient; clientId: string }) {
-  const slugs = ["ubiquiti-unifi", "ninjaone", "uptime-kuma"];
+  const slugs = ["ubiquiti-unifi", "ninjaone", "uptime-kuma", "stackscore"];
   const technologies = await input.prisma.technology.findMany({
     where: { slug: { in: slugs } },
     select: { id: true, slug: true, name: true },
   });
+
+  const budgetAllocations: Record<string, number> = {
+    "ubiquiti-unifi": 1_850_000,
+    ninjaone: 1_620_000,
+    "uptime-kuma": 980_000,
+    stackscore: 3_800_000,
+  };
+
+  const renewalDates: Record<string, Date | null> = {
+    "ubiquiti-unifi": new Date("2026-09-15"),
+    ninjaone: new Date("2026-10-01"),
+    "uptime-kuma": new Date("2026-11-20"),
+    stackscore: null,
+  };
 
   for (const technology of technologies) {
     await input.prisma.clientTechnology.create({
       data: {
         clientId: input.clientId,
         technologyId: technology.id,
-        displayName: technology.name,
+        displayName:
+          technology.slug === "stackscore"
+            ? "Microsoft 365 Business Premium & Azure LOB Apps"
+            : technology.name,
         businessPurpose:
           technology.slug === "ubiquiti-unifi"
-            ? "Office network, guest Wi-Fi, and Houston satellite location connectivity."
+            ? "Primary office network, guest Wi-Fi, and satellite office connectivity for both Pinnacle Engineering locations."
             : technology.slug === "ninjaone"
-              ? "Planned centralized endpoint management platform."
-              : "Basic infrastructure availability monitoring for gateways and critical services.",
-        deploymentStatus: technology.slug === "ninjaone" ? "planned" : "active",
-        alignmentStatus: technology.slug === "ninjaone" ? "not_standard" : "approved",
+              ? "Centralized endpoint management and patching for engineering workstations and field laptops."
+              : technology.slug === "uptime-kuma"
+                ? "Infrastructure availability monitoring for gateways, Synology backup targets, and critical Azure services."
+                : "Hybrid Entra ID collaboration platform, Microsoft 365 Business Premium, and Azure-hosted line-of-business applications.",
+        deploymentStatus:
+          technology.slug === "ninjaone"
+            ? "implementing"
+            : technology.slug === "uptime-kuma"
+              ? "planned"
+              : "active",
+        alignmentStatus: technology.slug === "uptime-kuma" ? "not_standard" : "approved",
         healthStatus: technology.slug === "ninjaone" ? "at_risk" : "healthy",
         lifecycleStatus: "current",
         managedBy: "bobkat_it",
-        quantity: technology.slug === "ubiquiti-unifi" ? 2 : 18,
-        quantityUnit: technology.slug === "ubiquiti-unifi" ? "sites" : "devices",
+        quantity: technology.slug === "ubiquiti-unifi" ? 2 : technology.slug === "stackscore" ? 84 : 84,
+        quantityUnit: technology.slug === "ubiquiti-unifi" ? "sites" : "users",
         ownerName: ACME_DEMO.primaryContactName,
         technicalOwnerName: "BobKat IT",
+        budgetAmountCents: budgetAllocations[technology.slug] ?? null,
+        budgetPeriod: "annual",
+        budgetNotes:
+          technology.slug === "stackscore"
+            ? "Includes Microsoft 365 Business Premium, Azure application hosting, and Synology backup platform allocations."
+            : null,
+        renewalDate: renewalDates[technology.slug] ?? null,
       },
     });
   }
+}
+
+async function seedVcioData(input: {
+  prisma: PrismaClient;
+  clientId: string;
+  adminUserId: string;
+  demoEmail: string;
+}) {
+  await input.prisma.recurringService.create({
+    data: {
+      id: ACME_DEMO.recurringVcioId,
+      clientId: input.clientId,
+      serviceName: "StackScore vCIO",
+      description: "Ongoing technology advisory, quarterly reviews, roadmap management, and executive reporting.",
+      quantity: 1,
+      unitPriceCents: 30000,
+      billingFrequency: "monthly",
+      startDate: new Date("2025-11-03"),
+      nextBillingDate: new Date("2026-08-03"),
+      renewalDate: new Date("2026-11-03"),
+      minimumTermMonths: 1,
+      autoRenew: true,
+      paymentMethodStatus: "card_on_file",
+      relatedTechnology: "StackScore vCIO",
+      status: "active",
+      lastInvoiceDate: new Date("2026-07-03"),
+      internalCostCents: 12000,
+      internalMarginPercent: 60,
+    },
+  });
+
+  await input.prisma.subscription.create({
+    data: {
+      id: ACME_DEMO.subscriptionId,
+      clientId: input.clientId,
+      recurringServiceId: ACME_DEMO.recurringVcioId,
+      provider: "stripe",
+      providerCustomerId: "cus_demo_pinnacle_engineering",
+      providerSubscriptionId: "sub_demo_pinnacle_vcio_2025",
+      providerPriceId: "price_demo_stackscore_vcio",
+      providerProductId: "prod_demo_stackscore_vcio",
+      serviceType: "stackscore_vcio",
+      billingInterval: "month",
+      amountCents: 30000,
+      currency: "usd",
+      status: "active",
+      rawStatus: "active",
+      currentPeriodStart: new Date("2026-07-03"),
+      currentPeriodEnd: new Date("2026-08-03"),
+      cancelAtPeriodEnd: false,
+      lastPaymentAt: new Date("2026-07-03"),
+    },
+  });
+
+  await input.prisma.vcioOnboarding.create({
+    data: {
+      id: ACME_DEMO.vcioOnboardingId,
+      clientId: input.clientId,
+      subscriptionId: ACME_DEMO.subscriptionId,
+      status: "completed",
+      customerType: "assessment_customer",
+      currentStep: "complete",
+      completionPercentage: 100,
+      initializationSource: "demo_seed",
+      initializedAt: new Date("2025-11-04"),
+      welcomeEmailStatus: "sent",
+      welcomeEmailRecipient: input.demoEmail,
+      welcomeEmailSentAt: new Date("2025-11-04"),
+      baselineRequired: false,
+      businessInfoJson: {
+        companyName: ACME_DEMO.companyName,
+        industry: ACME_DEMO.industry,
+        employeeCount: 84,
+        numberOfLocations: 2,
+      },
+      environmentJson: {
+        platform: "Microsoft 365 Business Premium",
+        identity: "Hybrid Entra ID",
+        network: "Ubiquiti UniFi",
+        endpointManagement: "NinjaOne RMM",
+        backup: "Synology Backup",
+        applications: "Azure-hosted line-of-business applications",
+      },
+      planningJson: {
+        annualTechnologyBudgetCents: ACME_DEMO.annualTechnologyBudgetCents,
+        remainingTechnologyBudgetCents: ACME_DEMO.remainingTechnologyBudgetCents,
+      },
+      strategySessionScheduledAt: new Date("2026-07-28"),
+      completedAt: new Date("2025-11-18"),
+    },
+  });
+
+  await input.prisma.vcioQuarterlyReview.create({
+    data: {
+      id: ACME_DEMO.vcioQ3ReviewId,
+      clientId: input.clientId,
+      subscriptionId: ACME_DEMO.subscriptionId,
+      reviewPeriodStart: new Date("2026-07-01"),
+      reviewPeriodEnd: new Date("2026-09-30"),
+      reviewDate: new Date("2026-07-28"),
+      status: "scheduled",
+      executiveSummary:
+        "Technology Health: Improving. Immediate Focus: Endpoint security, backups, documentation. Projected maturity improvement: +36 points.",
+      scoreMovementJson: {
+        currentStackScore: 56,
+        projectedStackScore: 92,
+        baselineStackScore: 39,
+        trendDirection: "improving",
+      },
+      budgetSummaryJson: {
+        annualBudgetCents: ACME_DEMO.annualTechnologyBudgetCents,
+        spentCents:
+          ACME_DEMO.annualTechnologyBudgetCents - ACME_DEMO.remainingTechnologyBudgetCents,
+        remainingCents: ACME_DEMO.remainingTechnologyBudgetCents,
+        currency: "USD",
+      },
+      nextQuarterPrioritiesJson: [
+        "Implement centralized endpoint management",
+        "Deploy infrastructure availability monitoring",
+        "Establish immutable backup strategy",
+        "Standardize Microsoft 365 security baseline",
+        "Formalize vendor lifecycle documentation",
+      ],
+      plannedInvestmentsJson: [
+        { title: "Endpoint Management Rollout", amountCents: 4200000 },
+        { title: "Backup & Disaster Recovery Modernization", amountCents: 6800000 },
+        { title: "Network Monitoring Deployment", amountCents: 1850000 },
+      ],
+      nextReviewDate: new Date("2026-10-15"),
+      linkedRoadmapId: ACME_DEMO.tipId,
+      createdByUserId: input.adminUserId,
+    },
+  });
 }
 
 export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
@@ -581,22 +790,23 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
       companyName: ACME_DEMO.companyName,
       primaryContactName: ACME_DEMO.primaryContactName,
       primaryContactEmail: demoEmail,
-      primaryContactPhone: "(713) 555-0148",
+      primaryContactPhone: "(214) 555-0184",
       primaryContactTitle: ACME_DEMO.primaryContactTitle,
       industry: ACME_DEMO.industry,
-      employeeCount: 18,
+      employeeCount: 84,
       numberOfLocations: 2,
-      deviceCount: 22,
+      deviceCount: 92,
       primaryBusinessGoal: "improve_cybersecurity",
-      highestTechnologyPriority: "Protect donor data and stabilize day-to-day operations",
+      highestTechnologyPriority:
+        "Protect project delivery systems, field devices, and Azure-hosted engineering applications",
       technologyVision:
-        "Acme Foundation is a growing nonprofit organization that relies heavily on Microsoft 365, cloud collaboration, donor information, shared workstations, and a small office network. Its technology environment is functional but lacks consistent management, monitoring, documentation, and lifecycle planning.",
+        "Pinnacle Engineering is a growing civil and structural engineering firm with 84 employees across two offices. The organization relies on Microsoft 365 Business Premium, hybrid Entra ID, Ubiquiti networking, NinjaOne RMM, Synology backup, and Azure-hosted line-of-business applications. The environment is functional but needs stronger endpoint management, monitoring, immutable backup protection, and documented lifecycle governance.",
       itSupportModel: "msp",
       environmentType: "hybrid",
       locationCity: ACME_DEMO.locationCity,
       locationState: ACME_DEMO.locationState,
       status: "active",
-      notes: `${ACME_DEMO.notesMarker} — Development-only demo client for customer portal review.`,
+      notes: `${ACME_DEMO.notesMarker} — Development-only demo client for screenshot and portal review.`,
       technologyProfile: { create: {} },
     },
   });
@@ -610,8 +820,8 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
       role: "client",
       clientId: client.id,
       isActive: true,
-      invitedAt: addMonths(new Date(), -8),
-      onboardingCompletedAt: addMonths(new Date(), -7),
+      invitedAt: new Date("2025-10-01"),
+      onboardingCompletedAt: new Date("2025-10-15"),
     },
   });
 
@@ -622,7 +832,7 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
     demoEmail,
   });
 
-  const baselineCompletedAt = addMonths(new Date(), -6);
+  const baselineCompletedAt = new Date("2026-01-12");
   const baselinePlan = buildAnswerPlan({
     pillarTargets: ACME_BASELINE_PILLAR_TARGETS,
     questionsByPillar,
@@ -634,7 +844,7 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
       id: ACME_DEMO.baselineAssessmentId,
       clientId: client.id,
       assessorUserId: technician.id,
-      assessmentName: "Acme Foundation Baseline Assessment",
+      assessmentName: "Pinnacle Engineering Baseline Assessment",
       assessmentType: "initial",
       assessmentDate: baselineCompletedAt,
       status: "draft",
@@ -646,7 +856,7 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
   await completeAssessmentV2(ACME_DEMO.baselineAssessmentId, admin.id);
   await backdateAssessment(prisma, ACME_DEMO.baselineAssessmentId, baselineCompletedAt);
 
-  const currentCompletedAt = addDays(new Date(), -21);
+  const currentCompletedAt = new Date("2026-06-21");
   const currentPlan = buildAnswerPlan({
     pillarTargets: ACME_CURRENT_PILLAR_TARGETS,
     questionsByPillar,
@@ -658,7 +868,7 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
       id: ACME_DEMO.currentAssessmentId,
       clientId: client.id,
       assessorUserId: technician.id,
-      assessmentName: "Acme Foundation Technology Maturity Assessment",
+      assessmentName: "Pinnacle Engineering Technology Maturity Assessment",
       assessmentType: "annual",
       assessmentDate: currentCompletedAt,
       status: "draft",
@@ -742,12 +952,19 @@ export async function seedAcmeFoundationDemo(prisma: PrismaClient): Promise<{
     demoEmail,
   });
 
+  await seedVcioData({
+    prisma,
+    clientId: client.id,
+    adminUserId: admin.id,
+    demoEmail,
+  });
+
   await prisma.technologyProfile.update({
     where: { clientId: client.id },
     data: {
       currentAssessmentId: ACME_DEMO.currentAssessmentId,
       lastAssessedAt: currentCompletedAt,
-      nextRecommendedAssessmentAt: addMonths(currentCompletedAt, 6),
+      nextRecommendedAssessmentAt: new Date("2027-06-21"),
       trendDirection: "improving",
     },
   });

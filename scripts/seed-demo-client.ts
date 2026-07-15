@@ -6,20 +6,21 @@ import { seedAcmeFoundationDemo } from "../prisma/demo/acme-foundation/seed";
 async function main() {
   assertDemoSeedAllowed();
 
-  console.log("Resetting Acme Inc. demo dataset...");
+  console.log("Resetting Pinnacle Engineering demo dataset...");
   const result = await seedAcmeFoundationDemo(prisma);
 
   console.log("");
-  console.log("Acme Inc. demo seed complete.");
+  console.log("Pinnacle Engineering demo seed complete.");
   console.log(`Client: ${result.companyName}`);
   console.log(`Client ID: ${result.clientId}`);
   console.log(`Demo login email: ${result.demoEmail}`);
-  console.log(`Demo login password: ${process.env.DEMO_CLIENT_PASSWORD ?? "AcmeDemo2026!"}`);
+  console.log(`Demo login password: ${process.env.DEMO_CLIENT_PASSWORD ?? "PinnacleDemo2026!"}`);
   console.log(`Baseline assessment: ${result.baselineAssessmentId}`);
   console.log(`Current assessment: ${result.currentAssessmentId}`);
   console.log("");
   console.log("Staff routes:");
   console.log(`  /clients/${result.clientId}/technology-profile`);
+  console.log(`  /clients/${result.clientId}/vcio`);
   console.log(`  /clients/${result.clientId}/billing`);
   console.log(`  /clients/${result.clientId}/billing/invoices`);
   console.log(`  /clients/${result.clientId}/improvement-plan/${result.tipId}`);

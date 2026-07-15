@@ -33,29 +33,31 @@ export function distributeAnswersForTargetScore(
   ];
 }
 
+/** Baseline assessment targets — overall StackScore ~39. */
 export const ACME_BASELINE_PILLAR_TARGETS: Record<TechnologyPillarCode, number> = {
-  security_operations: 45,
-  identity_access: 50,
-  endpoint_management: 38,
-  data_protection_recovery: 42,
-  network_connectivity: 52,
-  productivity_collaboration: 62,
-  documentation_knowledge: 35,
-  technology_strategy: 28,
+  security_operations: 38,
+  identity_access: 42,
+  endpoint_management: 34,
+  data_protection_recovery: 36,
+  network_connectivity: 44,
+  productivity_collaboration: 52,
+  documentation_knowledge: 28,
+  technology_strategy: 30,
 };
 
+/** Current assessment targets — overall StackScore ~56. */
 export const ACME_CURRENT_PILLAR_TARGETS: Record<TechnologyPillarCode, number> = {
-  security_operations: 66,
-  identity_access: 72,
-  endpoint_management: 58,
-  data_protection_recovery: 61,
-  network_connectivity: 68,
-  productivity_collaboration: 78,
-  documentation_knowledge: 54,
-  technology_strategy: 48,
+  security_operations: 54,
+  identity_access: 58,
+  endpoint_management: 48,
+  data_protection_recovery: 52,
+  network_connectivity: 60,
+  productivity_collaboration: 65,
+  documentation_knowledge: 50,
+  technology_strategy: 55,
 };
 
-/** Per-question overrides to reflect Acme's narrative (M365 in use, MFA mostly on, etc.). */
+/** Per-question overrides reflecting Pinnacle Engineering's hybrid Microsoft 365 environment. */
 export const ACME_CURRENT_ANSWER_OVERRIDES: Partial<
   Record<string, "Yes" | "Partially" | "No">
 > = {
@@ -63,21 +65,21 @@ export const ACME_CURRENT_ANSWER_OVERRIDES: Partial<
   "PC-002": "Yes",
   "PC-003": "Partially",
   "IA-002": "Yes",
-  "IA-003": "Yes",
+  "IA-003": "Partially",
   "IA-004": "Partially",
   "NW-001": "Yes",
   "NW-002": "Partially",
   "EP-001": "No",
-  "EP-002": "No",
+  "EP-002": "Partially",
   "EP-003": "Partially",
   "DP-001": "Partially",
   "DP-002": "Partially",
   "SO-003": "No",
-  "SO-004": "No",
+  "SO-004": "Partially",
   "DK-001": "Partially",
   "DK-002": "No",
   "TS-001": "Partially",
-  "TS-002": "No",
+  "TS-002": "Partially",
 };
 
 export const ACME_BASELINE_ANSWER_OVERRIDES: Partial<

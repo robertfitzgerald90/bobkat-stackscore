@@ -1,4 +1,4 @@
-/** Stable identifiers for idempotent Acme Foundation demo seeding. */
+/** Stable identifiers for idempotent Pinnacle Engineering demo seeding. */
 export const ACME_DEMO = {
   clientId: "a0000001-0000-4000-8000-000000000001",
   clientUserId: "a0000001-0000-4000-8000-000000000002",
@@ -8,6 +8,7 @@ export const ACME_DEMO = {
   projectM365Id: "a0000001-0000-4000-8000-000000000031",
   projectEndpointId: "a0000001-0000-4000-8000-000000000032",
   projectBackupId: "a0000001-0000-4000-8000-000000000033",
+  projectNetworkId: "a0000001-0000-4000-8000-000000000034",
   billingContactId: "a0000001-0000-4000-8000-000000000040",
   qbrId: "a0000001-0000-4000-8000-000000000041",
   depositEndpointId: "a0000001-0000-4000-8000-000000000050",
@@ -21,36 +22,43 @@ export const ACME_DEMO = {
   recurringManagedItId: "a0000001-0000-4000-8000-000000000070",
   recurringM365Id: "a0000001-0000-4000-8000-000000000071",
   recurringBackupId: "a0000001-0000-4000-8000-000000000072",
+  recurringVcioId: "a0000001-0000-4000-8000-000000000073",
   documentTipId: "a0000001-0000-4000-8000-000000000080",
   documentQbrId: "a0000001-0000-4000-8000-000000000081",
   documentProjectId: "a0000001-0000-4000-8000-000000000082",
-  companyName: "Acme Inc.",
-  primaryContactName: "Sarah Mitchell",
-  primaryContactTitle: "Executive Director",
-  industry: "Community Services / Nonprofit",
-  locationCity: "Houston",
+  subscriptionId: "a0000001-0000-4000-8000-000000000090",
+  vcioOnboardingId: "a0000001-0000-4000-8000-000000000091",
+  vcioQ3ReviewId: "a0000001-0000-4000-8000-000000000092",
+  companyName: "Pinnacle Engineering",
+  primaryContactName: "James Whitfield",
+  primaryContactTitle: "Director of Operations",
+  industry: "Civil & Structural Engineering",
+  locationCity: "Dallas",
   locationState: "Texas",
-  notesMarker: "DEMO:ACME_FOUNDATION",
+  notesMarker: "DEMO:PINNACLE_ENGINEERING",
+  annualTechnologyBudgetCents: 8_250_000,
+  remainingTechnologyBudgetCents: 3_120_000,
 } as const;
 
 export const ACME_DEMO_REC_KEYS = [
   "endpoint-management",
-  "backup-recovery",
   "infrastructure-monitoring",
+  "immutable-backup",
+  "m365-security-baseline",
+  "vendor-lifecycle",
   "admin-account-controls",
-  "technology-documentation",
   "patch-management",
+  "technology-documentation",
   "incident-response",
-  "wireless-segmentation",
   "quarterly-reviews",
   "technology-roadmap",
-  "vendor-lifecycle",
+  "wireless-segmentation",
 ] as const;
 
 export type AcmeDemoRecKey = (typeof ACME_DEMO_REC_KEYS)[number];
 
 export function acmeDedupeKey(key: AcmeDemoRecKey): string {
-  return `demo:acme:${key}`;
+  return `demo:pinnacle:${key}`;
 }
 
 export function resolveDemoClientEmail(): string {
@@ -63,7 +71,7 @@ export function resolveDemoClientEmail(): string {
     );
   }
 
-  return "acme.foundation.demo@bobkatit.com";
+  return "pinnacle.engineering.demo@bobkatit.com";
 }
 
 export function resolveDemoClientPassword(): string {
@@ -76,13 +84,13 @@ export function resolveDemoClientPassword(): string {
     );
   }
 
-  return "AcmeDemo2026!";
+  return "PinnacleDemo2026!";
 }
 
 export function assertDemoSeedAllowed(): void {
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "true") {
     throw new Error(
-      "Acme Foundation demo seed is blocked in production. Set ALLOW_DEMO_SEED=true only for controlled review environments.",
+      "Pinnacle Engineering demo seed is blocked in production. Set ALLOW_DEMO_SEED=true only for controlled review environments.",
     );
   }
 }

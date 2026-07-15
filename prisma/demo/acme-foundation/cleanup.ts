@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { ACME_DEMO, resolveDemoClientEmail } from "./constants";
 
-/** Removes only Acme Foundation demo records — safe for repeated reset. */
+/** Removes only Pinnacle Engineering demo records — safe for repeated reset. */
 export async function clearAcmeFoundationDemo(prisma: PrismaClient): Promise<void> {
   const demoEmail = resolveDemoClientEmail().toLowerCase();
 
@@ -95,6 +95,12 @@ export async function clearAcmeFoundationDemo(prisma: PrismaClient): Promise<voi
   await prisma.recurringService.deleteMany({ where: { clientId } });
   await prisma.clientBillingProfile.deleteMany({ where: { clientId } });
   await prisma.clientContact.deleteMany({ where: { clientId } });
+
+  await prisma.subscriptionPaymentAttempt.deleteMany({ where: { clientId } });
+  await prisma.subscriptionInvoice.deleteMany({ where: { clientId } });
+  await prisma.vcioQuarterlyReview.deleteMany({ where: { clientId } });
+  await prisma.vcioOnboarding.deleteMany({ where: { clientId } });
+  await prisma.subscription.deleteMany({ where: { clientId } });
 
   await prisma.project.deleteMany({ where: { clientId } });
   await prisma.assessmentRecommendation.deleteMany({ where: { clientId } });
