@@ -51,10 +51,10 @@ export const OFFER_SHOWCASE_HERO: OfferShowcaseHero = {
   description:
     "See your StackScore, projected improvement, and top strengths and risks the moment your assessment is complete.",
   image: {
-    src: "/images/executive-dashboard.png",
-    width: 1287,
-    height: 933,
-    alt: "StackScore executive dashboard with overall score, strengths, and risks",
+    src: "/images/vcio/client-overview.png",
+    width: 1969,
+    height: 1027,
+    alt: "StackScore client overview with technology maturity score and strategic priorities",
   },
 };
 
@@ -65,10 +65,10 @@ export const OFFER_SHOWCASE_FEATURES: OfferShowcaseFeature[] = [
     description:
       "Work through a structured questionnaire at your pace. StackScore translates your answers into a clear maturity score.",
     image: {
-      src: "/images/recommendation-summary-report.png",
-      width: 807,
-      height: 576,
-      alt: "StackScore assessment results showing current and projected scores",
+      src: "/images/vcio/technology-journey.png",
+      width: 1973,
+      height: 1261,
+      alt: "StackScore technology journey showing score progression and milestone history",
     },
   },
   {
@@ -77,10 +77,10 @@ export const OFFER_SHOWCASE_FEATURES: OfferShowcaseFeature[] = [
     description:
       "Drill into pillar-level maturity scores and tiers across your technology environment from one centralized view.",
     image: {
-      src: "/images/technology-pillars.png",
-      width: 1296,
-      height: 439,
-      alt: "StackScore technology pillars with maturity scores",
+      src: "/images/vcio/vcio-dashboard1.png",
+      width: 1974,
+      height: 941,
+      alt: "StackScore vCIO client success dashboard overview",
     },
   },
   {
@@ -89,10 +89,10 @@ export const OFFER_SHOWCASE_FEATURES: OfferShowcaseFeature[] = [
     description:
       "Focus on the highest-impact improvements first — each with priority, business context, and estimated score gains.",
     image: {
-      src: "/images/immediate-priorities.png",
-      width: 1295,
-      height: 874,
-      alt: "StackScore immediate priorities and recommendations",
+      src: "/images/vcio/vcio-dashboard2.png",
+      width: 1971,
+      height: 892,
+      alt: "StackScore dashboard showing open recommendations and active projects",
     },
   },
   {
@@ -101,10 +101,10 @@ export const OFFER_SHOWCASE_FEATURES: OfferShowcaseFeature[] = [
     description:
       "Download a polished, board-ready deliverable you can share with leadership and use to plan next steps.",
     image: {
-      src: "/images/report-cover.png",
-      width: 809,
-      height: 785,
-      alt: "StackScore executive report cover page",
+      src: "/images/vcio/vcio-dashboard3.png",
+      width: 1577,
+      height: 1193,
+      alt: "StackScore executive reporting and technology improvement plan view",
     },
   },
 ];
