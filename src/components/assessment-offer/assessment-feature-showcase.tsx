@@ -14,10 +14,12 @@ function ShowcaseScreenshot({
   image,
   priority = false,
   sizes,
+  className,
 }: {
   image: OfferShowcaseScreenshot;
   priority?: boolean;
   sizes: string;
+  className?: string;
 }) {
   return (
     <Image
@@ -30,7 +32,7 @@ function ShowcaseScreenshot({
       quality={100}
       draggable={false}
       sizes={sizes}
-      className="h-auto w-full select-none"
+      className={cn("h-auto w-full select-none", className)}
     />
   );
 }
@@ -46,27 +48,20 @@ export function AssessmentFeatureShowcase({
   index,
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
-  const isHero = section.variant === "hero" || section.imagePosition === "full";
   const imageFirst = section.imagePosition === "left";
-  const imageSizes = isHero
-    ? "(min-width: 1280px) 1120px, 100vw"
-    : "(min-width: 1024px) 58vw, 100vw";
+  const imageSizes = "(min-width: 1024px) 62vw, 100vw";
+  const dualImageSizes = "(min-width: 1024px) 31vw, 50vw";
 
   const copyBlock = (
-    <div className={cn("space-y-6", imageFirst && !isHero && "lg:order-2")}>
+    <div className={cn("order-1 space-y-6 lg:max-w-xl", imageFirst ? "lg:order-2" : "lg:order-1")}>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-          {section.eyebrow}
-        </p>
-        <h3
-          className={cn(
-            "mt-3 font-semibold tracking-tight text-foreground",
-            isHero ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl",
-          )}
-        >
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
+        <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2rem] lg:leading-tight">
           {section.heading}
         </h3>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground">{section.description}</p>
+        <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-[1.05rem] sm:leading-7">
+          {section.description}
+        </p>
       </div>
 
       {section.outcomes.length > 0 ? (
@@ -90,33 +85,47 @@ export function AssessmentFeatureShowcase({
     </div>
   );
 
+  const mockupContent = section.images ? (
+    <div className="grid gap-3 p-4 sm:gap-4 sm:p-5 md:p-6 lg:grid-cols-2">
+      {section.images.map((image) => (
+        <ShowcaseScreenshot
+          key={image.src}
+          image={image}
+          priority={priority}
+          sizes={dualImageSizes}
+          className="rounded-md"
+        />
+      ))}
+    </div>
+  ) : section.image ? (
+    <div className="p-4 sm:p-5 md:p-6 lg:p-7">
+      <ShowcaseScreenshot image={section.image} priority={priority} sizes={imageSizes} className="rounded-md" />
+    </div>
+  ) : null;
+
   const imageBlock = (
-    <div className={cn(imageFirst && !isHero && "lg:order-1")}>
-      <OfferBrowserFrame>
-        <ShowcaseScreenshot image={section.image} priority={priority} sizes={imageSizes} />
-      </OfferBrowserFrame>
+    <div
+      className={cn(
+        "group/mockup relative order-2 lg:-my-4",
+        imageFirst ? "lg:order-1 lg:-ml-2 xl:-ml-4" : "lg:order-2 lg:-mr-2 xl:-mr-4",
+      )}
+    >
+      <OfferBrowserFrame frameTitle={section.frameTitle}>{mockupContent}</OfferBrowserFrame>
     </div>
   );
 
   return (
-    <OfferReveal delayMs={index * 50}>
+    <OfferReveal delayMs={index * 60}>
       <article id={section.id} className="scroll-mt-24">
-        {isHero ? (
-          <div className="space-y-8 lg:space-y-10">
-            {copyBlock}
-            {imageBlock}
-          </div>
-        ) : (
-          <div
-            className={cn(
-              "grid items-center gap-8 lg:gap-12",
-              imageFirst ? "lg:grid-cols-[3fr_2fr]" : "lg:grid-cols-[2fr_3fr]",
-            )}
-          >
-            {copyBlock}
-            {imageBlock}
-          </div>
-        )}
+        <div
+          className={cn(
+            "grid items-center gap-10 lg:gap-14 xl:gap-16",
+            imageFirst ? "lg:grid-cols-[1.15fr_0.85fr]" : "lg:grid-cols-[0.85fr_1.15fr]",
+          )}
+        >
+          {copyBlock}
+          {imageBlock}
+        </div>
       </article>
     </OfferReveal>
   );

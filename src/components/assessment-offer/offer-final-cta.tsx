@@ -1,12 +1,13 @@
 import { Lock } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
+import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { OfferCtaPanel } from "./offer-cta-panel";
 
 export function OfferFinalCta() {
   return (
     <OfferCtaPanel
-      headline="Ready to see where you stand?"
-      supportingText="Get the full picture of your technology maturity with executive deliverables your leadership team can trust."
+      headline="Ready to Take Control of Your Technology?"
+      supportingText="Whether you're looking to understand your current environment or build a long-term technology strategy, StackScore gives you the visibility, planning, and guidance needed to make smarter technology decisions."
       footnote={
         <>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -22,11 +23,20 @@ export function OfferFinalCta() {
         </>
       }
     >
-      <AssessmentPurchaseButton
-        label="Start My Assessment"
-        className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
-        source="offer_final_cta"
-      />
+      <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
+        <AssessmentPurchaseButton
+          label="Purchase Technology Assessment"
+          className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+          source="offer_final_cta"
+        />
+        <ServicesCtaLink
+          cta="generalConsultation"
+          label="Schedule a Discovery Call"
+          variant="outline"
+          className="h-11 w-full px-8 text-base sm:w-auto"
+          placement="offer_final_cta_discovery"
+        />
+      </div>
     </OfferCtaPanel>
   );
 }
