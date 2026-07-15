@@ -49,7 +49,6 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     image: {
       src: "/services/technology-maturity-assessment.png",
       alt: "Bobkat IT Technology Maturity Assessment service preview",
-      fit: "contain",
     },
     icon: ClipboardCheck,
   },
@@ -72,7 +71,6 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     image: {
       src: "/services/stackscore-vcio.png",
       alt: "StackScore vCIO strategic technology advisory and client portal",
-      fit: "contain",
     },
     icon: BarChart3,
   },
