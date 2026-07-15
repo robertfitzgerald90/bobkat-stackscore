@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
+import { TechnologyProgressPreview } from "@/components/product-previews/technology-progress-preview";
 import type {
   AssessmentOfferShowcaseSection,
   OfferShowcaseScreenshot,
 } from "@/lib/assessment-offer/content";
+import { technologyProgressSummaryDemoData } from "@/lib/demo-data/technology-progress-summary";
 import { OfferReveal } from "./offer-reveal";
 import {
   PRODUCT_SCREENSHOT_CLASS,
@@ -14,9 +16,14 @@ import {
 import { cn } from "@/lib/utils";
 
 function sectionGridClass(
+  section: AssessmentOfferShowcaseSection,
   imageFirst: boolean,
   emphasis: NonNullable<AssessmentOfferShowcaseSection["imageEmphasis"]> | "default",
 ) {
+  if (section.preview === "technology-progress" && imageFirst) {
+    return "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]";
+  }
+
   if (emphasis === "compact") {
     return imageFirst ? "lg:grid-cols-[1.35fr_1fr]" : "lg:grid-cols-[1fr_1.35fr]";
   }
@@ -108,12 +115,50 @@ function ShowcaseOutcomes({
   );
 }
 
-function ShowcaseCopy({ section }: { section: AssessmentOfferShowcaseSection }) {
+function ShowcaseCopy({ section, centered = false }: { section: AssessmentOfferShowcaseSection; centered?: boolean }) {
   return (
-    <div className={cn("space-y-6", section.layout === "stacked" ? "max-w-3xl" : "max-w-md")}>
+    <div
+      className={cn(
+        "space-y-6",
+        section.layout === "stacked" ? "max-w-3xl" : centered ? "max-w-md lg:max-w-none" : "max-w-md",
+      )}
+    >
       <ShowcaseHeader section={section} />
       <ShowcaseOutcomes section={section} layout="inline" />
     </div>
+  );
+}
+
+function ShowcasePreview({
+  section,
+  priority = false,
+}: {
+  section: AssessmentOfferShowcaseSection;
+  priority?: boolean;
+}) {
+  if (section.preview === "technology-progress") {
+    return <TechnologyProgressPreview data={technologyProgressSummaryDemoData} />;
+  }
+
+  if (!section.image) {
+    return null;
+  }
+
+  return (
+    <ProductScreenshot
+      image={section.image}
+      priority={priority}
+      sizes={
+        section.layout === "stacked"
+          ? "(min-width: 1280px) 1280px, 100vw"
+          : section.imageEmphasis === "compact"
+            ? "(min-width: 1024px) 32vw, 100vw"
+            : section.imageEmphasis === "emphasized"
+              ? "(min-width: 1024px) 50vw, 100vw"
+              : "(min-width: 1024px) 44vw, 100vw"
+      }
+      className={section.layout === "stacked" ? STACKED_PRODUCT_SCREENSHOT_CLASS : PRODUCT_SCREENSHOT_CLASS}
+    />
   );
 }
 
@@ -132,14 +177,6 @@ export function AssessmentFeatureShowcase({
   const isGridOutcomes = section.outcomesLayout === "grid";
   const imageFirst = section.imagePosition === "left";
   const emphasis = section.imageEmphasis ?? "default";
-  const stackedImageSizes = "(min-width: 1280px) 1280px, 100vw";
-  const imageSizes = isStacked
-    ? stackedImageSizes
-    : emphasis === "compact"
-      ? "(min-width: 1024px) 32vw, 100vw"
-      : emphasis === "emphasized"
-        ? "(min-width: 1024px) 50vw, 100vw"
-        : "(min-width: 1024px) 44vw, 100vw";
 
   if (isStacked) {
     return (
@@ -164,12 +201,7 @@ export function AssessmentFeatureShowcase({
           )}
 
           <OfferReveal delayMs={index * 40 + 100} variant="image" className="w-full min-w-0 pt-2 lg:pt-4">
-            <ProductScreenshot
-              image={section.image}
-              priority={priority}
-              sizes={stackedImageSizes}
-              className={STACKED_PRODUCT_SCREENSHOT_CLASS}
-            />
+            <ShowcasePreview section={section} priority={priority} />
             {section.imageCaption ? (
               <p className="mt-4 text-center text-sm text-muted-foreground">{section.imageCaption}</p>
             ) : null}
@@ -179,13 +211,19 @@ export function AssessmentFeatureShowcase({
     );
   }
 
+  const isProgressPreview = section.preview === "technology-progress";
   const copyBlock = (
     <OfferReveal
       delayMs={index * 40}
       className={cn("order-1", imageFirst ? "lg:order-2" : "lg:order-1")}
     >
-      <div className={cn(imageFirst ? "lg:justify-self-end" : "lg:justify-self-start")}>
-        <ShowcaseCopy section={section} />
+      <div
+        className={cn(
+          imageFirst ? "lg:justify-self-end" : "lg:justify-self-start",
+          isProgressPreview && imageFirst && "lg:flex lg:min-h-full lg:items-center",
+        )}
+      >
+        <ShowcaseCopy section={section} centered={isProgressPreview} />
       </div>
     </OfferReveal>
   );
@@ -199,16 +237,11 @@ export function AssessmentFeatureShowcase({
       <div
         className={cn(
           "w-full min-w-0",
-          emphasis === "compact" && "mx-auto max-w-[78%] px-2 sm:px-4 lg:max-w-[76%]",
-          emphasis === "emphasized" && "lg:-mx-2 xl:-mx-4",
+          !isProgressPreview && emphasis === "compact" && "mx-auto max-w-[78%] px-2 sm:px-4 lg:max-w-[76%]",
+          !isProgressPreview && emphasis === "emphasized" && "lg:-mx-2 xl:-mx-4",
         )}
       >
-        <ProductScreenshot
-          image={section.image}
-          priority={priority}
-          sizes={imageSizes}
-          className={PRODUCT_SCREENSHOT_CLASS}
-        />
+        <ShowcasePreview section={section} priority={priority} />
       </div>
     </OfferReveal>
   );
@@ -217,8 +250,8 @@ export function AssessmentFeatureShowcase({
     <article id={section.id} className="scroll-mt-24">
       <div
         className={cn(
-          "grid items-center gap-12 lg:gap-16 xl:gap-20",
-          sectionGridClass(imageFirst, emphasis),
+          "grid items-center gap-12 lg:gap-14 xl:gap-16",
+          sectionGridClass(section, imageFirst, emphasis),
         )}
       >
         {copyBlock}

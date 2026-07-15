@@ -30,6 +30,8 @@ export type OfferShowcaseScreenshot = {
   alt: string;
 };
 
+export type AssessmentOfferShowcasePreview = "technology-progress";
+
 export type AssessmentOfferShowcaseSection = {
   id: string;
   eyebrow: string;
@@ -37,12 +39,13 @@ export type AssessmentOfferShowcaseSection = {
   description: string;
   outcomes: string[];
   outcomesLabel?: string;
-  image: OfferShowcaseScreenshot;
+  image?: OfferShowcaseScreenshot;
   imagePosition: "left" | "right";
   imageEmphasis?: "compact" | "default" | "emphasized";
   layout?: "split" | "stacked";
   outcomesLayout?: "inline" | "grid";
   imageCaption?: string;
+  preview?: AssessmentOfferShowcasePreview;
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -81,12 +84,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       "Technology maturity evolution",
     ],
     outcomesLabel: "Key outcomes",
-    image: {
-      src: "/images/vcio/tech-journey-card.png",
-      width: 533,
-      height: 531,
-      alt: "StackScore technology journey card showing progress beyond a single maturity score",
-    },
+    preview: "technology-progress",
     imagePosition: "left",
     imageEmphasis: "compact",
   },

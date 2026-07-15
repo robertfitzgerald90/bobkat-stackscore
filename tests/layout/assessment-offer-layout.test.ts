@@ -24,6 +24,21 @@ describe("assessment offer landing page", () => {
     expect(hero).not.toContain("OFFER_HERO_SCREENSHOT");
   });
 
+  it("uses live technology progress preview in measurable progress section", () => {
+    const showcase = readFileSync(
+      resolve(process.cwd(), "src/components/assessment-offer/assessment-feature-showcase.tsx"),
+      "utf8",
+    );
+    const content = readFileSync(
+      resolve(process.cwd(), "src/lib/assessment-offer/content.ts"),
+      "utf8",
+    );
+
+    expect(content).toContain('preview: "technology-progress"');
+    expect(showcase).toContain("TechnologyProgressPreview");
+    expect(showcase).toContain("lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]");
+  });
+
   it("uses responsive layout utilities", () => {
     const hero = readFileSync(
       resolve(process.cwd(), "src/components/assessment-offer/offer-hero.tsx"),
