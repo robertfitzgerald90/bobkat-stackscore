@@ -7,7 +7,10 @@ import type {
   OfferShowcaseScreenshot,
 } from "@/lib/assessment-offer/content";
 import { OfferReveal } from "./offer-reveal";
-import { PRODUCT_SCREENSHOT_CLASS } from "./product-screenshot-styles";
+import {
+  PRODUCT_SCREENSHOT_CLASS,
+  STACKED_PRODUCT_SCREENSHOT_CLASS,
+} from "./product-screenshot-styles";
 import { cn } from "@/lib/utils";
 
 function sectionGridClass(
@@ -47,47 +50,69 @@ export function ProductScreenshot({
       quality={100}
       draggable={false}
       sizes={sizes}
-      className={cn("h-auto w-full select-none", PRODUCT_SCREENSHOT_CLASS, className)}
+      className={cn("h-auto w-full select-none", className)}
     />
+  );
+}
+
+function ShowcaseHeader({ section }: { section: AssessmentOfferShowcaseSection }) {
+  const isStacked = section.layout === "stacked";
+
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
+      <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
+        {section.heading}
+      </h3>
+      <p
+        className={cn(
+          "mt-5 text-[0.95rem] leading-7 text-muted-foreground",
+          isStacked ? "max-w-[52ch]" : "max-w-[34ch] sm:max-w-[38ch]",
+        )}
+      >
+        {section.description}
+      </p>
+    </div>
+  );
+}
+
+function ShowcaseOutcomes({
+  section,
+  layout = "inline",
+}: {
+  section: AssessmentOfferShowcaseSection;
+  layout?: "inline" | "grid";
+}) {
+  if (section.outcomes.length === 0) return null;
+
+  return (
+    <div>
+      {section.outcomesLabel ? (
+        <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
+      ) : null}
+      <ul
+        className={cn(
+          "grid gap-2.5",
+          layout === "grid" ? "mt-4 gap-3 sm:grid-cols-2 lg:grid-cols-3" : section.outcomesLabel ? "mt-3" : undefined,
+        )}
+        aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
+      >
+        {section.outcomes.map((outcome) => (
+          <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <span>{outcome}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
 function ShowcaseCopy({ section }: { section: AssessmentOfferShowcaseSection }) {
   return (
-    <div className={cn("space-y-6", section.layout === "stacked" ? "max-w-2xl" : "max-w-md")}>
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
-        <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
-          {section.heading}
-        </h3>
-        <p
-          className={cn(
-            "mt-5 text-[0.95rem] leading-7 text-muted-foreground",
-            section.layout === "stacked" ? "max-w-[52ch]" : "max-w-[34ch] sm:max-w-[38ch]",
-          )}
-        >
-          {section.description}
-        </p>
-      </div>
-
-      {section.outcomes.length > 0 ? (
-        <div>
-          {section.outcomesLabel ? (
-            <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
-          ) : null}
-          <ul
-            className={cn("grid gap-2.5", section.outcomesLabel ? "mt-3" : undefined)}
-            aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
-          >
-            {section.outcomes.map((outcome) => (
-              <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                <span>{outcome}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+    <div className={cn("space-y-6", section.layout === "stacked" ? "max-w-3xl" : "max-w-md")}>
+      <ShowcaseHeader section={section} />
+      <ShowcaseOutcomes section={section} layout="inline" />
     </div>
   );
 }
@@ -104,10 +129,12 @@ export function AssessmentFeatureShowcase({
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
   const isStacked = section.layout === "stacked";
+  const isGridOutcomes = section.outcomesLayout === "grid";
   const imageFirst = section.imagePosition === "left";
   const emphasis = section.imageEmphasis ?? "default";
+  const stackedImageSizes = "(min-width: 1280px) 1280px, 100vw";
   const imageSizes = isStacked
-    ? "(min-width: 1024px) 1100px, 100vw"
+    ? stackedImageSizes
     : emphasis === "compact"
       ? "(min-width: 1024px) 32vw, 100vw"
       : emphasis === "emphasized"
@@ -117,18 +144,35 @@ export function AssessmentFeatureShowcase({
   if (isStacked) {
     return (
       <article id={section.id} className="scroll-mt-24">
-        <div className="flex flex-col gap-12 lg:gap-16 xl:gap-20">
+        <div className="flex flex-col gap-10 lg:gap-12 xl:gap-16">
           <OfferReveal delayMs={index * 40}>
-            <ShowcaseCopy section={section} />
+            <div className="max-w-3xl space-y-0">
+              <ShowcaseHeader section={section} />
+            </div>
           </OfferReveal>
 
-          <OfferReveal delayMs={index * 40 + 80} variant="image">
-            <div className="w-full min-w-0">
-              <ProductScreenshot image={section.image} priority={priority} sizes={imageSizes} />
-              {section.imageCaption ? (
-                <p className="mt-4 text-center text-sm text-muted-foreground">{section.imageCaption}</p>
-              ) : null}
-            </div>
+          {isGridOutcomes ? (
+            <OfferReveal delayMs={index * 40 + 40}>
+              <div className="max-w-3xl">
+                <ShowcaseOutcomes section={section} layout="grid" />
+              </div>
+            </OfferReveal>
+          ) : (
+            <OfferReveal delayMs={index * 40 + 40} className="max-w-3xl">
+              <ShowcaseOutcomes section={section} layout="inline" />
+            </OfferReveal>
+          )}
+
+          <OfferReveal delayMs={index * 40 + 100} variant="image" className="w-full min-w-0 pt-2 lg:pt-4">
+            <ProductScreenshot
+              image={section.image}
+              priority={priority}
+              sizes={stackedImageSizes}
+              className={STACKED_PRODUCT_SCREENSHOT_CLASS}
+            />
+            {section.imageCaption ? (
+              <p className="mt-4 text-center text-sm text-muted-foreground">{section.imageCaption}</p>
+            ) : null}
           </OfferReveal>
         </div>
       </article>
@@ -140,11 +184,7 @@ export function AssessmentFeatureShowcase({
       delayMs={index * 40}
       className={cn("order-1", imageFirst ? "lg:order-2" : "lg:order-1")}
     >
-      <div
-        className={cn(
-          imageFirst ? "lg:justify-self-end" : "lg:justify-self-start",
-        )}
-      >
+      <div className={cn(imageFirst ? "lg:justify-self-end" : "lg:justify-self-start")}>
         <ShowcaseCopy section={section} />
       </div>
     </OfferReveal>
@@ -163,7 +203,12 @@ export function AssessmentFeatureShowcase({
           emphasis === "emphasized" && "lg:-mx-2 xl:-mx-4",
         )}
       >
-        <ProductScreenshot image={section.image} priority={priority} sizes={imageSizes} />
+        <ProductScreenshot
+          image={section.image}
+          priority={priority}
+          sizes={imageSizes}
+          className={PRODUCT_SCREENSHOT_CLASS}
+        />
       </div>
     </OfferReveal>
   );

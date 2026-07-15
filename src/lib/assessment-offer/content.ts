@@ -41,6 +41,7 @@ export type AssessmentOfferShowcaseSection = {
   imagePosition: "left" | "right";
   imageEmphasis?: "compact" | "default" | "emphasized";
   layout?: "split" | "stacked";
+  outcomesLayout?: "inline" | "grid";
   imageCaption?: string;
 };
 
@@ -156,6 +157,8 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       alt: "StackScore budget and technology lifecycle planning workspace",
     },
     imagePosition: "right",
+    layout: "stacked",
+    outcomesLayout: "grid",
   },
   {
     id: "continuous-improvement",

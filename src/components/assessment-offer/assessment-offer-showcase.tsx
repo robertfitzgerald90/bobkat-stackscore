@@ -57,11 +57,16 @@ export function AssessmentOfferShowcase() {
             ) : null}
 
             {background === "panel" ? (
-              <div className="mx-auto max-w-6xl rounded-3xl border border-border/40 bg-background/60 px-4 py-12 sm:px-8 sm:py-14 md:px-10">
+              <div
+                className={cn(
+                  "mx-auto rounded-3xl border border-border/40 bg-background/60 px-4 py-12 sm:px-8 sm:py-14 md:px-10",
+                  section.layout === "stacked" ? "max-w-7xl" : "max-w-6xl",
+                )}
+              >
                 <AssessmentFeatureShowcase section={section} index={index} priority={index === 0} />
               </div>
             ) : (
-              <div className="mx-auto max-w-6xl">
+              <div className={cn("mx-auto", section.layout === "stacked" ? "max-w-7xl" : "max-w-6xl")}>
                 <AssessmentFeatureShowcase section={section} index={index} priority={index === 0} />
               </div>
             )}

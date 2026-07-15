@@ -10,60 +10,53 @@ import { HERO_SCREENSHOT_CLASS } from "./product-screenshot-styles";
 
 export function OfferHero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16">
+    <section className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 md:pb-24 md:pt-12">
       <OfferHeroBackground />
 
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col items-center gap-12 text-center lg:grid lg:grid-cols-[6fr_19fr] lg:items-center lg:gap-20 lg:text-left">
-          <div className="flex w-full flex-col items-center lg:items-start">
-            <OfferReveal>
-              <BrandLogo size={44} variant="stacked" className="mb-8 lg:mb-6" />
-            </OfferReveal>
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
+        <OfferReveal>
+          <BrandLogo size={44} variant="stacked" className="mb-6 sm:mb-8" />
+        </OfferReveal>
 
-            <OfferReveal delayMs={60}>
-              <h1 className="max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.75rem] lg:leading-[1.08] xl:text-[4rem]">
-                Know Exactly Where Your Technology Stands
-              </h1>
-            </OfferReveal>
+        <OfferReveal delayMs={60}>
+          <h1 className="max-w-5xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.05]">
+            Know Exactly Where Your Technology Stands
+          </h1>
+        </OfferReveal>
 
-            <OfferReveal delayMs={120}>
-              <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mt-6">
-                The {BRAND.reportTitle} gives growing businesses a clear picture of technology maturity,
-                prioritized risks, and an executive-ready path forward — powered by {BRAND.productName}{" "}
-                from {BRAND.companyName}.
-              </p>
-            </OfferReveal>
+        <OfferReveal delayMs={120}>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg">
+            The {BRAND.reportTitle} gives growing businesses a clear picture of technology maturity,
+            prioritized risks, and an executive-ready path forward — powered by {BRAND.productName}{" "}
+            from {BRAND.companyName}.
+          </p>
+        </OfferReveal>
 
-            <OfferReveal
-              delayMs={180}
-              className="mt-8 flex w-full max-w-md flex-col items-center gap-3 sm:mt-10 lg:items-start"
-            >
-              <AssessmentPurchaseButton
-                label="Start My Assessment"
-                className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
-                source="offer_hero"
-              />
-              <p className="flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
-                <Lock className="h-3.5 w-3.5 shrink-0" />
-                Secure checkout powered by Stripe
-              </p>
-            </OfferReveal>
-          </div>
+        <OfferReveal delayMs={180} className="mt-8 flex w-full flex-col items-center gap-3 sm:mt-10">
+          <AssessmentPurchaseButton
+            label="Start My Assessment"
+            className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+            source="offer_hero"
+          />
+          <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
+            <Lock className="h-3.5 w-3.5 shrink-0" />
+            Secure checkout powered by Stripe
+          </p>
+        </OfferReveal>
 
-          <OfferReveal delayMs={240} variant="image" className="w-full min-w-0 lg:justify-self-stretch">
-            <Image
-              src={OFFER_HERO_SCREENSHOT.src}
-              alt={OFFER_HERO_SCREENSHOT.alt}
-              width={OFFER_HERO_SCREENSHOT.width}
-              height={OFFER_HERO_SCREENSHOT.height}
-              priority
-              quality={100}
-              draggable={false}
-              sizes="(min-width: 1024px) 760px, 100vw"
-              className={`h-auto w-full select-none ${HERO_SCREENSHOT_CLASS}`}
-            />
-          </OfferReveal>
-        </div>
+        <OfferReveal delayMs={240} variant="image" className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
+          <Image
+            src={OFFER_HERO_SCREENSHOT.src}
+            alt={OFFER_HERO_SCREENSHOT.alt}
+            width={OFFER_HERO_SCREENSHOT.width}
+            height={OFFER_HERO_SCREENSHOT.height}
+            priority
+            quality={100}
+            draggable={false}
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            className={`h-auto w-full select-none ${HERO_SCREENSHOT_CLASS}`}
+          />
+        </OfferReveal>
       </div>
     </section>
   );
