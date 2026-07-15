@@ -1,6 +1,6 @@
 import { CalendarCheck, CheckCircle2 } from "lucide-react";
+import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { OFFER_FEATURES } from "@/lib/assessment-offer/content";
-import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { OfferFeatureGrid } from "./offer-feature-grid";
 import { OfferReveal } from "./offer-reveal";
 
@@ -21,23 +21,25 @@ function ReviewSessionPanel() {
               <CalendarCheck className="h-6 w-6" aria-hidden />
             </div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              Included Consultation
+              Included With Your Assessment
             </p>
             <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               60-Minute Results Review
             </h3>
             <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-300">
-              Walk through your assessment results with a Bobkat IT consultant. We&apos;ll explain
-              your maturity score, answer questions, prioritize recommendations, and align on the
-              most important next steps for your business.
+              After your assessment is completed, meet with a Bobkat IT consultant to review your
+              StackScore, clarify risks and opportunities, prioritize recommendations, and define
+              practical next steps for your business.
             </p>
             <div className="mt-6">
-              <ServicesCtaLink
-                cta="purchaseAssessment"
-                label="Schedule Your Review"
+              <AssessmentPurchaseButton
+                label="Purchase Assessment — $1,500"
                 className="h-11 w-full px-6 text-base sm:w-auto"
-                placement="assessment_offer_review_session"
+                source="offer_review_session"
               />
+              <p className="mt-3 text-sm text-slate-400">
+                Review scheduling becomes available after purchase and assessment completion.
+              </p>
             </div>
           </div>
 
