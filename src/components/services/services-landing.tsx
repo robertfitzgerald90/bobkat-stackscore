@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
@@ -8,6 +7,7 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
+import { ServiceScreenshot } from "@/components/services/service-screenshot";
 import { buttonVariants } from "@/components/ui/button";
 import {
   SERVICES_CATALOG,
@@ -129,25 +129,12 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
             </div>
           </div>
 
-          <div
-            className={cn(
-              "group relative overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm",
-              imageFirst && "lg:order-1",
-            )}
-          >
-            <Image
-              src={service.image.src}
-              alt={service.image.alt}
-              width={1024}
-              height={682}
-              sizes="(min-width: 1024px) 44vw, 100vw"
-              className={cn(
-                "aspect-[3/2] h-auto w-full transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100",
-                imageFit === "contain" ? "object-contain p-3 sm:p-4" : "object-cover",
-              )}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-70" aria-hidden />
-          </div>
+          <ServiceScreenshot
+            src={service.image.src}
+            alt={service.image.alt}
+            fit={imageFit}
+            className={imageFirst ? "lg:order-1" : undefined}
+          />
         </div>
       </SolutionViewTracker>
     </OfferReveal>

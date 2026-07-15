@@ -34,7 +34,8 @@ export type AssessmentOfferShowcasePreview =
   | "technology-progress"
   | "technology-maturity-profile"
   | "current-quarter-priorities"
-  | "technology-lifecycle";
+  | "technology-lifecycle"
+  | "quarterly-review";
 
 export type AssessmentOfferShowcaseSection = {
   id: string;
@@ -163,12 +164,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       "Long-term planning",
     ],
     outcomesLabel: "Key outcomes",
-    image: {
-      src: "/images/vcio/quarterly-reviews.png",
-      width: 565,
-      height: 384,
-      alt: "StackScore quarterly strategic reviews for ongoing technology planning",
-    },
+    preview: "quarterly-review",
     imagePosition: "left",
   },
 ];

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   AlertTriangle,
-  CalendarDays,
   CheckCircle2,
   FileText,
   FolderKanban,
@@ -24,6 +23,8 @@ import { ResendVcioWelcomeButton } from "@/components/vcio/resend-vcio-welcome-b
 import { ResetVcioOnboardingButton } from "@/components/vcio/reset-vcio-onboarding-button";
 import { VcioFeatureUnlocksPanel } from "@/components/vcio/vcio-feature-unlocks-panel";
 import { CurrentQuarterPriorities } from "@/components/priorities/current-quarter-priorities";
+import { QuarterlyReviewSummary } from "@/components/quarterly-reviews/quarterly-review-summary";
+import { currentQuarterLabel } from "@/lib/quarterly-reviews/labels";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 import { getBookingUrl } from "@/lib/support/config";
 
@@ -80,10 +81,6 @@ function AccessAlert({ state }: { state: VcioAccessState }) {
 function formatCurrencyFromCents(cents: number | null) {
   if (cents === null) return null;
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
-}
-
-function currentQuarterLabel(date = new Date()) {
-  return `Q${Math.floor(date.getMonth() / 3) + 1} ${date.getFullYear()}`;
 }
 
 export default async function ClientVcioDashboardPage({ params }: PageProps) {
@@ -739,35 +736,20 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CalendarDays className="h-4 w-4 text-primary" />
-              Quarterly Reviews
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <p>Current quarter: {currentQuarterLabel()}</p>
-            <p>Next scheduled review: {nextReview ? formatDisplayDate(nextReview) : "Not scheduled"}</p>
-            <p>
-              Previous review:{" "}
-              {previousGeneratedReview ? formatDisplayDate(previousGeneratedReview.generatedAt ?? previousGeneratedReview.reviewPeriodEnd) : "None yet"}
-            </p>
-            <p className="text-muted-foreground">
-              Completed reviews will appear in the quarterly reviews workspace.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Link href={`/clients/${clientId}/quarterly-reviews`} className={buttonVariants({ variant: "outline" })}>
-                View Reviews
-              </Link>
-              {user.role !== "client" ? (
-                <Link href={`/clients/${clientId}/quarterly-review`} className={buttonVariants({ variant: "outline" })}>
-                  Generate Report
-                </Link>
-              ) : null}
-            </div>
-          </CardContent>
-        </Card>
+        <QuarterlyReviewSummary
+          currentQuarter={currentQuarterLabel()}
+          nextReviewDate={nextReview?.toISOString() ?? null}
+          previousReviewDate={
+            previousGeneratedReview
+              ? (
+                  previousGeneratedReview.generatedAt ?? previousGeneratedReview.reviewPeriodEnd
+                )?.toISOString() ?? null
+              : null
+          }
+          viewReviewsHref={`/clients/${clientId}/quarterly-reviews`}
+          generateReportHref={`/clients/${clientId}/quarterly-review`}
+          showGenerateReport={user.role !== "client"}
+        />
 
         <Card>
           <CardHeader>

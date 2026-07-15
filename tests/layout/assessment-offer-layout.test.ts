@@ -83,6 +83,20 @@ describe("assessment offer landing page", () => {
     expect(showcase).toContain("TechnologyLifecyclePreview");
   });
 
+  it("uses live quarterly review preview in continuous improvement section", () => {
+    const showcase = readFileSync(
+      resolve(process.cwd(), "src/components/assessment-offer/assessment-feature-showcase.tsx"),
+      "utf8",
+    );
+    const content = readFileSync(
+      resolve(process.cwd(), "src/lib/assessment-offer/content.ts"),
+      "utf8",
+    );
+
+    expect(content).toContain('preview: "quarterly-review"');
+    expect(showcase).toContain("QuarterlyReviewPreview");
+  });
+
   it("uses responsive layout utilities", () => {
     const hero = readFileSync(
       resolve(process.cwd(), "src/components/assessment-offer/offer-hero.tsx"),

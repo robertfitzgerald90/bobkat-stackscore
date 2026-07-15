@@ -6,6 +6,7 @@ import { TechnologyProgressPreview } from "@/components/product-previews/technol
 import { TechnologyMaturityProfilePreview } from "@/components/product-previews/technology-maturity-profile-preview";
 import { CurrentQuarterPrioritiesPreview } from "@/components/product-previews/current-quarter-priorities-preview";
 import { TechnologyLifecyclePreview } from "@/components/product-previews/technology-lifecycle-preview";
+import { QuarterlyReviewPreview } from "@/components/product-previews/quarterly-review-preview";
 import type {
   AssessmentOfferShowcaseSection,
   OfferShowcaseScreenshot,
@@ -14,6 +15,7 @@ import { technologyProgressSummaryDemoData } from "@/lib/demo-data/technology-pr
 import { technologyMaturityProfileDemoData } from "@/lib/demo-data/technology-maturity-profile";
 import { currentQuarterPrioritiesDemoData } from "@/lib/demo-data/current-quarter-priorities";
 import { technologyLifecycleDemoData } from "@/lib/demo-data/technology-lifecycle";
+import { quarterlyReviewSummaryDemoData } from "@/lib/demo-data/quarterly-review-summary";
 import { OfferReveal } from "./offer-reveal";
 import {
   PRODUCT_SCREENSHOT_CLASS,
@@ -162,6 +164,10 @@ function ShowcasePreview({
     return <TechnologyLifecyclePreview items={technologyLifecycleDemoData} />;
   }
 
+  if (section.preview === "quarterly-review") {
+    return <QuarterlyReviewPreview data={quarterlyReviewSummaryDemoData} />;
+  }
+
   if (!section.image) {
     return null;
   }
@@ -282,7 +288,7 @@ export function AssessmentFeatureShowcase({
       <div
         className={cn(
           imageFirst ? "lg:justify-self-end" : "lg:justify-self-start",
-          isProgressPreview && imageFirst && "lg:flex lg:min-h-full lg:items-center",
+          isPreviewLeft && imageFirst && "lg:flex lg:min-h-full lg:items-center",
         )}
       >
         <ShowcaseCopy section={section} centered={isProgressPreview} />
