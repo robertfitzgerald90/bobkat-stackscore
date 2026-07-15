@@ -13,7 +13,7 @@ describe("assessment offer landing page", () => {
       "utf8",
     );
 
-    expect(landing).toContain("OfferScreenshotGallery");
+    expect(landing).toContain("AssessmentOfferShowcase");
     expect(landing).toContain("OfferFeatures");
     expect(landing).toContain("OfferTimeline");
     expect(landing).toContain("OfferWhy");

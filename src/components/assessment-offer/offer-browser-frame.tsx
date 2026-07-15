@@ -14,18 +14,13 @@ export function OfferBrowserFrame({
 }) {
   return (
     <div className={cn(FRAME_CLASS, className)}>
-      <div className="flex items-center gap-1.5 border-b border-border/50 bg-muted/25 px-3 py-2.5 sm:px-4">
+      <div className="flex items-center gap-1.5 border-b border-border/50 bg-muted/25 px-3 py-2 sm:px-4">
         <span className="h-2 w-2 rounded-full bg-[#FF5F57]" />
         <span className="h-2 w-2 rounded-full bg-[#FEBC2E]" />
         <span className="h-2 w-2 rounded-full bg-[#28C840]" />
-        <span className="ml-2 h-1.5 flex-1 max-w-[42%] rounded-full bg-border/80" />
+        <span className="ml-2 h-1.5 max-w-[42%] flex-1 rounded-full bg-border/80" />
       </div>
-      <div
-        className={cn(
-          "relative aspect-[16/10] overflow-hidden bg-[#f8f9fb]",
-          viewportClassName,
-        )}
-      >
+      <div className={cn("relative overflow-hidden bg-[#061426]", viewportClassName)}>
         {children}
       </div>
     </div>
