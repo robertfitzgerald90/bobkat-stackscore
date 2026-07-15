@@ -12,6 +12,7 @@ type InvitationProductScreenshotProps = {
   className?: string;
   priority?: boolean;
   delayMs?: number;
+  fit?: "full" | "contained";
 };
 
 export function InvitationProductScreenshot({
@@ -20,9 +21,19 @@ export function InvitationProductScreenshot({
   className,
   priority = false,
   delayMs = 0,
+  fit = "full",
 }: InvitationProductScreenshotProps) {
+  const isContained = fit === "contained";
+
   return (
-    <OfferReveal delayMs={delayMs} variant="image" className={cn("w-full min-w-0", className)}>
+    <OfferReveal
+      delayMs={delayMs}
+      variant="image"
+      className={cn(
+        isContained ? "mx-auto flex w-full max-w-3xl flex-col items-center sm:max-w-4xl" : "w-full min-w-0",
+        className,
+      )}
+    >
       <Image
         src={image.src}
         alt={image.alt}
@@ -32,10 +43,14 @@ export function InvitationProductScreenshot({
         loading={priority ? undefined : "lazy"}
         quality={100}
         draggable={false}
-        sizes="(min-width: 1280px) 1280px, 100vw"
-        className={cn("h-auto w-full select-none", STACKED_PRODUCT_SCREENSHOT_CLASS)}
+        sizes={isContained ? `${image.width}px` : "(min-width: 1280px) 1280px, 100vw"}
+        className={cn(
+          "h-auto select-none",
+          isContained ? "w-auto max-w-full" : "w-full",
+          STACKED_PRODUCT_SCREENSHOT_CLASS,
+        )}
       />
-      {caption ? <p className="mt-4 text-center text-sm text-muted-foreground">{caption}</p> : null}
+      {caption ? <p className="mt-4 max-w-2xl text-center text-sm text-muted-foreground">{caption}</p> : null}
     </OfferReveal>
   );
 }

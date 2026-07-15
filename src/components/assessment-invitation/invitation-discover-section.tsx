@@ -1,8 +1,8 @@
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
+import { SnapshotResultCard } from "@/components/snapshot/snapshot-result-card";
 import { INVITATION_DISCOVER_FEATURES } from "@/lib/assessment-invitation/content";
-import { INVITATION_SNAPSHOT_REPORT_SCREENSHOT } from "@/lib/assessment-invitation/screenshots";
-import { InvitationProductScreenshot } from "./invitation-product-screenshot";
+import { INVITATION_SNAPSHOT_PREVIEW_DATA } from "@/lib/assessment-invitation/snapshot-preview-data";
 
 const columnClassName = "sm:grid-cols-2 lg:grid-cols-4";
 
@@ -36,12 +36,13 @@ export function InvitationDiscoverSection() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 w-full max-w-7xl sm:mt-14 md:mt-16">
-        <InvitationProductScreenshot
-          image={INVITATION_SNAPSHOT_REPORT_SCREENSHOT}
-          caption="Receive an executive-ready snapshot of your organization's technology maturity in minutes."
-          delayMs={220}
-        />
+      <div className="mx-auto mt-12 max-w-5xl sm:mt-14 md:mt-16">
+        <OfferReveal delayMs={220} variant="image">
+          <SnapshotResultCard data={INVITATION_SNAPSHOT_PREVIEW_DATA} preview />
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Example Technology Snapshot result
+          </p>
+        </OfferReveal>
       </div>
     </section>
   );

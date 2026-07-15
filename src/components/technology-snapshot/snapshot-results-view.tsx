@@ -3,28 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import {
+  SnapshotResultCard,
+  snapshotResultsPayloadToCardData,
+} from "@/components/snapshot/snapshot-result-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
-import {
-  FULL_ASSESSMENT_BENEFITS,
-} from "@/lib/technology-snapshot/display";
+import { FULL_ASSESSMENT_BENEFITS, SNAPSHOT_MAX_SCORE } from "@/lib/technology-snapshot/display";
 import type { SnapshotClassification } from "@/lib/technology-snapshot/types";
 import { cn } from "@/lib/utils";
 
 const PURCHASE_URL = SERVICES_CTA_DESTINATIONS.assessmentLearnMore.href;
-
-const CLASSIFICATION_VARIANT: Record<
-  SnapshotClassification,
-  "success" | "secondary" | "warning" | "destructive"
-> = {
-  healthy: "success",
-  needs_attention: "secondary",
-  elevated_risk: "warning",
-  immediate_action: "destructive",
-};
 
 export type SnapshotResultsPayload = {
   id: string;
@@ -68,40 +59,12 @@ export function SnapshotResultsView({
       window.alert(error instanceof Error ? error.message : "Unable to continue to assessment");
     }
   }
+
   return (
     <div className="min-w-0 space-y-6">
-      <Card className="border-primary/20 shadow-md">
-        <CardHeader className="space-y-3 text-center">
-          <p className="text-sm text-muted-foreground">{companyName}</p>
-          <CardTitle className="text-2xl">Your Technology Snapshot</CardTitle>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-4xl font-bold tabular-nums text-primary">{result.totalScore}</p>
-            <p className="text-sm text-muted-foreground">out of 24</p>
-            <Badge variant={CLASSIFICATION_VARIANT[result.classification]} className="text-sm">
-              {result.classificationLabel}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="break-words text-center text-sm leading-relaxed text-muted-foreground">
-            {result.summary}
-          </p>
-
-          {result.observations.length > 0 ? (
-            <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
-              <p className="text-sm font-medium">Key observations</p>
-              <ul className="space-y-2">
-                {result.observations.map((observation) => (
-                  <li key={observation} className="flex gap-2 text-sm leading-relaxed">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span className="min-w-0 break-words">{observation}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
+      <SnapshotResultCard
+        data={snapshotResultsPayloadToCardData(companyName, result, SNAPSHOT_MAX_SCORE)}
+      />
 
       <Card>
         <CardHeader>
