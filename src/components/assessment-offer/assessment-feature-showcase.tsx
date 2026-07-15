@@ -49,7 +49,7 @@ export function AssessmentFeatureShowcase({
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
   const imageFirst = section.imagePosition === "left";
-  const imageSizes = "(min-width: 1024px) 40vw, 100vw";
+  const imageSizes = "(min-width: 1024px) 44vw, 100vw";
 
   const copyBlock = (
     <div
@@ -106,7 +106,7 @@ export function AssessmentFeatureShowcase({
         <div
           className={cn(
             "grid items-center gap-12 lg:gap-14 xl:gap-16",
-            imageFirst ? "lg:grid-cols-[1.62fr_1fr]" : "lg:grid-cols-[1fr_1.62fr]",
+            imageFirst ? "lg:grid-cols-[1.75fr_1fr]" : "lg:grid-cols-[1fr_1.75fr]",
           )}
         >
           {copyBlock}
