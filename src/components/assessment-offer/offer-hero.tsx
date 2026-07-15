@@ -13,15 +13,15 @@ export function OfferHero() {
     <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16">
       <OfferHeroBackground />
 
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col items-center gap-12 text-center lg:grid lg:grid-cols-[9fr_11fr] lg:items-center lg:gap-14 lg:text-left xl:gap-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col items-center gap-12 text-center lg:grid lg:grid-cols-[6fr_19fr] lg:items-center lg:gap-20 lg:text-left">
           <div className="flex w-full flex-col items-center lg:items-start">
             <OfferReveal>
               <BrandLogo size={44} variant="stacked" className="mb-8 lg:mb-6" />
             </OfferReveal>
 
             <OfferReveal delayMs={60}>
-              <h1 className="max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+              <h1 className="max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.75rem] lg:leading-[1.08] xl:text-[4rem]">
                 Know Exactly Where Your Technology Stands
               </h1>
             </OfferReveal>
@@ -50,7 +50,7 @@ export function OfferHero() {
             </OfferReveal>
           </div>
 
-          <OfferReveal delayMs={240} className="w-full min-w-0 lg:justify-self-end">
+          <OfferReveal delayMs={240} variant="image" className="w-full min-w-0 lg:justify-self-stretch">
             <Image
               src={OFFER_HERO_SCREENSHOT.src}
               alt={OFFER_HERO_SCREENSHOT.alt}
@@ -59,7 +59,7 @@ export function OfferHero() {
               priority
               quality={100}
               draggable={false}
-              sizes="(min-width: 1024px) 55vw, 100vw"
+              sizes="(min-width: 1024px) 760px, 100vw"
               className={`h-auto w-full select-none ${HERO_SCREENSHOT_CLASS}`}
             />
           </OfferReveal>

@@ -10,6 +10,21 @@ import { OfferReveal } from "./offer-reveal";
 import { PRODUCT_SCREENSHOT_CLASS } from "./product-screenshot-styles";
 import { cn } from "@/lib/utils";
 
+function sectionGridClass(
+  imageFirst: boolean,
+  emphasis: NonNullable<AssessmentOfferShowcaseSection["imageEmphasis"]> | "default",
+) {
+  if (emphasis === "compact") {
+    return imageFirst ? "lg:grid-cols-[1.35fr_1fr]" : "lg:grid-cols-[1fr_1.35fr]";
+  }
+
+  if (emphasis === "emphasized") {
+    return imageFirst ? "lg:grid-cols-[2.15fr_1fr]" : "lg:grid-cols-[1fr_2.15fr]";
+  }
+
+  return imageFirst ? "lg:grid-cols-[1.75fr_1fr]" : "lg:grid-cols-[1fr_1.75fr]";
+}
+
 export function ProductScreenshot({
   image,
   priority = false,
@@ -49,70 +64,86 @@ export function AssessmentFeatureShowcase({
   priority = false,
 }: AssessmentFeatureShowcaseProps) {
   const imageFirst = section.imagePosition === "left";
-  const imageSizes = "(min-width: 1024px) 44vw, 100vw";
+  const emphasis = section.imageEmphasis ?? "default";
+  const imageSizes =
+    emphasis === "compact"
+      ? "(min-width: 1024px) 32vw, 100vw"
+      : emphasis === "emphasized"
+        ? "(min-width: 1024px) 50vw, 100vw"
+        : "(min-width: 1024px) 44vw, 100vw";
 
   const copyBlock = (
-    <div
-      className={cn(
-        "order-1 max-w-md space-y-6",
-        imageFirst ? "lg:order-2 lg:justify-self-end" : "lg:order-1 lg:justify-self-start",
-      )}
+    <OfferReveal
+      delayMs={index * 40}
+      className={cn("order-1", imageFirst ? "lg:order-2" : "lg:order-1")}
     >
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
-        <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
-          {section.heading}
-        </h3>
-        <p className="mt-5 max-w-[34ch] text-[0.95rem] leading-7 text-muted-foreground sm:max-w-[38ch]">
-          {section.description}
-        </p>
-      </div>
-
-      {section.outcomes.length > 0 ? (
+      <div
+        className={cn(
+          "max-w-md space-y-6",
+          imageFirst ? "lg:justify-self-end" : "lg:justify-self-start",
+        )}
+      >
         <div>
-          {section.outcomesLabel ? (
-            <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
-          ) : null}
-          <ul
-            className={cn("grid gap-2.5", section.outcomesLabel ? "mt-3" : undefined)}
-            aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
-          >
-            {section.outcomes.map((outcome) => (
-              <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                <span>{outcome}</span>
-              </li>
-            ))}
-          </ul>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{section.eyebrow}</p>
+          <h3 className="mt-4 text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-[1.75rem] lg:text-[1.85rem] lg:leading-tight">
+            {section.heading}
+          </h3>
+          <p className="mt-5 max-w-[34ch] text-[0.95rem] leading-7 text-muted-foreground sm:max-w-[38ch]">
+            {section.description}
+          </p>
         </div>
-      ) : null}
-    </div>
+
+        {section.outcomes.length > 0 ? (
+          <div>
+            {section.outcomesLabel ? (
+              <p className="text-sm font-medium text-foreground">{section.outcomesLabel}</p>
+            ) : null}
+            <ul
+              className={cn("grid gap-2.5", section.outcomesLabel ? "mt-3" : undefined)}
+              aria-label={`${section.heading} ${section.outcomesLabel ?? "highlights"}`}
+            >
+              {section.outcomes.map((outcome) => (
+                <li key={outcome} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <span>{outcome}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+    </OfferReveal>
   );
 
   const imageBlock = (
-    <div
-      className={cn(
-        "order-2 w-full min-w-0",
-        imageFirst ? "lg:order-1" : "lg:order-2",
-      )}
+    <OfferReveal
+      delayMs={index * 40 + 80}
+      variant="image"
+      className={cn("order-2", imageFirst ? "lg:order-1" : "lg:order-2")}
     >
-      <ProductScreenshot image={section.image} priority={priority} sizes={imageSizes} />
-    </div>
+      <div
+        className={cn(
+          "w-full min-w-0",
+          emphasis === "compact" && "mx-auto max-w-[78%] px-2 sm:px-4 lg:max-w-[76%]",
+          emphasis === "emphasized" && "lg:-mx-2 xl:-mx-4",
+        )}
+      >
+        <ProductScreenshot image={section.image} priority={priority} sizes={imageSizes} />
+      </div>
+    </OfferReveal>
   );
 
   return (
-    <OfferReveal delayMs={index * 60}>
-      <article id={section.id} className="scroll-mt-24">
-        <div
-          className={cn(
-            "grid items-center gap-12 lg:gap-14 xl:gap-16",
-            imageFirst ? "lg:grid-cols-[1.75fr_1fr]" : "lg:grid-cols-[1fr_1.75fr]",
-          )}
-        >
-          {copyBlock}
-          {imageBlock}
-        </div>
-      </article>
-    </OfferReveal>
+    <article id={section.id} className="scroll-mt-24">
+      <div
+        className={cn(
+          "grid items-center gap-12 lg:gap-16 xl:gap-20",
+          sectionGridClass(imageFirst, emphasis),
+        )}
+      >
+        {copyBlock}
+        {imageBlock}
+      </div>
+    </article>
   );
 }

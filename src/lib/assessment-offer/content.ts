@@ -39,6 +39,7 @@ export type AssessmentOfferShowcaseSection = {
   outcomesLabel?: string;
   image: OfferShowcaseScreenshot;
   imagePosition: "left" | "right";
+  imageEmphasis?: "compact" | "default" | "emphasized";
 };
 
 export type AssessmentOfferWorkflowStep = {
@@ -84,6 +85,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       alt: "StackScore technology journey card showing progress beyond a single maturity score",
     },
     imagePosition: "left",
+    imageEmphasis: "compact",
   },
   {
     id: "executive-visibility",
@@ -106,6 +108,7 @@ export const ASSESSMENT_OFFER_SHOWCASE_SECTIONS: AssessmentOfferShowcaseSection[
       alt: "StackScore technology maturity overview with executive technology health insights",
     },
     imagePosition: "right",
+    imageEmphasis: "emphasized",
   },
   {
     id: "actionable-priorities",

@@ -7,9 +7,10 @@ type OfferRevealProps = {
   children: React.ReactNode;
   className?: string;
   delayMs?: number;
+  variant?: "default" | "image";
 };
 
-export function OfferReveal({ children, className, delayMs = 0 }: OfferRevealProps) {
+export function OfferReveal({ children, className, delayMs = 0, variant = "default" }: OfferRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -29,7 +30,7 @@ export function OfferReveal({ children, className, delayMs = 0 }: OfferRevealPro
           observer.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+      { threshold: 0.1, rootMargin: "0px 0px -48px 0px" },
     );
 
     observer.observe(element);
@@ -40,8 +41,12 @@ export function OfferReveal({ children, className, delayMs = 0 }: OfferRevealPro
     <div
       ref={ref}
       className={cn(
-        "transition-all duration-700 ease-out motion-reduce:transition-none",
-        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+        "transition-all duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+        visible
+          ? "translate-y-0 scale-100 opacity-100"
+          : variant === "image"
+            ? "translate-y-8 scale-[0.96] opacity-0"
+            : "translate-y-6 scale-[0.98] opacity-0",
         className,
       )}
       style={{ transitionDelay: visible ? `${delayMs}ms` : "0ms" }}

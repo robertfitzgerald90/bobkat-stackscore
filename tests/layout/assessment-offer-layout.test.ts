@@ -28,7 +28,7 @@ describe("assessment offer landing page", () => {
       "utf8",
     );
 
-    expect(hero).toContain("max-w-6xl");
+    expect(hero).toContain("max-w-7xl");
     expect(hero).toContain("text-balance");
   });
 });
