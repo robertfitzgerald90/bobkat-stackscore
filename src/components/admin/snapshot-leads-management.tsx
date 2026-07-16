@@ -231,63 +231,67 @@ export function SnapshotLeadsManagement({
           ) : (
             <>
               <div className="hidden min-w-0 lg:block">
-                <div className="overflow-safe-x table-desktop">
-                  <Table>
+                <div className="min-w-0 max-w-full overflow-x-auto lg:overflow-x-visible">
+                  <Table className="table-auto">
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Lead</TableHead>
-                        <TableHead>Company</TableHead>
-                        <TableHead className="hidden xl:table-cell">Email</TableHead>
-                        <TableHead className="hidden xl:table-cell">Phone</TableHead>
-                        <TableHead>Score</TableHead>
-                        <TableHead>Risk Level</TableHead>
-                        <TableHead className="hidden md:table-cell">Submitted</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="min-w-[240px]">Company</TableHead>
+                        <TableHead className="hidden min-w-[200px] lg:table-cell">Email</TableHead>
+                        <TableHead className="hidden w-[1%] xl:table-cell">Phone</TableHead>
+                        <TableHead className="w-[1%]">Score</TableHead>
+                        <TableHead className="w-[1%]">Risk</TableHead>
+                        <TableHead className="hidden w-[1%] md:table-cell">Submitted</TableHead>
+                        <TableHead className="w-[1%]">Status</TableHead>
+                        <TableHead className="w-[1%] text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredLeads.map((lead) => (
-                        <TableRow key={lead.id}>
-                          <TableCell className="min-w-0 max-w-[180px]">
+                        <TableRow key={lead.id} className="align-top">
+                          <TableCell className="min-w-[240px] align-top whitespace-normal py-3">
                             <div className="space-y-1">
                               <Link
                                 href={`/snapshot-leads/${lead.id}`}
-                                className="break-words font-medium text-primary hover:underline"
+                                className="break-words font-semibold text-foreground hover:text-primary hover:underline"
                               >
-                                {resolveLeadDisplayName(lead)}
+                                {lead.companyName}
                               </Link>
+                              <p className="text-sm text-muted-foreground">
+                                {resolveLeadDisplayName(lead)}
+                              </p>
                               {lead.notes?.[0] ? (
-                                <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <MessageSquare className="h-3 w-3 shrink-0" />
-                                  <span className="line-clamp-1">{lead.notes[0].note}</span>
+                                <p className="flex items-start gap-1 text-xs text-muted-foreground">
+                                  <MessageSquare className="mt-0.5 h-3 w-3 shrink-0" />
+                                  <span className="whitespace-normal break-words">
+                                    {lead.notes[0].note}
+                                  </span>
                                 </p>
                               ) : null}
                             </div>
                           </TableCell>
-                          <TableCell className="min-w-0 max-w-[160px] break-words">
-                            {lead.companyName}
-                          </TableCell>
-                          <TableCell className="hidden min-w-0 break-all xl:table-cell">
-                            <a href={`mailto:${lead.email}`} className="text-primary hover:underline">
+                          <TableCell className="hidden min-w-[180px] align-top whitespace-normal py-3 lg:table-cell">
+                            <a
+                              href={`mailto:${lead.email}`}
+                              className="break-all text-primary hover:underline"
+                            >
                               {lead.email}
                             </a>
                           </TableCell>
-                          <TableCell className="hidden xl:table-cell">
+                          <TableCell className="hidden w-[1%] align-top whitespace-nowrap py-3 xl:table-cell">
                             <SnapshotLeadPhoneCell phone={lead.phone} />
                           </TableCell>
-                          <TableCell className="whitespace-nowrap tabular-nums">
+                          <TableCell className="w-[1%] align-top whitespace-nowrap py-3 tabular-nums">
                             {lead.totalScore}/{SNAPSHOT_MAX_SCORE}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="w-[1%] align-top whitespace-nowrap py-3">
                             <Badge variant="outline">
                               {formatSnapshotClassification(lead.classification)}
                             </Badge>
                           </TableCell>
-                          <TableCell className="hidden whitespace-nowrap text-sm text-muted-foreground md:table-cell">
+                          <TableCell className="hidden w-[1%] align-top whitespace-nowrap py-3 text-sm text-muted-foreground md:table-cell">
                             {formatDate(lead.createdAt)}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="w-[1%] align-top whitespace-nowrap py-3">
                             <Select
                               value={lead.status}
                               items={SNAPSHOT_LEAD_STATUS_LABELS}
@@ -299,7 +303,7 @@ export function SnapshotLeadsManagement({
                               }
                               disabled={updatingId === lead.id}
                             >
-                              <SelectTrigger className="!w-full min-w-[140px] max-w-[180px]">
+                              <SelectTrigger className="w-auto min-w-[8.75rem]">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -311,7 +315,7 @@ export function SnapshotLeadsManagement({
                               </SelectContent>
                             </Select>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="w-[1%] align-top whitespace-nowrap py-3 text-right">
                             <SnapshotLeadActions
                               lead={lead}
                               onStatusChange={(status) => updateStatus(lead.id, status)}
@@ -329,13 +333,17 @@ export function SnapshotLeadsManagement({
               <div className="space-y-3 lg:hidden">
                 {filteredLeads.map((lead) => (
                   <MobileDataCard key={lead.id}>
-                    <Link
-                      href={`/snapshot-leads/${lead.id}`}
-                      className="break-words font-semibold text-primary hover:underline"
-                    >
-                      {resolveLeadDisplayName(lead)}
-                    </Link>
-                    <MobileDataRow label="Company">{lead.companyName}</MobileDataRow>
+                    <div className="space-y-1">
+                      <Link
+                        href={`/snapshot-leads/${lead.id}`}
+                        className="break-words font-semibold text-foreground hover:text-primary hover:underline"
+                      >
+                        {lead.companyName}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">
+                        {resolveLeadDisplayName(lead)}
+                      </p>
+                    </div>
                     <MobileDataRow label="Email">
                       <a href={`mailto:${lead.email}`} className="break-all text-primary hover:underline">
                         {lead.email}
