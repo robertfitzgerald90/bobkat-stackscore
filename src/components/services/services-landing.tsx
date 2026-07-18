@@ -230,9 +230,12 @@ function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon className="h-6 w-6" aria-hidden />
                   </div>
-                  <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                    {service.title}
-                  </h3>
+                  <div>
+                    <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                      {service.title}
+                    </h3>
+                    <p className="mt-2 text-lg font-semibold text-primary">{service.price}</p>
+                  </div>
                 </div>
 
                 <p className="text-base leading-relaxed text-muted-foreground">{service.description}</p>

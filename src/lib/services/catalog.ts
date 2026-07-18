@@ -41,6 +41,7 @@ export type ServiceCatalogItem = {
 export type ResidentialServiceItem = {
   id: string;
   title: string;
+  price: string;
   description: string;
   highlights: string[];
   primaryCtaLabel: string;
@@ -154,6 +155,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
 export const RESIDENTIAL_SERVICE: ResidentialServiceItem = {
   id: "residential-it-support",
   title: "Residential IT Support",
+  price: "Starting at $150/visit",
   description:
     "Reliable in-home and remote technology support for individuals and families. Whether you need help with computers, Wi-Fi, new device setup, or technology troubleshooting, Bobkat IT provides professional assistance without the frustration.",
   highlights: [
