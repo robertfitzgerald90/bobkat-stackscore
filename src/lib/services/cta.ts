@@ -31,6 +31,14 @@ export const SERVICES_CTA_DESTINATIONS = {
     label: "Schedule Consultation",
     href: "https://cal.com/bobkat-it/bobkat-it-free-consult",
   },
+  managedItExplore: {
+    label: "Explore Managed IT",
+    href: "https://cal.com/bobkat-it/managed-it-consultation",
+  },
+  strategicConsultingExplore: {
+    label: "Explore Strategic Consulting",
+    href: "https://cal.com/bobkat-it/bobkat-it-free-consult",
+  },
   managedItConsultation: {
     label: "Schedule Consultation",
     href: "https://cal.com/bobkat-it/managed-it-consultation",

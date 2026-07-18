@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, CheckCircle2 } from "lucide-react";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
@@ -10,10 +10,13 @@ import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServiceScreenshot } from "@/components/services/service-screenshot";
 import { buttonVariants } from "@/components/ui/button";
 import {
-  SERVICES_CATALOG,
-  SERVICES_PRICING,
+  CORE_SERVICES,
+  FEATURED_PRODUCT,
+  RESIDENTIAL_SERVICE,
+  SERVICES_JOURNEY_KEYWORDS,
+  type FeaturedProductItem,
+  type ResidentialServiceItem,
   type ServiceCatalogItem,
-  type ServicePricingItem,
 } from "@/lib/services/catalog";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
@@ -28,67 +31,114 @@ function ServiceKeywordBadge({ keyword }: { keyword: string }) {
   );
 }
 
-function ServiceKeywordPills({ keywords }: { keywords: [string, string, string] }) {
+function ServiceHighlights({ highlights, title }: { highlights: string[]; title: string }) {
   return (
-    <ul className="flex flex-wrap gap-2" aria-label="Service focus areas">
-      {keywords.map((keyword) => (
-        <li
-          key={keyword}
-          className="rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground"
-        >
-          {keyword}
+    <ul className="grid gap-3" aria-label={`${title} highlights`}>
+      {highlights.map((highlight) => (
+        <li key={highlight} className="flex items-start gap-3 text-sm text-foreground">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+          <span>{highlight}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-function ServicesPrimaryCta({
-  service,
-  className,
-}: {
-  service: ServiceCatalogItem;
-  className?: string;
-}) {
+function JourneyKeywords() {
   return (
-    <ServicesCtaLink
-      cta={service.primaryCta}
-      label={service.primaryCtaLabel}
-      className={className}
-      serviceId={service.id}
-      placement="service_section_primary"
-    />
+    <OfferReveal delayMs={150} className="mt-10 w-full max-w-2xl">
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+        {SERVICES_JOURNEY_KEYWORDS.map((keyword, index) => (
+          <div key={keyword} className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+            <ServiceKeywordBadge keyword={keyword} />
+            {index < SERVICES_JOURNEY_KEYWORDS.length - 1 ? (
+              <ArrowDown className="h-4 w-4 shrink-0 text-primary/60 sm:hidden" aria-hidden />
+            ) : null}
+            {index < SERVICES_JOURNEY_KEYWORDS.length - 1 ? (
+              <ArrowRight className="hidden h-4 w-4 shrink-0 text-primary/60 sm:block" aria-hidden />
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </OfferReveal>
   );
 }
 
-function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; index: number }) {
-  const Icon = service.icon;
+function FeaturedProductSection({ product }: { product: FeaturedProductItem }) {
+  const Icon = product.icon;
 
   return (
-    <OfferReveal delayMs={index * 45}>
-      <a
-        href={`#${service.id}`}
-        className="group block h-full rounded-xl border border-border/60 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
-      >
-        <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
-            <Icon className="h-5 w-5" aria-hidden />
-          </div>
-          <div className="space-y-2">
-            <ServiceKeywordBadge keyword={service.keyword} />
-            <h3 className="text-base font-semibold text-foreground">{service.title}</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">{service.headline}</p>
-          </div>
-        </div>
-      </a>
-    </OfferReveal>
+    <section
+      id={product.id}
+      className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24"
+    >
+      <div className="mx-auto max-w-6xl">
+        <OfferSectionHeader
+          eyebrow="Featured Product"
+          title="Start by understanding your technology"
+          description="Our flagship assessment is the recommended first step for every new client."
+        />
+
+        <OfferReveal>
+          <SolutionViewTracker
+            solutionId={product.id}
+            solutionTitle={product.title}
+            className="scroll-mt-24 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/[0.08] via-card to-card p-4 shadow-md sm:p-6 lg:p-8"
+          >
+            <ServiceScreenshot
+              src={product.image.src}
+              alt={product.image.alt}
+              size="featured"
+              className="mb-8"
+            />
+
+            <div className="space-y-6">
+              <div className="flex flex-wrap items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="h-6 w-6" aria-hidden />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {product.title}
+                  </h3>
+                  <p className="mt-2 text-lg font-semibold text-primary">{product.price}</p>
+                </div>
+              </div>
+
+              <p className="max-w-4xl text-base leading-relaxed text-muted-foreground">
+                {product.description}
+              </p>
+
+              <ServiceHighlights highlights={product.highlights} title={product.title} />
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <ServicesCtaLink
+                  cta={product.primaryCta}
+                  label={product.primaryCtaLabel}
+                  className="h-11 w-full px-6 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+                  serviceId={product.id}
+                  placement="featured_product_primary"
+                />
+                <ServicesCtaLink
+                  cta={product.secondaryCta}
+                  label={product.secondaryCtaLabel}
+                  className="h-11 w-full px-6 text-base sm:w-auto"
+                  variant="outline"
+                  serviceId={product.id}
+                  placement="featured_product_secondary"
+                />
+              </div>
+            </div>
+          </SolutionViewTracker>
+        </OfferReveal>
+      </div>
+    </section>
   );
 }
 
 function ServiceSection({ service }: { service: ServiceCatalogItem }) {
   const Icon = service.icon;
   const imageFirst = service.imagePosition === "left";
-  const imageFit = service.image.fit ?? "cover";
 
   return (
     <OfferReveal>
@@ -100,8 +150,8 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
       >
         <div
           className={cn(
-            "grid items-center gap-8 lg:grid-cols-[1fr_0.92fr] lg:gap-10",
-            imageFirst && "lg:grid-cols-[0.92fr_1fr]",
+            "grid items-center gap-8 lg:gap-10",
+            imageFirst ? "lg:grid-cols-[1.12fr_1fr]" : "lg:grid-cols-[1fr_1.12fr]",
           )}
         >
           <div className={cn("space-y-6", imageFirst && "lg:order-2")}>
@@ -115,19 +165,23 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
                   <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                     {service.title}
                   </h3>
-                  <p className="mt-2 text-lg font-semibold leading-snug text-foreground/90 sm:text-xl">
-                    {service.headline}
-                  </p>
+                  <p className="mt-2 text-lg font-semibold text-primary">{service.price}</p>
                 </div>
               </div>
             </div>
 
             <p className="text-base leading-relaxed text-muted-foreground">{service.description}</p>
 
-            <ServiceKeywordPills keywords={service.supportingKeywords} />
+            <ServiceHighlights highlights={service.highlights} title={service.title} />
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <ServicesPrimaryCta service={service} className="h-11 w-full px-6 text-base sm:w-auto" />
+              <ServicesCtaLink
+                cta={service.primaryCta}
+                label={service.primaryCtaLabel}
+                className="h-11 w-full px-6 text-base sm:w-auto"
+                serviceId={service.id}
+                placement="service_section_primary"
+              />
               {service.secondaryCta ? (
                 <ServicesCtaLink
                   cta={service.secondaryCta}
@@ -143,7 +197,7 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
           <ServiceScreenshot
             src={service.image.src}
             alt={service.image.alt}
-            fit={imageFit}
+            size="large"
             className={imageFirst ? "lg:order-1" : undefined}
           />
         </div>
@@ -152,64 +206,54 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
   );
 }
 
-function PricingCard({ item, index }: { item: ServicePricingItem; index: number }) {
-  const isHighlighted = Boolean(item.badge);
+function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
+  const Icon = service.icon;
 
   return (
-    <OfferReveal delayMs={index * 45}>
-      <div
-        className={cn(
-          "flex h-full flex-col rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none",
-          isHighlighted
-            ? "border-primary/25 bg-gradient-to-b from-primary/[0.08] to-card"
-            : "border-border/60 hover:border-primary/20",
-        )}
-      >
-        {item.badge ? (
-          <p className="mb-4 w-fit rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-primary">
-            {item.badge}
-          </p>
-        ) : null}
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
-        <p className="mt-4 text-2xl font-semibold text-primary">{item.price}</p>
-        {item.frequency ? (
-          <p className="mt-1 text-sm font-medium text-muted-foreground">{item.frequency}</p>
-        ) : null}
-        <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-          {item.description}
-        </p>
-        <ServicesCtaLink
-          cta={item.cta}
-          label={item.ctaLabel}
-          className="mt-6 h-10 w-full px-4"
-          placement="services_pricing"
-          variant={isHighlighted ? "default" : "outline"}
+    <section id={service.id} className="border-t border-border/60 bg-muted/20 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+      <div className="mx-auto max-w-6xl">
+        <OfferSectionHeader
+          eyebrow="Additional Offering"
+          title="Support for home technology"
+          description="Residential IT Support is available as a separate service for individuals and families."
         />
-      </div>
-    </OfferReveal>
-  );
-}
 
-function PositioningCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <OfferReveal>
-      <div className="flex h-full flex-col rounded-xl border border-border/60 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none">
-        <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Sparkles className="h-5 w-5" aria-hidden />
-        </div>
-        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
-        <div className="mt-6">{children}</div>
+        <OfferReveal>
+          <SolutionViewTracker
+            solutionId={service.id}
+            solutionTitle={service.title}
+            className="scroll-mt-24 rounded-2xl border border-dashed border-border/70 bg-card/80 p-4 shadow-sm sm:p-6 lg:p-8"
+          >
+            <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.12fr] lg:gap-10">
+              <div className="space-y-6">
+                <div className="flex flex-wrap items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-6 w-6" aria-hidden />
+                  </div>
+                  <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {service.title}
+                  </h3>
+                </div>
+
+                <p className="text-base leading-relaxed text-muted-foreground">{service.description}</p>
+
+                <ServiceHighlights highlights={service.highlights} title={service.title} />
+
+                <ServicesCtaLink
+                  cta={service.primaryCta}
+                  label={service.primaryCtaLabel}
+                  className="h-11 w-full px-6 text-base sm:w-auto"
+                  serviceId={service.id}
+                  placement="residential_primary"
+                />
+              </div>
+
+              <ServiceScreenshot src={service.image.src} alt={service.image.alt} size="large" />
+            </div>
+          </SolutionViewTracker>
+        </OfferReveal>
       </div>
-    </OfferReveal>
+    </section>
   );
 }
 
@@ -236,16 +280,17 @@ export function ServicesLanding() {
 
             <OfferReveal delayMs={120}>
               <p className="mt-5 max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mt-6">
-                Bobkat IT combines managed services, strategic consulting, digital experiences, and
-                ongoing technology advisory into a complete approach that helps businesses operate
-                securely, make better technology decisions, strengthen their digital presence, and
-                continuously improve over time.
+                Bobkat IT helps businesses understand their technology, operate securely, plan for
+                the future, and grow through modern digital experiences—a complete approach built
+                for security, reliability, and long-term success.
               </p>
             </OfferReveal>
 
-            <OfferReveal delayMs={180} className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center">
+            <JourneyKeywords />
+
+            <OfferReveal delayMs={210} className="mt-10 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <a
-                href="#services-catalog"
+                href={`#${FEATURED_PRODUCT.id}`}
                 className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-6 text-base sm:w-auto")}
               >
                 Explore Services
@@ -266,88 +311,28 @@ export function ServicesLanding() {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <OfferSectionHeader
-              eyebrow="Services Overview"
-              title="Operate → Plan → Grow → Optimize"
-              description="A clear progression from reliable operations to strategic leadership—each service builds on the last."
-            />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {SERVICES_CATALOG.map((service, index) => (
-                <ServiceOverviewCard key={service.id} service={service} index={index} />
-              ))}
-            </div>
-          </div>
-        </section>
+        <FeaturedProductSection product={FEATURED_PRODUCT} />
 
-        <section id="services-catalog" className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section id="core-services" className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
-              eyebrow="Interactive Services Catalog"
-              title="Strategic technology partnership"
-              description="Four focused service areas that help your organization operate securely, plan with confidence, grow digitally, and optimize continuously."
+              eyebrow="Core Services"
+              title="Operate → Plan → Grow"
+              description="Three focused service areas that help your organization run reliably, plan strategically, and grow digitally."
             />
             <div className="grid gap-6">
-              {SERVICES_CATALOG.map((service) => (
+              {CORE_SERVICES.map((service) => (
                 <ServiceSection key={service.id} service={service} />
               ))}
             </div>
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <OfferSectionHeader
-              eyebrow="Assessment Positioning"
-              title="Not Sure Where to Start?"
-              description="Start with a free snapshot, purchase a comprehensive assessment, or schedule a consultation with Bobkat IT."
-            />
-            <div className="grid gap-4 md:grid-cols-3">
-              <PositioningCard
-                title="Start Free Technology Snapshot"
-                description="Answer a short set of questions and get an immediate high-level maturity view."
-              >
-                <TechnologySnapshotLink
-                  label="Start Free Snapshot"
-                  className="h-10 w-full px-4"
-                  placement="services_positioning_snapshot"
-                />
-              </PositioningCard>
-              <PositioningCard
-                title="Purchase Comprehensive Assessment"
-                description="Unlock executive reporting, risk analysis, and a strategic roadmap powered by StackScore."
-              >
-                <ServicesCtaLink cta="purchaseAssessment" label="Purchase Assessment" className="h-10 w-full px-4" placement="services_positioning_purchase" />
-              </PositioningCard>
-              <PositioningCard
-                title="Schedule Consultation"
-                description="Talk with Bobkat IT about managed services, strategic consulting, digital presence, or ongoing advisory."
-              >
-                <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" placement="services_positioning_consultation" />
-              </PositioningCard>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <OfferSectionHeader
-              eyebrow="Transparent Technology Pricing"
-              title="Transparent Technology Pricing"
-              description="Clear starting points with no mystery. Every engagement is scoped around your environment, priorities, and business goals."
-            />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {SERVICES_PRICING.map((item, index) => (
-                <PricingCard key={item.title} item={item} index={index} />
-              ))}
-            </div>
-          </div>
-        </section>
+        <ResidentialSection service={RESIDENTIAL_SERVICE} />
 
         <OfferCtaPanel
           headline="Build Technology That Supports Your Business"
-          supportingText="Move from scattered technology decisions to a clear path for security, reliability, and long-term growth."
+          supportingText="Start with a Technology Maturity Assessment, then move from reliable operations to strategic planning and digital growth."
         >
           <TechnologySnapshotLink
             label="Start Free Snapshot"
@@ -367,7 +352,7 @@ export function ServicesLanding() {
             placement="services_footer"
           />
           <Link
-            href="#services-catalog"
+            href={`#${FEATURED_PRODUCT.id}`}
             className="mt-1 inline-flex items-center text-sm font-medium text-primary hover:text-link-hover"
           >
             Review all services

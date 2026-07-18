@@ -5,14 +5,14 @@ import { BRAND } from "@/lib/branding";
 export const metadata: Metadata = {
   title: `Bobkat IT Services | ${BRAND.companyName}`,
   description:
-    "Bobkat IT helps businesses operate securely, plan technology strategy, strengthen digital presence, and optimize continuously through managed services, consulting, and StackScore Technology Advisory.",
+    "Understand, operate, plan, and grow with Bobkat IT. Technology Maturity Assessment, Managed IT Services, Strategic IT Consulting, Digital Presence, and Residential IT Support.",
   alternates: {
     canonical: "/services",
   },
   openGraph: {
     title: `Bobkat IT Services | ${BRAND.companyName}`,
     description:
-      "Strategic technology partnership: operate, plan, grow, and optimize with managed IT, consulting, digital presence, and StackScore Technology Advisory.",
+      "Strategic technology partnership: assess your environment, operate securely, plan with confidence, and grow your digital presence.",
     url: "/services",
     type: "website",
   },
