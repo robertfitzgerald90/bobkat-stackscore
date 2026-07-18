@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
@@ -19,6 +19,29 @@ import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { cn } from "@/lib/utils";
+
+function ServiceKeywordBadge({ keyword }: { keyword: string }) {
+  return (
+    <p className="w-fit rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-primary">
+      {keyword}
+    </p>
+  );
+}
+
+function ServiceKeywordPills({ keywords }: { keywords: [string, string, string] }) {
+  return (
+    <ul className="flex flex-wrap gap-2" aria-label="Service focus areas">
+      {keywords.map((keyword) => (
+        <li
+          key={keyword}
+          className="rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground"
+        >
+          {keyword}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function ServicesPrimaryCta({
   service,
@@ -40,13 +63,9 @@ function ServicesPrimaryCta({
 
 function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; index: number }) {
   const Icon = service.icon;
-  const centerOnLargeScreens = service.id === "residential-it-support";
 
   return (
-    <OfferReveal
-      delayMs={index * 45}
-      className={centerOnLargeScreens ? "lg:col-start-2" : undefined}
-    >
+    <OfferReveal delayMs={index * 45}>
       <a
         href={`#${service.id}`}
         className="group block h-full rounded-xl border border-border/60 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none motion-reduce:transform-none motion-reduce:transition-none"
@@ -55,9 +74,10 @@ function ServiceOverviewCard({ service, index }: { service: ServiceCatalogItem; 
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
             <Icon className="h-5 w-5" aria-hidden />
           </div>
-          <div>
+          <div className="space-y-2">
+            <ServiceKeywordBadge keyword={service.keyword} />
             <h3 className="text-base font-semibold text-foreground">{service.title}</h3>
-            <p className="mt-1 text-sm font-medium text-primary">{service.price}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{service.headline}</p>
           </div>
         </div>
       </a>
@@ -85,35 +105,26 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
           )}
         >
           <div className={cn("space-y-6", imageFirst && "lg:order-2")}>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex flex-wrap items-start gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon className="h-6 w-6" aria-hidden />
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                  {service.eyebrow}
-                </p>
-                <p className="mt-1 text-sm font-medium text-muted-foreground">{service.price}</p>
+              <div className="min-w-0 space-y-3">
+                <ServiceKeywordBadge keyword={service.keyword} />
+                <div>
+                  <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 text-lg font-semibold leading-snug text-foreground/90 sm:text-xl">
+                    {service.headline}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                {service.title}
-              </h3>
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                {service.description}
-              </p>
-            </div>
+            <p className="text-base leading-relaxed text-muted-foreground">{service.description}</p>
 
-            <ul className="grid gap-3" aria-label={`${service.title} highlights`}>
-              {service.highlights.map((highlight) => (
-                <li key={highlight} className="flex items-start gap-3 text-sm text-foreground">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  <span>{highlight}</span>
-                </li>
-              ))}
-            </ul>
+            <ServiceKeywordPills keywords={service.supportingKeywords} />
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <ServicesPrimaryCta service={service} className="h-11 w-full px-6 text-base sm:w-auto" />
@@ -219,15 +230,16 @@ export function ServicesLanding() {
 
             <OfferReveal delayMs={60}>
               <h1 className="mt-8 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-                Technology Designed Around Your Business
+                Technology should support your business—not slow it down.
               </h1>
             </OfferReveal>
 
             <OfferReveal delayMs={120}>
               <p className="mt-5 max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mt-6">
-                From managed IT and strategic consulting to digital presence, StackScore Technology
-                Advisory, assessments, infrastructure, and continuity planning—Bobkat IT delivers
-                practical technology solutions built for security, reliability, and long-term growth.
+                Bobkat IT combines managed services, strategic consulting, digital experiences, and
+                ongoing technology advisory into a complete approach that helps businesses operate
+                securely, make better technology decisions, strengthen their digital presence, and
+                continuously improve over time.
               </p>
             </OfferReveal>
 
@@ -258,10 +270,10 @@ export function ServicesLanding() {
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="Services Overview"
-              title="Choose the right starting point"
-              description="Each service connects to the right next step, from public assessment details to a focused consultation with Bobkat IT."
+              title="Operate → Plan → Grow → Optimize"
+              description="A clear progression from reliable operations to strategic leadership—each service builds on the last."
             />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {SERVICES_CATALOG.map((service, index) => (
                 <ServiceOverviewCard key={service.id} service={service} index={index} />
               ))}
@@ -273,8 +285,8 @@ export function ServicesLanding() {
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="Interactive Services Catalog"
-              title="Modern technology services for growing teams"
-              description="Browse Bobkat IT services, compare entry points, and take the next step that fits your organization."
+              title="Strategic technology partnership"
+              description="Four focused service areas that help your organization operate securely, plan with confidence, grow digitally, and optimize continuously."
             />
             <div className="grid gap-6">
               {SERVICES_CATALOG.map((service) => (
@@ -289,7 +301,7 @@ export function ServicesLanding() {
             <OfferSectionHeader
               eyebrow="Assessment Positioning"
               title="Not Sure Where to Start?"
-              description="Start small, purchase the full assessment, or talk through your goals with Bobkat IT."
+              description="Start with a free snapshot, purchase a comprehensive assessment, or schedule a consultation with Bobkat IT."
             />
             <div className="grid gap-4 md:grid-cols-3">
               <PositioningCard
@@ -310,7 +322,7 @@ export function ServicesLanding() {
               </PositioningCard>
               <PositioningCard
                 title="Schedule Consultation"
-                description="Talk with Bobkat IT about managed services, projects, continuity planning, or home support."
+                description="Talk with Bobkat IT about managed services, strategic consulting, digital presence, or ongoing advisory."
               >
                 <ServicesCtaLink cta="generalConsultation" className="h-10 w-full px-4" placement="services_positioning_consultation" />
               </PositioningCard>
@@ -323,7 +335,7 @@ export function ServicesLanding() {
             <OfferSectionHeader
               eyebrow="Transparent Technology Pricing"
               title="Transparent Technology Pricing"
-              description="Clear starting prices with no mystery. Every engagement is scoped around your environment, priorities, and business goals."
+              description="Clear starting points with no mystery. Every engagement is scoped around your environment, priorities, and business goals."
             />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {SERVICES_PRICING.map((item, index) => (
