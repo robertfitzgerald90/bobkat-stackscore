@@ -2,6 +2,8 @@ import {
   BarChart3,
   ClipboardCheck,
   CloudCog,
+  Compass,
+  Globe,
   Home,
   Network,
   RotateCcw,
@@ -31,6 +33,105 @@ export type ServiceCatalogItem = {
 
 export const SERVICES_CATALOG: ServiceCatalogItem[] = [
   {
+    id: "managed-it-services",
+    title: "Managed IT Services",
+    eyebrow: "Ongoing IT Partnership",
+    price: "Starting at $15/device/month",
+    description:
+      "Proactive IT management that keeps your devices secure, reliable, monitored, and up to date.",
+    highlights: [
+      "Endpoint Monitoring & Maintenance",
+      "Patch Management & Remote Support",
+      "Cybersecurity & Microsoft 365 Management",
+    ],
+    primaryCtaLabel: "Schedule Consultation",
+    primaryCta: "managedItConsultation",
+    imagePosition: "right",
+    image: {
+      src: "/services/managed-it-services.png",
+      alt: "Bobkat IT Managed IT Services service preview",
+    },
+    icon: ShieldCheck,
+  },
+  {
+    id: "strategic-it-consulting",
+    title: "Strategic IT Consulting",
+    eyebrow: "Technology Investment Guidance",
+    price: "Custom Engagements",
+    description:
+      "Make confident technology decisions with expert guidance on assessments, roadmaps, vendor selection, and investment priorities—aligned to your business goals.",
+    highlights: [
+      "Technology Maturity Assessments",
+      "Technology Roadmap Development",
+      "Investment & Vendor Evaluation",
+      "Executive Technology Planning Sessions",
+    ],
+    primaryCtaLabel: "Explore Strategic Consulting",
+    primaryCta: "assessmentLearnMore",
+    secondaryCta: "generalConsultation",
+    imagePosition: "left",
+    image: {
+      src: "/services/strategic-it-consulting.png",
+      alt: "Bobkat IT Strategic IT Consulting service preview",
+    },
+    icon: Compass,
+  },
+  {
+    id: "digital-presence",
+    title: "Digital Presence",
+    eyebrow: "Digital Presence & Business Applications",
+    price: "Custom Solutions",
+    description:
+      "Your website should do more than exist—it should help your business grow. Bobkat IT designs and develops modern websites, client portals, dashboards, and custom business applications that strengthen your online presence, improve customer experience, and streamline business operations.",
+    highlights: [
+      "Custom Website Design & Development",
+      "Client Portals & Dashboards",
+      "Internal Business Applications",
+      "Business Process Automation",
+      "API & System Integrations",
+      "SEO & Performance Optimization",
+      "Branding & Visual Identity",
+      "Ongoing Support & Enhancements",
+    ],
+    primaryCtaLabel: "Explore Digital Presence",
+    primaryCta: "digitalPresenceExplore",
+    secondaryCta: "generalConsultation",
+    imagePosition: "right",
+    image: {
+      src: "/services/digital-presence.png",
+      alt: "Bobkat IT Digital Presence and business applications service preview",
+    },
+    icon: Globe,
+  },
+  {
+    id: "stackscore-technology-advisory",
+    title: "StackScore Technology Advisory",
+    eyebrow: "Ongoing Technology Advisory",
+    price: "$300/month",
+    description:
+      "Turn your StackScore assessment into an ongoing technology strategy. StackScore Technology Advisory provides executive reporting, technology roadmaps, budgeting guidance, quarterly reviews, and continuous strategic planning to help your organization make better technology decisions year after year.",
+    highlights: [
+      "Quarterly Technology Reviews",
+      "Technology Roadmap Management",
+      "Executive Reporting",
+      "Technology Budget Planning",
+      "Project Prioritization",
+      "Vendor & Renewal Planning",
+      "Annual StackScore Reassessment",
+      "Direct Access to Your Technology Advisor",
+      "Continuous StackScore Portal Access",
+    ],
+    primaryCtaLabel: "Start Technology Advisory",
+    primaryCta: "vcioOffer",
+    secondaryCta: "generalConsultation",
+    imagePosition: "left",
+    image: {
+      src: "/services/stackscore-vcio.png",
+      alt: "StackScore Technology Advisory strategic planning and client portal",
+    },
+    icon: BarChart3,
+  },
+  {
     id: "technology-maturity-assessment",
     title: "Technology Maturity Assessment",
     eyebrow: "Standardized Product",
@@ -51,49 +152,6 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
       alt: "Bobkat IT Technology Maturity Assessment service preview",
     },
     icon: ClipboardCheck,
-  },
-  {
-    id: "stackscore-vcio",
-    title: "StackScore vCIO",
-    eyebrow: "Ongoing Technology Advisory",
-    price: "$300/month",
-    description:
-      "Turn your technology assessment into an ongoing strategy. StackScore vCIO gives your business continued access to its technology roadmap, executive reporting, improvement tracking, and a dedicated strategic technology advisor.",
-    highlights: [
-      "Quarterly Technology Reviews",
-      "Technology Roadmap & Budget Planning",
-      "Direct Access to a Strategic IT Advisor",
-    ],
-    primaryCtaLabel: "Start vCIO Service",
-    primaryCta: "vcioOffer",
-    secondaryCta: "generalConsultation",
-    imagePosition: "left",
-    image: {
-      src: "/services/stackscore-vcio.png",
-      alt: "StackScore vCIO strategic technology advisory and client portal",
-    },
-    icon: BarChart3,
-  },
-  {
-    id: "managed-it-services",
-    title: "Managed IT Services",
-    eyebrow: "Ongoing IT Partnership",
-    price: "Starting at $15/device/month",
-    description:
-      "Proactive IT management that keeps your devices secure, reliable, monitored, and up to date.",
-    highlights: [
-      "Endpoint Monitoring & Maintenance",
-      "Patch Management & Remote Support",
-      "Cybersecurity & Microsoft 365 Management",
-    ],
-    primaryCtaLabel: "Schedule Consultation",
-    primaryCta: "managedItConsultation",
-    imagePosition: "right",
-    image: {
-      src: "/services/managed-it-services.png",
-      alt: "Bobkat IT Managed IT Services service preview",
-    },
-    icon: ShieldCheck,
   },
   {
     id: "network-infrastructure-deployment",
@@ -202,7 +260,7 @@ export const SERVICES_PRICING: ServicePricingItem[] = [
     cta: "purchaseAssessment",
   },
   {
-    title: "StackScore vCIO",
+    title: "StackScore Technology Advisory",
     price: "$300/month",
     description:
       "Ongoing technology strategy, quarterly reviews, roadmap management, and direct advisor access.",

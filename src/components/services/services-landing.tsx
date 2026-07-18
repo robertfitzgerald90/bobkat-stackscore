@@ -225,9 +225,9 @@ export function ServicesLanding() {
 
             <OfferReveal delayMs={120}>
               <p className="mt-5 max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg md:mt-6">
-                From strategic assessments and managed IT to infrastructure, cloud projects, backup,
-                disaster recovery, and residential support, Bobkat IT delivers practical technology
-                solutions built for security, reliability, and long-term growth.
+                From managed IT and strategic consulting to digital presence, StackScore Technology
+                Advisory, assessments, infrastructure, and continuity planning—Bobkat IT delivers
+                practical technology solutions built for security, reliability, and long-term growth.
               </p>
             </OfferReveal>
 
