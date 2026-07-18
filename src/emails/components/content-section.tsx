@@ -13,7 +13,7 @@ export function ContentSection({ paragraphs }: ContentSectionProps) {
         backgroundColor: emailTokens.surface,
         borderLeft: `1px solid ${emailTokens.border}`,
         borderRight: `1px solid ${emailTokens.border}`,
-        padding: "0 32px 24px",
+        padding: "0 24px 20px",
       }}
     >
       {paragraphs.map((paragraph) => (

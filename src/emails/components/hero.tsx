@@ -14,7 +14,7 @@ export function Hero({ title, description }: HeroProps) {
         backgroundColor: emailTokens.surface,
         borderLeft: `1px solid ${emailTokens.border}`,
         borderRight: `1px solid ${emailTokens.border}`,
-        padding: "8px 32px 24px",
+        padding: "8px 24px 20px",
         textAlign: "center",
       }}
     >

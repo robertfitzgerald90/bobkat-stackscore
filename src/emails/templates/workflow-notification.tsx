@@ -1,5 +1,4 @@
 import React from "react";
-import { Section } from "@react-email/components";
 import {
   ContentSection,
   EmailFooter,
@@ -8,9 +7,9 @@ import {
   EmailLayout,
   InformationCard,
   PrimaryButton,
+  SecondaryButton,
   SecurityNotice,
 } from "@/emails/components";
-import { emailTokens } from "@/emails/tokens";
 import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
 import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import type { TemplateVersionContent } from "@/lib/communications/template-content";
@@ -30,7 +29,7 @@ export type WorkflowNotificationEmailData = {
   primaryCta: WorkflowEmailCta;
   secondaryCta?: WorkflowEmailCta;
   closingParagraph?: string;
-  securityNotice?: string;
+  securityNotice?: string | string[];
   firstName?: string;
 };
 
@@ -38,24 +37,6 @@ export type WorkflowNotificationEmailProps = WorkflowNotificationEmailData & {
   brand?: CommunicationBrandConfig;
   content?: TemplateVersionContent | null;
 };
-
-function SecondaryButton({ href, label }: WorkflowEmailCta) {
-  return (
-    <Section style={{ textAlign: "center" as const, marginTop: "12px" }}>
-      <a
-        href={href}
-        style={{
-          color: emailTokens.primary,
-          fontSize: "15px",
-          fontWeight: 600,
-          textDecoration: "underline",
-        }}
-      >
-        {label}
-      </a>
-    </Section>
-  );
-}
 
 export function WorkflowNotificationEmail({
   heroTitle,
@@ -71,6 +52,12 @@ export function WorkflowNotificationEmail({
   brand = DEFAULT_COMMUNICATION_BRAND,
   content,
 }: WorkflowNotificationEmailProps) {
+  const securityItems = Array.isArray(securityNotice)
+    ? securityNotice
+    : securityNotice
+      ? [securityNotice]
+      : [];
+
   return (
     <EmailLayout preview={previewText ?? heroDescription ?? heroTitle}>
       <EmailHeader brand={brand} />
@@ -80,11 +67,13 @@ export function WorkflowNotificationEmail({
       />
       {paragraphs.length > 0 ? <ContentSection paragraphs={paragraphs} /> : null}
       <PrimaryButton href={primaryCta.href} label={content?.ctaLabel ?? primaryCta.label} brand={brand} />
-      {secondaryCta ? <SecondaryButton {...secondaryCta} /> : null}
+      {secondaryCta ? (
+        <SecondaryButton href={secondaryCta.href} label={secondaryCta.label} brand={brand} />
+      ) : null}
       {summaryItems.length > 0 ? (
         <InformationCard title={summaryTitle ?? "Summary"} items={summaryItems} />
       ) : null}
-      {securityNotice ? <SecurityNotice message={securityNotice} /> : null}
+      {securityItems.length > 0 ? <SecurityNotice items={securityItems} /> : null}
       {closingParagraph ? <ContentSection paragraphs={[closingParagraph]} /> : null}
       <EmailFooter brand={brand} />
     </EmailLayout>

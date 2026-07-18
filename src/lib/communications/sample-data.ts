@@ -1,6 +1,9 @@
 import { BRAND } from "@/lib/branding";
 import type { AccountActivationEmailData } from "@/emails/templates/account-activation";
 import type { AssessmentInvitationEmailData } from "@/emails/templates/assessment-invitation";
+import {
+  getTechnologyMaturityAssessmentBookingUrl,
+} from "@/lib/communications/booking-urls";
 
 /** Safe fake activation URL — never a production token. */
 export const PREVIEW_ACTIVATION_URL =
@@ -36,6 +39,7 @@ export function buildAssessmentInvitationSampleData(
     organizationName: "Northwind Professional Services",
     assessmentName: `${BRAND.productName} Technology Maturity Assessment`,
     invitationUrl: PREVIEW_INVITATION_URL,
+    assessmentBookingUrl: getTechnologyMaturityAssessmentBookingUrl(),
     supportEmail: BRAND.email,
     websiteUrl: "https://www.bobkatit.com",
     ...overrides,
@@ -96,7 +100,7 @@ export function buildVcioWelcomeSampleData(
 ) {
   const dashboardUrl = PREVIEW_PROTECTED_URL;
   const onboardingUrl = "https://app.stackscore.example/portal/vcio/onboarding";
-  const strategySessionUrl = "https://cal.com/bobkat-it/bobkat-it-free-consult";
+  const strategySessionUrl = onboardingUrl;
 
   return {
     clientName: "Alex",
@@ -126,8 +130,8 @@ export function buildVcioWelcomeSampleData(
       href: onboardingUrl,
     },
     secondaryCta: {
-      label: "Schedule Strategy Session",
-      href: strategySessionUrl,
+      label: "Open vCIO Dashboard",
+      href: dashboardUrl,
     },
     ...overrides,
   };

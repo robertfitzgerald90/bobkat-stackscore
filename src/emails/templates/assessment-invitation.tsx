@@ -8,8 +8,13 @@ import {
   EmailLayout,
   InformationCard,
   PrimaryButton,
+  SecondaryButton,
 } from "@/emails/components";
 import { emailTokens } from "@/emails/tokens";
+import {
+  ASSESSMENT_BOOKING_LABELS,
+  getTechnologyMaturityAssessmentBookingUrl,
+} from "@/lib/communications/booking-urls";
 import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
 import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import type { TemplateVersionContent } from "@/lib/communications/template-content";
@@ -22,6 +27,7 @@ export type AssessmentInvitationEmailData = {
   assessmentName?: string;
   supportEmail?: string;
   websiteUrl?: string;
+  assessmentBookingUrl?: string;
 };
 
 export type AssessmentInvitationEmailProps = AssessmentInvitationEmailData & {
@@ -31,31 +37,30 @@ export type AssessmentInvitationEmailProps = AssessmentInvitationEmailData & {
 
 const DEFAULT_DELIVERABLES = [
   "Overall Technology Health Score",
-  "Category-by-Category Maturity Scores",
-  "Executive-Friendly Reporting",
+  "Category-by-Category Maturity Analysis",
+  "Executive-Ready Reporting",
   "Technology Risk Identification",
   "Prioritized Improvement Recommendations",
-  "Technology Roadmap",
-  "Business-Focused Insights",
+  "Technology Roadmap Guidance",
 ];
 
 const DEFAULT_FAQ = [
   {
-    question: "Do I need technical knowledge?",
+    question: "Do I need technical expertise?",
     answer:
-      "No. The assessment is written to be understandable by both technical and business stakeholders.",
+      "No. The assessment is designed for business and technology leaders alike—clear questions, practical language, and actionable results.",
   },
   {
     question: "How long does it take?",
-    answer: "Most organizations complete the assessment in approximately 15–30 minutes.",
+    answer: "Most organizations complete the assessment in 15–30 minutes.",
   },
   {
-    question: "Can I return later?",
-    answer: "Yes. Your progress will be saved automatically after activation.",
+    question: "Can I save progress and return later?",
+    answer: "Yes. Your work is saved automatically once your account is activated.",
   },
   {
-    question: "Will someone review my results?",
-    answer: `Yes. If your assessment includes a consultation, ${BRAND.companyName} will schedule a review session to discuss your results and answer any questions.`,
+    question: "What happens after I finish?",
+    answer: `${BRAND.companyName} can review your results with you and help translate findings into a practical improvement plan.`,
   },
 ];
 
@@ -82,7 +87,7 @@ function FaqSection({
         backgroundColor: emailTokens.surface,
         borderLeft: `1px solid ${emailTokens.border}`,
         borderRight: `1px solid ${emailTokens.border}`,
-        padding: "0 32px 24px",
+        padding: "0 24px 24px",
       }}
     >
       <Heading
@@ -99,7 +104,7 @@ function FaqSection({
         Frequently Asked Questions
       </Heading>
       {items.map((item) => (
-        <Section key={item.question} style={{ marginBottom: "16px" }}>
+        <Section key={item.question} style={{ marginBottom: "14px" }}>
           <Text
             style={{
               margin: "0 0 4px",
@@ -133,21 +138,23 @@ export function AssessmentInvitationEmail({
   organizationName,
   assessmentName: _assessmentName,
   supportEmail,
+  assessmentBookingUrl,
   brand = DEFAULT_COMMUNICATION_BRAND,
   content,
 }: AssessmentInvitationEmailProps) {
+  const bookingUrl = assessmentBookingUrl ?? getTechnologyMaturityAssessmentBookingUrl();
   const greeting =
     content?.heroTitle ??
     (firstName
-      ? `You're Invited, ${firstName}`
-      : "You're Invited to Discover Your Technology Maturity");
+      ? `${firstName}, you're invited`
+      : "You're invited to assess your technology maturity");
 
   const introParagraphs =
     content?.contentParagraphs && content.contentParagraphs.length > 0
       ? content.contentParagraphs.map((paragraph) =>
           interpolateCopy(
             paragraph,
-            { invitationUrl, firstName, organizationName, supportEmail },
+            { invitationUrl, firstName, organizationName, supportEmail, assessmentBookingUrl: bookingUrl },
             brand,
           ),
         )
@@ -155,19 +162,19 @@ export function AssessmentInvitationEmail({
           organizationName
             ? `${organizationName} has been invited to complete a ${brand.productName} Technology Maturity Assessment.`
             : `You've been invited to complete a ${brand.productName} Technology Maturity Assessment.`,
-          `${brand.productName} helps organizations understand the strengths, weaknesses, and opportunities within their technology environment by transforming technical information into clear business insights.`,
-          "Whether you're evaluating your current infrastructure, planning future investments, or simply looking for a clearer picture of your technology, this assessment provides a structured starting point.",
+          `${brand.productName} gives leadership a clear view of technology strengths, risks, and priorities—without unnecessary complexity.`,
+          "Activate your account to begin. You'll receive structured guidance, measurable scores, and recommendations you can act on.",
         ];
 
   const deliverables = content?.nextSteps ?? DEFAULT_DELIVERABLES;
 
   const previewText =
     content?.previewText ??
-    "Discover your organization's technology maturity and uncover opportunities for improvement.";
+    "Discover your organization's technology maturity and uncover practical next steps.";
 
   const closingParagraph =
     content?.closingParagraph ??
-    `Questions about your invitation? Contact us at ${supportEmail ?? brand.supportEmail}. We look forward to helping you get started.`;
+    `Questions about your invitation? Contact us at ${supportEmail ?? brand.supportEmail}. We're ready to help you get started.`;
 
   return (
     <EmailLayout preview={previewText}>
@@ -176,13 +183,13 @@ export function AssessmentInvitationEmail({
         title={greeting}
         description={
           content?.heroDescription ??
-          "A professional technology assessment designed to give your leadership team clarity and confidence."
+          "A professional assessment designed to give your leadership team clarity and confidence."
         }
       />
       <ContentSection paragraphs={introParagraphs} />
       <PrimaryButton
         href={invitationUrl}
-        label={content?.ctaLabel ?? "Activate Account & Begin Assessment"}
+        label={content?.ctaLabel ?? ASSESSMENT_BOOKING_LABELS.invitation}
         brand={brand}
       />
       <InformationCard title="What You'll Receive" items={deliverables} />
@@ -191,7 +198,7 @@ export function AssessmentInvitationEmail({
           backgroundColor: emailTokens.surface,
           borderLeft: `1px solid ${emailTokens.border}`,
           borderRight: `1px solid ${emailTokens.border}`,
-          padding: "0 32px 24px",
+          padding: "0 24px 24px",
         }}
       >
         <Heading
@@ -217,7 +224,7 @@ export function AssessmentInvitationEmail({
           Complete from any modern web browser.
         </Text>
         <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
-          Responses can be saved and completed later.
+          Progress is saved automatically after activation.
         </Text>
       </Section>
       <FaqSection items={DEFAULT_FAQ} />
@@ -226,7 +233,7 @@ export function AssessmentInvitationEmail({
           backgroundColor: emailTokens.surface,
           borderLeft: `1px solid ${emailTokens.border}`,
           borderRight: `1px solid ${emailTokens.border}`,
-          padding: "0 32px 24px",
+          padding: "0 24px 24px",
         }}
       >
         <Heading
@@ -240,46 +247,30 @@ export function AssessmentInvitationEmail({
             color: emailTokens.primary,
           }}
         >
-          Business Value
+          Why It Matters
         </Heading>
         <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
-          Completing a Technology Maturity Assessment provides your organization with greater visibility
-          into its technology environment, helping leadership prioritize investments, reduce operational
-          risk, and make informed technology decisions.
+          A Technology Maturity Assessment helps leadership prioritize investments, reduce operational
+          risk, and align technology decisions with business goals—before small gaps become costly
+          disruptions.
         </Text>
       </Section>
-      <Hr style={{ borderColor: emailTokens.border, margin: "0 32px" }} />
-      <Section
-        style={{
-          backgroundColor: emailTokens.surface,
-          borderLeft: `1px solid ${emailTokens.border}`,
-          borderRight: `1px solid ${emailTokens.border}`,
-          padding: "0 32px 24px",
-        }}
-      >
-        <Heading
-          as="h3"
-          style={{
-            margin: "0 0 8px",
-            fontFamily: emailTokens.fontFamilyHeading,
-            fontSize: "16px",
-            fontWeight: 700,
-            color: emailTokens.primary,
-          }}
-        >
-          Book a Meeting
-        </Heading>
-        <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
-          After completing your assessment, {brand.companyName} can walk you through your results,
-          discuss your Technology Blueprint and Roadmap, and explore next steps tailored to your
-          organization.
-        </Text>
-      </Section>
+      <Hr style={{ borderColor: emailTokens.border, margin: "0 24px" }} />
+      <ContentSection
+        paragraphs={[
+          `Prefer to review the full assessment offer first? You can explore what's included and how ${brand.companyName} supports your team.`,
+        ]}
+      />
+      <SecondaryButton
+        href={bookingUrl}
+        label={ASSESSMENT_BOOKING_LABELS.offer}
+        brand={brand}
+      />
       <ContentSection
         paragraphs={[
           interpolateCopy(
             closingParagraph,
-            { invitationUrl, firstName, organizationName, supportEmail },
+            { invitationUrl, firstName, organizationName, supportEmail, assessmentBookingUrl: bookingUrl },
             brand,
           ),
         ]}
@@ -292,5 +283,6 @@ export function AssessmentInvitationEmail({
 export function buildAssessmentInvitationDefaults() {
   return {
     assessmentName: `${BRAND.productName} Technology Maturity Assessment`,
+    assessmentBookingUrl: getTechnologyMaturityAssessmentBookingUrl(),
   };
 }

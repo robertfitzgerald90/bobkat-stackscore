@@ -1,11 +1,16 @@
+import {
+  ASSESSMENT_BOOKING_LABELS,
+  getTechnologyMaturityAssessmentBookingUrl,
+} from "@/lib/communications/booking-urls";
+
 const SUPPORT_EMAIL = "support@bobkatit.com";
 
-export const CALCOM_BOOKING_URL =
-  process.env.NEXT_PUBLIC_CALCOM_BOOKING_URL?.trim() ?? "";
+/** @deprecated Prefer getTechnologyMaturityAssessmentBookingUrl() */
+export const CALCOM_BOOKING_URL = getTechnologyMaturityAssessmentBookingUrl();
 
 export const BOOKING_LABELS = {
-  primary: "Schedule Your Assessment Review",
-  secondary: "Book a Meeting",
+  primary: ASSESSMENT_BOOKING_LABELS.review,
+  secondary: ASSESSMENT_BOOKING_LABELS.offer,
 } as const;
 
 export function getSupportEmail(): string {
@@ -13,7 +18,8 @@ export function getSupportEmail(): string {
 }
 
 export function getBookingUrl(): string | null {
-  return CALCOM_BOOKING_URL || null;
+  const url = getTechnologyMaturityAssessmentBookingUrl();
+  return url || null;
 }
 
 export function resolveBookingLabel(

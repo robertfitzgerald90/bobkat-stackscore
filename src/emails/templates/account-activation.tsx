@@ -71,8 +71,8 @@ export function AccountActivationEmail({
         })
       : [
           defaultOrgLine,
-          "You are about to gain a clear understanding of your technology environment, uncover hidden risks, and identify practical opportunities to strengthen your business through technology.",
-          `${brand.productName} transforms technical information into clear, measurable insights so you can make technology decisions with confidence.`,
+          "You're about to gain a clear, executive-ready view of your technology environment—strengths, risks, and practical next steps.",
+          `${brand.productName} translates technical detail into decisions your leadership team can act on with confidence.`,
         ];
 
   const nextSteps = content?.nextSteps ?? [

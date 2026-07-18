@@ -13,6 +13,10 @@ import {
   buildVcioWelcomeSampleData,
   PREVIEW_PROTECTED_URL,
 } from "@/lib/communications/sample-data";
+import {
+  ASSESSMENT_BOOKING_LABELS,
+  getTechnologyMaturityAssessmentBookingUrl,
+} from "@/lib/communications/booking-urls";
 import type {
   EmailTemplateCategory,
   EmailTemplateDefinition,
@@ -173,9 +177,21 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
       previewText: "Sign in to begin your Technology Maturity Assessment.",
     },
     sampleData: {
-      heroTitle: "Your Assessment is Ready",
-      paragraphs: ["Your Technology Maturity Assessment workspace is ready."],
-      primaryCta: { label: "Start Assessment", href: PREVIEW_PROTECTED_URL },
+      heroTitle: "Your Assessment Workspace Is Ready",
+      heroDescription: "Your Technology Maturity Assessment is prepared in StackScore.",
+      previewText: "Sign in to begin your Technology Maturity Assessment.",
+      paragraphs: [
+        "Alex, your assessment workspace is ready.",
+        "Sign in to continue where you left off or start from your dashboard.",
+      ],
+      summaryTitle: "What you can do next",
+      summaryItems: [
+        "Complete the guided Technology Maturity Assessment",
+        "Review pillar scores and executive reporting",
+        "Build a practical improvement roadmap",
+      ],
+      primaryCta: { label: "Start My Assessment", href: PREVIEW_PROTECTED_URL },
+      secondaryCta: { label: "Sign In to StackScore", href: PREVIEW_PROTECTED_URL },
     },
   }),
   workflowTemplate({
@@ -237,8 +253,8 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
         href: PREVIEW_PROTECTED_URL,
       },
       secondaryCta: {
-        label: "Book Technology Review",
-        href: PREVIEW_PROTECTED_URL,
+        label: ASSESSMENT_BOOKING_LABELS.review,
+        href: getTechnologyMaturityAssessmentBookingUrl(),
       },
       summaryItems: ["Phases: 3", "Projects: 8"],
     },

@@ -3,15 +3,19 @@ import { Button, Section } from "@react-email/components";
 import { DEFAULT_COMMUNICATION_BRAND, type CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import { emailTokens } from "@/emails/tokens";
 
-type PrimaryButtonProps = {
+type SecondaryButtonProps = {
   href: string;
   label: string;
   brand?: CommunicationBrandConfig;
 };
 
-/** Centered bulletproof CTA for Gmail, Outlook, and Apple Mail. */
-export function PrimaryButton({ href, label, brand = DEFAULT_COMMUNICATION_BRAND }: PrimaryButtonProps) {
-  const borderRadius = brand.componentSettings.primaryButton?.borderRadius ?? "10px";
+/** Outlined secondary CTA — email-client safe table button. */
+export function SecondaryButton({
+  href,
+  label,
+  brand = DEFAULT_COMMUNICATION_BRAND,
+}: SecondaryButtonProps) {
+  const borderRadius = brand.componentSettings.secondaryButton?.borderRadius ?? "10px";
 
   return (
     <Section
@@ -19,22 +23,23 @@ export function PrimaryButton({ href, label, brand = DEFAULT_COMMUNICATION_BRAND
         backgroundColor: emailTokens.surface,
         borderLeft: `1px solid ${emailTokens.border}`,
         borderRight: `1px solid ${emailTokens.border}`,
-        padding: "8px 24px 24px",
+        padding: "0 24px 24px",
         textAlign: "center",
       }}
     >
       <Button
         href={href}
         style={{
-          backgroundColor: brand.buttonPrimaryBg,
+          backgroundColor: brand.buttonSecondaryBg,
+          border: `1px solid ${emailTokens.border}`,
           borderRadius,
-          color: brand.buttonPrimaryText,
+          color: brand.buttonSecondaryText,
           display: "inline-block",
           fontFamily: brand.fontFamilyBody,
-          fontSize: "16px",
+          fontSize: "15px",
           fontWeight: 600,
           lineHeight: "100%",
-          padding: "14px 28px",
+          padding: "12px 24px",
           textAlign: "center",
           textDecoration: "none",
         }}

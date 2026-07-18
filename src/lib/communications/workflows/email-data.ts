@@ -1,4 +1,8 @@
 import { buildProtectedAppUrl, buildPublicAppUrl } from "@/lib/communications/links/build-protected-url";
+import {
+  ASSESSMENT_BOOKING_LABELS,
+  getTechnologyMaturityAssessmentBookingUrl,
+} from "@/lib/communications/booking-urls";
 import { getCommunicationWorkflowSettings } from "@/lib/communications/settings/workflow-settings";
 import { BRAND } from "@/lib/branding";
 
@@ -82,8 +86,8 @@ export async function buildRoadmapReadyEmailData(input: {
       href: buildProtectedAppUrl(`/clients/${input.clientId}/roadmap`),
     },
     secondaryCta: {
-      label: "Book Technology Review",
-      href: buildProtectedAppUrl(`/clients/${input.clientId}/quarterly-review`),
+      label: ASSESSMENT_BOOKING_LABELS.review,
+      href: getTechnologyMaturityAssessmentBookingUrl(),
     },
     firstName: input.firstName,
   };

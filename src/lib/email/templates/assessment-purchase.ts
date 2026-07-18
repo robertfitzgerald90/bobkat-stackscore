@@ -21,29 +21,39 @@ export async function buildActivationEmail(input: {
   };
 }
 
-export function buildAssessmentReadyEmail(input: {
+export async function buildAssessmentReadyEmail(input: {
   loginUrl: string;
   startUrl: string;
-}): { subject: string; html: string; text: string } {
-  const subject = `Your ${BRAND.reportTitle} is ready`;
+  firstName?: string;
+  organizationName?: string;
+}): Promise<{ subject: string; html: string; text: string }> {
+  const greeting = input.firstName ? `${input.firstName}, your assessment is ready` : "Your assessment is ready";
 
-  const text = [
-    `Your new ${BRAND.reportTitle} is ready.`,
-    "",
-    `Sign in to continue: ${input.loginUrl}`,
-    `Or go directly to your assessment: ${input.startUrl}`,
-    "",
-    `— ${BRAND.companyName}`,
-  ].join("\n");
+  const rendered = await renderCommunicationTemplate("LEGACY-ASSESSMENT-READY", {
+    heroTitle: "Your Assessment Workspace Is Ready",
+    heroDescription: `${BRAND.productName} is prepared for ${input.organizationName ?? "your organization"}.`,
+    previewText: "Sign in to begin your Technology Maturity Assessment.",
+    paragraphs: [
+      greeting,
+      `Your ${BRAND.reportTitle} workspace is ready. When you sign in, you can pick up where you left off or start from your dashboard.`,
+      "Your responses, scores, and recommendations will stay organized in one executive-ready workspace.",
+    ],
+    summaryTitle: "What you can do next",
+    summaryItems: [
+      "Complete the guided Technology Maturity Assessment",
+      "Review pillar scores and executive reporting",
+      "Build a practical improvement roadmap with Bobkat IT",
+    ],
+    primaryCta: { label: "Start My Assessment", href: input.startUrl },
+    secondaryCta: { label: "Sign In to StackScore", href: input.loginUrl },
+    closingParagraph: `Questions before you begin? Reply to this email or contact ${BRAND.email}.`,
+  });
 
-  const html = `
-    <p>Your new <strong>${BRAND.reportTitle}</strong> is ready.</p>
-    <p><a href="${input.loginUrl}">Sign in to StackScore</a></p>
-    <p><a href="${input.startUrl}">Start your assessment</a></p>
-    <p>— ${BRAND.companyName}</p>
-  `.trim();
-
-  return { subject, html, text };
+  return {
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+  };
 }
 
 export function buildActivationUrls(rawToken: string) {

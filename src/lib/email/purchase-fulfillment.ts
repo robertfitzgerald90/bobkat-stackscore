@@ -133,7 +133,7 @@ export async function sendPurchaseFulfillmentEmail(
     });
 
     purchaseTrace("E10", "BEFORE recordAndSendCommunication() — assessment-ready template", { to: email });
-    const content = buildAssessmentReadyEmail({
+    const content = await buildAssessmentReadyEmail({
       loginUrl: urls.loginUrl,
       startUrl: urls.startUrl,
     });

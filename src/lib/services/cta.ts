@@ -9,7 +9,7 @@ export const SERVICES_CTA_DESTINATIONS = {
   },
   purchaseAssessment: {
     label: "Purchase Technology Assessment",
-    href: "https://cal.com/bobkat-it/technology-maturity-strategy",
+    href: "/assessment-offer",
   },
   solutionsLanding: {
     label: "Explore All Solutions",

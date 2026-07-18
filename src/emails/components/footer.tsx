@@ -12,12 +12,11 @@ function websiteHref(website: string): string {
 
 export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: CommunicationBrandConfig }) {
   const siteUrl = websiteHref(brand.websiteUrl);
-  const teamLabel =
-    brand.componentSettings.footer?.teamLabel ?? `The ${brand.productName} Team`;
+  const displayWebsite = brand.websiteUrl.replace(/^https?:\/\//, "");
   const servicesLine =
-    brand.componentSettings.footer?.servicesLine ?? brand.footerTagline;
-  const showSocial =
-    brand.componentSettings.socialLinks?.enabled !== false && brand.socialLinks.length > 0;
+    brand.componentSettings.footer?.servicesLine ??
+    brand.footerTagline ??
+    "Technology consulting for growing organizations";
 
   return (
     <Section
@@ -27,25 +26,26 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
         borderTop: "none",
         borderRadius: `0 0 ${emailTokens.radius} ${emailTokens.radius}`,
         boxShadow: emailTokens.shadow,
-        padding: "24px 32px 32px",
+        padding: "24px 24px 28px",
         textAlign: "center",
       }}
     >
       <Hr style={{ borderColor: emailTokens.border, margin: "0 0 20px" }} />
       <Text
         style={{
-          margin: "0 0 8px",
-          fontSize: "14px",
-          fontWeight: 600,
-          lineHeight: "20px",
+          margin: "0 0 6px",
+          fontSize: "15px",
+          fontWeight: 700,
+          lineHeight: "22px",
           color: brand.primaryColor,
+          letterSpacing: "-0.01em",
         }}
       >
-        {teamLabel}
+        {brand.productName}
       </Text>
       <Text
         style={{
-          margin: "0 0 12px",
+          margin: "0 0 14px",
           fontSize: "13px",
           lineHeight: "20px",
           color: emailTokens.textMuted,
@@ -53,36 +53,22 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
       >
         Powered by {brand.companyName}
       </Text>
-      {servicesLine ? (
-        <Text
-          style={{
-            margin: "0 0 16px",
-            fontSize: "12px",
-            lineHeight: "18px",
-            color: emailTokens.textMuted,
-          }}
-        >
-          {servicesLine}
-        </Text>
-      ) : null}
-      {brand.address ? (
-        <Text
-          style={{
-            margin: "0 0 12px",
-            fontSize: "12px",
-            lineHeight: "18px",
-            color: emailTokens.textMuted,
-          }}
-        >
-          {brand.address}
-        </Text>
-      ) : null}
+      <Text
+        style={{
+          margin: "0 0 16px",
+          fontSize: "12px",
+          lineHeight: "18px",
+          color: emailTokens.textMuted,
+        }}
+      >
+        {servicesLine}
+      </Text>
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
           href={siteUrl}
           style={{ color: brand.primaryColor, textDecoration: "underline" }}
         >
-          {brand.websiteUrl.replace(/^https?:\/\//, "")}
+          {displayWebsite}
         </Link>
       </Text>
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
@@ -98,21 +84,9 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
           {brand.supportPhone}
         </Text>
       ) : null}
-      {showSocial ? (
-        <Text style={{ margin: "12px 0 0", fontSize: "12px", lineHeight: "20px" }}>
-          {brand.socialLinks.map((link, index) => (
-            <React.Fragment key={link.platform}>
-              {index > 0 ? " · " : null}
-              <Link href={link.url} style={{ color: brand.primaryColor, textDecoration: "underline" }}>
-                {link.label ?? link.platform}
-              </Link>
-            </React.Fragment>
-          ))}
-        </Text>
-      ) : null}
       <Text
         style={{
-          margin: "20px 0 0",
+          margin: "18px 0 0",
           fontSize: "11px",
           lineHeight: "16px",
           color: emailTokens.textMuted,

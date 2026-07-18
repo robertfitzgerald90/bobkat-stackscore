@@ -6,7 +6,6 @@ import { recordOrganizationActivity } from "@/lib/communications/activity/record
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
 import { buildActivationUrls } from "@/lib/email/templates/assessment-purchase";
 import { BRAND } from "@/lib/branding";
-import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { dispatchCommunication } from "@/lib/communications/dispatcher";
 import {
   calculateOnboardingPercentage,
@@ -75,10 +74,10 @@ function buildVcioWelcomeContext(input: {
           heroDescription:
             "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
           paragraphs: [
-            "Your organization is already configured, so there is no lengthy setup process.",
-            "Next, review your roadmap, share current priorities, and schedule your first strategy session.",
+            "Your organization is already configured, so you can move directly into planning.",
+            "Review your roadmap, share current priorities, and complete onboarding so your first strategy session starts with the right context.",
           ],
-          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Schedule your strategy session"],
+          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Complete vCIO onboarding"],
           ctaLabel: "Review Roadmap",
           primaryHref: input.roadmapUrl,
         }
@@ -86,10 +85,10 @@ function buildVcioWelcomeContext(input: {
         ? {
             heroTitle: "Welcome Back to StackScore vCIO",
             heroDescription:
-              "Your existing assessment has been connected and your advisory roadmap is ready.",
+              "Your existing assessment is connected and your advisory roadmap is ready.",
             paragraphs: [
-              "We connected your existing technology assessment, recommendations, improvement plan, and current projects.",
-              "Complete the quick setup to tell us what has changed since your assessment, then schedule your first strategy session.",
+              "We connected your technology assessment, recommendations, improvement plan, and active projects.",
+              "Complete the quick setup to tell us what has changed since your assessment, then review your roadmap with your Bobkat IT advisor.",
             ],
             summaryItems: [
               `Technology Score: ${input.technologyScore ?? "Available in your dashboard"}`,
@@ -102,15 +101,15 @@ function buildVcioWelcomeContext(input: {
         : {
             heroTitle: "Welcome to StackScore vCIO",
             heroDescription:
-              "Your strategic technology advisory service is active. Let's prepare your first planning session.",
+              "Your strategic technology advisory service is active.",
             paragraphs: [
               "StackScore vCIO gives your organization ongoing technology advisory, quarterly planning, roadmap management, executive reporting, and direct access to Bobkat IT.",
-              "Activate or sign in, complete onboarding, and schedule your initial strategy session.",
+              "Activate or sign in, complete onboarding, and we'll prepare your first strategy session with the right context.",
             ],
             summaryItems: [
               "Activate or sign in to StackScore",
               "Complete onboarding",
-              "Schedule your initial strategy session",
+              "Review your advisory dashboard",
             ],
             ctaLabel: input.activationToken ? "Activate StackScore" : "Complete Onboarding",
             primaryHref,
@@ -132,7 +131,7 @@ function buildVcioWelcomeContext(input: {
     summaryTitle: "Your next steps",
     summaryItems: scenario.summaryItems,
     primaryCta: { label: scenario.ctaLabel, href: scenario.primaryHref },
-    secondaryCta: { label: "Schedule Strategy Session", href: input.strategySessionUrl },
+    secondaryCta: { label: "Open vCIO Dashboard", href: input.dashboardUrl },
   };
 }
 
@@ -261,7 +260,7 @@ export async function initializeVcioClient(
         roadmapUrl: `${appUrl}/clients/${client.id}/roadmap`,
         strategySessionUrl: input.isTest
           ? `${appUrl}/admin/communications/testing`
-          : SERVICES_CTA_DESTINATIONS.generalConsultation.href,
+          : onboardingUrl,
       }),
     });
     if (result.status !== "sent") {

@@ -18,7 +18,7 @@ export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
         borderRadius: `${emailTokens.radius} ${emailTokens.radius} 0 0`,
         border: `1px solid ${emailTokens.border}`,
         borderBottom: "none",
-        padding: "28px 32px 24px",
+        padding: "28px 24px 20px",
         textAlign: "center",
       }}
     >
