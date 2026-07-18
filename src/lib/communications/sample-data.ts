@@ -1,3 +1,7 @@
+import {
+  formatAssessmentWelcomeSummaryItems,
+  VCIO_CUSTOMER_EMAIL_COPY,
+} from "@/lib/vcio/customer-email-copy";
 import { BRAND } from "@/lib/branding";
 import type { AccountActivationEmailData } from "@/emails/templates/account-activation";
 import type { AssessmentInvitationEmailData } from "@/emails/templates/assessment-invitation";
@@ -100,7 +104,7 @@ export function buildVcioWelcomeSampleData(
 ) {
   const dashboardUrl = PREVIEW_PROTECTED_URL;
   const onboardingUrl = "https://app.stackscore.example/portal/vcio/onboarding";
-  const strategySessionUrl = onboardingUrl;
+  const welcome = VCIO_CUSTOMER_EMAIL_COPY.welcome;
 
   return {
     clientName: "Alex",
@@ -109,32 +113,66 @@ export function buildVcioWelcomeSampleData(
     roadmapUrl: dashboardUrl,
     dashboardUrl,
     onboardingUrl,
-    strategySessionUrl,
+    strategySessionUrl: onboardingUrl,
     supportEmail: BRAND.email,
     currentYear: String(new Date().getFullYear()),
-    heroTitle: "Welcome to StackScore vCIO",
-    heroDescription:
-      "Your strategic technology advisory service is active. Let's turn your roadmap into measurable progress.",
-    paragraphs: [
-      "Welcome to StackScore vCIO. Bobkat IT will help you manage technology planning, executive reporting, roadmap progress, and quarterly reviews.",
-      "Complete your onboarding workflow so we can prepare your first strategy session with the right context.",
-    ],
-    summaryTitle: "What happens next",
-    summaryItems: [
-      "Complete your vCIO onboarding",
-      "Review your roadmap and recommendations",
-      "Schedule your first strategy session",
-    ],
+    heroTitle: welcome.heroTitle,
+    heroDescription: welcome.heroDescription,
+    paragraphs: [...welcome.paragraphs],
+    summaryTitle: welcome.summaryTitle,
+    summaryItems: [...welcome.summaryItems],
     primaryCta: {
-      label: "Complete Onboarding",
+      label: welcome.primaryCta,
       href: onboardingUrl,
     },
     secondaryCta: {
-      label: "Open vCIO Dashboard",
+      label: welcome.secondaryCta,
       href: dashboardUrl,
     },
     ...overrides,
   };
+}
+
+export function buildVcioManagedServicesWelcomeSampleData(
+  overrides: Parameters<typeof buildVcioWelcomeSampleData>[0] = {},
+) {
+  const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeManagedServices;
+  return buildVcioWelcomeSampleData({
+    heroTitle: copy.heroTitle,
+    heroDescription: copy.heroDescription,
+    paragraphs: [...copy.paragraphs],
+    summaryItems: [...copy.summaryItems],
+    primaryCta: {
+      label: copy.primaryCta,
+      href: "https://app.stackscore.example/portal/roadmap",
+    },
+    secondaryCta: {
+      label: copy.secondaryCta,
+      href: "https://app.stackscore.example/portal/vcio/onboarding",
+    },
+    ...overrides,
+  });
+}
+
+export function buildVcioAssessmentWelcomeSampleData(
+  overrides: Parameters<typeof buildVcioWelcomeSampleData>[0] = {},
+) {
+  const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeAssessmentCustomer;
+  return buildVcioWelcomeSampleData({
+    heroTitle: copy.heroTitle,
+    heroDescription: copy.heroDescription,
+    paragraphs: [...copy.paragraphs],
+    summaryItems: formatAssessmentWelcomeSummaryItems("72"),
+    primaryCta: {
+      label: copy.primaryCta,
+      href: "https://app.stackscore.example/portal/vcio/onboarding",
+    },
+    secondaryCta: {
+      label: copy.secondaryCta,
+      href: PREVIEW_PROTECTED_URL,
+    },
+    ...overrides,
+  });
 }
 
 export function mergeTemplateData<T extends Record<string, unknown>>(

@@ -23,6 +23,7 @@ import {
 } from "@/lib/vcio/constants";
 import { findClientIdByStripeCustomerId } from "@/lib/vcio/stripe-customers";
 import { initializeVcioClient } from "@/lib/vcio/initialization";
+import { VCIO_CUSTOMER_EMAIL_COPY } from "@/lib/vcio/customer-email-copy";
 
 type SyncResult =
   | {
@@ -451,14 +452,16 @@ export async function syncVcioSubscriptionFromStripe(
     const userId = clientContact.users[0]?.id ?? null;
 
     if (localSubscription.cancelAtPeriodEnd && !previousSubscription?.cancelAtPeriodEnd) {
+      const copy = VCIO_CUSTOMER_EMAIL_COPY.cancellationScheduled;
       await sendVcioLifecycleEmail({
         clientId: resolved.clientId,
         userId,
         to: clientContact.primaryContactEmail,
-        subject: "StackScore vCIO cancellation scheduled",
-        message:
-          "Your StackScore vCIO subscription is scheduled to cancel at the end of the current paid period. Access continues until that date.",
-        ctaLabel: "Manage Subscription",
+        subject: copy.subject,
+        heroTitle: copy.heroTitle,
+        previewText: copy.previewText,
+        paragraphs: [...copy.paragraphs],
+        ctaLabel: copy.primaryCta,
         ctaHref: `${appUrl}/portal/billing`,
         templateKey: "VCIO-CANCELLATION-SCHEDULED",
         workflow: "vcio_cancellation_scheduled",
@@ -474,14 +477,16 @@ export async function syncVcioSubscriptionFromStripe(
     }
 
     if (status === "canceled" && previousSubscription?.status !== "canceled") {
+      const copy = VCIO_CUSTOMER_EMAIL_COPY.subscriptionEnded;
       await sendVcioLifecycleEmail({
         clientId: resolved.clientId,
         userId,
         to: clientContact.primaryContactEmail,
-        subject: "StackScore vCIO subscription ended",
-        message:
-          "Your StackScore vCIO subscription has ended. Historical records are preserved, and ongoing advisory features may be read-only.",
-        ctaLabel: "Reactivate StackScore vCIO",
+        subject: copy.subject,
+        heroTitle: copy.heroTitle,
+        previewText: copy.previewText,
+        paragraphs: [...copy.paragraphs],
+        ctaLabel: copy.primaryCta,
         ctaHref: `${appUrl}/vcio-offer`,
         templateKey: "VCIO-SUBSCRIPTION-ENDED",
         workflow: "vcio_subscription_ended",

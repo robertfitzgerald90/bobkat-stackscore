@@ -13,10 +13,8 @@ function websiteHref(website: string): string {
 export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: CommunicationBrandConfig }) {
   const siteUrl = websiteHref(brand.websiteUrl);
   const displayWebsite = brand.websiteUrl.replace(/^https?:\/\//, "");
-  const servicesLine =
-    brand.componentSettings.footer?.servicesLine ??
-    brand.footerTagline ??
-    "Technology consulting for growing organizations";
+  const primaryLine = brand.footerTagline;
+  const secondaryLine = brand.componentSettings.footer?.servicesLine;
 
   return (
     <Section
@@ -55,14 +53,28 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
       </Text>
       <Text
         style={{
-          margin: "0 0 16px",
+          margin: "0 0 8px",
           fontSize: "12px",
           lineHeight: "18px",
           color: emailTokens.textMuted,
         }}
       >
-        {servicesLine}
+        {primaryLine}
       </Text>
+      {secondaryLine ? (
+        <Text
+          style={{
+            margin: "0 0 16px",
+            fontSize: "12px",
+            lineHeight: "18px",
+            color: emailTokens.textMuted,
+          }}
+        >
+          {secondaryLine}
+        </Text>
+      ) : (
+        <Text style={{ margin: "0 0 16px", fontSize: "12px", lineHeight: "18px" }} />
+      )}
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
           href={siteUrl}

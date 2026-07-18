@@ -74,9 +74,13 @@ export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
   supportPhone: BRAND.phone,
   address: "",
   copyrightText: `© ${new Date().getFullYear()} ${BRAND.companyName}. All rights reserved.`,
-  footerTagline: "Technology Consulting · Managed Services · Technology Strategy",
+  footerTagline: "OPERATE · PLAN · GROW",
   socialLinks: [],
-  componentSettings: {},
+  componentSettings: {
+    footer: {
+      servicesLine: "Managed IT Services · Strategic IT Consulting · Digital Presence",
+    },
+  },
 };
 
 export function normalizeBrandConfig(

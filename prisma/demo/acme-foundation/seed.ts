@@ -507,7 +507,7 @@ async function seedCommunicationRecords(input: {
     },
     {
       templateKey: "vcio-welcome",
-      subject: "Welcome to StackScore vCIO",
+      subject: "Welcome to Bobkat IT Strategic IT Consulting",
       sentAt: new Date("2025-11-04"),
     },
     {

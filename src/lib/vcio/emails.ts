@@ -8,6 +8,10 @@ import { buildActivationUrls } from "@/lib/email/templates/assessment-purchase";
 import { getAppUrl } from "@/lib/stripe/app-url";
 import type { VcioCustomerType } from "@/generated/prisma/client";
 import { BRAND } from "@/lib/branding";
+import {
+  formatAssessmentWelcomeSummaryItems,
+  VCIO_CUSTOMER_EMAIL_COPY,
+} from "@/lib/vcio/customer-email-copy";
 
 export async function sendVcioSubscriptionReceivedEmail(input: {
   clientId: string;
@@ -20,33 +24,27 @@ export async function sendVcioSubscriptionReceivedEmail(input: {
   const activationUrl = input.activationToken
     ? buildActivationUrls(input.activationToken).activationUrl
     : onboardingUrl;
+  const copy = VCIO_CUSTOMER_EMAIL_COPY.subscriptionReceived;
 
   const rendered = await renderCommunicationTemplate("EMAIL-010", {
-    heroTitle: "Your StackScore vCIO Subscription Is Active",
-    heroDescription: "We're preparing your advisory workspace and onboarding profile.",
-    previewText: "Complete onboarding to begin your vCIO strategy session.",
-    paragraphs: [
-      "Thank you for subscribing to StackScore vCIO.",
-      "Your subscription includes ongoing technology advisory, quarterly reviews, roadmap management, executive reporting, and direct access to Bobkat IT.",
-    ],
-    summaryItems: [
-      "Activate or sign in to StackScore",
-      "Complete your vCIO onboarding",
-      "Review your roadmap and priorities",
-    ],
+    heroTitle: copy.heroTitle,
+    heroDescription: copy.previewText,
+    previewText: copy.previewText,
+    paragraphs: [...copy.paragraphs],
+    summaryItems: [...copy.summaryItems],
     primaryCta: {
-      label: input.activationToken ? "Activate StackScore" : "Open vCIO Onboarding",
+      label: input.activationToken ? copy.primaryCtaActivation : copy.primaryCtaOnboarding,
       href: activationUrl,
     },
     secondaryCta: {
-      label: "Open vCIO Dashboard",
+      label: copy.secondaryCta,
       href: `${appUrl}/portal/vcio`,
     },
   });
 
   return recordAndSendCommunication({
     to: input.to,
-    subject: rendered.subject,
+    subject: VCIO_CUSTOMER_EMAIL_COPY.welcome.subject,
     html: rendered.html,
     text: rendered.text,
     previewText: rendered.previewText,
@@ -84,61 +82,53 @@ export async function sendVcioWelcomeEmail(input: {
 
   const scenario =
     input.customerType === "managed_services_client"
-      ? {
-          subject: "Your StackScore vCIO Service Is Active",
-          heroTitle: "Your StackScore vCIO Service Is Active",
-          heroDescription:
-            "Your Bobkat IT relationship is connected to your vCIO planning workspace.",
-          paragraphs: [
-            "Your organization is already configured, so you can move directly into planning.",
-            "Review your roadmap, share current priorities, and complete onboarding so your first strategy session starts with the right context.",
-          ],
-          summaryItems: [
-            "Review your roadmap",
-            "Begin quarterly planning",
-            "Complete vCIO onboarding",
-          ],
-          ctaLabel: "Review Roadmap",
-          secondaryLabel: "Complete Onboarding",
-          secondaryHref: onboardingUrl,
-        }
-      : input.customerType === "assessment_customer"
-        ? {
-            subject: "Welcome Back to StackScore vCIO",
-            heroTitle: "Welcome Back to StackScore vCIO",
-            heroDescription:
-              "Your existing assessment is connected and your advisory roadmap is ready.",
-            paragraphs: [
-              "We connected your technology assessment, recommendations, improvement plan, and active projects.",
-              "Complete the quick setup to tell us what has changed since your assessment, then review your roadmap with your Bobkat IT advisor.",
-            ],
-            summaryItems: [
-              `Technology Score: ${input.technologyScore ?? "Available in your dashboard"}`,
-              "Recommendations are available",
-              "Your roadmap is ready for review",
-            ],
-            ctaLabel: "Complete Quick Setup",
-            secondaryLabel: "Open vCIO Dashboard",
-            secondaryHref: dashboardUrl,
-          }
-        : {
-            subject: "Welcome to StackScore vCIO",
-            heroTitle: "Welcome to StackScore vCIO",
-            heroDescription:
-              "Your strategic technology advisory service is active.",
-            paragraphs: [
-              "StackScore vCIO gives your organization ongoing technology advisory, quarterly planning, roadmap management, executive reporting, and direct access to Bobkat IT.",
-              "Activate or sign in, complete onboarding, and we'll prepare your first strategy session with the right context.",
-            ],
-            summaryItems: [
-              "Activate or sign in to StackScore",
-              "Complete onboarding",
-              "Review your advisory dashboard",
-            ],
-            ctaLabel: input.activationToken ? "Activate StackScore" : "Complete Onboarding",
-            secondaryLabel: "Open vCIO Dashboard",
-            secondaryHref: dashboardUrl,
+      ? (() => {
+          const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeManagedServices;
+          return {
+            subject: copy.subject,
+            previewText: VCIO_CUSTOMER_EMAIL_COPY.welcome.previewText,
+            heroTitle: copy.heroTitle,
+            heroDescription: copy.heroDescription,
+            paragraphs: [...copy.paragraphs],
+            summaryItems: [...copy.summaryItems],
+            ctaLabel: copy.primaryCta,
+            secondaryLabel: copy.secondaryCta,
+            secondaryHref: onboardingUrl,
+            primaryHref: roadmapUrl,
           };
+        })()
+      : input.customerType === "assessment_customer"
+        ? (() => {
+            const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeAssessmentCustomer;
+            return {
+              subject: copy.subject,
+              previewText: VCIO_CUSTOMER_EMAIL_COPY.welcome.previewText,
+              heroTitle: copy.heroTitle,
+              heroDescription: copy.heroDescription,
+              paragraphs: [...copy.paragraphs],
+              summaryItems: formatAssessmentWelcomeSummaryItems(input.technologyScore),
+              ctaLabel: copy.primaryCta,
+              secondaryLabel: copy.secondaryCta,
+              secondaryHref: dashboardUrl,
+              primaryHref,
+            };
+          })()
+        : (() => {
+            const copy = VCIO_CUSTOMER_EMAIL_COPY.welcome;
+            return {
+              subject: copy.subject,
+              previewText: copy.previewText,
+              heroTitle: copy.heroTitle,
+              heroDescription: copy.heroDescription,
+              paragraphs: [...copy.paragraphs],
+              summaryTitle: copy.summaryTitle,
+              summaryItems: [...copy.summaryItems],
+              ctaLabel: input.activationToken ? "Activate StackScore" : copy.primaryCta,
+              secondaryLabel: copy.secondaryCta,
+              secondaryHref: dashboardUrl,
+              primaryHref,
+            };
+          })();
 
   const rendered = await renderCommunicationTemplate(
     "EMAIL-010",
@@ -154,10 +144,11 @@ export async function sendVcioWelcomeEmail(input: {
       currentYear: String(new Date().getFullYear()),
       heroTitle: scenario.heroTitle,
       heroDescription: scenario.heroDescription,
+      previewText: scenario.previewText,
       paragraphs: scenario.paragraphs,
-      summaryTitle: "Your next steps",
+      summaryTitle: "summaryTitle" in scenario ? scenario.summaryTitle : "What happens next",
       summaryItems: scenario.summaryItems,
-      primaryCta: { label: scenario.ctaLabel, href: primaryHref },
+      primaryCta: { label: scenario.ctaLabel, href: scenario.primaryHref },
       secondaryCta: { label: scenario.secondaryLabel, href: scenario.secondaryHref },
       closingParagraph: `Questions? Contact ${BRAND.email} and our team will help you get oriented.`,
     },
@@ -169,7 +160,7 @@ export async function sendVcioWelcomeEmail(input: {
     subject: input.isTest ? `[TEST] ${scenario.subject}` : scenario.subject,
     html: rendered.html,
     text: rendered.text,
-    previewText: rendered.previewText,
+    previewText: scenario.previewText,
     templateKey: "EMAIL-010",
     clientId: input.clientId,
     userId: input.userId ?? null,
@@ -195,24 +186,22 @@ export async function sendVcioPaymentFailedEmail(input: {
   relatedEntityId?: string | null;
 }) {
   const billingUrl = `${getAppUrl()}/portal/billing`;
+  const copy = VCIO_CUSTOMER_EMAIL_COPY.paymentFailed;
   const rendered = await renderCommunicationTemplate("VCIO-PAYMENT-FAILED", {
-    heroTitle: "Payment Action Needed",
-    heroDescription: "We couldn't process your latest StackScore vCIO payment.",
-    previewText: "Update billing to keep advisory access active.",
-    paragraphs: [
-      "Your StackScore vCIO subscription payment did not go through.",
-      `Advisory access remains available during the ${input.gracePeriodDays}-day grace period. Please update billing to avoid read-only access.`,
-    ],
-    primaryCta: { label: "Manage Billing", href: billingUrl },
+    heroTitle: copy.heroTitle,
+    heroDescription: copy.previewText,
+    previewText: copy.previewText,
+    paragraphs: [...copy.paragraphs],
+    primaryCta: { label: copy.primaryCta, href: billingUrl },
     closingParagraph: `Need help? Contact ${BRAND.email} and we'll assist right away.`,
   });
 
   await recordAndSendCommunication({
     to: input.to,
-    subject: rendered.subject,
+    subject: copy.subject,
     html: rendered.html,
     text: rendered.text,
-    previewText: rendered.previewText,
+    previewText: copy.previewText,
     templateKey: "VCIO-PAYMENT-FAILED",
     eventKey: "VCIO_PAYMENT_FAILED",
     sendType: "AUTOMATED",
@@ -231,7 +220,10 @@ export async function sendVcioLifecycleEmail(input: {
   userId?: string | null;
   to: string;
   subject: string;
-  message: string;
+  heroTitle: string;
+  message?: string;
+  previewText?: string;
+  paragraphs?: string[];
   ctaLabel: string;
   ctaHref: string;
   templateKey: string;
@@ -240,21 +232,22 @@ export async function sendVcioLifecycleEmail(input: {
   idempotencyKey?: string;
   relatedEntityId?: string | null;
 }) {
+  const fallbackMessage = input.message ?? input.paragraphs?.[0] ?? input.previewText ?? input.heroTitle;
   const rendered = await renderCommunicationTemplate(input.templateKey, {
-    heroTitle: input.subject.replace(/^StackScore vCIO /i, ""),
-    heroDescription: input.message,
-    previewText: input.message,
-    paragraphs: [input.message],
+    heroTitle: input.heroTitle,
+    heroDescription: input.previewText ?? fallbackMessage,
+    previewText: input.previewText ?? fallbackMessage,
+    paragraphs: input.paragraphs ?? (input.message ? [input.message] : undefined),
     primaryCta: { label: input.ctaLabel, href: input.ctaHref },
     closingParagraph: `Questions? Contact ${BRAND.email}.`,
   });
 
   await recordAndSendCommunication({
     to: input.to,
-    subject: rendered.subject,
+    subject: input.subject,
     html: rendered.html,
     text: rendered.text,
-    previewText: rendered.previewText,
+    previewText: input.previewText ?? rendered.previewText,
     templateKey: input.templateKey,
     eventKey: input.eventKey ?? null,
     sendType: "AUTOMATED",

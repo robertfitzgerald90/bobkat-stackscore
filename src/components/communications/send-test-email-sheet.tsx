@@ -14,6 +14,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { SampleProfileView } from "@/lib/communications/sample-profiles";
+import {
+  buildVcioAssessmentWelcomeSampleData,
+  buildVcioManagedServicesWelcomeSampleData,
+} from "@/lib/communications/sample-data";
 
 type SendTestEmailSheetProps = {
   open: boolean;
@@ -67,29 +71,19 @@ export function SendTestEmailSheet({
       if (vcioCustomerType === "assessment_customer") {
         return {
           ...base,
-          heroTitle: "Welcome Back to StackScore vCIO",
-          heroDescription:
-            "Your existing assessment has been connected and your advisory roadmap is ready.",
-          paragraphs: [
-            "We connected your existing technology assessment, recommendations, improvement plan, and current projects.",
-            "Complete the quick setup to tell us what has changed since your assessment, then schedule your first strategy session.",
-          ],
-          summaryItems: ["Technology Score: 72", "Recommendations are available", "Your roadmap is ready for review"],
-          primaryCta: { label: "Complete Quick Setup", href: "https://app.stackscore.example/portal/vcio/onboarding" },
+          ...buildVcioAssessmentWelcomeSampleData({
+            clientName: firstName || undefined,
+            organizationName: organizationName || undefined,
+          }),
         };
       }
       if (vcioCustomerType === "managed_services_client") {
         return {
           ...base,
-          heroTitle: "Your StackScore vCIO Service Is Active",
-          heroDescription:
-            "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
-          paragraphs: [
-            "Your organization is already configured, so there is no lengthy setup process.",
-            "Next, review your roadmap, share current priorities, and schedule your first strategy session.",
-          ],
-          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Schedule your strategy session"],
-          primaryCta: { label: "Review Roadmap", href: "https://app.stackscore.example/portal/roadmap" },
+          ...buildVcioManagedServicesWelcomeSampleData({
+            clientName: firstName || undefined,
+            organizationName: organizationName || undefined,
+          }),
         };
       }
       return base;

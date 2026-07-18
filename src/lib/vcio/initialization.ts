@@ -12,6 +12,10 @@ import {
   detectVcioCustomerType,
   getClientSuccessDashboardPath,
 } from "@/lib/vcio/onboarding";
+import {
+  formatAssessmentWelcomeSummaryItems,
+  VCIO_CUSTOMER_EMAIL_COPY,
+} from "@/lib/vcio/customer-email-copy";
 
 export type VcioInitializationSource = "STRIPE" | "ADMIN_TEST" | "MANUAL";
 
@@ -69,51 +73,40 @@ function buildVcioWelcomeContext(input: {
     : input.onboardingUrl;
   const scenario =
     input.customerType === "managed_services_client"
-      ? {
-          heroTitle: "Your StackScore vCIO Service Is Active",
-          heroDescription:
-            "Welcome back. Your Bobkat IT relationship is already connected to your vCIO planning workspace.",
-          paragraphs: [
-            "Your organization is already configured, so you can move directly into planning.",
-            "Review your roadmap, share current priorities, and complete onboarding so your first strategy session starts with the right context.",
-          ],
-          summaryItems: ["Review your roadmap", "Begin quarterly planning", "Complete vCIO onboarding"],
-          ctaLabel: "Review Roadmap",
-          primaryHref: input.roadmapUrl,
-        }
-      : input.customerType === "assessment_customer"
-        ? {
-            heroTitle: "Welcome Back to StackScore vCIO",
-            heroDescription:
-              "Your existing assessment is connected and your advisory roadmap is ready.",
-            paragraphs: [
-              "We connected your technology assessment, recommendations, improvement plan, and active projects.",
-              "Complete the quick setup to tell us what has changed since your assessment, then review your roadmap with your Bobkat IT advisor.",
-            ],
-            summaryItems: [
-              `Technology Score: ${input.technologyScore ?? "Available in your dashboard"}`,
-              "Recommendations are available",
-              "Your roadmap is ready for review",
-            ],
-            ctaLabel: "Complete Quick Setup",
-            primaryHref,
-          }
-        : {
-            heroTitle: "Welcome to StackScore vCIO",
-            heroDescription:
-              "Your strategic technology advisory service is active.",
-            paragraphs: [
-              "StackScore vCIO gives your organization ongoing technology advisory, quarterly planning, roadmap management, executive reporting, and direct access to Bobkat IT.",
-              "Activate or sign in, complete onboarding, and we'll prepare your first strategy session with the right context.",
-            ],
-            summaryItems: [
-              "Activate or sign in to StackScore",
-              "Complete onboarding",
-              "Review your advisory dashboard",
-            ],
-            ctaLabel: input.activationToken ? "Activate StackScore" : "Complete Onboarding",
-            primaryHref,
+      ? (() => {
+          const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeManagedServices;
+          return {
+            heroTitle: copy.heroTitle,
+            heroDescription: copy.heroDescription,
+            paragraphs: [...copy.paragraphs],
+            summaryItems: [...copy.summaryItems],
+            ctaLabel: copy.primaryCta,
+            primaryHref: input.roadmapUrl,
           };
+        })()
+      : input.customerType === "assessment_customer"
+        ? (() => {
+            const copy = VCIO_CUSTOMER_EMAIL_COPY.welcomeAssessmentCustomer;
+            return {
+              heroTitle: copy.heroTitle,
+              heroDescription: copy.heroDescription,
+              paragraphs: [...copy.paragraphs],
+              summaryItems: formatAssessmentWelcomeSummaryItems(input.technologyScore),
+              ctaLabel: copy.primaryCta,
+              primaryHref,
+            };
+          })()
+        : (() => {
+            const copy = VCIO_CUSTOMER_EMAIL_COPY.welcome;
+            return {
+              heroTitle: copy.heroTitle,
+              heroDescription: copy.heroDescription,
+              paragraphs: [...copy.paragraphs],
+              summaryItems: [...copy.summaryItems],
+              ctaLabel: input.activationToken ? "Activate StackScore" : copy.primaryCta,
+              primaryHref,
+            };
+          })();
 
   return {
     clientName: input.clientName ?? "there",
@@ -128,10 +121,21 @@ function buildVcioWelcomeContext(input: {
     heroTitle: scenario.heroTitle,
     heroDescription: scenario.heroDescription,
     paragraphs: scenario.paragraphs,
-    summaryTitle: "Your next steps",
+    summaryTitle: VCIO_CUSTOMER_EMAIL_COPY.welcome.summaryTitle,
     summaryItems: scenario.summaryItems,
     primaryCta: { label: scenario.ctaLabel, href: scenario.primaryHref },
-    secondaryCta: { label: "Open vCIO Dashboard", href: input.dashboardUrl },
+    secondaryCta: {
+      label:
+        input.customerType === "managed_services_client"
+          ? VCIO_CUSTOMER_EMAIL_COPY.welcomeManagedServices.secondaryCta
+          : input.customerType === "assessment_customer"
+            ? VCIO_CUSTOMER_EMAIL_COPY.welcomeAssessmentCustomer.secondaryCta
+            : VCIO_CUSTOMER_EMAIL_COPY.welcome.secondaryCta,
+      href:
+        input.customerType === "managed_services_client"
+          ? input.onboardingUrl
+          : input.dashboardUrl,
+    },
   };
 }
 
