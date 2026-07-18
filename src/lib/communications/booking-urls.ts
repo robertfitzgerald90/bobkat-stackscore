@@ -1,4 +1,4 @@
-import { getAppUrl } from "@/lib/stripe/app-url";
+import { getBaseUrl } from "@/lib/url/base-url";
 
 /** Public marketing path for the Technology Maturity Assessment offer. */
 export const TECHNOLOGY_MATURITY_ASSESSMENT_BOOKING_PATH = "/assessment-offer";
@@ -16,7 +16,7 @@ export function getTechnologyMaturityAssessmentBookingUrl(): string {
     return fromEnv.replace(/\/$/, "");
   }
 
-  return `${getAppUrl()}${TECHNOLOGY_MATURITY_ASSESSMENT_BOOKING_PATH}`;
+  return `${getBaseUrl()}${TECHNOLOGY_MATURITY_ASSESSMENT_BOOKING_PATH}`;
 }
 
 export const ASSESSMENT_BOOKING_LABELS = {

@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Bobkat Manufacturing provides secure industrial networking, IT and OT integration, business continuity, operational monitoring, and resilient technology solutions for manufacturing organizations.",
   alternates: {
-    canonical: "https://stackscore.bobkatit.com/solutions/manufacturing",
+    canonical: "/solutions/manufacturing",
   },
   openGraph: {
     title: "Bobkat Manufacturing | Industrial IT & Operational Technology Solutions",
     description:
       "Secure industrial networking, IT and OT integration, business continuity, operational monitoring, and resilient technology solutions for manufacturing organizations.",
-    url: "https://stackscore.bobkatit.com/solutions/manufacturing",
+    url: "/solutions/manufacturing",
     type: "website",
     images: [
       {

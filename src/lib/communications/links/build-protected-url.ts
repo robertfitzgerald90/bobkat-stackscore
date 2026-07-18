@@ -1,19 +1,16 @@
-import { getAppUrl } from "@/lib/stripe/app-url";
+import { buildAppPath, buildAppUrl, getBaseUrl } from "@/lib/url/base-url";
 
-export function buildAppPath(path: string): string {
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  return normalized;
-}
+export { buildAppPath };
 
 export function buildPublicAppUrl(path: string): string {
-  return `${getAppUrl()}${buildAppPath(path)}`;
+  return buildAppUrl(path);
 }
 
 /** Wraps a protected in-app path with login redirect preservation. */
 export function buildProtectedAppUrl(path: string): string {
   const callbackPath = buildAppPath(path);
   const params = new URLSearchParams({ callbackUrl: callbackPath });
-  return `${getAppUrl()}/login?${params.toString()}`;
+  return `${getBaseUrl()}/login?${params.toString()}`;
 }
 
 export function buildInvitationLandingUrl(input?: {

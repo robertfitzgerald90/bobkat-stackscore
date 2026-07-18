@@ -8,8 +8,8 @@ Check **Production** and ensure variables apply to **Build** and **Runtime**.
 |----------|-----------------|
 | `DATABASE_URL` | Neon pooled connection string with `?sslmode=require` |
 | `AUTH_SECRET` | 32+ char random string (can differ from local) |
-| `AUTH_URL` | `https://stackscore.bobkatit.com` |
-| `NEXT_PUBLIC_APP_URL` | `https://stackscore.bobkatit.com` |
+| `AUTH_URL` | `https://stackscore.tech` |
+| `NEXT_PUBLIC_APP_URL` | `https://stackscore.tech` |
 
 ## One-time Neon database setup
 
@@ -110,7 +110,7 @@ Open the failed deployment → **Build** logs and find the last `>` command:
 | | Local (`.env`) | Production (Vercel) |
 |--|----------------|-------------------|
 | Database | Home/LAN PostgreSQL | Neon |
-| `AUTH_URL` | `http://localhost:3000` | `https://stackscore.bobkatit.com` |
+| `AUTH_URL` | `http://localhost:3000` | `https://stackscore.tech` |
 | Secrets | `.env` (gitignored) | Vercel env vars only |
 
 See [DEPLOY.md](DEPLOY.md) for full pilot deployment steps.

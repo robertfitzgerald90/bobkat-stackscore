@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Bobkat Professional provides strategic IT leadership, enterprise-inspired cybersecurity, centralized management, and proactive technology planning for growing organizations.",
   alternates: {
-    canonical: "https://stackscore.bobkatit.com/solutions/professional",
+    canonical: "/solutions/professional",
   },
   openGraph: {
     title: "Bobkat Professional | Strategic IT for Growing Businesses",
     description:
       "Strategic IT leadership, enterprise-inspired cybersecurity, centralized management, and proactive technology planning for growing organizations.",
-    url: "https://stackscore.bobkatit.com/solutions/professional",
+    url: "/solutions/professional",
     type: "website",
     images: [
       {

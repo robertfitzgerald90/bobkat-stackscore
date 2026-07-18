@@ -37,7 +37,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "activationUrl",
     description: "Secure one-time account activation link.",
-    example: "https://stackscore.bobkatit.com/activate?token=…",
+    example: "https://stackscore.tech/activate?token=…",
     category: "Authentication",
     required: true,
     source: "Account activation token",
@@ -61,7 +61,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "resultsUrl",
     description: "Link to completed assessment results.",
-    example: "https://stackscore.bobkatit.com/clients/…/technology-profile",
+    example: "https://stackscore.tech/clients/…/technology-profile",
     category: "Assessment",
     required: true,
     source: "Assessment record",
@@ -69,7 +69,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "roadmapUrl",
     description: "Link to the generated technology roadmap.",
-    example: "https://stackscore.bobkatit.com/clients/…/roadmap",
+    example: "https://stackscore.tech/clients/…/roadmap",
     category: "Roadmap",
     required: true,
     source: "Roadmap record",
@@ -77,7 +77,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "proposalUrl",
     description: "Link to a technology proposal document.",
-    example: "https://stackscore.bobkatit.com/clients/…/proposals/…",
+    example: "https://stackscore.tech/clients/…/proposals/…",
     category: "Proposal",
     required: true,
     source: "Proposal record",
@@ -85,7 +85,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "resetUrl",
     description: "Secure password reset link.",
-    example: "https://stackscore.bobkatit.com/reset-password?token=…",
+    example: "https://stackscore.tech/reset-password?token=…",
     category: "Authentication",
     required: true,
     source: "Password reset token",
@@ -93,7 +93,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "reviewUrl",
     description: "Scheduling link for quarterly technology review.",
-    example: "https://stackscore.bobkatit.com/review/schedule",
+    example: "https://stackscore.tech/review/schedule",
     category: "Future",
     required: true,
     source: "Review workflow",
@@ -101,7 +101,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "projectUrl",
     description: "Link to a project workspace.",
-    example: "https://stackscore.bobkatit.com/projects/…",
+    example: "https://stackscore.tech/projects/…",
     category: "Projects",
     required: true,
     source: "Project record",
@@ -117,7 +117,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "invitationUrl",
     description: "Assessment invitation acceptance link.",
-    example: "https://stackscore.bobkatit.com/assessment/invite/…",
+    example: "https://stackscore.tech/assessment/invite/…",
     category: "Assessment",
     required: true,
     source: "Invitation token",

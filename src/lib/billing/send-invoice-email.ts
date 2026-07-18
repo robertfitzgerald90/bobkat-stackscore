@@ -3,6 +3,7 @@ import { sendEmail } from "@/lib/email/send";
 import { formatMoney } from "@/lib/billing/money";
 import { recordBillingAudit } from "@/lib/billing/audit";
 import { BRAND } from "@/lib/branding";
+import { buildAppUrl } from "@/lib/url/base-url";
 import { createInvoiceCheckoutSession } from "@/lib/billing/stripe-checkout";
 
 type SendInvoiceEmailInput = {
@@ -28,7 +29,9 @@ export async function sendInvoiceEmail(input: SendInvoiceEmailInput) {
     paymentUrl = session.url;
   }
 
-  const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/clients/${invoice.clientId}/billing/invoices/${invoice.id}`;
+  const viewUrl = buildAppUrl(
+    `/clients/${invoice.clientId}/billing/invoices/${invoice.id}`,
+  );
   const subject = input.isReminder
     ? `Payment reminder — Invoice ${invoice.invoiceNumber}`
     : `Invoice ${invoice.invoiceNumber} from ${BRAND.companyName}`;

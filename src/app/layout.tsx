@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
+import { getBaseUrl } from "@/lib/url/base-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,6 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getBaseUrl()),
   title: "Bobkat StackScore",
   description: "Technology maturity assessments for small and medium businesses",
   icons: {

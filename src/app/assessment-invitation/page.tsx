@@ -8,19 +8,22 @@ import type {
 const title = "You've Been Invited | StackScore";
 const description =
   "Start your free Technology Snapshot and discover strengths, risks, and practical technology insights.";
-const ogImageUrl = "https://stackscore.bobkatit.com/images/og/assessment-invitation.png";
+const ogImagePath = "/images/og/assessment-invitation.png";
 
 export const metadata: Metadata = {
   title,
   description,
+  alternates: {
+    canonical: "/assessment-invitation",
+  },
   openGraph: {
     title,
     description,
-    url: "https://stackscore.bobkatit.com/assessment-invitation",
+    url: "/assessment-invitation",
     type: "website",
     images: [
       {
-        url: ogImageUrl,
+        url: ogImagePath,
         alt: "StackScore Technology Snapshot invitation",
       },
     ],
@@ -29,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: [ogImageUrl],
+    images: [ogImagePath],
   },
 };
 

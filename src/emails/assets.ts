@@ -1,11 +1,11 @@
-import { getAppUrl } from "@/lib/stripe/app-url";
+import { getBaseUrl } from "@/lib/url/base-url";
 
 /** Absolute URL for a public asset used in HTML emails (required by Gmail, Outlook, Apple Mail). */
 export function getEmailAssetUrl(assetPath: string): string {
   const base = (
     process.env.EMAIL_ASSET_BASE_URL?.trim() ||
     process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    getAppUrl()
+    getBaseUrl()
   ).replace(/\/$/, "");
 
   const path = assetPath.startsWith("/") ? assetPath : `/${assetPath}`;

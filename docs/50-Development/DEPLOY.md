@@ -31,7 +31,7 @@ Copy `.env.example` to `.env` and configure:
 |----------|----------|-------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `AUTH_SECRET` | Yes | **32+ characters** in production (`openssl rand -base64 32`) |
-| `AUTH_URL` | Yes (production) | Canonical URL, e.g. `https://stackscore.bobkatit.local` or `http://192.168.1.106:3000` |
+| `AUTH_URL` | Yes (production) | Canonical URL — production: `https://stackscore.tech`; local: `http://localhost:3000` |
 | `NEXT_PUBLIC_APP_URL` | Recommended | Same as `AUTH_URL` for links |
 | `SEED_ADMIN_PASSWORD` | First seed only | Change default before first `db:seed` in production |
 
@@ -56,8 +56,8 @@ See **[ENVIRONMENTS.md](ENVIRONMENTS.md)** for the full split and Vercel build s
    |----------|--------|
    | `DATABASE_URL` | Neon connection string (`?sslmode=require`) |
    | `AUTH_SECRET` | 32+ character random string |
-   | `AUTH_URL` | `https://stackscore.bobkatit.com` |
-   | `NEXT_PUBLIC_APP_URL` | `https://stackscore.bobkatit.com` |
+   | `AUTH_URL` | `https://stackscore.tech` |
+   | `NEXT_PUBLIC_APP_URL` | `https://stackscore.tech` |
 
 2. **Build Command:** `npm run vercel-build`
 
@@ -112,7 +112,9 @@ This marks the initial migration as applied and keeps future schema changes on t
 ## Production Checklist
 
 - [ ] `AUTH_SECRET` is 32+ random characters (not the example value)
-- [ ] `AUTH_URL` matches the URL users actually open in the browser
+- [ ] `AUTH_URL` matches the URL users actually open in the browser (`https://stackscore.tech` in production)
+- [ ] `NEXT_PUBLIC_APP_URL` matches `AUTH_URL` in production
+- [ ] Legacy domain `stackscore.bobkatit.com` remains attached in Vercel/DNS so middleware can 308-redirect to `stackscore.tech`
 - [ ] `SEED_ADMIN_PASSWORD` changed before first seed
 - [ ] PostgreSQL backups scheduled (daily minimum)
 - [ ] `npm test` passes

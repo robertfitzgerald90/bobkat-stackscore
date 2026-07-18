@@ -5,14 +5,14 @@ import { extractLinkLabel, maskSensitiveUrl } from "@/lib/communications/trackin
 describe("communications url sanitization", () => {
   it("masks activation tokens in URLs", () => {
     const masked = maskSensitiveUrl(
-      "https://stackscore.bobkatit.com/activate-account?token=super-secret",
+      "https://stackscore.tech/activate-account?token=super-secret",
     );
     expect(masked).toContain("token=%5Bredacted%5D");
     expect(masked).not.toContain("super-secret");
   });
 
   it("labels activation links", () => {
-    expect(extractLinkLabel("https://stackscore.bobkatit.com/activate-account")).toBe(
+    expect(extractLinkLabel("https://stackscore.tech/activate-account")).toBe(
       "Activation link",
     );
   });

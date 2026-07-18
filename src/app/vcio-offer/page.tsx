@@ -1,28 +1,29 @@
 import type { Metadata } from "next";
 import { VcioOfferLanding } from "@/components/vcio/vcio-offer-landing";
+import { buildAppUrl } from "@/lib/url/base-url";
 
 const title = "StackScore vCIO | Strategic Technology Advisory";
 const description =
   "Ongoing technology strategy, quarterly reviews, executive reporting, roadmap management, budget planning, and direct access to a strategic technology advisor for $300 per month.";
-const url = "https://stackscore.bobkatit.com/vcio-offer";
-const image = "https://stackscore.bobkatit.com/images/og/assessment-invitation.png";
+const pagePath = "/vcio-offer";
+const ogImagePath = "/images/og/assessment-invitation.png";
 
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/vcio-offer" },
+  alternates: { canonical: pagePath },
   openGraph: {
     title,
     description,
-    url,
+    url: pagePath,
     type: "website",
-    images: [{ url: image, alt: "StackScore vCIO strategic technology advisory" }],
+    images: [{ url: ogImagePath, alt: "StackScore vCIO strategic technology advisory" }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: [image],
+    images: [ogImagePath],
   },
 };
 
@@ -42,7 +43,7 @@ export default function VcioOfferPage() {
       price: "300",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
-      url,
+      url: buildAppUrl(pagePath),
     },
   };
 

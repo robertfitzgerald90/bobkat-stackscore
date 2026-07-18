@@ -15,8 +15,8 @@ describe("getAppUrl", () => {
   });
 
   it("prefers NEXT_PUBLIC_APP_URL", () => {
-    process.env.NEXT_PUBLIC_APP_URL = "https://stackscore.bobkatit.com/";
-    expect(getAppUrl()).toBe("https://stackscore.bobkatit.com");
+    process.env.NEXT_PUBLIC_APP_URL = "https://stackscore.tech/";
+    expect(getAppUrl()).toBe("https://stackscore.tech");
   });
 
   it("falls back to AUTH_URL", () => {

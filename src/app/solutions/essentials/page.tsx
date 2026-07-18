@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Bobkat Essentials provides secure networking, Microsoft 365 management, cybersecurity, monitoring, backups, and proactive IT support for small businesses.",
   alternates: {
-    canonical: "https://stackscore.bobkatit.com/solutions/essentials",
+    canonical: "/solutions/essentials",
   },
   openGraph: {
     title: "Bobkat Essentials | Complete IT for Small Businesses",
     description:
       "Secure networking, Microsoft 365 management, cybersecurity, monitoring, backups, and proactive IT support for small businesses.",
-    url: "https://stackscore.bobkatit.com/solutions/essentials",
+    url: "/solutions/essentials",
     type: "website",
     images: [
       {
