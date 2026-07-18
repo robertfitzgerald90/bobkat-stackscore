@@ -90,7 +90,6 @@ export const SERVICES_CATALOG: ServiceCatalogItem[] = [
     primaryCta: "managedItConsultation",
     imagePosition: "right",
     image: {
-      // TODO: Replace this static graphic with a $15/device/month version; the current image includes baked-in $500/month pricing.
       src: "/services/managed-it-services.png",
       alt: "Bobkat IT Managed IT Services service preview",
     },
