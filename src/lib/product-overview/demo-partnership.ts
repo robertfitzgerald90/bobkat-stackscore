@@ -9,6 +9,11 @@ import type {
   DemoSuccessOutcome,
   DemoTimelineSnapshot,
 } from "@/lib/product-overview/types";
+import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
+
+const DEMO_ANNUAL_PLAN = NORTHSTAR_DEMO_BUDGET.planned;
+const DEMO_NEXT_YEAR_PLAN = DEMO_ANNUAL_PLAN + 4_000;
+const DEMO_ASSESSMENT_BASELINE_PLAN = Math.round(NORTHSTAR_DEMO_BUDGET.operatingAnnual + 10_000);
 
 export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
   {
@@ -21,7 +26,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 18,
       activeProjects: 0,
       roadmapCompletionPercent: 0,
-      annualTechnologyPlan: 42_000,
+      annualTechnologyPlan: DEMO_ASSESSMENT_BASELINE_PLAN,
       approvedSpend: 0,
       highPriorityRecommendations: 7,
     },
@@ -37,7 +42,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 16,
       activeProjects: 0,
       roadmapCompletionPercent: 8,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 12_000,
       highPriorityRecommendations: 6,
     },
@@ -53,7 +58,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 15,
       activeProjects: 2,
       roadmapCompletionPercent: 18,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 18_000,
       highPriorityRecommendations: 5,
     },
@@ -69,7 +74,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 14,
       activeProjects: 4,
       roadmapCompletionPercent: 28,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 24_000,
       highPriorityRecommendations: 5,
     },
@@ -85,7 +90,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 12,
       activeProjects: 4,
       roadmapCompletionPercent: 35,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 27_000,
       highPriorityRecommendations: 4,
     },
@@ -101,7 +106,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 10,
       activeProjects: 3,
       roadmapCompletionPercent: 48,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 30_000,
       highPriorityRecommendations: 3,
     },
@@ -117,7 +122,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 9,
       activeProjects: 3,
       roadmapCompletionPercent: 55,
-      annualTechnologyPlan: 48_000,
+      annualTechnologyPlan: DEMO_ANNUAL_PLAN,
       approvedSpend: 30_000,
       highPriorityRecommendations: 3,
     },
@@ -133,11 +138,11 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 8,
       activeProjects: 2,
       roadmapCompletionPercent: 62,
-      annualTechnologyPlan: 52_000,
+      annualTechnologyPlan: DEMO_NEXT_YEAR_PLAN,
       approvedSpend: 18_000,
       highPriorityRecommendations: 2,
     },
-    summary: "Leadership aligns next-year investments with a refreshed $52,000 plan and three-year vision.",
+    summary: `Leadership aligns next-year investments with a refreshed $${DEMO_NEXT_YEAR_PLAN.toLocaleString("en-US")} plan and three-year vision.`,
   },
   {
     id: "annual-review",
@@ -149,7 +154,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       openRecommendations: 7,
       activeProjects: 2,
       roadmapCompletionPercent: 68,
-      annualTechnologyPlan: 52_000,
+      annualTechnologyPlan: DEMO_NEXT_YEAR_PLAN,
       approvedSpend: 22_000,
       highPriorityRecommendations: 2,
     },
@@ -380,10 +385,10 @@ export const EXECUTIVE_DECISION_WIDGETS: DemoExecutiveWidget[] = [
   {
     id: "budget-health",
     label: "Budget Health",
-    value: "63% utilized",
+    value: `${NORTHSTAR_DEMO_BUDGET.utilizationPercent}% utilized`,
     status: "healthy",
     whyExecutivesCare: "Technology spending must align with approved plans without surprise overruns.",
-    businessImplications: "$12,000 remaining on a $48,000 annual plan — capacity for prioritized Q4 work.",
+    businessImplications: `$${NORTHSTAR_DEMO_BUDGET.remaining.toLocaleString("en-US")} remaining on a $${DEMO_ANNUAL_PLAN.toLocaleString("en-US")} annual plan — capacity for prioritized Q4 work.`,
     suggestedAction: "Approve Q4 Ubiquiti network refresh from remaining planned investment.",
   },
   {

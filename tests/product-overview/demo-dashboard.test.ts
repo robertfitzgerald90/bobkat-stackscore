@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { northstarDemoDashboard } from "@/lib/product-overview/demo-dashboard";
+import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
+import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
 import {
   DEMO_BUDGET_PERIODS,
   DEMO_BUSINESS_OUTCOME_KPIS,
@@ -38,7 +40,7 @@ import {
 describe("product overview demo dashboard", () => {
   it("uses the Northstar Manufacturing demo organization", () => {
     expect(northstarDemoDashboard.organization.name).toBe("Northstar Manufacturing");
-    expect(northstarDemoDashboard.organization.employeeCount).toBe(55);
+    expect(northstarDemoDashboard.organization.employeeCount).toBe(DEFAULT_DEMO_COMPANY_PROFILE.employeeCount);
   });
 
   it("includes the Phase 1 dashboard metrics", () => {
@@ -47,8 +49,8 @@ describe("product overview demo dashboard", () => {
     expect(northstarDemoDashboard.metrics.activeProjects).toBe(4);
     expect(northstarDemoDashboard.metrics.roadmapCompletionPercent).toBe(42);
     expect(northstarDemoDashboard.quarterlyReview.nextReviewDate).toBe("September 15, 2026");
-    expect(northstarDemoDashboard.budget.planned).toBe(48_000);
-    expect(northstarDemoDashboard.budget.approved).toBe(30_000);
+    expect(northstarDemoDashboard.budget.planned).toBe(NORTHSTAR_DEMO_BUDGET.planned);
+    expect(northstarDemoDashboard.budget.approved).toBe(NORTHSTAR_DEMO_BUDGET.approved);
     expect(northstarDemoDashboard.technologyScore.projectedScore).toBe(82);
   });
 
@@ -69,7 +71,9 @@ describe("product overview demo dashboard", () => {
   it("includes extended quarterly review metrics", () => {
     expect(northstarDemoDashboard.quarterlyReview.currentScore).toBe(68);
     expect(northstarDemoDashboard.quarterlyReview.previousScore).toBe(62);
-    expect(northstarDemoDashboard.quarterlyReview.budgetUtilizationPercent).toBe(63);
+    expect(northstarDemoDashboard.quarterlyReview.budgetUtilizationPercent).toBe(
+      NORTHSTAR_DEMO_BUDGET.utilizationPercent,
+    );
   });
 
   it("includes recommendations and roadmap initiatives for Phase 2", () => {

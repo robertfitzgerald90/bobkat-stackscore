@@ -1,4 +1,8 @@
 /** Stable identifiers for idempotent Pinnacle Engineering demo seeding. */
+import { getPinnacleSeedTechnologyBudgets } from "@/lib/demo-data/demo-financial-profile";
+
+const PINNACLE_DEMO_BUDGETS = getPinnacleSeedTechnologyBudgets();
+
 export const ACME_DEMO = {
   clientId: "a0000001-0000-4000-8000-000000000001",
   clientUserId: "a0000001-0000-4000-8000-000000000002",
@@ -36,8 +40,8 @@ export const ACME_DEMO = {
   locationCity: "Dallas",
   locationState: "Texas",
   notesMarker: "DEMO:PINNACLE_ENGINEERING",
-  annualTechnologyBudgetCents: 8_250_000,
-  remainingTechnologyBudgetCents: 3_120_000,
+  annualTechnologyBudgetCents: PINNACLE_DEMO_BUDGETS.annualTechnologyBudgetCents,
+  remainingTechnologyBudgetCents: PINNACLE_DEMO_BUDGETS.remainingTechnologyBudgetCents,
 } as const;
 
 export const ACME_DEMO_REC_KEYS = [

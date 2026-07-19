@@ -1,13 +1,11 @@
 import { Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { PdfFlowSection } from "@/lib/pdf/shared/components/flow-section";
-import { PdfReportFooter } from "@/lib/pdf/shared/components/report-footer";
-import { PdfReportHeader } from "@/lib/pdf/shared/components/report-header";
-import { PdfKpiCard, PdfKpiRow } from "@/lib/pdf/shared/components/kpi-card";
-import { PdfReportTable } from "@/lib/pdf/shared/components/report-table";
 import { PdfProgressBar } from "@/lib/pdf/shared/components/report-bar";
 import { COLORS } from "@/lib/pdf/shared/colors";
-import { REPORT_SPACING } from "@/lib/pdf/shared/tokens";
+import { PdfTipReportFooter } from "@/lib/pdf/tip/footer";
+import { PdfTipReportHeader } from "@/lib/pdf/tip/header";
+import { PdfTipSection } from "@/lib/pdf/tip/section";
+import { TIP_PAGINATION } from "@/lib/pdf/tip/tokens";
 import type { TipReportData } from "@/lib/pdf/types";
 import type {
   TipBusinessValueMetric,
@@ -24,14 +22,13 @@ import {
 export function PdfTipPageChrome({ data }: { data: TipReportData }) {
   return (
     <>
-      <PdfReportHeader
+      <PdfTipReportHeader
         clientName={data.clientName}
         generatedDate={data.generatedDate}
-        documentLabel="Technology Improvement Plan"
         technologyScore={data.currentScore}
         reportVersion={String(data.version)}
       />
-      <PdfReportFooter
+      <PdfTipReportFooter
         generatedDate={data.generatedDate}
         clientName={data.clientName}
         documentVersion={String(data.version)}
@@ -42,20 +39,40 @@ export function PdfTipPageChrome({ data }: { data: TipReportData }) {
 
 export function PdfAssessmentScope() {
   return (
-    <PdfFlowSection title="Assessment Scope">
-      <View style={styles.scopeBox}>
+    <PdfTipSection title="Assessment Scope">
+      <View wrap={false} style={styles.scopeBox}>
         <Text style={styles.scopeText}>
           This assessment evaluates technology maturity using industry best practices and
           organizational information provided during the assessment process. It is intended to
           identify strategic improvement opportunities and support executive decision-making.
         </Text>
-        <Text style={[styles.scopeText, { marginTop: 8 }]}>
+        <Text style={[styles.scopeText, { marginTop: 6 }]}>
           This document is not a penetration test, compliance audit, or technical implementation
           guide. Detailed execution planning, product selection, and deployment methodology are
           reserved for an ongoing consulting partnership with {BRAND.companyName}.
         </Text>
       </View>
-    </PdfFlowSection>
+    </PdfTipSection>
+  );
+}
+
+function PdfTipKpiCard({
+  label,
+  value,
+  caption,
+  highlight = false,
+}: {
+  label: string;
+  value: string | number;
+  caption?: string;
+  highlight?: boolean;
+}) {
+  return (
+    <View style={highlight ? styles.kpiCardHighlight : styles.kpiCard}>
+      <Text style={styles.kpiLabel}>{label}</Text>
+      <Text style={styles.kpiValue}>{value}</Text>
+      {caption ? <Text style={styles.kpiCaption}>{caption}</Text> : null}
+    </View>
   );
 }
 
@@ -81,8 +98,8 @@ export function PdfExecutiveSummaryDashboard({
   topOpportunities: string[];
 }) {
   return (
-    <PdfFlowSection title="Executive Summary">
-      <View style={styles.executiveHero}>
+    <PdfTipSection title="Executive Summary">
+      <View wrap={false} style={styles.executiveHero}>
         <View style={styles.executiveMetaRow}>
           <View style={styles.executiveMetaItem}>
             <Text style={styles.executiveMetaLabel}>Organization</Text>
@@ -97,26 +114,25 @@ export function PdfExecutiveSummaryDashboard({
             <Text style={styles.executiveMetaValue}>{overallBusinessRisk}</Text>
           </View>
         </View>
-        <PdfKpiRow>
-          <PdfKpiCard label="StackScore" value={currentScore} caption="Current (0–100)" />
-          <PdfKpiCard
+        <View style={styles.kpiRow}>
+          <PdfTipKpiCard label="StackScore" value={currentScore} caption="Current (0–100)" />
+          <PdfTipKpiCard
             label="Projected Score"
             value={projectedScore}
             caption="After roadmap"
             highlight
           />
-          <PdfKpiCard
+          <PdfTipKpiCard
             label="Technology Maturity"
             value={maturityTierLabel}
             caption="Current level"
           />
-        </PdfKpiRow>
+        </View>
       </View>
 
-      <Text style={styles.blockLabel}>Executive Summary</Text>
       <Text style={styles.bodyText}>{executiveSummary}</Text>
 
-      <View style={{ flexDirection: "row", gap: 12, marginTop: 4 }}>
+      <View style={{ flexDirection: "row", gap: 10 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.blockLabel}>Top Business Risks</Text>
           {topBusinessRisks.map((risk) => (
@@ -136,7 +152,7 @@ export function PdfExecutiveSummaryDashboard({
           ))}
         </View>
       </View>
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }
 
@@ -146,13 +162,13 @@ export function PdfBusinessValueSnapshot({
   metrics: TipBusinessValueMetric[];
 }) {
   return (
-    <PdfFlowSection
+    <PdfTipSection
       title="Business Value Snapshot"
       subtitle="Projected maturity improvements after completing the strategic roadmap"
     >
       <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
         {metrics.map((metric) => (
-          <View key={metric.label} style={styles.valueMetricCard}>
+          <View key={metric.label} wrap={false} style={styles.valueMetricCard}>
             <Text style={styles.valueMetricLabel}>{metric.label}</Text>
             <View style={styles.valueMetricCompare}>
               <View>
@@ -166,11 +182,11 @@ export function PdfBusinessValueSnapshot({
                 </Text>
               </View>
             </View>
-            <PdfProgressBar percent={metric.projectedPercent} variant="improvement" />
+            <PdfProgressBar percent={metric.projectedPercent} variant="improvement" height={6} />
           </View>
         ))}
       </View>
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }
 
@@ -210,20 +226,25 @@ function PdfPriorityBadge({ level }: { level: TipCategoryFinding["priority"] }) 
   );
 }
 
+function PdfFieldBlock({ label, body }: { label: string; body: string }) {
+  return (
+    <View wrap={false} minPresenceAhead={TIP_PAGINATION.fieldBlock}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={styles.fieldBody}>{body}</Text>
+    </View>
+  );
+}
+
 export function PdfCategoryFindingCard({ finding }: { finding: TipCategoryFinding }) {
   return (
-    <View style={styles.findingCard}>
-      <View style={styles.findingHeader}>
-        <Text style={styles.findingTitle}>{finding.categoryName}</Text>
-      </View>
+    <View wrap={false} minPresenceAhead={TIP_PAGINATION.findingCard} style={styles.findingCard}>
+      <Text style={styles.findingTitle}>{finding.categoryName}</Text>
       <View style={styles.badgeRow}>
         <PdfRiskBadge level={finding.riskLevel} />
         <PdfPriorityBadge level={finding.priority} />
       </View>
-      <Text style={styles.fieldLabel}>Current State</Text>
-      <Text style={styles.fieldBody}>{finding.currentState}</Text>
-      <Text style={styles.fieldLabel}>Business Impact</Text>
-      <Text style={styles.fieldBody}>{finding.businessImpact}</Text>
+      <PdfFieldBlock label="Current State" body={finding.currentState} />
+      <PdfFieldBlock label="Business Impact" body={finding.businessImpact} />
     </View>
   );
 }
@@ -234,14 +255,15 @@ export function PdfCurrentStateFindings({
   findings: TipCategoryFinding[];
 }) {
   return (
-    <PdfFlowSection
+    <PdfTipSection
+      breakBefore
       title="Current State Findings"
       subtitle="Assessment observations grouped by category — focused on business impact, not technical implementation"
     >
       {findings.map((finding) => (
         <PdfCategoryFindingCard key={finding.categoryName} finding={finding} />
       ))}
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }
 
@@ -251,41 +273,41 @@ export function PdfStrategicInitiativeCard({
   initiative: TipStrategicInitiative;
 }) {
   return (
-    <View style={styles.initiativeCard}>
-      <Text style={styles.initiativeTitle}>{initiative.name}</Text>
-      <View style={styles.badgeRow}>
-        <PdfPriorityBadge level={initiative.priority} />
-        <Text
-          style={[
-            styles.badge,
-            {
-              backgroundColor: COLORS.surface,
-              color: COLORS.navy,
-              borderColor: COLORS.border,
-            },
-          ]}
-        >
-          {initiative.recommendedPhase}
-        </Text>
-        <Text
-          style={[
-            styles.badge,
-            {
-              backgroundColor: COLORS.surface,
-              color: COLORS.navy,
-              borderColor: COLORS.border,
-            },
-          ]}
-        >
-          {initiative.estimatedInvestment}
-        </Text>
+    <View wrap={false} minPresenceAhead={TIP_PAGINATION.initiativeCard} style={styles.initiativeCard}>
+      <View wrap={false} minPresenceAhead={TIP_PAGINATION.initiativeHeader}>
+        <Text style={styles.initiativeTitle}>{initiative.name}</Text>
+        <View style={styles.badgeRow}>
+          <PdfPriorityBadge level={initiative.priority} />
+          <Text
+            style={[
+              styles.badge,
+              {
+                backgroundColor: COLORS.surface,
+                color: COLORS.navy,
+                borderColor: COLORS.border,
+              },
+            ]}
+          >
+            {initiative.recommendedPhase}
+          </Text>
+          <Text
+            style={[
+              styles.badge,
+              {
+                backgroundColor: COLORS.surface,
+                color: COLORS.navy,
+                borderColor: COLORS.border,
+              },
+            ]}
+          >
+            {initiative.estimatedInvestment}
+          </Text>
+        </View>
       </View>
-      <Text style={styles.fieldLabel}>Business Objective</Text>
-      <Text style={styles.fieldBody}>{initiative.businessObjective}</Text>
-      <Text style={styles.fieldLabel}>Why It Matters</Text>
-      <Text style={styles.fieldBody}>{initiative.whyItMatters}</Text>
+      <PdfFieldBlock label="Business Objective" body={initiative.businessObjective} />
+      <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
       {initiative.expectedBenefits.length > 0 ? (
-        <>
+        <View wrap={false} minPresenceAhead={TIP_PAGINATION.fieldBlock}>
           <Text style={styles.fieldLabel}>Expected Benefits</Text>
           {initiative.expectedBenefits.map((benefit) => (
             <View key={benefit} style={styles.checklistRow}>
@@ -293,7 +315,7 @@ export function PdfStrategicInitiativeCard({
               <Text style={styles.checklistText}>{benefit}</Text>
             </View>
           ))}
-        </>
+        </View>
       ) : null}
     </View>
   );
@@ -305,14 +327,57 @@ export function PdfStrategicImprovementRoadmap({
   initiatives: TipStrategicInitiative[];
 }) {
   return (
-    <PdfFlowSection
+    <PdfTipSection
+      breakBefore
       title="Strategic Improvement Roadmap"
       subtitle="What should be accomplished — implementation methodology reserved for consulting engagement"
     >
       {initiatives.map((initiative) => (
         <PdfStrategicInitiativeCard key={initiative.id} initiative={initiative} />
       ))}
-    </PdfFlowSection>
+    </PdfTipSection>
+  );
+}
+
+function PdfTipInvestmentTable({
+  rows,
+}: {
+  rows: TipPhaseInvestmentRow[];
+}) {
+  const columns = [
+    { key: "phase", label: "Phase", width: "18%" },
+    { key: "businessGoal", label: "Business Goal", width: "52%" },
+    { key: "investment", label: "Estimated Investment", width: "30%", align: "right" as const },
+  ];
+
+  return (
+    <View wrap={false} minPresenceAhead={TIP_PAGINATION.table} style={styles.tableWrap}>
+      <View style={styles.tableHeader}>
+        {columns.map((column) => (
+          <Text
+            key={column.key}
+            style={[
+              styles.tableHeaderCell,
+              { width: column.width, textAlign: column.align ?? "left" },
+            ]}
+          >
+            {column.label}
+          </Text>
+        ))}
+      </View>
+      {rows.map((row, index) => (
+        <View
+          key={`${row.phaseLabel}-${index}`}
+          style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}
+        >
+          <Text style={[styles.tableCell, { width: columns[0]!.width }]}>{row.phaseLabel}</Text>
+          <Text style={[styles.tableCell, { width: columns[1]!.width }]}>{row.businessGoal}</Text>
+          <Text style={[styles.tableCell, { width: columns[2]!.width, textAlign: "right" }]}>
+            {row.estimatedInvestment}
+          </Text>
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -328,36 +393,25 @@ export function PdfPhaseInvestmentSummary({
   oneTimeInvestments: string;
 }) {
   return (
-    <PdfFlowSection title="Phase Investment Summary">
-      <PdfReportTable
-        columns={[
-          { key: "phase", label: "Phase", width: "18%" },
-          { key: "businessGoal", label: "Business Goal", width: "52%" },
-          { key: "investment", label: "Estimated Investment", width: "30%", align: "right" },
-        ]}
-        rows={rows.map((row) => ({
-          phase: row.phaseLabel,
-          businessGoal: row.businessGoal,
-          investment: row.estimatedInvestment,
-        }))}
-      />
+    <PdfTipSection breakBefore title="Phase Investment Summary">
+      <PdfTipInvestmentTable rows={rows} />
 
-      <View style={styles.investmentHero}>
+      <View wrap={false} minPresenceAhead={TIP_PAGINATION.investmentBlock} style={styles.investmentHero}>
         <Text style={styles.investmentHeroLabel}>Estimated Total Investment</Text>
         <Text style={styles.investmentHeroValue}>{totalInvestment}</Text>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 12, marginTop: 4 }}>
-        <View style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <View wrap={false} style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
           <Text style={styles.calloutTitle}>Recurring Services</Text>
-          <Text style={styles.bodyText}>{recurringServices}</Text>
+          <Text style={[styles.bodyText, { marginBottom: 0 }]}>{recurringServices}</Text>
         </View>
-        <View style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
+        <View wrap={false} style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
           <Text style={styles.calloutTitle}>One-Time Investments</Text>
-          <Text style={styles.bodyText}>{oneTimeInvestments}</Text>
+          <Text style={[styles.bodyText, { marginBottom: 0 }]}>{oneTimeInvestments}</Text>
         </View>
       </View>
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }
 
@@ -369,15 +423,16 @@ export function PdfRoadmapToResults() {
     "Executive business reviews with measurable outcomes",
     "Budget planning and investment prioritization",
     "Vendor management and technology strategy guidance",
-    `StackScore portal access for ongoing visibility`,
+    "StackScore portal access for ongoing visibility",
   ];
 
   return (
-    <PdfFlowSection
+    <PdfTipSection
+      breakBefore
       title="From Roadmap to Results"
       subtitle="How Strategic IT Consulting turns assessment insights into accountable execution"
     >
-      <View style={styles.callout}>
+      <View wrap={false} style={styles.callout}>
         <Text style={styles.bodyText}>
           This Technology Improvement Plan identifies where technology creates business risk and
           where investment will deliver the greatest return. The assessment answers what should be
@@ -397,7 +452,7 @@ export function PdfRoadmapToResults() {
           <Text style={styles.checklistText}>{benefit}</Text>
         </View>
       ))}
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }
 
@@ -418,17 +473,22 @@ export function PdfExecutiveNextSteps() {
   ];
 
   return (
-    <PdfFlowSection title="Next Steps">
+    <PdfTipSection breakBefore title="Next Steps">
       {options.map((option) => (
-        <View key={option.title} style={styles.nextStepCard}>
+        <View
+          key={option.title}
+          wrap={false}
+          minPresenceAhead={TIP_PAGINATION.nextStepCard}
+          style={styles.nextStepCard}
+        >
           <Text style={styles.nextStepTitle}>{option.title}</Text>
           <Text style={styles.nextStepBody}>{option.body}</Text>
         </View>
       ))}
-      <Text style={[styles.bodyText, { marginTop: REPORT_SPACING.block, marginBottom: 0 }]}>
+      <Text style={[styles.bodyText, { marginTop: 8, marginBottom: 0 }]}>
         Contact {BRAND.companyName} at {BRAND.email}
         {BRAND.phone ? ` or ${BRAND.phone}` : ""} to proceed.
       </Text>
-    </PdfFlowSection>
+    </PdfTipSection>
   );
 }

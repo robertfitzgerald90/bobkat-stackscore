@@ -35,7 +35,7 @@ export const DEMO_BUSINESS_GOALS: Array<{
 export const DEFAULT_PERSONALIZATION: DemoPersonalization = {
   companyName: "Northstar Manufacturing",
   industryId: "manufacturing",
-  employeeCount: 55,
+  employeeCount: 52,
   locationCount: 1,
   businessGoal: "reduce-it-risk",
 };

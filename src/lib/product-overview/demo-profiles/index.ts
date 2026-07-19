@@ -1,5 +1,5 @@
-import type { DemoIndustryId, DemoPersonalization, DemoProfileBundle } from "@/lib/product-overview/demo-profiles/types";
-import type { DemoIndustryOption } from "@/lib/product-overview/demo-profiles/types";
+import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
+import type { DemoIndustryId, DemoPersonalization, DemoProfileBundle, DemoIndustryOption } from "@/lib/product-overview/demo-profiles/types";
 import { personalizeDeep } from "@/lib/product-overview/demo-profiles/personalization";
 import { manufacturingProfile } from "@/lib/product-overview/demo-profiles/manufacturing-profile";
 import { applyIndustryPatch } from "@/lib/product-overview/demo-profiles/industry-patches";
@@ -44,7 +44,7 @@ export function getDefaultProfile(): DemoProfileBundle {
   return buildDemoProfile({
     companyName: "Northstar Manufacturing",
     industryId: "manufacturing",
-    employeeCount: 55,
+    employeeCount: DEFAULT_DEMO_COMPANY_PROFILE.employeeCount,
     locationCount: 1,
     businessGoal: "reduce-it-risk",
   });

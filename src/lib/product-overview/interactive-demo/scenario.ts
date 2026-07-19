@@ -1,3 +1,4 @@
+import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
 import { DEFAULT_ROADMAP_PHASE_DEFINITIONS } from "@/lib/technology-improvement-plan/roadmap-engine/phase-config";
 import { PRIORITY_TIMELINES } from "@/lib/recommendations/display";
 import { VCIO_MONTHLY_AMOUNT_CENTS } from "@/lib/vcio/constants";
@@ -7,6 +8,9 @@ import type { InteractiveDemoScenario } from "./types";
 export const DEMO_MANAGED_IT_PER_DEVICE_MONTHLY_CENTS = 1_500;
 
 const phaseDefs = DEFAULT_ROADMAP_PHASE_DEFINITIONS;
+const demoCompany = DEFAULT_DEMO_COMPANY_PROFILE;
+const managedEndpointMonthlyDollars =
+  (demoCompany.managedDeviceCount * DEMO_MANAGED_IT_PER_DEVICE_MONTHLY_CENTS) / 100;
 
 /**
  * Centralized Interactive StackScore Experience scenario.
@@ -22,11 +26,11 @@ export const NORTHSTAR_INTERACTIVE_DEMO_SCENARIO: InteractiveDemoScenario = {
     id: "demo-northstar-manufacturing",
     name: "Northstar Manufacturing",
     industry: "Light manufacturing",
-    employeeCount: 55,
-    locationCount: 1,
-    managedDeviceCount: 60,
+    employeeCount: demoCompany.employeeCount,
+    locationCount: demoCompany.locationCount,
+    managedDeviceCount: demoCompany.managedDeviceCount,
     summary:
-      "A single-location SMB with about 55 employees and 60 managed Windows endpoints. Microsoft 365 Business Premium, Ubiquiti networking, and growing operational dependence on technology — without enterprise-scale capital budgets.",
+      "A single-location SMB with about 50 licensed users and 60 managed Windows endpoints. Microsoft 365 Business Premium, Ubiquiti networking, and growing operational dependence on technology — without enterprise-scale capital budgets.",
     primaryConcerns: [
       "Inconsistent endpoint visibility and patching",
       "Backup coverage without proven recovery tests",
@@ -84,7 +88,7 @@ export const NORTHSTAR_INTERACTIVE_DEMO_SCENARIO: InteractiveDemoScenario = {
       riskLevel: "Critical",
       stackScoreImprovement: 15,
       oneTimeInvestment: 7_500,
-      monthlyRecurringInvestment: 900, // 60 × $15 Managed IT
+      monthlyRecurringInvestment: managedEndpointMonthlyDollars,
       showMonthlyRecurring: true,
       monthlyRecurringLabel: "standard",
       primaryBusinessOutcome: "Centralized visibility and recoverable systems for every supported device",
@@ -126,7 +130,7 @@ export const NORTHSTAR_INTERACTIVE_DEMO_SCENARIO: InteractiveDemoScenario = {
           stackScoreContribution: 5,
           costType: "mixed",
           oneTimeInvestment: 2_500,
-          monthlyRecurringInvestment: 900,
+          monthlyRecurringInvestment: managedEndpointMonthlyDollars,
           initialStatus: "open",
         },
         {

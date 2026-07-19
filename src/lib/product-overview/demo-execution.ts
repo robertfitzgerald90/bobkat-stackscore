@@ -7,6 +7,8 @@ import type {
   DemoReportPreview,
   DemoValueProposition,
 } from "@/lib/product-overview/types";
+import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
+import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
 
 const STANDARD_TIMELINE = [
   { id: "planning", label: "Planning", status: "completed" as const },
@@ -22,7 +24,7 @@ export const DEMO_EXECUTIVE_REVIEW: DemoExecutiveReview = {
   executiveSummary: [
     "Northstar Manufacturing improved its overall technology score by 6 points since the previous quarter, reflecting measurable progress in identity protection and backup validation.",
     "Two strategic projects completed on schedule, including endpoint lifecycle standardization and data classification policy rollout.",
-    "Technology spending remains disciplined at 63% budget utilization against a $48,000 annual plan — spend smarter, not more.",
+    `Technology spending remains disciplined at ${NORTHSTAR_DEMO_BUDGET.utilizationPercent}% budget utilization against a $${NORTHSTAR_DEMO_BUDGET.planned.toLocaleString("en-US")} annual plan — spend smarter, not more.`,
     "Leadership visibility into technology risk has improved significantly through StackScore executive reporting.",
   ],
   scoreTrend: [
@@ -43,10 +45,10 @@ export const DEMO_EXECUTIVE_REVIEW: DemoExecutiveReview = {
     "Disaster recovery exercise not yet scheduled for Q4 2026",
   ],
   budgetSummary: [
-    "Annual technology plan: $48,000",
-    "Approved spend: $30,000 (63% utilization)",
-    "Committed: $18,000",
-    "Remaining planned investment: $12,000",
+    `Annual technology plan: $${NORTHSTAR_DEMO_BUDGET.planned.toLocaleString("en-US")}`,
+    `Approved spend: $${NORTHSTAR_DEMO_BUDGET.approved.toLocaleString("en-US")} (${NORTHSTAR_DEMO_BUDGET.utilizationPercent}% utilization)`,
+    `Committed: $${NORTHSTAR_DEMO_BUDGET.committed.toLocaleString("en-US")}`,
+    `Remaining planned investment: $${NORTHSTAR_DEMO_BUDGET.remaining.toLocaleString("en-US")}`,
     "Spending 3% under plan with no critical overruns",
   ],
   roadmapProgress: [
@@ -165,7 +167,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
     metrics: [
       { label: "Phase", value: "1 of 4" },
       { label: "One-Time", value: "$7,500" },
-      { label: "Monthly Recurring", value: "$900/month" },
+      { label: "Monthly Recurring", value: `$${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month` },
       { label: "Score Impact", value: "+15" },
     ],
     sections: [
@@ -177,7 +179,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
         heading: "Investment",
         bullets: [
           "One-time implementation investment: $7,500",
-          "New monthly recurring investment: $900/month (Managed IT · 60 devices × $15)",
+          `New monthly recurring investment: $${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month (Managed endpoint service · ${DEFAULT_DEMO_COMPANY_PROFILE.managedDeviceCount} devices × $15)`,
           "Future phases are excluded from this proposal",
         ],
       },
@@ -240,7 +242,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
       {
         heading: "Phase Highlights",
         bullets: [
-          "Phase 1 Critical Stabilization (0–30 days): +15 points · $7,500 one-time · $900/month",
+          `Phase 1 Critical Stabilization (0–30 days): +15 points · $7,500 one-time · $${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month`,
           "Phase 2 High-Priority Improvements (30–90 days): +9 points · $9,500 one-time",
           "Phase 3 Operational Maturity (90–180 days): +7 points · Strategic IT Consulting cadence",
           "Phase 4 Strategic Enhancements (180+ days): +3 points · selective upgrades",
@@ -257,7 +259,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
       { label: "Total One-Time", value: "$23,000" },
       { label: "Total Monthly", value: "$1,200/month" },
       { label: "Phase 1 One-Time", value: "$7,500" },
-      { label: "Phase 1 Monthly", value: "$900/month" },
+      { label: "Phase 1 Monthly", value: `$${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month` },
     ],
     sections: [
       {
@@ -267,7 +269,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
       {
         heading: "By Phase",
         bullets: [
-          "Phase 1: $7,500 one-time · $900/month Managed IT",
+          `Phase 1: $7,500 one-time · $${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month managed endpoint service`,
           "Phase 2: $9,500 one-time · no new monthly recurring",
           "Phase 3: $2,500 one-time · $300/month Strategic IT Consulting",
           "Phase 4: $3,500 one-time · no new monthly recurring",
@@ -307,7 +309,12 @@ export const DEMO_BUDGET_PERIODS: DemoBudgetPeriod[] = [
   {
     id: "current-year",
     label: "Current Year",
-    annual: { planned: 48_000, approved: 30_000, committed: 18_000, remaining: 12_000 },
+    annual: {
+      planned: NORTHSTAR_DEMO_BUDGET.planned,
+      approved: NORTHSTAR_DEMO_BUDGET.approved,
+      committed: NORTHSTAR_DEMO_BUDGET.committed,
+      remaining: NORTHSTAR_DEMO_BUDGET.remaining,
+    },
     categories: [
       { id: "infrastructure", label: "Infrastructure", amount: 14_000 },
       { id: "cybersecurity", label: "Cybersecurity", amount: 10_000 },

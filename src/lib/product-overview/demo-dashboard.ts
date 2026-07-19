@@ -1,4 +1,5 @@
 import { northstarManufacturing } from "@/lib/product-overview/demo-organization";
+import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
 import {
   DEMO_RECOMMENDATIONS,
   DEMO_ROADMAP_INITIATIVES,
@@ -28,8 +29,8 @@ export const northstarDemoDashboard: DemoDashboard = {
     plannedThisQuarter: 3,
     activeProjects: 4,
     roadmapCompletionPercent: 42,
-    annualTechnologyPlan: 48_000,
-    approvedSpend: 30_000,
+    annualTechnologyPlan: NORTHSTAR_DEMO_BUDGET.planned,
+    approvedSpend: NORTHSTAR_DEMO_BUDGET.approved,
   },
   pillars: [
     {
@@ -392,19 +393,19 @@ export const northstarDemoDashboard: DemoDashboard = {
     previousScore: 62,
     openHighPriority: 3,
     roadmapCompletionPercent: 42,
-    budgetUtilizationPercent: 63,
+    budgetUtilizationPercent: NORTHSTAR_DEMO_BUDGET.utilizationPercent,
     executiveSummary: [
       "Technology score improved 6 points since the last quarterly review.",
       "Two strategic projects completed on schedule with measurable risk reduction.",
       "Five recommendations were closed, including quick wins in identity and policy standardization.",
-      "Technology spending remains disciplined against a $48,000 annual plan — spend smarter, not more.",
+      `Technology spending remains disciplined at ${NORTHSTAR_DEMO_BUDGET.utilizationPercent}% budget utilization against a $${NORTHSTAR_DEMO_BUDGET.planned.toLocaleString("en-US")} annual plan — spend smarter, not more.`,
     ],
   },
   budget: {
-    planned: 48_000,
-    approved: 30_000,
-    committed: 18_000,
-    remaining: 12_000,
+    planned: NORTHSTAR_DEMO_BUDGET.planned,
+    approved: NORTHSTAR_DEMO_BUDGET.approved,
+    committed: NORTHSTAR_DEMO_BUDGET.committed,
+    remaining: NORTHSTAR_DEMO_BUDGET.remaining,
   },
   nextAction: {
     title: "Complete Microsoft 365 Security Hardening before starting the Ubiquiti network refresh.",

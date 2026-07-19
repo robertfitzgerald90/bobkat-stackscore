@@ -28,6 +28,7 @@ import {
   ACME_CURRENT_PILLAR_TARGETS,
   buildAnswerPlan,
 } from "./responses";
+import { getPinnacleSeedTechnologyBudgets } from "@/lib/demo-data/demo-financial-profile";
 
 function addMonths(date: Date, months: number): Date {
   const next = new Date(date);
@@ -563,37 +564,29 @@ async function seedClientTechnologies(input: { prisma: PrismaClient; clientId: s
     select: { id: true, slug: true, name: true },
   });
 
-  const budgetAllocations: Record<string, number> = {
-    "ubiquiti-unifi": 1_850_000,
-    ninjaone: 1_620_000,
-    "uptime-kuma": 980_000,
-    stackscore: 3_800_000,
-  };
-
-  const renewalDates: Record<string, Date | null> = {
-    "ubiquiti-unifi": new Date("2026-09-15"),
-    ninjaone: new Date("2026-10-01"),
-    "uptime-kuma": new Date("2026-11-20"),
-    stackscore: null,
-  };
+  const pinnacleBudgets = getPinnacleSeedTechnologyBudgets();
 
   for (const technology of technologies) {
+    const allocation =
+      pinnacleBudgets.allocations[technology.slug as keyof typeof pinnacleBudgets.allocations];
     await input.prisma.clientTechnology.create({
       data: {
         clientId: input.clientId,
         technologyId: technology.id,
         displayName:
           technology.slug === "stackscore"
-            ? "Microsoft 365 Business Premium & Azure LOB Apps"
-            : technology.name,
+            ? "Microsoft 365 Business Premium"
+            : technology.slug === "ninjaone"
+              ? "Managed Endpoint Service"
+              : technology.name,
         businessPurpose:
           technology.slug === "ubiquiti-unifi"
-            ? "Primary office network, guest Wi-Fi, and satellite office connectivity for both Pinnacle Engineering locations."
+            ? "Primary office network, guest Wi-Fi, and connectivity across Pinnacle Engineering locations."
             : technology.slug === "ninjaone"
-              ? "Centralized endpoint management and patching for engineering workstations and field laptops."
+              ? "Bobkat IT managed endpoint service for engineering workstations and field laptops."
               : technology.slug === "uptime-kuma"
-                ? "Infrastructure availability monitoring for gateways, Synology backup targets, and critical Azure services."
-                : "Hybrid Entra ID collaboration platform, Microsoft 365 Business Premium, and Azure-hosted line-of-business applications.",
+                ? "Open-source infrastructure availability monitoring with optional Bobkat IT hosting and management."
+                : "Microsoft 365 Business Premium collaboration platform for licensed users.",
         deploymentStatus:
           technology.slug === "ninjaone"
             ? "implementing"
@@ -604,17 +597,16 @@ async function seedClientTechnologies(input: { prisma: PrismaClient; clientId: s
         healthStatus: technology.slug === "ninjaone" ? "at_risk" : "healthy",
         lifecycleStatus: "current",
         managedBy: "bobkat_it",
-        quantity: technology.slug === "ubiquiti-unifi" ? 2 : technology.slug === "stackscore" ? 84 : 84,
-        quantityUnit: technology.slug === "ubiquiti-unifi" ? "sites" : "users",
+        quantity: allocation.quantity,
+        quantityUnit: allocation.quantityUnit,
         ownerName: ACME_DEMO.primaryContactName,
         technicalOwnerName: "BobKat IT",
-        budgetAmountCents: budgetAllocations[technology.slug] ?? null,
-        budgetPeriod: "annual",
-        budgetNotes:
-          technology.slug === "stackscore"
-            ? "Includes Microsoft 365 Business Premium, Azure application hosting, and Synology backup platform allocations."
-            : null,
-        renewalDate: renewalDates[technology.slug] ?? null,
+        budgetAmountCents: allocation.budgetAmountCents,
+        budgetPeriod: allocation.budgetPeriod,
+        budgetNotes: allocation.budgetNotes,
+        renewalDate: allocation.renewalDate,
+        plannedReplacementDate:
+          technology.slug === "ubiquiti-unifi" ? allocation.renewalDate : null,
       },
     });
   }

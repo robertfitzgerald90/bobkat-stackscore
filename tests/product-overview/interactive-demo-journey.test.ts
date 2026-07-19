@@ -9,18 +9,20 @@ import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 import { DEMO_EXECUTIVE_REPORTS, getDemoReportPreviewById } from "@/lib/product-overview/demo-execution";
 import { DEFAULT_ROADMAP_PHASE_DEFINITIONS } from "@/lib/technology-improvement-plan/roadmap-engine/phase-config";
 import { VCIO_MONTHLY_AMOUNT_CENTS } from "@/lib/vcio/constants";
+import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
+import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
 import { centsToDollars } from "@/lib/technology-improvement-plan/pricing";
 
 describe("interactive demo scenario", () => {
   it("uses production phase definitions and SMB-aligned company profile", () => {
     const scenario = NORTHSTAR_INTERACTIVE_DEMO_SCENARIO;
-    expect(scenario.company.employeeCount).toBe(55);
+    expect(scenario.company.employeeCount).toBe(DEFAULT_DEMO_COMPANY_PROFILE.employeeCount);
     expect(scenario.company.locationCount).toBe(1);
     expect(scenario.company.managedDeviceCount).toBe(60);
     expect(scenario.phases).toHaveLength(4);
     expect(scenario.phases[0]?.id).toBe(DEFAULT_ROADMAP_PHASE_DEFINITIONS[0]?.id);
     expect(scenario.strategicConsultingMonthlyCents).toBe(VCIO_MONTHLY_AMOUNT_CENTS);
-    expect(scenario.phases[0]?.monthlyRecurringInvestment).toBe(900);
+    expect(scenario.phases[0]?.monthlyRecurringInvestment).toBe(NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly);
     expect(scenario.assessment.initialStackScore).toBe(58);
     expect(scenario.scoreProgression.afterPhase1Score).toBe(73);
     expect(scenario.scoreProgression.projectedFinalScore).toBe(92);
