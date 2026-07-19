@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
+  BarChart3,
   BookOpen,
   Briefcase,
   CalendarDays,
@@ -109,6 +110,7 @@ export function getConsultantSidebarNav(
   const items: SidebarNavItem[] = [
     { href: "/portfolio", label: "Portfolio", icon: LayoutGrid, portfolioOnly: true },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/insights", label: "Business Insights", icon: BarChart3 },
     { href: "/consulting", label: "Consulting Workspace", icon: Briefcase },
     { href: "/clients", label: "Clients", icon: Users },
     { href: "/assessments", label: "Assessments", icon: ClipboardList },

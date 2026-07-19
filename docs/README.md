@@ -35,6 +35,7 @@ Authoritative product and engineering specifications for Bobkat StackScore.
 
 - [DOC-120 – Domain Model](30-Architecture/DOC-120%20%E2%80%93%20Domain%20Model%20Specification.md)
 - [DOC-300 – Technical Architecture](30-Architecture/DOC-300%20-%20Technical%20Architecture.md)
+- [DOC-310 – Commercial Platform Architecture](30-Architecture/DOC-310%20%E2%80%93%20Commercial%20Platform%20Architecture.md)
 - [DOC-302 – API Specification](30-Architecture/DOC-302%20-%20API%20Specification.md)
 - [DOC-301 – Database Schema (v1 implementation)](30-Architecture/DOC-301%20%E2%80%93%20Database%20Schema%20Specification.md)
 - [DEV-002 – Migration Plan](50-Development/DEV-002%20%E2%80%93%20Next%20Generation%20Migration%20Plan.md)

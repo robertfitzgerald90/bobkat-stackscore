@@ -27,7 +27,7 @@ StackScore documentation is organized by concern. Paths are relative to `docs/`.
 | [`00-Governance/`](00-Governance/) | DOC-001 – DOC-007 | Product vision, philosophy, BTIL, design principles, constitutions |
 | [`10-Product/`](10-Product/) | DOC-100 – DOC-109 | Commercial domain, deliverables, assessment design |
 | [`20-Business-Logic/`](20-Business-Logic/) | DOC-110 – DOC-119, DOC-131 – DOC-135, DOC-150 – DOC-153, DOC-151A–H | Scoring, assessment libraries, maturity framework, intelligence engines |
-| [`30-Architecture/`](30-Architecture/) | DOC-120 – DOC-130, DOC-300 – DOC-303 | Domain model, schema, workflow, services, reporting, technical layer |
+| [`30-Architecture/`](30-Architecture/) | DOC-120 – DOC-130, DOC-300 – DOC-303, DOC-310 | Domain model, schema, workflow, services, reporting, technical layer, commercial platform |
 | [`40-Modules/`](40-Modules/) | DOC-160 – DOC-163, DOC-180, DOC-200 – DOC-206 | Portfolio, client workspace, lifecycle architecture |
 | [`50-Development/`](50-Development/) | DEV-001, DEV-002 | Engineering standards, migration plan, operational guides (non-governing) |
 | [`60-Operations/`](60-Operations/) | DOC-021 | Deployment strategy, changelogs, runbooks |

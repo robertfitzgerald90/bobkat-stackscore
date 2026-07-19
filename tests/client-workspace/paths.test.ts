@@ -188,5 +188,6 @@ describe("client workspace access", () => {
       "Subscription & Billing",
       "Executive Reports",
     ]);
+    expect(labels).not.toContain("Customer 360");
   });
 });

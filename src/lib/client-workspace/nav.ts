@@ -5,6 +5,7 @@
 
 export const CLIENT_WORKSPACE_SECTIONS = [
   "overview",
+  "360",
   "lifecycle",
   "vcio",
   "journey",
@@ -34,6 +35,7 @@ export type ClientWorkspaceNavItem = {
 /** DOC-201 navigation order and labels. */
 export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "overview", label: "Overview", isOverview: true },
+  { section: "360", label: "Customer 360" },
   { section: "lifecycle", label: "Technology Lifecycle" },
   { section: "vcio", label: "vCIO Dashboard" },
   { section: "journey", label: "Technology Journey" },
@@ -83,6 +85,8 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
+    case "360":
+      return `/clients/${clientId}/360`;
     case "lifecycle":
       return `/clients/${clientId}/lifecycle`;
     case "vcio":
@@ -118,6 +122,7 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   if (rest.startsWith("/technology-profile") || rest.startsWith("/overview")) {
     return "overview";
   }
+  if (rest.startsWith("/360")) return "360";
   if (rest.startsWith("/lifecycle")) return "lifecycle";
   if (rest.startsWith("/journey")) return "journey";
   if (rest.startsWith("/vcio")) return "vcio";
