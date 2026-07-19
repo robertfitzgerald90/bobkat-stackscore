@@ -1,20 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
-import { useProductOverview } from "@/components/product-overview/product-overview-context";
+import { DEMO_INLINE_DETAIL_SECTIONS } from "@/lib/product-overview/demo-interaction";
 import { ECOSYSTEM_NODES } from "@/lib/product-overview/demo-partnership";
 import { cn } from "@/lib/utils";
 
+/**
+ * Master-detail ecosystem map.
+ * interactionMode: inline-detail — no FeaturePopover.
+ */
 export function StackscoreEcosystemSection() {
+  const detailId = useId();
   const [activeNodeId, setActiveNodeId] = useState(ECOSYSTEM_NODES[0]?.id ?? "assessment");
-  const { openDetail } = useProductOverview();
   const activeNode = ECOSYSTEM_NODES.find((node) => node.id === activeNodeId) ?? ECOSYSTEM_NODES[0]!;
 
   return (
     <section
-      id="product-overview-ecosystem"
+      id={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.sectionId}
+      data-demo-interaction={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.interactionMode}
+      data-demo-presentation={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.presentation}
       className="scroll-mt-36 border-t border-border/70 bg-background px-4 py-10 sm:px-6 sm:py-12"
     >
       <div className="mx-auto max-w-7xl">
@@ -34,25 +40,26 @@ export function StackscoreEcosystemSection() {
         </OfferReveal>
 
         <div className="mt-10 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex min-w-max items-start gap-2 px-1">
+          <div
+            className="flex min-w-max items-start gap-2 px-1"
+            role="listbox"
+            aria-label="StackScore ecosystem capabilities"
+            aria-controls={detailId}
+          >
             {ECOSYSTEM_NODES.map((node, index) => {
               const isActive = node.id === activeNodeId;
               return (
                 <div key={node.id} className="flex items-start gap-2">
                   <button
                     type="button"
-                    data-demo-feature={`ecosystemNode:${node.id}`}
-                    onClick={(event) => {
-                      setActiveNodeId(node.id);
-                      openDetail(
-                        { type: "ecosystemNode", nodeId: node.id },
-                        event.currentTarget,
-                      );
-                    }}
+                    role="option"
+                    aria-selected={isActive}
+                    onClick={() => setActiveNodeId(node.id)}
                     className={cn(
-                      "w-40 rounded-xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-44",
+                      "w-40 rounded-xl border p-4 text-left transition-all duration-200 ease-out motion-reduce:transition-none sm:w-44",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                       isActive
-                        ? "scale-105 border-primary bg-primary text-primary-foreground shadow-md"
+                        ? "border-primary bg-primary text-primary-foreground shadow-[0_0_0_1px_rgba(8,47,91,0.25),0_0_28px_rgba(8,47,91,0.28)]"
                         : "border-border/70 bg-card hover:border-primary/30",
                     )}
                   >
@@ -70,13 +77,24 @@ export function StackscoreEcosystemSection() {
           </div>
         </div>
 
-        <OfferReveal delayMs={100}>
-          <div className="mt-8 rounded-2xl border border-border/70 bg-card p-6 shadow-sm sm:p-8">
+        <div
+          id={detailId}
+          role="region"
+          aria-live="polite"
+          aria-atomic="true"
+          className="mt-8 min-h-[9.5rem] rounded-2xl border border-border/70 bg-card p-6 shadow-sm sm:min-h-[8.5rem] sm:p-8"
+        >
+          <div
+            key={activeNode.id}
+            className="animate-in fade-in-0 slide-in-from-bottom-1 duration-200 motion-reduce:animate-none"
+          >
             <p className="text-lg font-semibold text-foreground">{activeNode.label}</p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{activeNode.description}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {activeNode.description}
+            </p>
             <p className="mt-4 text-sm font-medium text-primary">{activeNode.businessValue}</p>
           </div>
-        </OfferReveal>
+        </div>
       </div>
     </section>
   );

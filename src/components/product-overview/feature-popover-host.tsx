@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FeaturePopover } from "@/components/product-overview/feature-popover";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
+import { shouldOpenFeaturePopover } from "@/lib/product-overview/demo-interaction";
 import { PRODUCT_TOUR_STEPS } from "@/lib/product-overview/demo-partnership";
 import {
   FEATURE_POPOVER_ANCHOR_ATTR,
@@ -64,7 +65,7 @@ export function FeaturePopoverHost() {
   }, [presentationActive, tourActive, tourStep, tourStepConfig]);
 
   const detailModel = useMemo(() => {
-    if (!detailPanel || tourActive) return null;
+    if (!detailPanel || tourActive || !shouldOpenFeaturePopover(detailPanel)) return null;
     return resolveFeaturePopoverModel(detailPanel, demoProfile);
   }, [demoProfile, detailPanel, tourActive]);
 

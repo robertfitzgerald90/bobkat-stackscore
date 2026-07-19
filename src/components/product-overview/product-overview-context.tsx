@@ -38,6 +38,7 @@ import {
   PRODUCT_TOUR_STEPS,
   TOUR_STORAGE_KEY,
 } from "@/lib/product-overview/demo-partnership";
+import { shouldOpenFeaturePopover } from "@/lib/product-overview/demo-interaction";
 import { resolveAnchorElement } from "@/lib/product-overview/feature-popover-types";
 import type { DemoDetailPanel, ProductOverviewHighlight } from "@/lib/product-overview/types";
 
@@ -228,6 +229,10 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
 
   const openDetail = useCallback(
     (panel: DemoDetailPanel, anchor?: HTMLElement | EventTarget | null) => {
+      // Master-detail sections update an in-page panel; never open a FeaturePopover.
+      if (!shouldOpenFeaturePopover(panel)) {
+        return;
+      }
       setDetailPanel(panel);
       const resolved = resolveAnchorElement(anchor);
       if (resolved) setDetailAnchor(resolved);
