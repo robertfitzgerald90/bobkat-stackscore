@@ -52,6 +52,9 @@ describe("roadmap progress metrics", () => {
     expect(metrics.currentPhaseName).toBe("High Priority Improvements");
     expect(metrics.remainingOneTimeInvestment).toBe(3000);
     expect(metrics.remainingMonthlyRecurring).toBe(150);
+    expect(metrics.currentMonthlyServices).toBe(200);
+    expect(metrics.projectedMonthlyServicesAfterCompletion).toBe(350);
+    expect(metrics.currentPhaseImplementationStatusLabel).toBe("Awaiting Approval");
     expect(metrics.domainImprovements.securityImprovement).toBe(10);
     expect(metrics.domainImprovements.businessContinuityImprovement).toBe(0);
   });

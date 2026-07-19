@@ -1,6 +1,7 @@
 import type { RoadmapPhaseStatus } from "@/generated/prisma/client";
-import type { DomainImprovementMetrics, RoadmapProgressMetrics } from "./types";
 import { computeImpactPoints, type ScoreImpactInput } from "./effective-score";
+import { ROADMAP_PHASE_STATUS_LABELS } from "./labels";
+import type { DomainImprovementMetrics, RoadmapProgressMetrics } from "./types";
 
 type PhaseInvestmentInput = {
   status: RoadmapPhaseStatus;
@@ -8,7 +9,14 @@ type PhaseInvestmentInput = {
   monthlyRecurringInvestment: number;
   name: string;
   sortOrder: number;
+  proposalStatusLabel?: string | null;
 };
+
+const ACTIVE_SERVICE_PHASE_STATUSES: RoadmapPhaseStatus[] = [
+  "approved",
+  "in_progress",
+  "completed",
+];
 
 type InitiativeMetricInput = ScoreImpactInput & {
   categoryName: string;
@@ -87,6 +95,15 @@ export function computeRoadmapProgressMetrics(
     incompletePhases.reduce((sum, phase) => sum + phase.monthlyRecurringInvestment, 0),
   );
 
+  const currentMonthlyServices = roundCurrency(
+    phases
+      .filter((phase) => ACTIVE_SERVICE_PHASE_STATUSES.includes(phase.status))
+      .reduce((sum, phase) => sum + phase.monthlyRecurringInvestment, 0),
+  );
+  const projectedMonthlyServicesAfterCompletion = roundCurrency(
+    phases.reduce((sum, phase) => sum + phase.monthlyRecurringInvestment, 0),
+  );
+
   const domainImprovements: DomainImprovementMetrics = {
     securityImprovement: 0,
     infrastructureImprovement: 0,
@@ -108,8 +125,14 @@ export function computeRoadmapProgressMetrics(
     riskReductionPercent,
     currentPhaseName: currentPhase ? currentPhase.name : null,
     currentPhaseStatus: currentPhase ? currentPhase.status : null,
+    currentPhaseProposalStatusLabel: currentPhase?.proposalStatusLabel ?? null,
+    currentPhaseImplementationStatusLabel: currentPhase
+      ? ROADMAP_PHASE_STATUS_LABELS[currentPhase.status]
+      : null,
     remainingOneTimeInvestment,
     remainingMonthlyRecurring,
+    currentMonthlyServices,
+    projectedMonthlyServicesAfterCompletion,
     domainImprovements,
   };
 }

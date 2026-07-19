@@ -1,5 +1,6 @@
-import type { UserRole } from "@/generated/prisma/client";
+import type { PhaseProposalStatus, UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { PHASE_PROPOSAL_STATUS_LABELS } from "@/lib/phase-proposals/types";
 import { computeEffectiveScoreJourney } from "./effective-score";
 import { computeRoadmapProgressMetrics } from "./metrics";
 import { isConsultantRole } from "./permissions";
@@ -9,6 +10,8 @@ import {
   type ClientRoadmapDashboard,
   type ClientRoadmapPhaseDetail,
   type RoadmapInitiativeView,
+  type RoadmapPhaseJourneyMilestone,
+  type RoadmapPhaseProposalSummary,
   type RoadmapPhaseView,
 } from "./types";
 
@@ -19,6 +22,12 @@ const roadmapInclude = {
     orderBy: { sortOrder: "asc" as const },
     include: {
       approvedBy: { select: { name: true } },
+      proposals: {
+        where: { status: { not: "superseded" as const } },
+        orderBy: [{ version: "desc" as const }, { createdAt: "desc" as const }],
+        take: 1,
+        include: { document: { select: { fileUrl: true } } },
+      },
       initiatives: {
         orderBy: { sortOrder: "asc" as const },
         include: {
@@ -76,6 +85,63 @@ function toInitiativeView(
   };
 }
 
+function toProposalSummary(
+  proposal: {
+    id: string;
+    proposalNumber: string;
+    version: number;
+    status: PhaseProposalStatus;
+    createdAt: Date;
+    sentAt: Date | null;
+    approvedAt: Date | null;
+    document?: { fileUrl: string } | null;
+  } | null | undefined,
+): RoadmapPhaseProposalSummary | null {
+  if (!proposal) return null;
+  return {
+    id: proposal.id,
+    proposalNumber: proposal.proposalNumber,
+    version: proposal.version,
+    status: proposal.status,
+    statusLabel: PHASE_PROPOSAL_STATUS_LABELS[proposal.status],
+    documentUrl: proposal.document?.fileUrl ?? null,
+    createdAt: proposal.createdAt.toISOString(),
+    sentAt: proposal.sentAt?.toISOString() ?? null,
+    approvedAt: proposal.approvedAt?.toISOString() ?? null,
+  };
+}
+
+function buildJourneyMilestones(input: {
+  proposalGeneratedAt: Date | null;
+  proposalAcceptedAt: Date | null;
+  projectStartedAt: Date | null;
+  projectCompletedAt: Date | null;
+  latestProposal: RoadmapPhaseProposalSummary | null;
+}): RoadmapPhaseJourneyMilestone[] {
+  const milestones: RoadmapPhaseJourneyMilestone[] = [];
+  if (input.proposalGeneratedAt || input.latestProposal) {
+    milestones.push("proposal_generated");
+  }
+  if (
+    input.latestProposal?.sentAt ||
+    input.latestProposal?.status === "sent" ||
+    input.latestProposal?.status === "viewed" ||
+    input.latestProposal?.status === "approved"
+  ) {
+    milestones.push("proposal_sent");
+  }
+  if (input.proposalAcceptedAt || input.latestProposal?.status === "approved") {
+    milestones.push("proposal_approved");
+  }
+  if (input.projectStartedAt) {
+    milestones.push("implementation_started");
+  }
+  if (input.projectCompletedAt) {
+    milestones.push("implementation_completed");
+  }
+  return milestones;
+}
+
 function toPhaseView(
   phase: {
     id: string;
@@ -94,7 +160,21 @@ function toPhaseView(
     approvedAt: Date | null;
     completionDate: Date | null;
     actualCompletionDate: Date | null;
+    proposalGeneratedAt: Date | null;
+    proposalAcceptedAt: Date | null;
+    projectStartedAt: Date | null;
+    projectCompletedAt: Date | null;
     approvedBy: { name: string } | null;
+    proposals?: Array<{
+      id: string;
+      proposalNumber: string;
+      version: number;
+      status: PhaseProposalStatus;
+      createdAt: Date;
+      sentAt: Date | null;
+      approvedAt: Date | null;
+      document?: { fileUrl: string } | null;
+    }>;
     initiatives: Array<Parameters<typeof toInitiativeView>[0]>;
   },
   isConsultant: boolean,
@@ -106,6 +186,10 @@ function toPhaseView(
       title: item.businessOutcomeTitle ?? item.title,
       description: item.businessOutcomeDescription ?? item.businessImpact,
     }));
+
+  const latestProposal = toProposalSummary(phase.proposals?.[0]);
+  const proposalNeedsClientAction =
+    latestProposal?.status === "sent" || latestProposal?.status === "viewed";
 
   return {
     id: phase.id,
@@ -126,9 +210,22 @@ function toPhaseView(
     approvedByName: phase.approvedBy?.name ?? null,
     completionDate: phase.completionDate?.toISOString() ?? null,
     actualCompletionDate: phase.actualCompletionDate?.toISOString() ?? null,
+    proposalGeneratedAt: phase.proposalGeneratedAt?.toISOString() ?? null,
+    proposalAcceptedAt: phase.proposalAcceptedAt?.toISOString() ?? null,
+    projectStartedAt: phase.projectStartedAt?.toISOString() ?? null,
+    projectCompletedAt: phase.projectCompletedAt?.toISOString() ?? null,
+    latestProposal,
+    journeyMilestones: buildJourneyMilestones({
+      proposalGeneratedAt: phase.proposalGeneratedAt,
+      proposalAcceptedAt: phase.proposalAcceptedAt,
+      projectStartedAt: phase.projectStartedAt,
+      projectCompletedAt: phase.projectCompletedAt,
+      latestProposal,
+    }),
     initiatives,
     businessOutcomes,
-    canClientApprove: !isConsultant && phase.status === "awaiting_approval",
+    canClientApprove:
+      !isConsultant && phase.status === "awaiting_approval" && !proposalNeedsClientAction,
   };
 }
 
@@ -183,6 +280,7 @@ export async function getClientRoadmapDashboard(
       monthlyRecurringInvestment: phase.monthlyRecurringInvestment,
       name: phase.name,
       sortOrder: phase.sortOrder,
+      proposalStatusLabel: phase.latestProposal?.statusLabel ?? null,
     })),
     initiativeInputs,
   );
@@ -216,6 +314,12 @@ export async function getClientRoadmapPhaseDetail(
     },
     include: {
       approvedBy: { select: { name: true } },
+      proposals: {
+        where: { status: { not: "superseded" } },
+        orderBy: [{ version: "desc" }, { createdAt: "desc" }],
+        take: 1,
+        include: { document: { select: { fileUrl: true } } },
+      },
       roadmap: {
         include: {
           client: { select: { companyName: true } },

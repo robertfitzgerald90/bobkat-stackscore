@@ -33,10 +33,33 @@ export type RoadmapProgressMetrics = {
   riskReductionPercent: number;
   currentPhaseName: string | null;
   currentPhaseStatus: RoadmapPhaseStatus | null;
+  currentPhaseProposalStatusLabel: string | null;
+  currentPhaseImplementationStatusLabel: string | null;
   remainingOneTimeInvestment: number;
   remainingMonthlyRecurring: number;
+  currentMonthlyServices: number;
+  projectedMonthlyServicesAfterCompletion: number;
   domainImprovements: DomainImprovementMetrics;
 };
+
+export type RoadmapPhaseProposalSummary = {
+  id: string;
+  proposalNumber: string;
+  version: number;
+  status: string;
+  statusLabel: string;
+  documentUrl: string | null;
+  createdAt: string;
+  sentAt: string | null;
+  approvedAt: string | null;
+};
+
+export type RoadmapPhaseJourneyMilestone =
+  | "proposal_generated"
+  | "proposal_sent"
+  | "proposal_approved"
+  | "implementation_started"
+  | "implementation_completed";
 
 export type RoadmapInitiativeView = {
   id: string;
@@ -74,6 +97,12 @@ export type RoadmapPhaseView = {
   approvedByName: string | null;
   completionDate: string | null;
   actualCompletionDate: string | null;
+  proposalGeneratedAt: string | null;
+  proposalAcceptedAt: string | null;
+  projectStartedAt: string | null;
+  projectCompletedAt: string | null;
+  latestProposal: RoadmapPhaseProposalSummary | null;
+  journeyMilestones: RoadmapPhaseJourneyMilestone[];
   initiatives: RoadmapInitiativeView[];
   businessOutcomes: Array<{ title: string; description: string }>;
   canClientApprove: boolean;

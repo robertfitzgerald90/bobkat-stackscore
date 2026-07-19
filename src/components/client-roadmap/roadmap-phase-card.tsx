@@ -29,7 +29,7 @@ export function RoadmapPhaseCard({
         {phase.executiveSummary}
       </p>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg bg-slate-50 px-3 py-2">
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             StackScore
@@ -56,9 +56,17 @@ export function RoadmapPhaseCard({
               : "—"}
           </p>
         </div>
+        <div className="rounded-lg bg-slate-50 px-3 py-2">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+            Proposal
+          </p>
+          <p className="mt-1 text-sm font-semibold">
+            {phase.latestProposal?.statusLabel ?? "Not generated"}
+          </p>
+        </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 flex flex-wrap gap-2">
         <Link
           href={`/clients/${clientId}/roadmap/phases/${phase.id}`}
           className={buttonClassName({ variant: "outline", size: "sm" })}
@@ -66,6 +74,14 @@ export function RoadmapPhaseCard({
           Open phase workspace
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
+        {phase.latestProposal ? (
+          <Link
+            href={`/clients/${clientId}/phase-proposals/${phase.latestProposal.id}`}
+            className={buttonClassName({ variant: "secondary", size: "sm" })}
+          >
+            View proposal
+          </Link>
+        ) : null}
       </div>
     </article>
   );

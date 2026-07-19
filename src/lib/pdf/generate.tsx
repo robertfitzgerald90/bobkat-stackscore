@@ -13,6 +13,13 @@ export async function generateTipReportPdf(data: TipReportData) {
   return renderToBuffer(<TipReportDocument data={data} />);
 }
 
+export async function generatePhaseProposalPdf(
+  data: import("@/lib/phase-proposals/types").PhaseProposalDetail,
+) {
+  const { PhaseProposalDocument } = await import("@/lib/pdf/phase-proposal-report");
+  return renderToBuffer(<PhaseProposalDocument data={data} />);
+}
+
 export async function generateProductOverviewPdf(
   data: import("@/lib/pdf/product-overview-report").ProductOverviewPdfData,
 ) {

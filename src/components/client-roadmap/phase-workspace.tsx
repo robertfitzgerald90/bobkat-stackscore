@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Check, FileText, Loader2 } from "lucide-react";
 import type { ClientRoadmapPhaseDetail } from "@/lib/client-roadmap/types";
 import {
   RECOMMENDATION_LIFECYCLE_LABELS,
@@ -12,6 +13,7 @@ import {
   ROADMAP_PHASE_STATUS_VALUES,
 } from "@/lib/client-roadmap/labels";
 import type { RecommendationStatus, RoadmapPhaseStatus } from "@/generated/prisma/client";
+import { ROADMAP_JOURNEY_MILESTONE_LABELS } from "@/lib/phase-proposals/types";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { buttonClassName } from "@/components/ui/button";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
@@ -45,6 +47,27 @@ export function PhaseWorkspace({
     }
     setPhase(body.phase);
     startTransition(() => router.refresh());
+  }
+
+  async function generateProposal() {
+    setError(null);
+    const response = await fetch(`/api/v1/clients/${clientId}/phase-proposals`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phaseId: phase.id }),
+    });
+    const body = (await response.json()) as {
+      proposal?: { id: string };
+      error?: string;
+    };
+    if (!response.ok || !body.proposal) {
+      setError(body.error ?? "Unable to generate proposal");
+      return;
+    }
+    startTransition(() => {
+      router.push(`/clients/${clientId}/phase-proposals/${body.proposal!.id}`);
+      router.refresh();
+    });
   }
 
   async function updateInitiativeStatus(initiativeId: string, status: RecommendationStatus) {
@@ -140,6 +163,19 @@ export function PhaseWorkspace({
             </select>
             {pending ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : null}
           </div>
+        ) : phase.latestProposal &&
+          (phase.latestProposal.status === "sent" || phase.latestProposal.status === "viewed") ? (
+          <div className="mt-5">
+            <Link
+              href={`/clients/${clientId}/phase-proposals/${phase.latestProposal.id}`}
+              className={buttonClassName({ variant: "default" })}
+            >
+              Review & approve proposal
+            </Link>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Approval applies to this phase only. Remaining roadmap phases stay optional.
+            </p>
+          </div>
         ) : phase.canClientApprove ? (
           <div className="mt-5">
             <button
@@ -167,6 +203,63 @@ export function PhaseWorkspace({
 
         {error ? <p className="mt-3 text-sm text-destructive">{error}</p> : null}
       </header>
+
+      <Section title="Phase Proposal">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            {phase.latestProposal ? (
+              <>
+                <p className="text-sm font-semibold">
+                  {phase.latestProposal.proposalNumber} · v{phase.latestProposal.version}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Status: {phase.latestProposal.statusLabel}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Generate a focused proposal for this phase only. Future phase pricing is never
+                included.
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {phase.latestProposal ? (
+              <Link
+                href={`/clients/${clientId}/phase-proposals/${phase.latestProposal.id}`}
+                className={buttonClassName({ variant: "outline", size: "sm" })}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Open proposal
+              </Link>
+            ) : null}
+            {phase.isConsultant && phase.initiatives.length > 0 ? (
+              <button
+                type="button"
+                className={buttonClassName({ variant: "default", size: "sm" })}
+                disabled={pending}
+                onClick={() => void generateProposal()}
+              >
+                {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {phase.latestProposal ? "Regenerate proposal" : "Generate proposal"}
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        {phase.journeyMilestones.length > 0 ? (
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {phase.journeyMilestones.map((milestone) => (
+              <li
+                key={milestone}
+                className="rounded-full border bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700"
+              >
+                {ROADMAP_JOURNEY_MILESTONE_LABELS[milestone]}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </Section>
 
       <Section title="Executive Summary">
         <p className="text-sm leading-relaxed text-muted-foreground">{phase.executiveSummary}</p>

@@ -1,5 +1,6 @@
 import { Check, Circle, Clock } from "lucide-react";
 import type { ClientRoadmapDashboard } from "@/lib/client-roadmap/types";
+import { ROADMAP_JOURNEY_MILESTONE_LABELS } from "@/lib/phase-proposals/types";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
 import { cn } from "@/lib/utils";
 
@@ -63,6 +64,18 @@ export function RoadmapTimeline({ dashboard }: { dashboard: ClientRoadmapDashboa
                 <RoadmapStatusBadge status={phase.status} />
               </div>
               <p className="mt-1 text-sm text-muted-foreground">{phase.timeline}</p>
+              {phase.latestProposal ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Proposal: {phase.latestProposal.statusLabel}
+                </p>
+              ) : null}
+              {phase.journeyMilestones.length > 0 ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {phase.journeyMilestones
+                    .map((milestone) => ROADMAP_JOURNEY_MILESTONE_LABELS[milestone])
+                    .join(" · ")}
+                </p>
+              ) : null}
             </div>
           </div>
         ))}

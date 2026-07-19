@@ -29,24 +29,34 @@ export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboa
       value: dashboard.metrics.currentPhaseName ?? "Complete",
     },
     {
-      label: "Risk Reduction",
-      value: `${dashboard.metrics.riskReductionPercent}%`,
+      label: "Proposal Status",
+      value: dashboard.metrics.currentPhaseProposalStatusLabel ?? "Not generated",
     },
     {
-      label: "Completed Initiatives",
-      value: dashboard.metrics.initiativesCompleted,
-    },
-    {
-      label: "Remaining Initiatives",
-      value: dashboard.metrics.initiativesRemaining,
+      label: "Implementation Status",
+      value: dashboard.metrics.currentPhaseImplementationStatusLabel ?? "—",
     },
     {
       label: "Remaining Investment",
       value: formatCurrency(dashboard.metrics.remainingOneTimeInvestment),
       hint:
         dashboard.metrics.remainingMonthlyRecurring > 0
-          ? `+ ${formatCurrency(dashboard.metrics.remainingMonthlyRecurring)}/mo`
+          ? `+ ${formatCurrency(dashboard.metrics.remainingMonthlyRecurring)}/mo remaining`
           : undefined,
+    },
+    {
+      label: "Current Monthly Services",
+      value:
+        dashboard.metrics.currentMonthlyServices > 0
+          ? `${formatCurrency(dashboard.metrics.currentMonthlyServices)}/mo`
+          : "None",
+    },
+    {
+      label: "Projected Monthly After Completion",
+      value:
+        dashboard.metrics.projectedMonthlyServicesAfterCompletion > 0
+          ? `${formatCurrency(dashboard.metrics.projectedMonthlyServicesAfterCompletion)}/mo`
+          : "None",
     },
   ];
 
