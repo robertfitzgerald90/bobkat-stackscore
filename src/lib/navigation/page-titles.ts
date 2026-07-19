@@ -39,8 +39,8 @@ const CLIENT_SUBROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/clients\/[^/]+\/assessments\/history$/, title: "Assessment History" },
   { pattern: /^\/clients\/[^/]+\/assessments\/compare$/, title: "Compare Assessments" },
   { pattern: /^\/clients\/[^/]+\/improvement-plan\/[^/]+$/, title: "Improvement Plan" },
-  { pattern: /^\/clients\/[^/]+\/quarterly-review\/[^/]+$/, title: "Quarterly Review" },
-  { pattern: /^\/clients\/[^/]+\/quarterly-reviews$/, title: "Quarterly Reviews" },
+  { pattern: /^\/clients\/[^/]+\/quarterly-review\/[^/]+$/, title: "Business Review" },
+  { pattern: /^\/clients\/[^/]+\/quarterly-reviews$/, title: "Business Reviews" },
   { pattern: /^\/clients\/[^/]+\/vcio\/onboarding$/, title: "vCIO Onboarding" },
   { pattern: /^\/clients\/[^/]+\/progress-report$/, title: "Progress Report" },
   {

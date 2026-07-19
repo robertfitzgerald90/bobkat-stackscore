@@ -22,7 +22,7 @@ export const DEMO_DEEP_LINK_SECTIONS = {
   },
   roadmap: {
     sectionId: "product-overview-roadmap",
-    label: "Technology Roadmap",
+    label: "Living Execution Plan",
   },
   "improvement-plan": {
     sectionId: "product-overview-phase-proposal",
@@ -38,7 +38,7 @@ export const DEMO_DEEP_LINK_SECTIONS = {
   },
   "quarterly-review": {
     sectionId: "product-overview-quarterly-review",
-    label: "Quarterly Review",
+    label: "Business Review",
   },
 } as const;
 

@@ -149,7 +149,7 @@ export const ACME_CURATED_RECOMMENDATIONS: CuratedRecommendationSpec[] = [
     status: "completed",
     estimatedImpactPoints: 4,
     pillarCode: "security_operations",
-    nextAction: "Review the approved plan during the next quarterly review.",
+    nextAction: "Review the approved plan during the next business review.",
     effort: "Medium",
   },
   {
@@ -164,7 +164,7 @@ export const ACME_CURATED_RECOMMENDATIONS: CuratedRecommendationSpec[] = [
     status: "completed",
     estimatedImpactPoints: 3,
     pillarCode: "technology_strategy",
-    nextAction: "Prepare Q3 2026 quarterly review materials.",
+    nextAction: "Prepare Q3 2026 business review materials.",
     effort: "Low",
   },
   {
@@ -179,7 +179,7 @@ export const ACME_CURATED_RECOMMENDATIONS: CuratedRecommendationSpec[] = [
     status: "completed",
     estimatedImpactPoints: 4,
     pillarCode: "technology_strategy",
-    nextAction: "Track roadmap execution during quarterly reviews.",
+    nextAction: "Track living execution plan progress during business reviews.",
     effort: "Medium",
   },
   {

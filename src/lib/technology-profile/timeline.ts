@@ -51,7 +51,7 @@ export const JOURNEY_TIMELINE_EVENT_LABELS: Record<JourneyTimelineEventType, str
   project_completed: "Project Completed",
   completion_report: "Completion Report",
   progress_report: "Progress Report",
-  quarterly_review: "Quarterly Review",
+  quarterly_review: "Business Review",
   profile_milestone: "Profile Milestone",
 };
 
@@ -165,7 +165,7 @@ function roundScore(value: unknown): number | null {
 function formatAssessmentType(type: string): string {
   const labels: Record<string, string> = {
     initial: "Initial",
-    quarterly: "Quarterly Review",
+    quarterly: "Business Review",
     annual: "Annual Review",
     followup: "Follow-up",
   };

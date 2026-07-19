@@ -34,7 +34,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
   },
   {
     id: "roadmap-created",
-    label: "Technology Roadmap",
+    label: "Living Execution Plan",
     period: "July 2026",
     metrics: {
       technologyScore: 58,
@@ -66,7 +66,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
   },
   {
     id: "qbr-1",
-    label: "Quarterly Review #1",
+    label: "Business Review #1",
     period: "September 2026",
     metrics: {
       technologyScore: 68,
@@ -78,7 +78,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       approvedSpend: 24_000,
       highPriorityRecommendations: 5,
     },
-    summary: "First executive quarterly review shows +6 point score improvement and two completed initiatives.",
+    summary: "First executive business review shows +6 point score improvement and two completed initiatives.",
   },
   {
     id: "score-improves",
@@ -114,7 +114,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
   },
   {
     id: "qbr-2",
-    label: "Quarterly Review #2",
+    label: "Business Review #2",
     period: "December 2026",
     metrics: {
       technologyScore: 78,
@@ -126,7 +126,7 @@ export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
       approvedSpend: 30_000,
       highPriorityRecommendations: 3,
     },
-    summary: "Second quarterly review confirms sustained progress, budget discipline, and reduced critical risks.",
+    summary: "Second business review confirms sustained progress, budget discipline, and reduced critical risks.",
   },
   {
     id: "strategic-planning",
@@ -194,7 +194,7 @@ export const CONTINUOUS_IMPROVEMENT_LOOP: DemoImprovementLoopStage[] = [
   {
     id: "review",
     label: "Review",
-    whatHappens: "Conduct executive quarterly reviews with score movement and completed work.",
+    whatHappens: "Conduct executive business reviews with score movement and completed work.",
     whyItMatters: "Maintains executive visibility and course-correction cadence.",
     whoBenefits: "CEO, board advisors, and executive sponsors",
   },
@@ -227,8 +227,8 @@ export const COLLABORATION_PARTICIPANTS: DemoCollaborationParticipant[] = [
     label: "Technology Advisor",
     role: "Strategic IT Consulting Partner",
     description:
-      "Guides assessment interpretation, roadmap prioritization, and quarterly executive reviews.",
-    connections: ["Executive Team", "Roadmap", "Quarterly Reviews", "Reports"],
+      "Guides assessment interpretation, living execution plan prioritization, and executive business reviews.",
+    connections: ["Executive Team", "Living Execution Plan", "Business Reviews", "Reports"],
   },
   {
     id: "executive-team",
@@ -244,7 +244,7 @@ export const COLLABORATION_PARTICIPANTS: DemoCollaborationParticipant[] = [
     role: "Implementation Team",
     description:
       "Executes projects, maintains systems, and provides operational context for recommendations.",
-    connections: ["Projects", "Roadmap", "Meeting Notes", "Technology Advisor"],
+    connections: ["Projects", "Living Execution Plan", "Meeting Notes", "Technology Advisor"],
   },
   {
     id: "business-leaders",
@@ -259,14 +259,14 @@ export const COLLABORATION_PARTICIPANTS: DemoCollaborationParticipant[] = [
 export const COLLABORATION_ARTIFACTS = [
   { id: "projects", label: "Projects", description: "Shared initiative progress and milestone accountability" },
   { id: "reports", label: "Reports", description: "Executive-ready reporting everyone references" },
-  { id: "roadmap", label: "Roadmap", description: "Single source of truth for technology priorities" },
-  { id: "meeting-notes", label: "Meeting Notes", description: "Quarterly review decisions captured and tracked" },
+  { id: "roadmap", label: "Living Execution Plan", description: "Single source of truth for technology priorities" },
+  { id: "meeting-notes", label: "Meeting Notes", description: "Business review decisions captured and tracked" },
 ];
 
 export const STRATEGIC_PLANNING_TABS: DemoStrategicPlanningTab[] = [
   {
     id: "next-quarter",
-    label: "Next Quarter",
+    label: "Upcoming Priorities",
     initiatives: [
       {
         id: "sp-m365-complete",
@@ -407,7 +407,7 @@ export const EXECUTIVE_DECISION_WIDGETS: DemoExecutiveWidget[] = [
     status: "attention",
     whyExecutivesCare: "Unaddressed technology risks can disrupt operations and compliance.",
     businessImplications: "Critical identity risks declining; infrastructure risk remains elevated.",
-    suggestedAction: "Review open risks in the next quarterly executive session.",
+    suggestedAction: "Review open risks in the next executive business review.",
   },
   {
     id: "business-impact",
@@ -416,7 +416,7 @@ export const EXECUTIVE_DECISION_WIDGETS: DemoExecutiveWidget[] = [
     status: "healthy",
     whyExecutivesCare: "Technology investments must connect to measurable business outcomes.",
     businessImplications: "Current initiatives address insurance readiness, compliance, and uptime.",
-    suggestedAction: "Continue linking project outcomes to quarterly review metrics.",
+    suggestedAction: "Continue linking project outcomes to business review metrics.",
   },
   {
     id: "compliance-readiness",
@@ -443,7 +443,7 @@ export const EXECUTIVE_DECISION_WIDGETS: DemoExecutiveWidget[] = [
     status: "neutral",
     whyExecutivesCare: "Executive decisions unblock projects and maintain roadmap momentum.",
     businessImplications: "Network refresh approval, DR exercise scheduling, and policy rollout sign-off.",
-    suggestedAction: "Address pending decisions in September 15 quarterly review.",
+    suggestedAction: "Address pending decisions in the September 15 business review.",
   },
 ];
 
@@ -490,7 +490,7 @@ export const CLIENT_SUCCESS_OUTCOMES: DemoSuccessOutcome[] = [
   { id: "critical-risks", label: "Critical Risks", value: "9 → 2" },
   { id: "completed-projects", label: "Completed Projects", value: "14" },
   { id: "budget-accuracy", label: "Budget Accuracy", value: "97%" },
-  { id: "quarterly-reviews", label: "Quarterly Reviews", value: "8" },
+  { id: "quarterly-reviews", label: "Business Reviews", value: "8" },
   { id: "business-continuity", label: "Business Continuity", value: "Improved", detail: "Validated recovery readiness" },
   { id: "cyber-maturity", label: "Cybersecurity Maturity", value: "+20 points" },
 ];
@@ -516,7 +516,7 @@ export const ECOSYSTEM_NODES: DemoEcosystemNode[] = [
   },
   {
     id: "roadmap",
-    label: "Roadmap",
+    label: "Living Execution Plan",
     description: "Sequence initiatives across quarters aligned with business priorities.",
     businessValue: "Turns strategy into an executable plan.",
   },
@@ -528,7 +528,7 @@ export const ECOSYSTEM_NODES: DemoEcosystemNode[] = [
   },
   {
     id: "quarterly-reviews",
-    label: "Quarterly Reviews",
+    label: "Business Reviews",
     description: "Measure progress through executive business reviews.",
     businessValue: "Sustains accountability and executive alignment.",
   },
@@ -574,7 +574,7 @@ export const PRODUCT_TOUR_STEPS: DemoProductTourStep[] = [
   {
     id: "tour-roadmap",
     stepNumber: 3,
-    title: "Technology Roadmap",
+    title: "Living Execution Plan",
     sectionId: "product-overview-roadmap",
     featureDescription: "Four phases with separated one-time and monthly investments.",
     whyItMatters: "Strategy requires sequencing, not one oversized capital ask.",
@@ -621,7 +621,7 @@ export const PRODUCT_TOUR_STEPS: DemoProductTourStep[] = [
     stepNumber: 8,
     title: "Reports & Planning",
     sectionId: "product-overview-reports",
-    featureDescription: "Connected assessment, roadmap, proposal, progress, QBR, and budget reports.",
+    featureDescription: "Connected assessment, living execution plan, proposal, progress, business review, and budget reports.",
     whyItMatters: "Executives need concise reporting from live roadmap data.",
     businessValue: "Reinforces ongoing strategic partnership value.",
   },
@@ -632,7 +632,7 @@ export const ENGAGEMENT_NEXT_STEPS = [
   { step: 2, label: "Complete Onboarding", description: "Share organization context and technology environment." },
   { step: 3, label: "Technology Review", description: "Collaborate on assessment scope and executive priorities." },
   { step: 4, label: "Receive Assessment", description: "Review pillar scores, findings, and prioritized recommendations." },
-  { step: 5, label: "Build Roadmap", description: "Convert recommendations into a sequenced technology roadmap." },
+  { step: 5, label: "Build Execution Plan", description: "Convert recommendations into a sequenced living execution plan." },
   { step: 6, label: "Begin Strategic IT Consulting", description: "Partner ongoing for execution, reviews, and continuous improvement." },
 ];
 

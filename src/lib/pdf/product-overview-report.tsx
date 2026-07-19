@@ -154,7 +154,7 @@ export function ProductOverviewPdfDocument({ data }: { data: ProductOverviewPdfD
           documentLabel="Executive Reporting & Partnership"
         />
         <PdfReportFooter generatedDate={data.generatedDate} clientName={data.companyName} />
-        <PdfSectionTitle title="Quarterly Reviews" subtitle="Executive accountability every quarter" />
+        <PdfSectionTitle title="Business Reviews" subtitle="Flexible strategic review of technology progress" />
         {dashboard.quarterlyReview.executiveSummary.map((line) => (
           <Text key={line} style={styles.body}>
             • {line}
@@ -168,7 +168,7 @@ export function ProductOverviewPdfDocument({ data }: { data: ProductOverviewPdfD
         </Text>
         <PdfSectionTitle title="Business Outcomes" subtitle="Technology strategy that drives measurable growth" />
         <Text style={styles.body}>
-          StackScore connects assessments, recommendations, roadmaps, projects, quarterly reviews,
+          StackScore connects assessments, recommendations, living execution plans, projects, business reviews,
           executive reports, and budget planning into one ongoing Strategic IT Consulting partnership.
         </Text>
         <PdfSectionTitle title="Next Step" subtitle="Begin your technology strategy with Bobkat IT" />

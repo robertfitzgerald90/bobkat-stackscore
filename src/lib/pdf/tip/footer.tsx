@@ -19,12 +19,12 @@ export function PdfTipReportFooter({
       fixed
       style={{
         position: "absolute",
-        bottom: 14,
+        bottom: 10,
         left: TIP_PDF_SPACING.pagePaddingX,
         right: TIP_PDF_SPACING.pagePaddingX,
         borderTopWidth: 1,
         borderTopColor: COLORS.border,
-        paddingTop: 5,
+        paddingTop: 4,
       }}
     >
       <View

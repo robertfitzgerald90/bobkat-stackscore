@@ -41,7 +41,7 @@ const DEFAULT_DELIVERABLES = [
   "Executive-Ready Reporting",
   "Technology Risk Identification",
   "Prioritized Improvement Recommendations",
-  "Technology Roadmap Guidance",
+  "Living Execution Plan Guidance",
 ];
 
 const DEFAULT_FAQ = [

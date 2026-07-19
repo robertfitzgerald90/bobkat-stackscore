@@ -2,7 +2,7 @@ import { Image, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
 import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
 import { COLORS } from "@/lib/pdf/shared/colors";
-import { TIP_PDF_SPACING, TIP_PDF_TYPOGRAPHY } from "@/lib/pdf/tip/tokens";
+import { TIP_PDF_SPACING } from "@/lib/pdf/tip/tokens";
 
 type PdfTipReportHeaderProps = {
   clientName: string;
@@ -30,8 +30,8 @@ export function PdfTipReportHeader({
         borderBottomWidth: 1,
         borderBottomColor: COLORS.border,
         paddingHorizontal: TIP_PDF_SPACING.pagePaddingX,
-        paddingTop: 10,
-        paddingBottom: 8,
+        paddingTop: 8,
+        paddingBottom: 6,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",

@@ -23,7 +23,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const { id: clientId, qbrId } = await context.params;
   const review = await getQuarterlyBusinessReview(clientId, qbrId, user.role);
-  if (!review) return notFound("Quarterly Business Review not found");
+  if (!review) return notFound("Business Review not found");
   return NextResponse.json({ review });
 }
 
@@ -49,7 +49,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const review = await updateQuarterlyBusinessReview(clientId, qbrId, {
       executiveSummary,
     });
-    if (!review) return notFound("Quarterly Business Review not found");
+    if (!review) return notFound("Business Review not found");
     return NextResponse.json({ review });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update review";

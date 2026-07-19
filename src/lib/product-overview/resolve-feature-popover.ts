@@ -42,7 +42,7 @@ function relatedFromConnection(connection?: {
   }
   if (connection?.roadmapInitiativeId) {
     actions.push({
-      label: "Roadmap",
+      label: "Living Execution Plan",
       panel: { type: "roadmapInitiative", initiativeId: connection.roadmapInitiativeId },
       featureKey: demoFeatureKey("roadmapInitiative", connection.roadmapInitiativeId),
     });
@@ -55,7 +55,7 @@ function relatedFromConnection(connection?: {
     });
   }
   actions.push({
-    label: "Quarterly Review",
+    label: "Business Review",
     panel: { type: "executiveReview" },
     featureKey: demoFeatureKey("executiveReview"),
   });
@@ -93,7 +93,7 @@ export function resolveFeaturePopoverModel(
         highlights: isAssessment
           ? [pillar.recommendedImprovement]
           : [pillar.exampleRecommendation],
-        relatedFeatures: ["Roadmap", "Recommendations", "Executive Reports"],
+        relatedFeatures: ["Living Execution Plan", "Recommendations", "Executive Reports"],
         relatedActions: relatedFromConnection({
           pillarId: pillar.id,
           recommendationId: connection?.recommendationId,
@@ -123,7 +123,7 @@ export function resolveFeaturePopoverModel(
           recommendation.dependencies.length > 0
             ? recommendation.dependencies.slice(0, 3)
             : undefined,
-        relatedFeatures: ["Roadmap", "Projects", "Budget"],
+        relatedFeatures: ["Living Execution Plan", "Projects", "Budget"],
         relatedActions: relatedFromConnection({
           pillarId: connection?.pillarId ?? recommendation.pillarId,
           recommendationId: recommendation.id,
@@ -178,7 +178,7 @@ export function resolveFeaturePopoverModel(
         highlights: isExecution
           ? project.milestones.slice(0, 3)
           : project.milestones.slice(0, 2),
-        relatedFeatures: ["Roadmap", "Recommendations", "Quarterly Reviews"],
+        relatedFeatures: ["Living Execution Plan", "Recommendations", "Business Reviews"],
         relatedActions: relatedFromConnection({
           pillarId: project.pillarId,
           recommendationId: project.relatedRecommendationId,
@@ -189,7 +189,7 @@ export function resolveFeaturePopoverModel(
     }
     case "roadmap": {
       return {
-        title: "Technology Roadmap",
+        title: "Living Execution Plan",
         badge: "Strategic plan",
         description:
           "Quarter-based implementation plan that sequences security, infrastructure, and continuity work.",
@@ -202,35 +202,35 @@ export function resolveFeaturePopoverModel(
         ),
         relatedFeatures: ["Recommendations", "Projects", "Budget"],
         relatedActions: [
-          { label: "Quarterly Review", panel: { type: "executiveReview" }, featureKey: demoFeatureKey("executiveReview") },
+          { label: "Business Review", panel: { type: "executiveReview" }, featureKey: demoFeatureKey("executiveReview") },
         ],
       };
     }
     case "qbr": {
       const review = dashboard.quarterlyReview;
       return {
-        title: "Executive Quarterly Review",
+        title: "Executive Business Review",
         badge: review.status,
         subtitle: review.nextReviewDate,
-        description: review.executiveSummary[0] ?? "Quarterly technology strategy review.",
+        description: review.executiveSummary[0] ?? "Flexible strategic technology review.",
         whyItMatters:
-          "Keeps executives aligned on score movement, risks, and next-quarter priorities.",
+          "Keeps executives aligned on score movement, risks, and upcoming priorities.",
         businessValue: `Score change +${review.scoreChange} · Budget variance ${review.budgetVariance}`,
         highlights: review.executiveSummary.slice(0, 3),
-        relatedFeatures: ["Roadmap", "Budget", "Reports"],
+        relatedFeatures: ["Living Execution Plan", "Budget", "Reports"],
       };
     }
     case "executiveReview": {
       const review = demoProfile.executiveReview;
       const qbr = dashboard.quarterlyReview;
       return {
-        title: "Executive Quarterly Review",
+        title: "Executive Business Review",
         badge: "Leadership brief",
         subtitle: qbr.nextReviewDate,
         description: review.executiveSummary[0] ?? "Executive review of technology progress.",
         whyItMatters: review.openRisks[0]
           ? `Open risk: ${review.openRisks[0]}`
-          : "Surfaces open risks and next-quarter priorities for decision makers.",
+          : "Surfaces open risks and upcoming priorities for decision makers.",
         businessValue: review.executiveRecommendations[0] ?? review.roadmapProgress[0] ?? "",
         highlights: [
           ...review.completedInitiatives.slice(0, 2),
@@ -240,7 +240,7 @@ export function resolveFeaturePopoverModel(
           label: point.quarter,
           value: String(point.score),
         })),
-        relatedFeatures: ["Roadmap", "Projects", "Budget"],
+        relatedFeatures: ["Living Execution Plan", "Projects", "Budget"],
       };
     }
     case "report": {
@@ -263,7 +263,7 @@ export function resolveFeaturePopoverModel(
           value: metric.value,
         })),
         highlights: firstSection?.bullets?.slice(0, 3),
-        relatedFeatures: ["Assessment", "Roadmap", "Quarterly Reviews"],
+        relatedFeatures: ["Assessment", "Living Execution Plan", "Business Reviews"],
       };
     }
     case "executiveWidget": {
@@ -276,7 +276,7 @@ export function resolveFeaturePopoverModel(
         whyItMatters: widget.whyExecutivesCare,
         businessValue: widget.businessImplications,
         highlights: [widget.suggestedAction],
-        relatedFeatures: ["Dashboard", "Roadmap", "Budget"],
+        relatedFeatures: ["Dashboard", "Living Execution Plan", "Budget"],
       };
     }
     case "strategicInitiative": {
@@ -287,9 +287,9 @@ export function resolveFeaturePopoverModel(
         badge: initiative.priority,
         subtitle: initiative.timeframe,
         description: initiative.summary,
-        whyItMatters: "Connects long-range planning to the living technology roadmap.",
+        whyItMatters: "Connects long-range planning to the living execution plan.",
         businessValue: initiative.businessOutcome,
-        relatedFeatures: ["Roadmap", "Budget", "Quarterly Reviews"],
+        relatedFeatures: ["Living Execution Plan", "Budget", "Business Reviews"],
       };
     }
     case "collaborationParticipant": {
@@ -302,7 +302,7 @@ export function resolveFeaturePopoverModel(
         whyItMatters: "Keeps stakeholders aligned on priorities, progress, and decisions.",
         businessValue: "Reduces miscommunication across IT, finance, and leadership.",
         highlights: participant.connections,
-        relatedFeatures: ["Projects", "Reports", "Quarterly Reviews"],
+        relatedFeatures: ["Projects", "Reports", "Business Reviews"],
       };
     }
     case "ecosystemNode": {
@@ -314,7 +314,7 @@ export function resolveFeaturePopoverModel(
         description: node.description,
         whyItMatters: "Shows how StackScore capabilities reinforce one another.",
         businessValue: node.businessValue,
-        relatedFeatures: ["Dashboard", "Roadmap", "Reports"],
+        relatedFeatures: ["Dashboard", "Living Execution Plan", "Reports"],
       };
     }
     case "budget": {
@@ -334,15 +334,15 @@ export function resolveFeaturePopoverModel(
           { label: "Committed", value: formatDemoCurrency(budget.committed) },
           { label: "Remaining", value: formatDemoCurrency(budget.remaining) },
         ],
-        relatedFeatures: ["Roadmap", "Recommendations", "Executive Reports"],
+        relatedFeatures: ["Living Execution Plan", "Recommendations", "Executive Reports"],
         relatedActions: [
           {
-            label: "Roadmap",
+            label: "Living Execution Plan",
             panel: { type: "roadmap" },
             featureKey: demoFeatureKey("roadmap"),
           },
           {
-            label: "Quarterly Review",
+            label: "Business Review",
             panel: { type: "executiveReview" },
             featureKey: demoFeatureKey("executiveReview"),
           },

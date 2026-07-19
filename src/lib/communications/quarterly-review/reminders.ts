@@ -55,8 +55,8 @@ export async function scanQuarterlyReviewReminders() {
       clientId: client.id,
       category: "TECHNOLOGY",
       eventType: "quarterly_review_due",
-      title: "Quarterly review due",
-      description: `Quarterly Technology Review due around ${dueAt.toLocaleDateString()}.`,
+      title: "Business review due",
+      description: `Business Review due around ${dueAt.toLocaleDateString()}.`,
       visibility: "INTERNAL",
     });
 

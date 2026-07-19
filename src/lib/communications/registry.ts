@@ -235,22 +235,22 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
     key: "EMAIL-003",
     documentId: "EMAIL-003",
     name: "Roadmap Ready",
-    description: "Informs the customer that their Technology Roadmap has been generated.",
+    description: "Informs the customer that their Living Execution Plan has been generated.",
     category: "roadmap",
     status: "active",
-    subject: "Your Technology Roadmap is Ready",
+    subject: "Your Living Execution Plan is Ready",
     previewText: "Explore your prioritized technology improvement plan.",
     lastUpdated: LAST_UPDATED,
     requiredVariables: ["primaryCta"],
     optionalVariables: ["firstName", "organizationName"],
     defaults: {
-      subject: "Your Technology Roadmap is Ready",
+      subject: "Your Living Execution Plan is Ready",
       previewText: "Explore your prioritized technology improvement plan.",
     },
     sampleData: {
-      heroTitle: "Your Technology Roadmap is Ready",
+      heroTitle: "Your Living Execution Plan is Ready",
       primaryCta: {
-        label: "View Technology Roadmap",
+        label: "View Living Execution Plan",
         href: PREVIEW_PROTECTED_URL,
       },
       secondaryCta: {
@@ -329,7 +329,7 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
         label: "Schedule My Review",
         href: PREVIEW_PROTECTED_URL,
       },
-      summaryItems: ["Review completed improvements", "Update your technology roadmap"],
+      summaryItems: ["Review completed improvements", "Update your living execution plan"],
     },
   }),
   workflowTemplate({
@@ -380,7 +380,7 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
         href: PREVIEW_PROTECTED_URL,
       },
       secondaryCta: {
-        label: "View Updated Technology Roadmap",
+        label: "View Updated Living Execution Plan",
         href: PREVIEW_PROTECTED_URL,
       },
     },

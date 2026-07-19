@@ -8,16 +8,16 @@ export function getReportLibrary(clientId: string): ReportLibraryItem[] {
   return [
     {
       key: "technology_roadmap",
-      title: "Technology Roadmap",
-      description: "Phased implementation roadmap with separated investment profiles.",
+      title: "Living Execution Plan",
+      description: "Phased implementation plan with separated investment profiles.",
       engine: "Technology Roadmap Engine",
       hrefTemplate: `/clients/${clientId}/roadmap`,
       available: true,
     },
     {
       key: "quarterly_business_review",
-      title: "Quarterly Business Review",
-      description: "Executive QBR fed by living roadmap progress and score history.",
+      title: "Business Review",
+      description: "Flexible strategic review fed by living execution plan progress and score history.",
       engine: "Reporting Engine / QBR",
       hrefTemplate: `/clients/${clientId}/quarterly-reviews`,
       available: true,

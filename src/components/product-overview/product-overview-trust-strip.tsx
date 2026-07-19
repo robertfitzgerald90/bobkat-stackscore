@@ -10,7 +10,7 @@ const TRUST_ITEMS = [
   {
     icon: ShieldCheck,
     title: "Executive reporting built in",
-    description: "Quarterly reviews and leadership reports rendered from live platform data.",
+    description: "Business reviews and leadership reports rendered from live platform data.",
   },
   {
     icon: Lock,

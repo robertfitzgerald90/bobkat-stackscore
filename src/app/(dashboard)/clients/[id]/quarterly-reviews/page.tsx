@@ -37,7 +37,7 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
     <ClientPageShell className="max-w-5xl">
       <ClientPageHeader
         eyebrow="StackScore vCIO"
-        title="Quarterly Reviews"
+        title="Business Reviews"
         description="Completed and scheduled strategic technology reviews for this workspace."
         actions={
           <Link href={`/clients/${clientId}/vcio`} className={buttonVariants({ variant: "outline" })}>
@@ -50,16 +50,16 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
         <ClientEmptyState
           icon={CalendarDays}
           title="vCIO not active yet"
-          description="StackScore vCIO is not active for this workspace yet. Quarterly reviews become available with an active subscription."
-          nextStep="Contact Bobkat IT to activate ongoing advisory and quarterly review cadence."
+          description="StackScore vCIO is not active for this workspace yet. Business reviews become available with an active subscription."
+          nextStep="Contact Bobkat IT to activate ongoing advisory and business review cadence."
         />
       ) : null}
 
       {reviews.length === 0 ? (
         <ClientEmptyState
           icon={CalendarDays}
-          title="No quarterly reviews yet"
-          description="Quarterly reviews summarize score movement, completed initiatives, open risks, and next-quarter priorities."
+          title="No business reviews yet"
+          description="Business reviews summarize score movement, completed initiatives, open risks, and upcoming priorities."
           nextStep="Completed reviews will appear here after Bobkat IT prepares and publishes them."
         />
       ) : (

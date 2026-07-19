@@ -28,6 +28,6 @@ export async function POST(_request: Request, context: RouteContext) {
     user.id,
     user.role,
   );
-  if (!review) return notFound("Quarterly Business Review not found");
+  if (!review) return notFound("Business Review not found");
   return NextResponse.json({ review });
 }

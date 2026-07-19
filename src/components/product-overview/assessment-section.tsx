@@ -202,7 +202,7 @@ export function AssessmentSection() {
               className="h-11 px-6"
               onClick={() => scrollToSection("product-overview-roadmap")}
             >
-              View Technology Roadmap
+              View Living Execution Plan
             </Button>
           </div>
         </OfferReveal>

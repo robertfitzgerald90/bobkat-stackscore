@@ -28,8 +28,8 @@ import {
 import { cn } from "@/lib/utils";
 
 const receiveItems = [
-  "Quarterly Technology Reviews",
-  "Technology Roadmap Management",
+  "Business Reviews",
+  "Living Execution Plan Management",
   "Technology Budget Planning",
   "Improvement Tracking",
   "Executive Reports",
@@ -47,7 +47,7 @@ const audienceItems = [
   "Organizations that need a documented technology strategy",
   "Companies managing multiple technology projects or vendors",
   "Businesses that want executive-level guidance without hiring a full-time technology leader",
-  "Existing StackScore assessment clients that need help executing their roadmap",
+  "Existing StackScore assessment clients that need help executing their living execution plan",
   "Organizations that want proactive planning instead of reactive technology spending",
 ] as const;
 
@@ -55,8 +55,8 @@ const processSteps = [
   "Subscribe to StackScore vCIO",
   "Complete your onboarding profile",
   "Review your existing assessment or establish an initial technology baseline",
-  "Build and prioritize your technology roadmap",
-  "Begin ongoing planning, reporting, and quarterly reviews",
+  "Build and prioritize your living execution plan",
+  "Begin ongoing planning, reporting, and business reviews",
 ] as const;
 
 const portalFeatures = [
@@ -64,8 +64,8 @@ const portalFeatures = [
   "Recommendations",
   "Improvement plans",
   "Projects",
-  "Technology roadmap",
-  "Quarterly reviews",
+  "Living execution plan",
+  "Business reviews",
   "Technology budget",
   "Reports",
   "Documents",
@@ -77,8 +77,8 @@ const portalFeatures = [
 
 const pricingIncludes = [
   "Ongoing technology advisory",
-  "Quarterly technology reviews",
-  "Roadmap and budget management",
+  "Business reviews",
+  "Living execution plan and budget management",
   "Executive reporting",
   "Direct advisor access",
   "Annual reassessment",
@@ -105,7 +105,7 @@ const faqs = [
   {
     question: "How often are strategy reviews performed?",
     answer:
-      "Formal reviews are performed quarterly, with ongoing roadmap and advisory access throughout the subscription.",
+      "Business reviews are scheduled when they provide value — typically several times per year — with ongoing living execution plan and advisory access throughout the subscription.",
   },
   {
     question: "Can Bobkat IT implement the recommendations?",
@@ -216,7 +216,7 @@ export function VcioOfferLanding() {
               </OfferReveal>
               <OfferReveal delayMs={70}>
                 <h1 className="mt-8 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-                  Turn Your Technology Roadmap Into an Ongoing Strategy
+                  Turn Your Living Execution Plan Into an Ongoing Strategy
                 </h1>
               </OfferReveal>
               <OfferReveal delayMs={120}>

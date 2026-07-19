@@ -272,7 +272,7 @@ export function TipRoadmapOverviewSection({ data }: { data: TipReportData }) {
 
   return (
     <ReportSection
-      title="Technology Roadmap Overview"
+      title="Living Execution Plan Overview"
       subtitle="A sequenced journey from assessment through strategic enhancement"
       documentTheme={DOCUMENT_THEME}
     >

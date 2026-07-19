@@ -22,7 +22,7 @@ const STANDARD_TIMELINE = [
 
 export const DEMO_EXECUTIVE_REVIEW: DemoExecutiveReview = {
   executiveSummary: [
-    "Northstar Manufacturing improved its overall technology score by 6 points since the previous quarter, reflecting measurable progress in identity protection and backup validation.",
+    "Northstar Manufacturing improved its overall technology score by 6 points since the last review, reflecting measurable progress in identity protection and backup validation.",
     "Two strategic projects completed on schedule, including endpoint lifecycle standardization and data classification policy rollout.",
     `Technology spending remains disciplined at ${NORTHSTAR_DEMO_BUDGET.utilizationPercent}% budget utilization against a $${NORTHSTAR_DEMO_BUDGET.planned.toLocaleString("en-US")} annual plan — spend smarter, not more.`,
     "Leadership visibility into technology risk has improved significantly through StackScore executive reporting.",
@@ -67,7 +67,7 @@ export const DEMO_EXECUTIVE_REVIEW: DemoExecutiveReview = {
     "Maintain current investment pace — progress is measurable without oversized capital spend.",
     "Prioritize identity protection completion before network modernization to reduce compound risk.",
     "Schedule executive review of disaster recovery readiness before year-end audit cycle.",
-    "Continue quarterly StackScore reviews to sustain accountability and score improvement momentum.",
+    "Continue business review cadence with StackScore to sustain accountability and score improvement momentum.",
   ],
 };
 
@@ -82,7 +82,7 @@ export const DEMO_EXECUTIVE_REPORTS: DemoExecutiveReport[] = [
   },
   {
     id: "report-roadmap",
-    title: "Executive Technology Roadmap",
+    title: "Living Execution Plan",
     description:
       "Phased implementation roadmap with separated one-time and monthly investments per phase.",
     generatedDate: "July 8, 2026",
@@ -106,9 +106,9 @@ export const DEMO_EXECUTIVE_REPORTS: DemoExecutiveReport[] = [
   },
   {
     id: "report-qbr",
-    title: "Quarterly Business Review",
+    title: "Business Review",
     description:
-      "Executive quarterly review with score movement, completed work, open risks, and next priorities.",
+      "Flexible strategic review with score movement, completed work, open risks, and upcoming priorities.",
     generatedDate: "September 1, 2026",
     reportType: "qbr",
   },
@@ -154,7 +154,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
           "Harden MFA on Microsoft 365 Business Premium for privileged accounts.",
           "Implement practical backup validation with documented recovery tests.",
           "Modernize Ubiquiti switching and Wi-Fi at the single production site.",
-          "Establish quarterly technology reviews with executive sponsors.",
+          "Establish business reviews with executive sponsors.",
         ],
       },
     ],
@@ -187,8 +187,8 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
   },
   "report-qbr": {
     reportId: "report-qbr",
-    title: "Quarterly Business Review",
-    subtitle: "Northstar Manufacturing · Sample QBR",
+    title: "Business Review",
+    subtitle: "Northstar Manufacturing · Review Period: Apr 1 – Sep 30, 2026",
     generatedDate: "September 1, 2026",
     metrics: [
       { label: "Current Score", value: "73" },
@@ -213,8 +213,8 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
       {
         heading: "Ongoing Strategic Guidance",
         bullets: [
-          "Technology Roadmap Reviews",
-          "Quarterly Business Reviews",
+          "Living Execution Plan Reviews",
+          "Business Reviews",
           "Lifecycle Planning",
           "Budget Forecasting",
           "Risk Monitoring",
@@ -225,7 +225,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
   },
   "report-roadmap": {
     reportId: "report-roadmap",
-    title: "Executive Technology Roadmap",
+    title: "Living Execution Plan",
     subtitle: "Northstar Manufacturing · Phased Plan",
     generatedDate: "July 8, 2026",
     metrics: [
@@ -465,7 +465,7 @@ export const PLATFORM_MAP_STEPS: DemoPlatformMapStep[] = [
   },
   {
     id: "quarterly-reviews",
-    label: "Quarterly Reviews",
+    label: "Business Reviews",
     description: "Measure progress through executive quarterly business reviews.",
   },
   {

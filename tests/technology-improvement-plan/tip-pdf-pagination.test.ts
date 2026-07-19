@@ -1,0 +1,55 @@
+import { describe, expect, it } from "vitest";
+import {
+  canKeepCardIntact,
+  cardStartPresence,
+  estimateInitiativeCardHeight,
+} from "@/lib/pdf/tip/pagination";
+import { TIP_PDF_PAGE } from "@/lib/pdf/tip/tokens";
+import type { TipStrategicInitiative } from "@/lib/pdf/types";
+
+function makeInitiative(overrides: Partial<TipStrategicInitiative> = {}): TipStrategicInitiative {
+  return {
+    id: "init-1",
+    name: "Multi-Factor Authentication",
+    businessObjective:
+      "Protect executive and staff accounts with modern identity controls aligned to business risk.",
+    whyItMatters:
+      "Credential compromise remains a leading cause of business disruption and data exposure.",
+    expectedBenefits: [
+      "Reduced account-takeover risk",
+      "Stronger compliance posture",
+      "Clearer identity reporting for leadership",
+    ],
+    recommendedPhase: "Phase 1",
+    estimatedInvestment: "$3,500",
+    priority: "High",
+    ...overrides,
+  };
+}
+
+describe("TIP PDF pagination helpers", () => {
+  it("estimates a normal initiative card well under one printable page", () => {
+    const height = estimateInitiativeCardHeight(makeInitiative());
+    expect(height).toBeGreaterThan(100);
+    expect(height).toBeLessThan(TIP_PDF_PAGE.printableContentHeight * 0.75);
+    expect(canKeepCardIntact(height)).toBe(true);
+  });
+
+  it("marks intentionally oversized cards as split-capable", () => {
+    const oversized = makeInitiative({
+      name: "Enterprise-Wide Technology Resilience and Continuity Program",
+      businessObjective: "A".repeat(900),
+      whyItMatters: "B".repeat(900),
+      expectedBenefits: Array.from({ length: 12 }, (_, index) => `Benefit outcome ${index + 1}: ${"C".repeat(120)}`),
+    });
+    const height = estimateInitiativeCardHeight(oversized);
+    expect(canKeepCardIntact(height)).toBe(false);
+  });
+
+  it("requests enough start presence for intact cards", () => {
+    const height = estimateInitiativeCardHeight(makeInitiative());
+    const presence = cardStartPresence(height, 72);
+    expect(presence).toBeGreaterThanOrEqual(height);
+    expect(presence).toBeLessThanOrEqual(TIP_PDF_PAGE.printableContentHeight);
+  });
+});

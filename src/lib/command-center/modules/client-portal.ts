@@ -57,8 +57,8 @@ export function registerClientPortalCommands(): void {
     {
       id: "nav:customer:roadmap",
       category: "navigation",
-      title: "Roadmap",
-      subtitle: "Technology roadmap and planning",
+      title: "Living Execution Plan",
+      subtitle: "Living execution plan and planning",
       icon: "Map",
       keywords: ["roadmap", "plan", "strategy"],
       permissions: { roles: ["client"], requiresClient: true },
@@ -70,7 +70,7 @@ export function registerClientPortalCommands(): void {
     {
       id: "nav:customer:quarterly-reviews",
       category: "navigation",
-      title: "Quarterly Reviews",
+      title: "Business Reviews",
       subtitle: "vCIO review history",
       icon: "CalendarDays",
       keywords: ["quarterly", "review", "qbr"],

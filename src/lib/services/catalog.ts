@@ -111,7 +111,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
       "Align technology with your business goals through strategic planning, roadmaps, budgeting, and executive technology guidance.",
     highlights: [
       "Technology Strategy & Planning",
-      "Executive Technology Roadmaps",
+      "Executive Living Execution Plans",
       "Budget & Vendor Planning",
       "Cybersecurity Guidance",
       "Quarterly Strategic Reviews",

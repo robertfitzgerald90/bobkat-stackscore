@@ -68,13 +68,13 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
     },
     {
       href: customerHref(clientId, "roadmap"),
-      label: "Roadmap",
+      label: "Living Execution Plan",
       icon: Map,
       requiresClient: true,
     },
     {
       href: customerHref(clientId, "quarterly-reviews"),
-      label: "Quarterly Reviews",
+      label: "Business Reviews",
       icon: CalendarDays,
       requiresClient: true,
     },

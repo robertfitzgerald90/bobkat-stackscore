@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatDisplayDate } from "@/lib/display";
+import { BUSINESS_REVIEWS_LABEL } from "@/lib/customer-deliverable-labels";
 import { cn } from "@/lib/utils";
 
 export type QuarterlyReviewSummaryProps = {
@@ -43,7 +44,7 @@ export function QuarterlyReviewSummary({
   currentQuarter,
   nextReviewDate,
   previousReviewDate = null,
-  supportingText = "Completed reviews will appear in the quarterly reviews workspace.",
+  supportingText = "Completed reviews will appear in the business reviews workspace.",
   readOnly = false,
   compact = false,
   showGenerateReport = true,
@@ -57,11 +58,11 @@ export function QuarterlyReviewSummary({
       <CardHeader className={cn(compact && "pb-3")}>
         <CardTitle className="flex items-center gap-2 text-base">
           <CalendarDays className="h-4 w-4 text-primary" />
-          Quarterly Reviews
+          {BUSINESS_REVIEWS_LABEL}
         </CardTitle>
       </CardHeader>
       <CardContent className={cn("space-y-3 text-sm", compact && "pt-0")}>
-        <p>Current quarter: {currentQuarter}</p>
+        <p>Current review period: {currentQuarter}</p>
         <p>Next scheduled review: {formatReviewDate(nextReviewDate, "Not scheduled")}</p>
         <p>Previous review: {formatReviewDate(previousReviewDate, "None yet")}</p>
         <p className="text-muted-foreground">{supportingText}</p>

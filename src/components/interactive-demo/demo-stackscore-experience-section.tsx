@@ -107,7 +107,7 @@ export function DemoStackscoreExperienceSection({
                     ))}
                   </div>
                   <div className="rounded-lg border border-border/60 bg-muted/15 px-3 py-3 text-sm text-muted-foreground">
-                    Dashboard · Roadmap · Investment · Quarterly Reviews
+                    Dashboard · Living Execution Plan · Investment · Business Reviews
                   </div>
                 </div>
               </div>

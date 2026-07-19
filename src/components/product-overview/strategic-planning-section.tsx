@@ -36,7 +36,7 @@ export function StrategicPlanningSection() {
               Plan beyond the next project
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Move from quarter-to-quarter firefighting to disciplined next-quarter, 12-month, and
+              Move from reactive firefighting to disciplined upcoming priorities, 12-month, and
               three-year technology planning.
             </p>
           </div>

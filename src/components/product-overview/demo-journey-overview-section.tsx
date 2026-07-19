@@ -95,7 +95,7 @@ export function DemoJourneyOverviewSection() {
                 className="h-11 px-6"
                 onClick={() => scrollToSection("product-overview-roadmap")}
               >
-                Explore the Technology Roadmap
+                Explore the Living Execution Plan
               </Button>
               <Button
                 type="button"

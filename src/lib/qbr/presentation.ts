@@ -85,7 +85,7 @@ export function buildQbrDashboardKpis(data: QbrReportData): QbrDashboardKpi[] {
       hint: data.currentMaturityLabel ?? undefined,
     },
     {
-      label: "Quarter Change",
+      label: "Improvement Since Last Review",
       value: formatSignedPoints(data.scoreChange),
       hint:
         data.scoreAtPeriodStart !== null
@@ -184,7 +184,7 @@ export function summarizeCategoryImprovement(row: QbrCategoryImprovement): strin
     return "Score history is still building for this category.";
   }
   if (row.change > 0) {
-    return `Improved ${row.change} point${row.change === 1 ? "" : "s"} this quarter.`;
+    return `Improved ${row.change} point${row.change === 1 ? "" : "s"} since the last review.`;
   }
   if (row.change < 0) {
     return `Declined ${Math.abs(row.change)} point${Math.abs(row.change) === 1 ? "" : "s"} — needs attention.`;

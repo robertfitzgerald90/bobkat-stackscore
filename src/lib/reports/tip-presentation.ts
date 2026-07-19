@@ -210,5 +210,5 @@ export function findRecommendationForInitiative(
 }
 
 export function buildApprovalIntro(clientName: string): string {
-  return `By signing below, ${clientName} approves the selected implementation phase(s) of this Technology Roadmap. Remaining phases may be approved separately as priorities and budget allow. Approval of one phase does not obligate approval of subsequent phases.`;
+  return `By signing below, ${clientName} approves the selected implementation phase(s) of this Living Execution Plan. Remaining phases may be approved separately as priorities and budget allow. Approval of one phase does not obligate approval of subsequent phases.`;
 }

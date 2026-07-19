@@ -115,8 +115,8 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
   const links: WorkspaceHubLink[] = [
     {
       href: `/clients/${id}/quarterly-review`,
-      title: "Quarterly Business Reviews",
-      description: "Recurring executive reviews",
+      title: "Business Reviews",
+      description: "Flexible strategic reviews of technology progress",
     },
     {
       href: `/clients/${id}/progress-report`,

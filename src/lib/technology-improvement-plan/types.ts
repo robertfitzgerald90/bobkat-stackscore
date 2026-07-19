@@ -24,7 +24,7 @@ export const TIP_STEP_LABELS: Record<TipWorkflowStep, string> = {
   recommendations: "Recommendations",
   playbooks: "Solution Playbooks",
   investment: "Investment Review",
-  roadmap: "Technology Roadmap",
+  roadmap: "Living Execution Plan",
   preview: "Preview",
   complete: "Generate Plan",
 };

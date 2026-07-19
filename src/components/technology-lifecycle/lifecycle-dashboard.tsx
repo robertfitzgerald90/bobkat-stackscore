@@ -207,7 +207,7 @@ export function LifecycleDashboard({
               href={`/clients/${dashboard.clientId}/quarterly-reviews`}
               className={buttonClassName({ variant: "secondary", size: "sm" })}
             >
-              Quarterly reviews
+              Business reviews
             </Link>
           </div>
         </section>

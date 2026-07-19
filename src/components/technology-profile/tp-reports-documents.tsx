@@ -19,7 +19,7 @@ type TpReportsDocumentsProps = {
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   report: "Assessment Report",
   technology_improvement_plan: "Improvement Plan",
-  quarterly_business_review: "Quarterly Business Review",
+  quarterly_business_review: "Business Review",
   technology_lifecycle_report: "Technology Lifecycle Report",
   technology_budget_report: "Technology Budget Report",
   roadmap_progress_report: "Roadmap Progress Report",

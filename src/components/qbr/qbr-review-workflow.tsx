@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { QbrDetail } from "@/lib/qbr/service";
 import { formatDisplayDate } from "@/lib/display";
 import { QbrReportView } from "@/components/qbr/qbr-report-view";
+import { BUSINESS_REVIEW_LABEL, BUSINESS_REVIEWS_LABEL } from "@/lib/customer-deliverable-labels";
 import { toast } from "sonner";
 
 type QbrReviewWorkflowProps = {
@@ -82,7 +83,7 @@ export function QbrReviewWorkflow({
       const body = (await response.json()) as { review: QbrDetail };
       setReview(body.review);
       setExecutiveSummary(body.review.report.executiveSummary);
-      toast.success("Quarterly Business Review generated");
+      toast.success(`${BUSINESS_REVIEW_LABEL} generated`);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to generate review");
@@ -100,7 +101,7 @@ export function QbrReviewWorkflow({
             className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            All Quarterly Reviews
+            All {BUSINESS_REVIEWS_LABEL}
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="page-title">{review.title}</h2>
@@ -147,7 +148,7 @@ export function QbrReviewWorkflow({
             className={buttonClassName({ variant: "ghost", size: "sm", className: "mb-2 -ml-2 report-no-print" })}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            All Quarterly Reviews
+            All {BUSINESS_REVIEWS_LABEL}
           </Link>
         )}
       </div>

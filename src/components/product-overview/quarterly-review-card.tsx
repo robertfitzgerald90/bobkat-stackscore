@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BUSINESS_REVIEW_LABEL } from "@/lib/customer-deliverable-labels";
 import { cn } from "@/lib/utils";
 import type { DemoQuarterlyReview } from "@/lib/product-overview/types";
 
@@ -15,11 +16,11 @@ export function QuarterlyReviewCard({ review, compact = false, onPreview }: Quar
   return (
     <Card className="border-border/70 shadow-sm">
       <CardHeader className={cn("pb-3", compact && "px-4 pt-4")}>
-        <CardTitle className={cn("text-base", compact && "text-sm")}>Quarterly Review</CardTitle>
+        <CardTitle className={cn("text-base", compact && "text-sm")}>{BUSINESS_REVIEW_LABEL}</CardTitle>
       </CardHeader>
       <CardContent className={cn("space-y-4", compact && "px-4 pb-4")}>
         <div>
-          <p className="text-sm text-muted-foreground">Next Quarterly Review</p>
+          <p className="text-sm text-muted-foreground">Next Business Review</p>
           <p className="mt-1 text-lg font-semibold text-foreground">{review.nextReviewDate}</p>
           <p className="mt-1 text-sm text-muted-foreground">Status: {review.status}</p>
         </div>

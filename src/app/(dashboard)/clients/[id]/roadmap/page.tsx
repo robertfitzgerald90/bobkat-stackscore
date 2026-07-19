@@ -41,7 +41,7 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
       <ClientPageShell>
         <ClientPageHeader
           eyebrow="Implementation Journey"
-          title="Technology Roadmap"
+          title="Living Execution Plan"
           description="Track your phased technology journey, approve the next implementation window, and measure StackScore progress over time."
         />
         <RoadmapDashboard
@@ -61,8 +61,8 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
   return (
     <div className="space-y-8">
       <WorkspaceSectionHeader
-        title="Technology Roadmap"
-        description="Living implementation roadmap and technology investment planning for this client."
+        title="Living Execution Plan"
+        description="Living execution plan and technology investment planning for this client."
       />
 
       <RoadmapDashboard

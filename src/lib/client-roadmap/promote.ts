@@ -128,7 +128,7 @@ export async function promoteRoadmapFromTip(tipId: string) {
     investmentDraft: wizardState.investment,
   });
 
-  const title = `Technology Roadmap — ${tip.client.companyName}`;
+  const title = `Living Execution Plan — ${tip.client.companyName}`;
 
   return prisma.$transaction(async (tx) => {
     await tx.clientRoadmap.updateMany({

@@ -17,8 +17,8 @@ describe("getPageTitle", () => {
   it("returns DOC-201 section titles for workspace routes", () => {
     expect(getPageTitle("/clients/client-1/journey")).toBe("Technology Journey");
     expect(getPageTitle("/clients/client-1/vcio")).toBe("vCIO Dashboard");
-    expect(getPageTitle("/clients/client-1/roadmap")).toBe("Roadmap");
-    expect(getPageTitle("/clients/client-1/quarterly-reviews")).toBe("Quarterly Reviews");
+    expect(getPageTitle("/clients/client-1/roadmap")).toBe("Living Execution Plan");
+    expect(getPageTitle("/clients/client-1/quarterly-reviews")).toBe("Business Reviews");
     expect(getPageTitle("/clients/client-1/recommendations")).toBe("Recommendations");
     expect(getPageTitle("/clients/client-1/executive-reports")).toBe("Executive Reports");
   });
@@ -32,7 +32,7 @@ describe("getPageTitle", () => {
   });
 
   it("maps legacy routes to their workspace section titles", () => {
-    expect(getPageTitle("/clients/client-1/improvement-plan")).toBe("Roadmap");
+    expect(getPageTitle("/clients/client-1/improvement-plan")).toBe("Living Execution Plan");
     expect(getPageTitle("/clients/client-1/business-profile")).toBe("Contacts");
     expect(getPageTitle("/clients/client-1/quarterly-review")).toBe("Executive Reports");
   });

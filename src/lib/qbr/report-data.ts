@@ -181,7 +181,7 @@ function buildBusinessGoalProgress(goalLabel: string | null, scoreChange: number
     return `Progress this quarter supports "${goalLabel}" through measurable Technology Maturity Profile improvement.`;
   }
   if (scoreChange !== null && scoreChange < 0) {
-    return `"${goalLabel}" remains the guiding priority; renewed focus is recommended next quarter.`;
+    return `"${goalLabel}" remains the guiding priority; renewed focus is recommended in the next review period.`;
   }
   return `"${goalLabel}" continues to guide technology planning and roadmap prioritization.`;
 }

@@ -41,11 +41,11 @@ describe("CLIENT_WORKSPACE_NAV", () => {
   it("uses DOC-201 labels for primary modules", () => {
     const labels = CLIENT_WORKSPACE_NAV.map((item) => item.label);
     expect(labels).toContain("Technology Journey");
-    expect(labels).toContain("Roadmap");
+    expect(labels).toContain("Living Execution Plan");
     expect(labels).toContain("Executive Reports");
     expect(labels).not.toContain("Project Register");
     expect(labels).not.toContain("Improvement Plan");
-    expect(labels).not.toContain("Quarterly Review");
+    expect(labels).toContain("Business Reviews");
   });
 });
 
@@ -181,8 +181,8 @@ describe("client workspace access", () => {
       "Overview",
       "Technology Lifecycle",
       "vCIO Dashboard",
-      "Roadmap",
-      "Quarterly Reviews",
+      "Living Execution Plan",
+      "Business Reviews",
       "Projects",
       "Recommendations",
       "Subscription & Billing",

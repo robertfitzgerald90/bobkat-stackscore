@@ -26,9 +26,9 @@ export const REPORT_TYPE_META: Record<ReportType, ReportTypeMeta> = {
     attribution: "prepared",
   },
   quarterly_business_review: {
-    title: "Quarterly Business Review",
+    title: "Business Review",
     subtitle:
-      "What value has BobKat IT delivered this quarter? Technology progress, completed work, and priorities ahead.",
+      "Flexible strategic review — technology progress, completed work, and priorities ahead.",
     attribution: "prepared",
   },
   assessment_comparison: {

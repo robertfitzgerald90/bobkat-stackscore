@@ -1,6 +1,6 @@
 export const ASSESSMENT_TYPE_LABELS = {
   initial: "Initial",
-  quarterly: "Quarterly Review",
+  quarterly: "Business Review",
   annual: "Annual Review",
   followup: "Follow-up",
 } as const;

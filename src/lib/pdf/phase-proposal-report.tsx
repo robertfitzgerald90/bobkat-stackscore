@@ -309,7 +309,7 @@ export function PhaseProposalDocument({ data }: { data: PhaseProposalDetail }) {
           />
           <Text style={styles.body}>
             By signing below, {snapshot.clientName} approves {data.phaseSubtitle} — {data.phaseName}{" "}
-            as described in this proposal. Remaining Technology Roadmap phases remain optional and
+            as described in this proposal. Remaining Living Execution Plan phases remain optional and
             may be approved separately as priorities and budget allow.
           </Text>
           <Text style={styles.signatureLine} />

@@ -59,7 +59,7 @@ export async function seedAcmeDocuments(input: {
       clientId: input.clientId,
       qbrId: ACME_DEMO.qbrId,
       documentType: "quarterly_business_review",
-      title: "Q2 2026 Quarterly Business Review",
+      title: "Business Review",
       fileUrl: `/clients/${input.clientId}/quarterly-review/${ACME_DEMO.qbrId}`,
       uploadedByUserId: input.adminUserId,
       createdAt: new Date("2026-06-05"),
@@ -103,7 +103,7 @@ export async function seedAcmeQbr(input: {
       clientId: input.clientId,
       reviewPeriodStart: new Date("2026-04-01"),
       reviewPeriodEnd: new Date("2026-06-30"),
-      title: "Q2 2026 Quarterly Business Review",
+      title: "Business Review",
       status: "generated",
       executiveSummary:
         "Pinnacle Engineering improved overall technology maturity this quarter. Microsoft 365 Security Baseline work is underway, Endpoint Management Rollout is in progress, and Backup & Disaster Recovery Modernization is approved for the next phase.",
@@ -153,7 +153,7 @@ export async function seedAcmeNotes(input: {
       title: "Q3 2026 Strategy Session",
       visibility: "client_visible",
       content:
-        "Prepare Q3 2026 quarterly review covering endpoint security, immutable backup strategy, and Technology Improvement Plan execution.",
+        "Prepare Q3 2026 business review covering endpoint security, immutable backup strategy, and Technology Improvement Plan execution.",
       scheduledAt: new Date("2026-07-28"),
       createdAt: new Date("2026-07-02"),
     },

@@ -8,7 +8,7 @@ type QuarterlyReviewPreviewProps = {
 };
 
 /**
- * Focused Quarterly Reviews summary panel for marketing pages.
+ * Focused Business Reviews summary panel for marketing pages.
  * Static demo data only — no auth, database, or interactive controls.
  */
 export function QuarterlyReviewPreview({ data, className }: QuarterlyReviewPreviewProps) {

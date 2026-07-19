@@ -10,7 +10,10 @@ type PdfTipSectionProps = {
   children: ReactNode;
 };
 
-/** Print-aware section wrapper with orphan title prevention. */
+/**
+ * Section chrome with orphan-title protection.
+ * Title stays with the following intro/content via minPresenceAhead on the heading block.
+ */
 export function PdfTipSection({
   title,
   subtitle,
@@ -21,18 +24,19 @@ export function PdfTipSection({
 
   return (
     <View break={breakBefore} style={{ marginBottom: TIP_PDF_SPACING.section }}>
-      <View wrap={false} minPresenceAhead={minPresence}>
-        <View style={{ width: 28, height: 2, backgroundColor: COLORS.accent, marginBottom: 4 }} />
+      <View minPresenceAhead={minPresence}>
+        <View style={{ width: 24, height: 2, backgroundColor: COLORS.accent, marginBottom: 3 }} />
         <Text
           style={{
             fontSize: TIP_PDF_TYPOGRAPHY.sectionTitle,
             fontFamily: "Helvetica-Bold",
             color: COLORS.navy,
             lineHeight: 1.2,
-            paddingBottom: 4,
+            paddingBottom: 3,
             borderBottomWidth: 1,
             borderBottomColor: COLORS.border,
           }}
+          minPresenceAhead={subtitle ? 28 : 40}
         >
           {title}
         </Text>
@@ -41,15 +45,19 @@ export function PdfTipSection({
             style={{
               fontSize: TIP_PDF_TYPOGRAPHY.sectionSubtitle,
               color: COLORS.muted,
-              marginTop: 4,
+              marginTop: 3,
               lineHeight: 1.35,
+              marginBottom: 6,
             }}
+            minPresenceAhead={36}
           >
             {subtitle}
           </Text>
-        ) : null}
+        ) : (
+          <View style={{ height: 6 }} />
+        )}
       </View>
-      <View style={{ marginTop: 8 }}>{children}</View>
+      {children}
     </View>
   );
 }

@@ -13,8 +13,8 @@ function baseReport(overrides: Partial<QbrReportData> = {}): QbrReportData {
     id: "qbr-1",
     clientId: "client-1",
     clientName: "Acme Corp",
-    title: "Q2 2026 Quarterly Business Review — Acme Corp",
-    reviewPeriodLabel: "Q2 2026",
+    title: "Business Review — Acme Corp",
+    reviewPeriodLabel: "Apr 1, 2026 – Jun 30, 2026",
     reviewPeriodStart: "2026-04-01T00:00:00.000Z",
     reviewPeriodEnd: "2026-06-30T23:59:59.999Z",
     generatedAt: "2026-06-28T12:00:00.000Z",
@@ -103,7 +103,7 @@ describe("qbr presentation helpers", () => {
     const report = baseReport();
     const kpis = buildQbrDashboardKpis(report);
     expect(kpis.some((kpi) => kpi.label === "Technology Score" && kpi.value === "72")).toBe(true);
-    expect(kpis.some((kpi) => kpi.label === "Quarter Change" && kpi.value === "+7")).toBe(true);
+    expect(kpis.some((kpi) => kpi.label === "Improvement Since Last Review" && kpi.value === "+7")).toBe(true);
 
     const groups = groupOpportunitiesByPriority(report.remainingOpportunities);
     expect(groups[0]?.priority).toBe("critical");

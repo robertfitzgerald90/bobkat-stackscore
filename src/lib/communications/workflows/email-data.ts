@@ -66,11 +66,11 @@ export async function buildRoadmapReadyEmailData(input: {
   firstName?: string;
 }) {
   return {
-    heroTitle: "Your Technology Roadmap is Ready",
+    heroTitle: "Your Living Execution Plan is Ready",
     heroDescription: "Your prioritized technology improvement plan is available for review.",
     previewText: "Explore your prioritized technology improvement plan.",
     paragraphs: [
-      `${input.organizationName}'s Technology Roadmap has been published.`,
+      `${input.organizationName}'s Living Execution Plan has been published.`,
       input.executiveSummary ?? "Review phased initiatives, expected outcomes, and recommended sequencing.",
     ],
     summaryTitle: "Roadmap Overview",
@@ -82,7 +82,7 @@ export async function buildRoadmapReadyEmailData(input: {
       input.nextAction ? `Next Recommended Action: ${input.nextAction}` : "",
     ].filter(Boolean),
     primaryCta: {
-      label: "View Technology Roadmap",
+      label: "View Living Execution Plan",
       href: buildProtectedAppUrl(`/clients/${input.clientId}/roadmap`),
     },
     secondaryCta: {
@@ -178,7 +178,7 @@ export async function buildProjectCreatedEmailData(input: {
     heroDescription: "Bobkat IT has shared new implementation projects for your review.",
     previewText: "Your next technology improvement projects are ready.",
     paragraphs: [
-      `${input.projects.length} project${input.projects.length === 1 ? "" : "s"} ${input.projects.length === 1 ? "has" : "have"} been prepared based on your Technology Roadmap.`,
+      `${input.projects.length} project${input.projects.length === 1 ? "" : "s"} ${input.projects.length === 1 ? "has" : "have"} been prepared based on your Living Execution Plan.`,
       "Review objectives, expected outcomes, and estimated investment in your project portfolio.",
     ],
     summaryTitle: "Projects Shared",
@@ -233,7 +233,7 @@ export async function buildProjectCompletedEmailData(input: {
       href: buildProtectedAppUrl(`/clients/${input.clientId}/projects/${input.projectId}`),
     },
     secondaryCta: {
-      label: "View Updated Technology Roadmap",
+      label: "View Updated Living Execution Plan",
       href: buildProtectedAppUrl(`/clients/${input.clientId}/roadmap`),
     },
     firstName: input.firstName,
@@ -258,7 +258,7 @@ export async function buildQuarterlyReviewEmailData(input: {
       "Review completed improvements",
       "Discuss new business goals",
       "Evaluate new risks",
-      "Update your technology roadmap",
+      "Update your living execution plan",
       "Prioritize future projects",
     ],
     primaryCta: {

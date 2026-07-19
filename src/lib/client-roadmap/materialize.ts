@@ -123,7 +123,7 @@ export async function materializeDraftRoadmap(assessmentId: string) {
     investmentDraft: investment,
   });
 
-  const title = `Technology Roadmap — ${assessment.client.companyName}`;
+  const title = `Living Execution Plan — ${assessment.client.companyName}`;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.clientRoadmap.findFirst({

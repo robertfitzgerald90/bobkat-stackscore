@@ -11,6 +11,10 @@ import type { QbrSummary } from "@/lib/qbr/types";
 import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
 import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
 import { formatDisplayDate } from "@/lib/display";
+import {
+  BUSINESS_REVIEW_LABEL,
+  BUSINESS_REVIEWS_LABEL,
+} from "@/lib/customer-deliverable-labels";
 import { toast } from "sonner";
 
 type QbrReviewListProps = {
@@ -64,7 +68,7 @@ export function QbrReviewList({
             <ArrowLeft className="mr-2 h-4 w-4" />
             {BACK_TO_EXECUTIVE_REPORTS}
           </Link>
-          <h2 className="page-title">Quarterly Business Reviews</h2>
+          <h2 className="page-title">{BUSINESS_REVIEWS_LABEL}</h2>
           <p className="page-description">{clientName}</p>
         </div>
         <Button type="button" onClick={startReview} disabled={creating || !canCreate}>
@@ -76,7 +80,7 @@ export function QbrReviewList({
           ) : (
             <>
               <Plus className="mr-2 h-4 w-4" />
-              New Quarterly Review
+              New Business Review
             </>
           )}
         </Button>
@@ -92,14 +96,14 @@ export function QbrReviewList({
         <CardHeader>
           <CardTitle>Review History</CardTitle>
           <CardDescription>
-            Generate executive-ready reviews summarizing technology progress each quarter.
+            Generate executive-ready reviews summarizing technology progress for each review period.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {reviews.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No quarterly reviews yet. Start a review for the current quarter to summarize
-              completed projects, score movement, and next priorities.
+              No business reviews yet. Start a review to summarize completed projects, score
+              movement, and upcoming priorities.
             </p>
           ) : (
             reviews.map((review) => (

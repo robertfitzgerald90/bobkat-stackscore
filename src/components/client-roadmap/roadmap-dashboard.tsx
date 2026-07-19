@@ -32,7 +32,7 @@ export function RoadmapDashboard({
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <ClientSectionHeader
-          eyebrow="Technology Roadmap"
+          eyebrow="Living Execution Plan"
           title={dashboard.title}
           description={
             dashboard.status === "draft"

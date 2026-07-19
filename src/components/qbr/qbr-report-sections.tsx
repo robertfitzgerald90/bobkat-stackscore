@@ -89,8 +89,7 @@ export function QbrReportCover({ data }: { data: QbrReportData }) {
       <h1 className="qbr-report-cover-title">{meta.title}</h1>
       <p className="qbr-report-cover-client">{data.clientName}</p>
       <p className="qbr-report-cover-subtitle">
-        {data.reviewPeriodLabel} · Executive technology performance, outcomes, and next-quarter
-        priorities
+        Review period performance, outcomes, and upcoming priorities
       </p>
 
       <div className="qbr-report-cover-meta">
@@ -120,7 +119,7 @@ export function QbrReportCover({ data }: { data: QbrReportData }) {
         <p className="qbr-report-cover-score-hint">
           {data.scoreChange !== null
             ? `${formatSignedPoints(data.scoreChange)} vs prior period`
-            : "Quarter-end StackScore"}
+            : "Review-period StackScore"}
         </p>
       </div>
 
@@ -151,12 +150,12 @@ export function QbrExecutiveDashboardPage({
     <>
       <ReportSection
         title="Executive Dashboard"
-        subtitle="Thirty-second view of quarter performance and technology health"
+        subtitle="Thirty-second view of review-period performance and technology health"
         documentTheme={DOCUMENT_THEME}
       >
         <div className="qbr-score-hero">
           <div className="qbr-score-hero-card">
-            <p className="qbr-score-hero-label">Last Quarter</p>
+            <p className="qbr-score-hero-label">Previous Review</p>
             <p
               className={cn(
                 "qbr-score-hero-value",
@@ -168,7 +167,7 @@ export function QbrExecutiveDashboardPage({
           </div>
           <div className="qbr-score-hero-delta">
             <p className="qbr-score-hero-delta-value">{formatSignedPoints(data.scoreChange)}</p>
-            <p className="qbr-score-hero-delta-label">Quarter-over-quarter</p>
+            <p className="qbr-score-hero-delta-label">Since last review</p>
             <ArrowRight className="mx-auto mt-2 hidden h-4 w-4 text-[color:var(--report-muted)] md:block" />
           </div>
           <div className="qbr-score-hero-card">
@@ -215,7 +214,7 @@ export function QbrExecutiveDashboardPage({
               value={executiveSummary}
               isEditable
               onChange={onExecutiveSummaryChange}
-              placeholder="Summarize the quarter's technology progress in business language…"
+              placeholder="Summarize technology progress during this review period in business language…"
               className="qbr-executive-prose min-h-32 rounded-lg border bg-[color:var(--report-background)] px-3 py-2"
             />
           ) : (
@@ -618,12 +617,12 @@ export function QbrRoadmapPage({ data }: { data: QbrReportData }) {
   return (
     <>
       <ReportSection
-        title="Technology Roadmap"
+        title="Living Execution Plan"
         subtitle="Phased journey from assessment through implementation"
         documentTheme={DOCUMENT_THEME}
       >
         {data.roadmapPhases.length === 0 ? (
-          <QbrEmpty>No active technology roadmap phases are configured yet.</QbrEmpty>
+          <QbrEmpty>No active living execution plan phases are configured yet.</QbrEmpty>
         ) : (
           <div className="qbr-roadmap-flow">
             <div className="qbr-roadmap-step">
@@ -707,8 +706,8 @@ export function QbrRoadmapPage({ data }: { data: QbrReportData }) {
 export function QbrNextQuarterPage({ data }: { data: QbrReportData }) {
   return (
     <ReportSection
-      title="Next Quarter Priorities"
-      subtitle="What leadership should expect in the upcoming planning cycle"
+      title="Upcoming Priorities"
+      subtitle="What leadership should expect in the next planning cycle"
       documentTheme={DOCUMENT_THEME}
     >
       {data.nextQuarterPriorities.length === 0 &&
@@ -720,7 +719,7 @@ export function QbrNextQuarterPage({ data }: { data: QbrReportData }) {
             <article key={`priority-${index}`} className="qbr-priority-card">
               <div className="qbr-work-meta">
                 <span className="qbr-chip qbr-chip-medium">Priority {index + 1}</span>
-                <span className="qbr-chip">Next quarter</span>
+                <span className="qbr-chip">Upcoming</span>
               </div>
               <h4 className="qbr-priority-title" style={{ marginTop: "0.55rem" }}>
                 {priority}

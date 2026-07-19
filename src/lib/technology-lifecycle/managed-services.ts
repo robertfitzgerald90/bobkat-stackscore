@@ -38,8 +38,8 @@ export const BOBKAT_MANAGED_SERVICE_CATALOG: Array<{
   },
   {
     serviceKey: "quarterly_reviews",
-    serviceName: "Quarterly Reviews",
-    description: "Structured QBR cadence measuring progress and next priorities.",
+    serviceName: "Business Reviews",
+    description: "Structured business review cadence measuring progress and next priorities.",
     objectiveKeywords: ["qbr", "review", "quarterly", "progress"],
   },
   {

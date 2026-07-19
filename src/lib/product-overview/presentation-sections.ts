@@ -26,7 +26,7 @@ export const PRESENTATION_SECTIONS: PresentationSection[] = [
   {
     id: "roadmap",
     sectionId: "product-overview-roadmap",
-    title: "Technology Roadmap",
+    title: "Living Execution Plan",
     narrative:
       "Four independently approvable phases with separated one-time and monthly investments.",
     durationMs: 28_000,
@@ -68,7 +68,7 @@ export const PRESENTATION_SECTIONS: PresentationSection[] = [
     sectionId: "product-overview-reports",
     title: "Reports & Planning",
     narrative:
-      "Assessment, executive roadmap, phase proposal, progress, QBR, and budget reports stay connected.",
+      "Assessment, living execution plan, phase proposal, progress, business review, and budget reports stay connected.",
     durationMs: 20_000,
   },
   {
@@ -76,7 +76,7 @@ export const PRESENTATION_SECTIONS: PresentationSection[] = [
     sectionId: "product-overview-final-cta",
     title: "Begin Your Technology Strategy",
     narrative:
-      "Get a Technology Maturity Assessment and improve through a living, phased roadmap.",
+      "Get a Technology Maturity Assessment and improve through a living execution plan.",
     durationMs: 24_000,
   },
 ];

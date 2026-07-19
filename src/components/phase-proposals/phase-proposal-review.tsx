@@ -252,7 +252,7 @@ export function PhaseProposalReview({
       <Section title="Acceptance">
         <p className="text-sm leading-relaxed text-muted-foreground">
           Approval applies to {proposal.phaseSubtitle} — {proposal.phaseName} only. Remaining
-          Technology Roadmap phases remain optional and may be approved separately.
+          Living Execution Plan phases remain optional and may be approved separately.
         </p>
       </Section>
     </div>

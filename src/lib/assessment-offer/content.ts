@@ -223,7 +223,7 @@ export const OFFER_FEATURES: OfferFeature[] = [
   },
   {
     icon: Map,
-    title: "Technology Roadmap",
+    title: "Living Execution Plan",
     description:
       "Prioritized initiatives sequenced to reduce risk, improve reliability, and support growth.",
   },

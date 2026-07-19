@@ -31,7 +31,7 @@ export function buildQbrExecutiveSummary(data: Pick<
           : `Technology Maturity Profile held steady at ${data.scoreAtPeriodEnd}.`
       : data.scoreAtPeriodEnd !== null
         ? `Current Technology Maturity Profile score is ${data.scoreAtPeriodEnd}.`
-        : "Technology progress was documented this quarter.";
+        : "Technology progress was documented during this review period.";
 
   const deliveryParts: string[] = [];
   if (data.projectsCompletedInPeriod > 0) {
@@ -75,8 +75,8 @@ export function buildQbrExecutiveSummary(data: Pick<
     openCount > 0
       ? ` ${openCount} prioritized improvement${
           openCount === 1 ? "" : "s"
-        } remain for the next quarter.`
-      : " The client is well positioned to focus on optimization and maintenance next quarter.";
+        } remain for the next review period.`
+      : " The client is well positioned to focus on optimization and maintenance in upcoming reviews.";
 
   const nextStep =
     data.nextQuarterPriorities[0] ??

@@ -30,7 +30,7 @@ export function ConsultingWorkspaceView({
         </h1>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
           Portfolio view of StackScore health, proposal and implementation pipelines, upcoming
-          QBRs, and managed service revenue.
+          business reviews, and managed service revenue.
         </p>
       </header>
 
@@ -88,7 +88,7 @@ export function ConsultingWorkspaceView({
           )}
         </Panel>
 
-        <Panel title="Upcoming QBRs">
+        <Panel title="Upcoming Business Reviews">
           {summary.upcomingQbrs.length === 0 ? (
             <Empty>No upcoming review dates on file.</Empty>
           ) : (

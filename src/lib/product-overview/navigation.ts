@@ -22,10 +22,10 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
   },
   {
     id: "roadmap",
-    label: "Roadmap",
+    label: "Execution Plan",
     phase: 2,
     sectionId: "product-overview-roadmap",
-    teaserTitle: "Technology Roadmap",
+    teaserTitle: "Living Execution Plan",
     teaserDescription:
       "Four phases with separated one-time and monthly investments — approve one phase at a time.",
   },
@@ -72,6 +72,6 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     sectionId: "product-overview-reports",
     teaserTitle: "Reports & Planning",
     teaserDescription:
-      "Executive roadmap, phase proposal, progress, QBR, and budget reports from connected data.",
+      "Executive living execution plan, phase proposal, progress, business review, and budget reports from connected data.",
   },
 ];

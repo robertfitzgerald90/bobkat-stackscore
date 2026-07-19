@@ -70,7 +70,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Professional Services",
-      "report-qbr": "Quarterly Technology Review — Client Delivery Focus",
+      "report-qbr": "Business Review — Client Delivery Focus",
     },
   },
   healthcare: {
@@ -120,11 +120,11 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment establishes HIPAA-aligned technology maturity priorities.",
-      "qbr-1": "Quarterly review shows progress in identity protection and clinical backup validation.",
+      "qbr-1": "Business review shows progress in identity protection and clinical backup validation.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Healthcare",
-      "report-qbr": "Quarterly Technology Review — Clinical Operations",
+      "report-qbr": "Business Review — Clinical Operations",
     },
   },
   construction: {
@@ -174,11 +174,11 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment prioritizes jobsite connectivity and project data protection.",
-      "qbr-1": "Quarterly review shows progress in field team security and backup validation.",
+      "qbr-1": "Business review shows progress in field team security and backup validation.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Construction",
-      "report-roadmap": "Technology Roadmap — Project Operations",
+      "report-roadmap": "Living Execution Plan — Project Operations",
     },
   },
   distribution: {
@@ -228,7 +228,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment prioritizes warehouse infrastructure and inventory platform resilience.",
-      "qbr-1": "Quarterly review shows measurable progress in network and backup validation initiatives.",
+      "qbr-1": "Business review shows measurable progress in network and backup validation initiatives.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Distribution",
@@ -282,7 +282,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment prioritizes design data protection and engineer collaboration security.",
-      "qbr-1": "Quarterly review shows progress in data classification and backup validation.",
+      "qbr-1": "Business review shows progress in data classification and backup validation.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Engineering",
@@ -336,7 +336,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment establishes compliance-aligned technology maturity priorities.",
-      "qbr-1": "Quarterly review shows progress in advisor identity protection and governance.",
+      "qbr-1": "Business review shows progress in advisor identity protection and governance.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Financial Services",
@@ -390,11 +390,11 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     ],
     timelineSummaries: {
       "assessment-2026": "Baseline assessment prioritizes store infrastructure and POS resilience.",
-      "qbr-1": "Quarterly review shows progress in store network and backup validation initiatives.",
+      "qbr-1": "Business review shows progress in store network and backup validation initiatives.",
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Retail",
-      "report-qbr": "Quarterly Technology Review — Store Operations",
+      "report-qbr": "Business Review — Store Operations",
     },
   },
 };

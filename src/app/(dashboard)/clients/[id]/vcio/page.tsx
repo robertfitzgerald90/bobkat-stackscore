@@ -333,7 +333,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         }
       : !generatedRoadmap
         ? {
-            label: "Review Technology Roadmap",
+            label: "Review Living Execution Plan",
             description: "Review your roadmap so priorities and timing stay aligned.",
             href: `/clients/${clientId}/roadmap`,
           }
@@ -345,12 +345,12 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             }
           : previousGeneratedReview
             ? {
-                label: "Review Quarterly Report",
-                description: "Your latest Quarterly Business Review is ready.",
+                label: "View Business Review",
+                description: "Your latest Business Review is ready.",
                 href: `/clients/${clientId}/quarterly-review/${previousGeneratedReview.id}`,
               }
             : {
-                label: "Schedule Quarterly Review",
+                label: "Schedule Business Review",
                 description: "Prepare the next executive review of progress and priorities.",
                 href: `/clients/${clientId}/quarterly-reviews`,
               };
@@ -358,14 +358,14 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
     { label: "Subscription Active", complete: subscriptionActive },
     { label: "Schedule Strategy Session", complete: hasScheduledStrategySession || hasCompletedStrategySession },
     { label: "Review Improvement Plan", complete: Boolean(latestRoadmap) },
-    { label: "Review Technology Roadmap", complete: Boolean(generatedRoadmap) },
+    { label: "Review Living Execution Plan", complete: Boolean(generatedRoadmap) },
     {
       label: "Upload Network Diagram",
       complete: client.documents.some((document) => document.documentType === "diagram"),
     },
     { label: "Add Vendor Information", complete: hasVendorInfo },
     { label: "Establish Technology Budget", complete: hasBudget },
-    { label: "Schedule Quarterly Review", complete: Boolean(latestReview) },
+    { label: "Schedule Business Review", complete: Boolean(latestReview) },
   ];
 
   return (
@@ -413,12 +413,12 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           }
         />
         <ClientMetricCard label="Overall Status" value={overallStatus} />
-        <ClientMetricCard label="Quarterly Review Status" value={qbrStatus} />
+        <ClientMetricCard label="Business Review Status" value={qbrStatus} />
         <ClientMetricCard
           label="Latest Executive Report"
           value={latestExecutiveReport ? "Available" : "Pending"}
           sublabel={
-            latestExecutiveReport?.title ?? "Complete assessment or QBR to generate reports"
+            latestExecutiveReport?.title ?? "Complete assessment or business review to generate reports"
           }
         />
       </div>
@@ -451,7 +451,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           sublabel="Approved, scheduled, or in progress"
         />
         <ClientMetricCard
-          label="Roadmap Progress"
+          label="Living Execution Plan Progress"
           value={roadmapProgress !== null ? `${roadmapProgress}%` : "—"}
           sublabel={latestRoadmap ? latestRoadmap.title : "Create a roadmap to track progress"}
         />
@@ -471,7 +471,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           sublabel={hasBudget ? "Tracked on technology records" : "Budget planning not established"}
         />
         <ClientMetricCard
-          label="Quarterly Review"
+          label="Business Review"
           value={currentQuarterLabel()}
           sublabel={
             nextReview
@@ -536,7 +536,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
                 <p className="text-sm font-medium">Recent Reports</p>
                 {client.documents.length === 0 ? (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Reports and deliverables will appear after assessments, roadmaps, or QBRs are generated.
+                    Reports and deliverables will appear after assessments, living execution plans, or business reviews are generated.
                   </p>
                 ) : (
                   <ul className="mt-2 space-y-2 text-sm">
@@ -597,7 +597,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
                 <p className="text-sm font-medium">Recent Strategy Sessions</p>
                 {strategySessions.length === 0 ? (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Schedule a strategy session to begin quarterly planning.
+                    Schedule a strategy session to begin strategic planning.
                   </p>
                 ) : (
                   <ul className="mt-2 space-y-2 text-sm">
@@ -630,7 +630,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             Schedule Strategy Session
           </a>
           <Link href={`/clients/${clientId}/roadmap`} className={buttonVariants({ variant: "outline" })}>
-            View Roadmap
+            View Living Execution Plan
           </Link>
           <Link href={`/clients/${clientId}/executive-reports`} className={buttonVariants({ variant: "outline" })}>
             View Reports

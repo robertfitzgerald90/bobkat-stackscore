@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   ReportBody,
   ReportDocument,
@@ -19,6 +20,7 @@ import {
 } from "@/components/qbr/qbr-report-sections";
 import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
 import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
+import { BUSINESS_REVIEW_LABEL } from "@/lib/customer-deliverable-labels";
 import type { QbrReportData } from "@/lib/qbr/types";
 
 type QbrReportViewProps = {
@@ -40,12 +42,20 @@ export function QbrReportView({
 }: QbrReportViewProps) {
   const summaryText = executiveSummary ?? data.executiveSummary;
 
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = `${data.clientName} — ${BUSINESS_REVIEW_LABEL}`;
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [data.clientName]);
+
   return (
     <ReportShell className="qbr-executive-report">
       {showActions ? (
         <ReportPrintActions
           clientName={data.clientName}
-          title="Quarterly Business Review"
+          title={BUSINESS_REVIEW_LABEL}
           description={data.reviewPeriodLabel}
           backHref={clientWorkspaceExecutiveReportsPath(clientId)}
           backLabel={BACK_TO_EXECUTIVE_REPORTS}

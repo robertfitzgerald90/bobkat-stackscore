@@ -25,7 +25,7 @@ export type VcioFeatureAccess = {
 };
 
 export const VCIO_FEATURE_LABELS: Record<VcioFeatureKey, string> = {
-  quarterly_business_reviews: "Quarterly Business Reviews",
+  quarterly_business_reviews: "Business Reviews",
   executive_notes: "Executive Notes",
   technology_budget_planning: "Technology Budget Planning",
   strategy_sessions: "Strategy Sessions",

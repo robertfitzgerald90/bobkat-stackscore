@@ -134,7 +134,7 @@ export function BudgetPlanningSection() {
                   <span className="font-medium text-foreground">
                     Strategic IT Consulting retainer —{" "}
                   </span>
-                  Ongoing roadmap reviews and QBR cadence start at{" "}
+                  Ongoing living execution plan reviews and business review cadence start at{" "}
                   {getStrategicConsultingMonthlyLabel()}.
                 </li>
               </ol>

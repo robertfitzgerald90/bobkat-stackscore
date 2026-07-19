@@ -171,6 +171,9 @@ function buildFixture(name: string, phases: RoadmapPhaseResult[]): TipReportData
   };
 }
 
+const LONG_COPY =
+  "This initiative strengthens technology resilience across the organization by aligning identity, recovery, and operational controls to executive priorities. Leadership gains clearer reporting, reduced disruption risk, and a practical investment path that can be approved one phase at a time without locking the business into a single capital commitment. ";
+
 const FIXTURES = [
   {
     name: "single-phase-short",
@@ -199,6 +202,44 @@ const FIXTURES = [
         initiative("r8", "Automation & Workflow Optimization", "low", 6800),
       ], 7, 84),
     ]),
+  },
+  {
+    // Intentionally dense copy to exercise oversized-card split rules.
+    name: "oversized-initiative-split",
+    data: (() => {
+      const base = buildFixture("oversized-initiative-split", [
+        phase("phase-1", "Critical Stabilization", "Phase 1", [
+          initiative("r1", "Enterprise Resilience Program", "critical", 18500, 1200),
+          initiative("r2", "Backup Validation Program", "high", 5200, 400),
+          initiative("r3", "Endpoint Detection & Response", "critical", 6200, 850),
+        ], 12, 70),
+      ]);
+      return {
+        ...base,
+        recommendations: base.recommendations.map((rec, index) =>
+          index === 0
+            ? {
+                ...rec,
+                description: LONG_COPY.repeat(6),
+                businessImpact: LONG_COPY.repeat(5),
+                executiveNote: LONG_COPY.repeat(5),
+              }
+            : rec,
+        ),
+        strategicInitiatives: base.strategicInitiatives.map((item, index) =>
+          index === 0
+            ? {
+                ...item,
+                businessObjective: LONG_COPY.repeat(5),
+                whyItMatters: LONG_COPY.repeat(5),
+                expectedBenefits: Array.from({ length: 10 }, (_, benefitIndex) =>
+                  `Benefit ${benefitIndex + 1}: ${LONG_COPY}`,
+                ),
+              }
+            : item,
+        ),
+      };
+    })(),
   },
 ];
 

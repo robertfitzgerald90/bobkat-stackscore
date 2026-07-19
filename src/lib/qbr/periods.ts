@@ -19,11 +19,6 @@ export function getQuarterBounds(date: Date = new Date()): ReviewPeriod {
 }
 
 export function formatReviewPeriodLabel(start: Date, end: Date): string {
-  const quarter = getQuarterBounds(start);
-  if (quarter.start.getTime() === start.getTime() && quarter.end.getTime() === end.getTime()) {
-    return quarter.label;
-  }
-
   const formatter = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
@@ -37,6 +32,6 @@ export function isWithinReviewPeriod(date: Date, period: Pick<ReviewPeriod, "sta
   return time >= period.start.getTime() && time <= period.end.getTime();
 }
 
-export function defaultQbrTitle(clientName: string, period: ReviewPeriod): string {
-  return `${period.label} Quarterly Business Review — ${clientName}`;
+export function defaultQbrTitle(clientName: string, _period: ReviewPeriod): string {
+  return `Business Review — ${clientName}`;
 }
