@@ -26,6 +26,14 @@ import {
   PRESENTATION_SECTIONS,
   PRESENTATION_STORAGE_KEY,
 } from "@/lib/product-overview/presentation-sections";
+import {
+  ASSESSMENT_PREVIEW_QUESTIONS,
+  calculatePreviewScore,
+} from "@/lib/product-overview/assessment-preview-questions";
+import {
+  buildDemoProfile,
+  DEMO_INDUSTRY_OPTIONS,
+} from "@/lib/product-overview/demo-profiles";
 
 describe("product overview demo dashboard", () => {
   it("uses the Northstar Manufacturing demo organization", () => {
@@ -128,6 +136,46 @@ describe("product overview partnership demo data", () => {
     expect(EXECUTIVE_DECISION_WIDGETS.length).toBe(8);
     expect(AI_INSIGHTS_PREVIEWS.length).toBe(7);
     expect(CLIENT_SUCCESS_OUTCOMES.length).toBeGreaterThanOrEqual(7);
+  });
+});
+
+describe("product overview demo profiles", () => {
+  it("builds personalized profiles for all supported industries", () => {
+    for (const option of DEMO_INDUSTRY_OPTIONS) {
+      const profile = buildDemoProfile({
+        companyName: "Acme Demo Co",
+        industryId: option.id,
+        employeeCount: 120,
+        locationCount: 3,
+        businessGoal: "improve-cybersecurity",
+      });
+      expect(profile.dashboard.organization.name).toBe("Acme Demo Co");
+      expect(profile.dashboard.projects.length).toBeGreaterThan(0);
+      expect(profile.recommendations.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("personalizes manufacturing into a custom company name", () => {
+    const profile = buildDemoProfile({
+      companyName: "Acme Precision Manufacturing",
+      industryId: "manufacturing",
+      employeeCount: 120,
+      locationCount: 3,
+      businessGoal: "support-growth",
+    });
+    expect(profile.dashboard.organization.name).toBe("Acme Precision Manufacturing");
+    expect(profile.dashboard.organization.employeeCount).toBe(120);
+  });
+});
+
+describe("product overview assessment preview", () => {
+  it("calculates a sample score from representative answers", () => {
+    const answers = Object.fromEntries(
+      ASSESSMENT_PREVIEW_QUESTIONS.map((question) => [question.id, 3]),
+    );
+    const result = calculatePreviewScore(answers);
+    expect(result.score).toBe(75);
+    expect(result.maturityLabel).toBe("Managed");
   });
 });
 

@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewQbrPreviewed } from "@/lib/analytics/product-overview-events";
-import { northstarDemoDashboard } from "@/lib/product-overview/demo-dashboard";
 
 export function QuarterlyReviewSection() {
-  const { openDetail } = useProductOverview();
-  const review = northstarDemoDashboard.quarterlyReview;
+  const { demoProfile, openDetail } = useProductOverview();
+  const review = demoProfile.dashboard.quarterlyReview;
 
   const metrics = [
     ["Current Technology Score", String(review.currentScore)],

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewRecommendationOpened } from "@/lib/analytics/product-overview-events";
-import { DEMO_RECOMMENDATIONS } from "@/lib/product-overview/demo-strategy";
 import type { DemoRecommendation, RecommendationFilterTag } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
 
@@ -42,11 +41,11 @@ function priorityVariant(priority: DemoRecommendation["priority"]) {
 
 export function RecommendationsWorkspaceSection() {
   const [activeFilter, setActiveFilter] = useState<RecommendationFilterTag>("all");
-  const { openConnectedRecommendation, isHighlighted } = useProductOverview();
+  const { demoProfile, openConnectedRecommendation, isHighlighted } = useProductOverview();
 
   const filteredRecommendations = useMemo(
-    () => filterRecommendations(DEMO_RECOMMENDATIONS, activeFilter),
-    [activeFilter],
+    () => filterRecommendations(demoProfile.recommendations, activeFilter),
+    [activeFilter, demoProfile.recommendations],
   );
 
   return (

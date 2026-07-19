@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewPillarOpened } from "@/lib/analytics/product-overview-events";
-import { northstarDemoDashboard } from "@/lib/product-overview/demo-dashboard";
 import type { DemoPillar, PillarStatusColor } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
 
@@ -48,8 +47,8 @@ function TrendIndicator({ pillar }: { pillar: DemoPillar }) {
 }
 
 export function AssessmentSection() {
-  const { openConnectedPillar, isHighlighted } = useProductOverview();
-  const { technologyScore, pillars } = northstarDemoDashboard;
+  const { demoProfile, openConnectedPillar, isHighlighted } = useProductOverview();
+  const { technologyScore, pillars } = demoProfile.dashboard;
 
   return (
     <section

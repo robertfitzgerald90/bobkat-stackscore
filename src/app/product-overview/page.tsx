@@ -3,9 +3,9 @@ import { ProductOverviewExperience } from "@/components/product-overview/product
 import { BRAND } from "@/lib/branding";
 import { getBaseUrl } from "@/lib/url/base-url";
 
-const title = "StackScore Product Overview | Strategic IT Consulting Platform";
+const title = "StackScore Interactive Product Tour | Technology Strategy Platform";
 const description =
-  "Experience StackScore as an ongoing technology partnership — interactive assessments, recommendations, roadmaps, projects, quarterly reviews, executive reporting, and strategic planning in one platform.";
+  "Personalize an interactive StackScore demo for your company. Explore assessments, recommendations, roadmaps, projects, quarterly reviews, executive reporting, and Strategic IT Consulting — no login required.";
 
 export const metadata: Metadata = {
   title,
@@ -19,7 +19,9 @@ export const metadata: Metadata = {
     "vCIO platform",
     "technology strategy",
     "interactive product tour",
-    "technology maturity framework",
+    "Bobkat IT",
+    "product overview PDF",
+    "personalized technology demo",
   ],
   alternates: {
     canonical: "/product-overview",

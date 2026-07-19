@@ -5,6 +5,8 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import {
   ProductPresentationLauncher,
 } from "@/components/product-overview/product-presentation-mode";
+import { ProductOverviewPdfButton } from "@/components/product-overview/product-overview-pdf-button";
+import { DemoPersonalizationLauncher } from "@/components/product-overview/demo-personalization-wizard";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 
 export function ProductOverviewHeader() {
@@ -24,7 +26,9 @@ export function ProductOverviewHeader() {
           <Badge variant="secondary" className="hidden lg:inline-flex">
             Public Demo
           </Badge>
-          <ProductPresentationLauncher className="hidden md:inline-flex" />
+          <ProductPresentationLauncher className="hidden lg:inline-flex" />
+          <ProductOverviewPdfButton className="hidden xl:inline-flex h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm" />
+          <DemoPersonalizationLauncher className="hidden md:inline-flex h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm" />
           <ServicesCtaLink
             cta="purchaseAssessment"
             label="Get Your StackScore"

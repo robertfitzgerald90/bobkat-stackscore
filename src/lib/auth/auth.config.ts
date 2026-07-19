@@ -39,7 +39,8 @@ export const authConfig = {
         pathname.startsWith("/api/auth") ||
         pathname.startsWith("/api/v1/health") ||
         pathname.startsWith("/api/v1/public/technology-snapshot") ||
-        pathname.startsWith("/api/v1/public/activate-account");
+        pathname.startsWith("/api/v1/public/activate-account") ||
+        pathname.startsWith("/api/product-overview");
 
       if (pathname === "/login" && isLoggedIn) {
         if (userRole === "client") {

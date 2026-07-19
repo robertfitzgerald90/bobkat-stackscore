@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewSectionViewed, trackProductOverviewTimelineInteraction } from "@/lib/analytics/product-overview-events";
 import { formatDemoCurrency } from "@/lib/product-overview/demo-dashboard";
-import { TECHNOLOGY_TIMELINE_SNAPSHOTS } from "@/lib/product-overview/demo-partnership";
 import type { DemoTimelineSnapshot } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
 
@@ -48,8 +48,10 @@ function TimelineDashboardPreview({ snapshot }: { snapshot: DemoTimelineSnapshot
 }
 
 export function TechnologyTimelineSection() {
-  const [activeIndex, setActiveIndex] = useState(TECHNOLOGY_TIMELINE_SNAPSHOTS.length - 1);
-  const snapshot = TECHNOLOGY_TIMELINE_SNAPSHOTS[activeIndex]!;
+  const { demoProfile } = useProductOverview();
+  const snapshots = demoProfile.timelineSnapshots;
+  const [activeIndex, setActiveIndex] = useState(snapshots.length - 1);
+  const snapshot = snapshots[activeIndex]!;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -92,12 +94,12 @@ export function TechnologyTimelineSection() {
             id="technology-timeline-slider"
             type="range"
             min={0}
-            max={TECHNOLOGY_TIMELINE_SNAPSHOTS.length - 1}
+            max={snapshots.length - 1}
             value={activeIndex}
             onChange={(event) => {
               const index = Number(event.target.value);
               setActiveIndex(index);
-              trackProductOverviewTimelineInteraction(TECHNOLOGY_TIMELINE_SNAPSHOTS[index]!.id);
+              trackProductOverviewTimelineInteraction(snapshots[index]!.id);
             }}
             className="w-full accent-primary"
           />
@@ -105,7 +107,7 @@ export function TechnologyTimelineSection() {
 
         <div className="mt-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max gap-2">
-            {TECHNOLOGY_TIMELINE_SNAPSHOTS.map((item, index) => (
+            {snapshots.map((item, index) => (
               <button
                 key={item.id}
                 type="button"

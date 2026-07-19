@@ -3,7 +3,9 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { AssessmentPreviewSection } from "@/components/product-overview/assessment-preview-section";
 import { DemoModeBanner } from "@/components/product-overview/demo-mode-banner";
+import { DemoPersonalizationLauncher, DemoPersonalizationWizard } from "@/components/product-overview/demo-personalization-wizard";
 import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
 import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
 import {
@@ -195,7 +197,7 @@ const PlatformOverviewMapSection = dynamic(
 );
 
 function ProductOverviewContent() {
-  const { detailPanel, openDetail, closeDetail, presentationActive } = useProductOverview();
+  const { detailPanel, openDetail, closeDetail, presentationActive, personalization } = useProductOverview();
 
   return (
     <div className="min-w-0 overflow-x-clip bg-background pb-20 sm:pb-0">
@@ -209,6 +211,7 @@ function ProductOverviewContent() {
           onOpenDetail={openDetail}
           tourLauncher={
             <>
+              <DemoPersonalizationLauncher className="h-11 px-6 text-base" />
               <ProductTourLauncher className="h-11 px-8 text-base" />
               <ProductPresentationLauncher className="h-11 px-6 text-base md:hidden" />
             </>
@@ -227,7 +230,7 @@ function ProductOverviewContent() {
                 Experience StackScore from a client&apos;s perspective
               </h2>
               <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                Explore Northstar Manufacturing&apos;s technology command center with realistic
+                Explore {personalization.companyName}&apos;s technology command center with realistic
                 scores, priorities, projects, and executive planning signals.
               </p>
             </div>
@@ -242,6 +245,7 @@ function ProductOverviewContent() {
           <TechnologyTimelineSection />
           <TechnologyJourneySection />
           <AssessmentSection />
+          <AssessmentPreviewSection />
           <CurrentFutureStateSection />
           <RecommendationsWorkspaceSection />
           <RoadmapExperienceSection />
@@ -267,6 +271,7 @@ function ProductOverviewContent() {
       </main>
       <OfferFooter />
       <MetricDetailDrawer panel={detailPanel} onClose={closeDetail} />
+      <DemoPersonalizationWizard />
       <ProductGuidedTour />
       <ProductPresentationMode />
       {!presentationActive ? <ProductOverviewStickyCta /> : null}

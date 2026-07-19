@@ -4,16 +4,17 @@ import { useMemo, useState } from "react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewBudgetPeriodChanged } from "@/lib/analytics/product-overview-events";
-import { DEMO_BUDGET_PERIODS } from "@/lib/product-overview/demo-execution";
 import { formatDemoCurrency } from "@/lib/product-overview/demo-dashboard";
 import type { DemoBudgetPeriodId } from "@/lib/product-overview/types";
 
 export function BudgetPlanningSection() {
+  const { demoProfile } = useProductOverview();
   const [periodId, setPeriodId] = useState<DemoBudgetPeriodId>("current-year");
   const period = useMemo(
-    () => DEMO_BUDGET_PERIODS.find((item) => item.id === periodId) ?? DEMO_BUDGET_PERIODS[0]!,
-    [periodId],
+    () => demoProfile.budgetPeriods.find((item) => item.id === periodId) ?? demoProfile.budgetPeriods[0]!,
+    [demoProfile.budgetPeriods, periodId],
   );
   const maxCategoryAmount = Math.max(...period.categories.map((category) => category.amount));
 
@@ -39,7 +40,7 @@ export function BudgetPlanningSection() {
         </OfferReveal>
 
         <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Budget period">
-          {DEMO_BUDGET_PERIODS.map((item) => (
+          {demoProfile.budgetPeriods.map((item) => (
             <Button
               key={item.id}
               type="button"

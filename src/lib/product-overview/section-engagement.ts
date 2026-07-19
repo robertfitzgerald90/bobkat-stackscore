@@ -42,7 +42,15 @@ export function getEngagementSummary(): EngagementMap {
   return readEngagement();
 }
 
-export function clearEngagementOnRefreshNote() {
-  // Engagement clears automatically on refresh because sessionStorage persists only for session.
-  // Demo UI state is React state and resets on refresh by design.
+export function clearSectionEngagement() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(ENGAGEMENT_STORAGE_KEY);
 }
+
+export function clearAllDemoSessionStorage() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(ENGAGEMENT_STORAGE_KEY);
+  sessionStorage.removeItem("stackscore-product-overview-tour");
+  sessionStorage.removeItem("stackscore-product-overview-presentation");
+}
+

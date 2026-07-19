@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewRoadmapViewChanged } from "@/lib/analytics/product-overview-events";
-import { DEMO_ROADMAP_INITIATIVES } from "@/lib/product-overview/demo-strategy";
 import type { DemoRoadmapInitiative, RoadmapViewMode } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
 
@@ -78,15 +77,16 @@ function RoadmapInitiativeButton({
 
 export function RoadmapExperienceSection() {
   const [viewMode, setViewMode] = useState<RoadmapViewMode>("quarter");
-  const { openConnectedRoadmapInitiative, isHighlighted } = useProductOverview();
+  const { demoProfile, openConnectedRoadmapInitiative, isHighlighted } = useProductOverview();
+  const initiatives = demoProfile.roadmapInitiatives;
 
-  const quarterGroups = useMemo(() => groupByQuarter(DEMO_ROADMAP_INITIATIVES), []);
+  const quarterGroups = useMemo(() => groupByQuarter(initiatives), [initiatives]);
   const priorityGroups = useMemo(() => {
     return PRIORITY_ORDER.map((priority) => ({
       priority,
-      initiatives: DEMO_ROADMAP_INITIATIVES.filter((item) => item.priority === priority),
+      initiatives: initiatives.filter((item) => item.priority === priority),
     })).filter((group) => group.initiatives.length > 0);
-  }, []);
+  }, [initiatives]);
 
   const handleInitiativeClick = (initiative: DemoRoadmapInitiative) => {
     openConnectedRoadmapInitiative(initiative.id, "roadmap_experience");
@@ -157,7 +157,7 @@ export function RoadmapExperienceSection() {
 
         {viewMode === "timeline" ? (
           <div className="mt-6 space-y-4">
-            {DEMO_ROADMAP_INITIATIVES.map((initiative, index) => (
+            {initiatives.map((initiative, index) => (
               <OfferReveal key={initiative.id} delayMs={index * 40}>
                 <div className="grid gap-4 md:grid-cols-[120px_1fr]">
                   <div className="rounded-lg bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">

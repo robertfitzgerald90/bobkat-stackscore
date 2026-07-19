@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   trackProductOverviewConnectionHighlighted,
+  trackProductOverviewDemoPersonalized,
+  trackProductOverviewDemoReset,
   trackProductOverviewPresentationCompleted,
   trackProductOverviewPresentationExited,
   trackProductOverviewPresentationStarted,
@@ -12,19 +14,39 @@ import {
   trackProductOverviewTourSkipped,
   trackProductOverviewTourStarted,
 } from "@/lib/analytics/product-overview-events";
-import { getDemoProjectById } from "@/lib/product-overview/demo-dashboard";
+import {
+  buildDemoProfile,
+  getDefaultProfile,
+} from "@/lib/product-overview/demo-profiles";
+import {
+  getProfileConnectionByPillarId,
+  getProfileProjectById,
+} from "@/lib/product-overview/demo-profiles/lookups";
+import { DEFAULT_PERSONALIZATION } from "@/lib/product-overview/demo-profiles/personalization";
+import type {
+  DemoPersonalization,
+  DemoProfileBundle,
+} from "@/lib/product-overview/demo-profiles/types";
 import {
   PRESENTATION_SECTIONS,
   PRESENTATION_STORAGE_KEY,
 } from "@/lib/product-overview/presentation-sections";
 import { scrollToSection } from "@/lib/product-overview/polish-classes";
+import { clearAllDemoSessionStorage } from "@/lib/product-overview/section-engagement";
 import { recordSectionEngagement } from "@/lib/product-overview/section-engagement";
 import {
   PRODUCT_TOUR_STEPS,
   TOUR_STORAGE_KEY,
 } from "@/lib/product-overview/demo-partnership";
-import { getDemoConnectionByPillarId } from "@/lib/product-overview/demo-strategy";
 import type { DemoDetailPanel, ProductOverviewHighlight } from "@/lib/product-overview/types";
+
+export type PresentationModeSettings = {
+  loop: boolean;
+  kiosk: boolean;
+  showNotes: boolean;
+  pauseOnInteraction: boolean;
+  manualAdvance: boolean;
+};
 
 type TourProgress = {
   currentStep: number;
@@ -37,6 +59,10 @@ type PresentationProgress = {
 };
 
 type ProductOverviewContextValue = {
+  demoProfile: DemoProfileBundle;
+  personalization: DemoPersonalization;
+  personalizationWizardOpen: boolean;
+  presentationSettings: PresentationModeSettings;
   detailPanel: DemoDetailPanel;
   highlight: ProductOverviewHighlight;
   tourActive: boolean;
@@ -45,6 +71,14 @@ type ProductOverviewContextValue = {
   presentationPaused: boolean;
   presentationStep: number;
   presentationSectionProgress: number;
+  openPersonalizationWizard: () => void;
+  closePersonalizationWizard: () => void;
+  applyPersonalization: (input: DemoPersonalization) => void;
+  resetDemo: () => void;
+  startFresh: () => void;
+  jumpToPresentationStep: (stepIndex: number) => void;
+  setPresentationSettings: (settings: Partial<PresentationModeSettings>) => void;
+  notifyPresentationInteraction: () => void;
   openDetail: (panel: DemoDetailPanel) => void;
   closeDetail: () => void;
   setHighlight: (highlight: ProductOverviewHighlight) => void;
@@ -110,6 +144,17 @@ function writePresentationProgress(progress: PresentationProgress) {
 }
 
 export function ProductOverviewProvider({ children }: { children: React.ReactNode }) {
+  const [demoProfile, setDemoProfile] = useState<DemoProfileBundle>(() => getDefaultProfile());
+  const [personalization, setPersonalization] =
+    useState<DemoPersonalization>(DEFAULT_PERSONALIZATION);
+  const [personalizationWizardOpen, setPersonalizationWizardOpen] = useState(false);
+  const [presentationSettings, setPresentationSettingsState] = useState<PresentationModeSettings>({
+    loop: false,
+    kiosk: false,
+    showNotes: true,
+    pauseOnInteraction: true,
+    manualAdvance: false,
+  });
   const [detailPanel, setDetailPanel] = useState<DemoDetailPanel>(null);
   const [highlight, setHighlightState] = useState<ProductOverviewHighlight>({});
   const [tourActive, setTourActive] = useState(false);
@@ -167,7 +212,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
   }, []);
 
   const openConnectedPillar = useCallback((pillarId: string, source = "pillar") => {
-    const connection = getDemoConnectionByPillarId(pillarId);
+    const connection = getProfileConnectionByPillarId(demoProfile, pillarId);
     setHighlightState({
       pillarId,
       recommendationId: connection?.recommendationId,
@@ -175,7 +220,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     });
     setDetailPanel({ type: "assessmentPillar", pillarId });
     trackProductOverviewConnectionHighlighted(source);
-  }, []);
+  }, [demoProfile]);
 
   const openConnectedRecommendation = useCallback((recommendationId: string, source = "recommendation") => {
     setHighlightState((current) => ({
@@ -199,7 +244,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
   );
 
   const openConnectedProject = useCallback((projectId: string, source = "project") => {
-    const project = getDemoProjectById(projectId);
+    const project = getProfileProjectById(demoProfile, projectId);
     if (!project) return;
 
     setHighlightState({
@@ -210,7 +255,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     });
     setDetailPanel({ type: "projectExecution", projectId });
     trackProductOverviewConnectionHighlighted(source);
-  }, []);
+  }, [demoProfile]);
 
   const openReport = useCallback((reportId: string, source = "report") => {
     setHighlightState((current) => ({ ...current, reportId }));
@@ -257,6 +302,76 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       setPresentationSectionProgress(0);
     },
     [persistPresentationStep],
+  );
+
+  const openPersonalizationWizard = useCallback(() => {
+    setPersonalizationWizardOpen(true);
+  }, []);
+
+  const closePersonalizationWizard = useCallback(() => {
+    setPersonalizationWizardOpen(false);
+  }, []);
+
+  const applyPersonalization = useCallback((input: DemoPersonalization) => {
+    setPersonalization(input);
+    setDemoProfile(buildDemoProfile(input));
+    setDetailPanel(null);
+    setHighlightState({});
+    setPersonalizationWizardOpen(false);
+    trackProductOverviewDemoPersonalized(input.industryId, input.businessGoal);
+  }, []);
+
+  const resetDemoState = useCallback(() => {
+    clearAllDemoSessionStorage();
+    setDetailPanel(null);
+    setHighlightState({});
+    setTourActive(false);
+    setTourStep(0);
+    setPresentationActive(false);
+    setPresentationPaused(false);
+    setPresentationStep(0);
+    setPresentationSectionProgress(0);
+    presentationProgressRef.current = 0;
+    clearPresentationTimer();
+  }, [clearPresentationTimer]);
+
+  const resetDemo = useCallback(() => {
+    resetDemoState();
+    setPersonalization(DEFAULT_PERSONALIZATION);
+    setDemoProfile(getDefaultProfile());
+    trackProductOverviewDemoReset("reset_demo");
+  }, [resetDemoState]);
+
+  const startFresh = useCallback(() => {
+    resetDemoState();
+    setPersonalization(DEFAULT_PERSONALIZATION);
+    setDemoProfile(getDefaultProfile());
+    trackProductOverviewDemoReset("start_fresh");
+    scrollToSection("product-overview-dashboard", "start");
+  }, [resetDemoState]);
+
+  const setPresentationSettings = useCallback((settings: Partial<PresentationModeSettings>) => {
+    setPresentationSettingsState((current) => ({ ...current, ...settings }));
+  }, []);
+
+  const notifyPresentationInteraction = useCallback(() => {
+    if (presentationActive && presentationSettings.pauseOnInteraction && !presentationPaused) {
+      setPresentationPaused(true);
+      clearPresentationTimer();
+    }
+  }, [
+    clearPresentationTimer,
+    presentationActive,
+    presentationPaused,
+    presentationSettings.pauseOnInteraction,
+  ]);
+
+  const jumpToPresentationStep = useCallback(
+    (stepIndex: number) => {
+      if (stepIndex < 0 || stepIndex >= PRESENTATION_SECTIONS.length) return;
+      goToPresentationStep(stepIndex);
+    },
+    [goToPresentationStep],
   );
 
   const endTour = useCallback(() => {
@@ -334,11 +449,22 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     if (next >= PRESENTATION_SECTIONS.length) {
       trackProductOverviewPresentationCompleted();
       persistPresentationStep(PRESENTATION_SECTIONS.length - 1, true);
+      if (presentationSettings.loop || presentationSettings.kiosk) {
+        goToPresentationStep(0);
+        return;
+      }
       exitPresentation();
       return;
     }
     goToPresentationStep(next);
-  }, [exitPresentation, goToPresentationStep, persistPresentationStep, presentationStep]);
+  }, [
+    exitPresentation,
+    goToPresentationStep,
+    persistPresentationStep,
+    presentationSettings.kiosk,
+    presentationSettings.loop,
+    presentationStep,
+  ]);
 
   nextPresentationStepRef.current = nextPresentationStep;
 
@@ -357,7 +483,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
   }, []);
 
   useEffect(() => {
-    if (!presentationActive || presentationPaused) {
+    if (!presentationActive || presentationPaused || presentationSettings.manualAdvance) {
       clearPresentationTimer();
       return;
     }
@@ -385,6 +511,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     presentationActive,
     presentationPaused,
     presentationStep,
+    presentationSettings.manualAdvance,
   ]);
 
   useEffect(() => {
@@ -395,6 +522,10 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
 
   const value = useMemo(
     () => ({
+      demoProfile,
+      personalization,
+      personalizationWizardOpen,
+      presentationSettings,
       detailPanel,
       highlight,
       tourActive,
@@ -403,6 +534,14 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       presentationPaused,
       presentationStep,
       presentationSectionProgress,
+      openPersonalizationWizard,
+      closePersonalizationWizard,
+      applyPersonalization,
+      resetDemo,
+      startFresh,
+      jumpToPresentationStep,
+      setPresentationSettings,
+      notifyPresentationInteraction,
       openDetail,
       closeDetail,
       setHighlight,
@@ -427,6 +566,10 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       previousPresentationStep,
     }),
     [
+      demoProfile,
+      personalization,
+      personalizationWizardOpen,
+      presentationSettings,
       detailPanel,
       highlight,
       tourActive,
@@ -435,6 +578,14 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       presentationPaused,
       presentationStep,
       presentationSectionProgress,
+      openPersonalizationWizard,
+      closePersonalizationWizard,
+      applyPersonalization,
+      resetDemo,
+      startFresh,
+      jumpToPresentationStep,
+      setPresentationSettings,
+      notifyPresentationInteraction,
       openDetail,
       closeDetail,
       setHighlight,

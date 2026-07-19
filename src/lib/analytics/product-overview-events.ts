@@ -28,6 +28,10 @@ export const PRODUCT_OVERVIEW_ANALYTICS_EVENTS = {
   PRESENTATION_EXITED: "product_overview_presentation_exited",
   SECTION_ENGAGEMENT: "product_overview_section_engagement",
   CONSULTING_CTA_CLICKED: "product_overview_consulting_cta_clicked",
+  DEMO_PERSONALIZED: "product_overview_demo_personalized",
+  DEMO_RESET: "product_overview_demo_reset",
+  ASSESSMENT_PREVIEW_COMPLETED: "product_overview_assessment_preview_completed",
+  PDF_DOWNLOADED: "product_overview_pdf_downloaded",
 } as const;
 
 export type ProductOverviewAnalyticsEventName =
@@ -53,6 +57,9 @@ const ALLOWED_PROPERTY_KEYS = new Set([
   "cta_type",
   "presentation_step",
   "engagement_count",
+  "demo_industry_id",
+  "business_goal",
+  "reset_action",
 ]);
 
 function sanitizeProperties(properties?: MarketingAnalyticsProperties) {
@@ -221,6 +228,34 @@ export function trackProductOverviewSectionEngagement(sectionId: string, engagem
 
 export function trackProductOverviewConsultingCtaClicked(placement: string) {
   trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.CONSULTING_CTA_CLICKED, {
+    placement,
+  });
+}
+
+export function trackProductOverviewDemoPersonalized(
+  industryId: string,
+  businessGoal: string,
+) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.DEMO_PERSONALIZED, {
+    demo_industry_id: industryId,
+    business_goal: businessGoal,
+  });
+}
+
+export function trackProductOverviewDemoReset(resetAction: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.DEMO_RESET, {
+    reset_action: resetAction,
+  });
+}
+
+export function trackProductOverviewAssessmentPreviewCompleted(score: number) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.ASSESSMENT_PREVIEW_COMPLETED, {
+    engagement_count: score,
+  });
+}
+
+export function trackProductOverviewPdfDownloaded(placement: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.PDF_DOWNLOADED, {
     placement,
   });
 }

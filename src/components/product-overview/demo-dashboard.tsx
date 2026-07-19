@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   formatDemoCurrency,
-  northstarDemoDashboard,
 } from "@/lib/product-overview/demo-dashboard";
 import {
   trackProductOverviewPillarOpened,
@@ -33,7 +32,8 @@ type DemoDashboardProps = {
 };
 
 export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail }: DemoDashboardProps) {
-  const data = northstarDemoDashboard;
+  const { demoProfile } = useProductOverview();
+  const data = demoProfile.dashboard;
   const { openConnectedPillar, openConnectedRecommendation, openConnectedProject } = useProductOverview();
 
   function openDetail(panel: DemoDetailPanel) {
@@ -54,8 +54,8 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
       return;
     }
     if (panel.type === "nextAction") {
-      trackProductOverviewProjectOpened(northstarDemoDashboard.nextAction.relatedProjectId);
-      openConnectedProject(northstarDemoDashboard.nextAction.relatedProjectId, "next_action");
+      trackProductOverviewProjectOpened(data.nextAction.relatedProjectId);
+      openConnectedProject(data.nextAction.relatedProjectId, "next_action");
       return;
     }
     if (panel.type === "roadmap") trackProductOverviewRoadmapPreviewed();

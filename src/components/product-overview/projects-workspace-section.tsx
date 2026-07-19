@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectMilestoneTimeline } from "@/components/product-overview/project-milestone-timeline";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewProjectOpened } from "@/lib/analytics/product-overview-events";
-import { northstarDemoDashboard } from "@/lib/product-overview/demo-dashboard";
 import { STANDARD_TIMELINE } from "@/lib/product-overview/demo-execution";
 import type { DemoProject } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
@@ -80,8 +79,8 @@ function ProjectCard({
 }
 
 export function ProjectsWorkspaceSection() {
-  const { openConnectedProject, isHighlighted } = useProductOverview();
-  const projects = northstarDemoDashboard.projects;
+  const { demoProfile, openConnectedProject, isHighlighted } = useProductOverview();
+  const projects = demoProfile.dashboard.projects;
 
   return (
     <section

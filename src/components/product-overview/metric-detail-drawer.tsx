@@ -14,23 +14,20 @@ import { ProjectMilestoneTimeline } from "@/components/product-overview/project-
 import { ReportPreviewLayout } from "@/components/product-overview/report-preview-layout";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import {
-  getDemoPillarById,
-  getDemoProjectById,
-  northstarDemoDashboard,
-} from "@/lib/product-overview/demo-dashboard";
-import { DEMO_EXECUTIVE_REVIEW, getDemoReportPreviewById } from "@/lib/product-overview/demo-execution";
+  getProfileConnectionByPillarId,
+  getProfileConnectionByRecommendationId,
+  getProfilePillarById,
+  getProfileProjectById,
+  getProfileRecommendationById,
+  getProfileReportPreviewById,
+  getProfileRoadmapInitiativeById,
+} from "@/lib/product-overview/demo-profiles/lookups";
 import {
   getCollaborationParticipantById,
   getEcosystemNodeById,
   getExecutiveWidgetById,
   getStrategicInitiativeById,
 } from "@/lib/product-overview/demo-partnership";
-import {
-  getDemoConnectionByPillarId,
-  getDemoConnectionByRecommendationId,
-  getDemoRecommendationById,
-  getDemoRoadmapInitiativeById,
-} from "@/lib/product-overview/demo-strategy";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type MetricDetailDrawerProps = {
@@ -124,6 +121,8 @@ function ConnectedLinks({
 }
 
 export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) {
+  const { demoProfile } = useProductOverview();
+  const dashboard = demoProfile.dashboard;
   const open = panel !== null;
 
   let title = "";
@@ -133,8 +132,8 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
   switch (panel?.type) {
     case "pillar":
     case "assessmentPillar": {
-      const pillar = getDemoPillarById(panel.pillarId);
-      const connection = getDemoConnectionByPillarId(panel.pillarId);
+      const pillar = getProfilePillarById(demoProfile, panel.pillarId);
+      const connection = getProfileConnectionByPillarId(demoProfile, panel.pillarId);
       title = pillar?.name ?? "Technology Pillar";
       description =
         panel.type === "assessmentPillar"
@@ -187,10 +186,10 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "recommendation": {
-      const recommendation = getDemoRecommendationById(panel.recommendationId);
-      const connection = getDemoConnectionByRecommendationId(panel.recommendationId);
+      const recommendation = getProfileRecommendationById(demoProfile,panel.recommendationId);
+      const connection = getProfileConnectionByRecommendationId(demoProfile,panel.recommendationId);
       const roadmapInitiative = recommendation
-        ? getDemoRoadmapInitiativeById(recommendation.relatedRoadmapInitiativeId)
+        ? getProfileRoadmapInitiativeById(demoProfile,recommendation.relatedRoadmapInitiativeId)
         : undefined;
       title = recommendation?.title ?? "Recommendation Detail";
       description = "Why this recommendation exists and how it connects to the roadmap";
@@ -241,9 +240,9 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "roadmapInitiative": {
-      const initiative = getDemoRoadmapInitiativeById(panel.initiativeId);
+      const initiative = getProfileRoadmapInitiativeById(demoProfile,panel.initiativeId);
       const recommendation = initiative
-        ? getDemoRecommendationById(initiative.relatedRecommendationId)
+        ? getProfileRecommendationById(demoProfile,initiative.relatedRecommendationId)
         : undefined;
       title = initiative?.title ?? "Roadmap Initiative";
       description = "Strategic initiative detail and business outcome";
@@ -288,13 +287,13 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
     case "nextAction": {
       const projectId =
         panel.type === "nextAction"
-          ? northstarDemoDashboard.nextAction.relatedProjectId
+          ? dashboard.nextAction.relatedProjectId
           : panel.type === "project" || panel.type === "projectExecution"
             ? panel.projectId
             : "";
-      const project = getDemoProjectById(projectId);
+      const project = getProfileProjectById(demoProfile,projectId);
       const roadmapInitiative = project
-        ? getDemoRoadmapInitiativeById(project.relatedRoadmapInitiativeId)
+        ? getProfileRoadmapInitiativeById(demoProfile,project.relatedRoadmapInitiativeId)
         : undefined;
       const isFullProject = panel.type === "projectExecution";
       title = project?.title ?? "Project Detail";
@@ -313,7 +312,7 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
             <span className="text-sm text-muted-foreground">{project.progress}% complete</span>
           </div>
           {panel.type === "nextAction" ? (
-            <DetailSection label="Recommended action">{northstarDemoDashboard.nextAction.body}</DetailSection>
+            <DetailSection label="Recommended action">{dashboard.nextAction.body}</DetailSection>
           ) : null}
           {isFullProject ? (
             <>
@@ -369,7 +368,7 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
                 {roadmapInitiative?.title ?? project.relatedRoadmapInitiativeId}
               </DetailSection>
               <DetailSection label="Related quarterly review">
-                {northstarDemoDashboard.quarterlyReview.nextReviewDate}
+                {dashboard.quarterlyReview.nextReviewDate}
               </DetailSection>
               <DetailSection label="Project notes">
                 <ul className="space-y-1">
@@ -402,7 +401,7 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       description = "Quarter-based strategic roadmap for Northstar Manufacturing";
       body = (
         <div className="space-y-4">
-          {northstarDemoDashboard.roadmapQuarters.map((quarter) => (
+          {dashboard.roadmapQuarters.map((quarter) => (
             <div key={quarter.quarter} className="rounded-xl border border-border/70 p-4">
               <p className="font-medium text-foreground">{quarter.quarter}</p>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
@@ -417,7 +416,7 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "qbr": {
-      const review = northstarDemoDashboard.quarterlyReview;
+      const review = dashboard.quarterlyReview;
       title = "Executive Quarterly Review Preview";
       description = `Prepared for ${review.nextReviewDate}`;
       body = (
@@ -445,8 +444,8 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "executiveReview": {
-      const review = DEMO_EXECUTIVE_REVIEW;
-      const qbr = northstarDemoDashboard.quarterlyReview;
+      const review = demoProfile.executiveReview;
+      const qbr = dashboard.quarterlyReview;
       title = "Executive Quarterly Review";
       description = `Northstar Manufacturing · ${qbr.nextReviewDate}`;
       body = (
@@ -515,7 +514,7 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "report": {
-      const preview = getDemoReportPreviewById(panel.reportId);
+      const preview = getProfileReportPreviewById(demoProfile, panel.reportId);
       title = preview?.title ?? "Report Preview";
       description = preview?.subtitle ?? "Executive report preview";
       body = preview ? <ReportPreviewLayout preview={preview} /> : null;

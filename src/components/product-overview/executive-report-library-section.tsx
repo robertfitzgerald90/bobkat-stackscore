@@ -5,11 +5,10 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
-import { DEMO_EXECUTIVE_REPORTS } from "@/lib/product-overview/demo-execution";
 import { cn } from "@/lib/utils";
 
 export function ExecutiveReportLibrarySection() {
-  const { openReport, isHighlighted } = useProductOverview();
+  const { demoProfile, openReport, isHighlighted } = useProductOverview();
 
   return (
     <section
@@ -33,7 +32,7 @@ export function ExecutiveReportLibrarySection() {
         </OfferReveal>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {DEMO_EXECUTIVE_REPORTS.map((report, index) => (
+          {demoProfile.executiveReports.map((report, index) => (
             <OfferReveal key={report.id} delayMs={index * 40}>
               <Card
                 id={`product-overview-report-${report.id}`}
