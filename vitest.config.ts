@@ -6,6 +6,9 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
   },
+  esbuild: {
+    jsxInject: `import React from 'react'`,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

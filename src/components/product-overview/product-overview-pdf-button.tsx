@@ -18,7 +18,7 @@ export function ProductOverviewPdfButton({ className }: { className?: string }) 
       onClick={() => trackProductOverviewPdfDownloaded("product_overview_header")}
     >
       <FileDown className="mr-1.5 h-4 w-4" aria-hidden />
-      Download Product Overview PDF
+      Download Interactive Demo PDF
     </a>
   );
 }

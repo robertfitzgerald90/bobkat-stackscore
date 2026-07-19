@@ -12,11 +12,13 @@ export function ProductOverviewAssessmentCta({
   placement,
   variant = "outline",
   className,
+  onBeforeNavigate,
 }: {
   label: string;
   placement: string;
   variant?: "default" | "outline";
   className?: string;
+  onBeforeNavigate?: () => void;
 }) {
   const destination = SERVICES_CTA_DESTINATIONS.purchaseAssessment;
 
@@ -25,6 +27,7 @@ export function ProductOverviewAssessmentCta({
       href={destination.href}
       className={cn(buttonVariants({ variant }), className)}
       onClick={() => {
+        onBeforeNavigate?.();
         trackServiceCtaClick({
           ctaKey: "purchaseAssessment",
           linkType: "internal",

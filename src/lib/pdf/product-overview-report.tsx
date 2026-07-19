@@ -41,13 +41,13 @@ export function ProductOverviewPdfDocument({ data }: { data: ProductOverviewPdfD
 
   return (
     <Document
-      title={`${data.companyName} — StackScore Product Overview`}
+      title={`${data.companyName} — StackScore Interactive Demo`}
       author={BRAND.companyName}
-      subject="StackScore Interactive Product Overview"
+      subject="StackScore Interactive Demo"
     >
       <Page size="LETTER" style={styles.page}>
         <PdfCoverPage
-          eyebrow="StackScore Product Overview"
+          eyebrow="StackScore Interactive Demo"
           title="Technology Strategy Platform"
           subtitle="Executive overview of assessments, recommendations, roadmaps, and ongoing partnership"
           clientName={data.companyName}
@@ -68,7 +68,7 @@ export function ProductOverviewPdfDocument({ data }: { data: ProductOverviewPdfD
         <PdfReportHeader
           clientName={data.companyName}
           generatedDate={data.generatedDate}
-          documentLabel="StackScore Product Overview"
+          documentLabel="StackScore Interactive Demo"
         />
         <PdfReportFooter generatedDate={data.generatedDate} clientName={data.companyName} />
         <PdfSectionTitle

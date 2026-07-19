@@ -7,6 +7,8 @@ import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-ba
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
+import { DemoShowcasePanel } from "@/components/interactive-demo/demo-showcase-panel";
+import { InteractiveDemoButton } from "@/components/interactive-demo/interactive-demo-button";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { buttonVariants } from "@/components/ui/button";
@@ -110,26 +112,35 @@ export function SolutionsLanding() {
                 </div>
               </OfferReveal>
 
-              <OfferReveal delayMs={180} className="mt-8 flex w-full flex-col items-center gap-3 sm:mt-10 sm:flex-row lg:justify-start">
+              <OfferReveal delayMs={180} className="mt-8 flex w-full flex-col items-center gap-3 sm:mt-10 lg:items-start">
+                <div className="flex w-full flex-col items-center gap-3 sm:flex-row lg:justify-start">
+                  <ServicesCtaLink
+                    cta="purchaseAssessment"
+                    label="Get Your Technology Assessment"
+                    className="h-11 w-full px-6 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+                    placement="homepage_hero"
+                  />
+                  <InteractiveDemoButton
+                    label="Explore the Interactive Demo"
+                    placement="homepage_hero"
+                    returnTo="/solutions"
+                    variant="outline"
+                    className="h-11 w-full px-6 text-base sm:w-auto"
+                  />
+                </div>
+                <p className="max-w-md text-sm text-muted-foreground lg:text-left">
+                  Explore a sample StackScore client portal before purchasing your assessment.
+                </p>
                 <a
                   href="#solution-families"
                   className={cn(
-                    buttonVariants({ variant: "default" }),
-                    "h-11 w-full px-6 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto",
+                    buttonVariants({ variant: "ghost" }),
+                    "h-10 w-full px-4 text-sm sm:w-auto",
                   )}
                 >
                   Choose Your Solution
                   <ArrowDown className="ml-1.5 h-4 w-4" aria-hidden />
                 </a>
-                <Link
-                  href="/assessment-invitation"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "h-11 w-full px-6 text-base sm:w-auto",
-                  )}
-                >
-                  Start Technology Assessment
-                </Link>
               </OfferReveal>
             </div>
 
@@ -163,6 +174,8 @@ export function SolutionsLanding() {
             </div>
           </div>
         </section>
+
+        <DemoShowcasePanel placement="homepage_demo_panel" returnTo="/solutions" />
 
         <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
           <div className="mx-auto max-w-6xl">

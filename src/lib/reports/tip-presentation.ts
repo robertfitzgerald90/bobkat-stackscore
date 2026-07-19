@@ -104,6 +104,18 @@ export function buildPhaseExecutiveNarrative(phase: RoadmapPhaseResult): string 
 }
 
 export function buildPhaseOutcomeBullets(phase: RoadmapPhaseResult): string[] {
+  return buildPhaseOutcomeBulletsInternal(phase, { truncate: true });
+}
+
+/** Full outcome text for executive PDF deliverables — no truncation. */
+export function buildPhaseOutcomeBulletsFull(phase: RoadmapPhaseResult): string[] {
+  return buildPhaseOutcomeBulletsInternal(phase, { truncate: false });
+}
+
+function buildPhaseOutcomeBulletsInternal(
+  phase: RoadmapPhaseResult,
+  options: { truncate: boolean },
+): string[] {
   const bullets: string[] = [];
   const seen = new Set<string>();
 
@@ -111,8 +123,8 @@ export function buildPhaseOutcomeBullets(phase: RoadmapPhaseResult): string[] {
     const text = (outcome.description || outcome.title).trim();
     if (!text || seen.has(text.toLowerCase())) continue;
     seen.add(text.toLowerCase());
-    bullets.push(shortenOutcome(text));
-    if (bullets.length >= 5) break;
+    bullets.push(options.truncate ? shortenOutcome(text) : text);
+    if (bullets.length >= 8) break;
   }
 
   if (bullets.length < 3) {
@@ -121,7 +133,7 @@ export function buildPhaseOutcomeBullets(phase: RoadmapPhaseResult): string[] {
       if (!text || seen.has(text.toLowerCase())) continue;
       seen.add(text.toLowerCase());
       bullets.push(text);
-      if (bullets.length >= 5) break;
+      if (bullets.length >= 8) break;
     }
   }
 

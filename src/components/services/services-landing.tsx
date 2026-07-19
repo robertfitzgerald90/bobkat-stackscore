@@ -6,6 +6,9 @@ import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-ba
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
+import { DemoAssessmentServicePanel } from "@/components/interactive-demo/demo-assessment-service-panel";
+import { DemoCompactPanel } from "@/components/interactive-demo/demo-compact-panel";
+import { DemoStrategicConsultingCta } from "@/components/interactive-demo/demo-strategic-consulting-cta";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServiceScreenshot } from "@/components/services/service-screenshot";
 import { buttonVariants } from "@/components/ui/button";
@@ -128,6 +131,8 @@ function FeaturedProductSection({ product }: { product: FeaturedProductItem }) {
                   placement="featured_product_secondary"
                 />
               </div>
+
+              <DemoAssessmentServicePanel />
             </div>
           </SolutionViewTracker>
         </OfferReveal>
@@ -192,6 +197,7 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
                 />
               ) : null}
             </div>
+            {service.id === "strategic-it-consulting" ? <DemoStrategicConsultingCta /> : null}
           </div>
 
           <ServiceScreenshot
@@ -332,6 +338,18 @@ export function ServicesLanding() {
         </section>
 
         <ResidentialSection service={RESIDENTIAL_SERVICE} />
+
+        <section className="px-4 pb-4 sm:px-6">
+          <div className="mx-auto max-w-6xl">
+            <DemoCompactPanel
+              heading="Not Ready to Reach Out Yet?"
+              copy="Explore the StackScore client portal first and see how Bobkat IT turns technology findings into a clear improvement plan."
+              placement="contact_page"
+              returnTo="/services"
+              demoLabel="Explore Interactive Demo"
+            />
+          </div>
+        </section>
 
         <OfferCtaPanel
           headline="Build Technology That Supports Your Business"

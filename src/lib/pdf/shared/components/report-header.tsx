@@ -7,12 +7,16 @@ type PdfReportHeaderProps = {
   clientName: string;
   generatedDate: string;
   documentLabel: string;
+  technologyScore?: number;
+  reportVersion?: string;
 };
 
 export function PdfReportHeader({
   clientName,
   generatedDate,
   documentLabel,
+  technologyScore,
+  reportVersion,
 }: PdfReportHeaderProps) {
   return (
     <View style={styles.pageHeader} fixed>
@@ -28,7 +32,13 @@ export function PdfReportHeader({
       </View>
       <View style={styles.pageHeaderRight}>
         <Text style={styles.pageHeaderClient}>{clientName}</Text>
-        <Text style={styles.pageHeaderDate}>Prepared {generatedDate}</Text>
+        {technologyScore !== undefined ? (
+          <Text style={styles.pageHeaderScore}>Technology Score {technologyScore}</Text>
+        ) : null}
+        <Text style={styles.pageHeaderDate}>
+          Prepared {generatedDate}
+          {reportVersion ? ` · v${reportVersion}` : ""}
+        </Text>
       </View>
     </View>
   );

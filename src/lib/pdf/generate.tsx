@@ -1,3 +1,4 @@
+import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { AssessmentReportDocument } from "@/lib/pdf/assessment-report";
 import { TipReportDocument } from "@/lib/pdf/tip-report";

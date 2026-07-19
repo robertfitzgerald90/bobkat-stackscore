@@ -10,7 +10,7 @@ type PdfKpiCardProps = {
 
 export function PdfKpiCard({ label, value, caption, highlight = false }: PdfKpiCardProps) {
   return (
-    <View wrap={false} style={highlight ? styles.kpiCardHighlight : styles.kpiCard}>
+    <View style={highlight ? styles.kpiCardHighlight : styles.kpiCard}>
       <Text style={styles.kpiLabel}>{label}</Text>
       <Text style={styles.kpiValue}>{value}</Text>
       {caption ? <Text style={styles.kpiCaption}>{caption}</Text> : null}
@@ -23,5 +23,9 @@ type PdfKpiRowProps = {
 };
 
 export function PdfKpiRow({ children }: PdfKpiRowProps) {
-  return <View style={{ flexDirection: "row", gap: 10, marginBottom: 14 }}>{children}</View>;
+  return (
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 16 }}>
+      {children}
+    </View>
+  );
 }

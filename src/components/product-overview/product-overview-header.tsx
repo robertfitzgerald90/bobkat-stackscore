@@ -16,7 +16,7 @@ export function ProductOverviewHeader() {
         <div className="flex min-w-0 items-center gap-3">
           <BrandLogo size={32} variant="stacked" className="shrink-0" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground">StackScore Product Overview</p>
+            <p className="truncate text-sm font-semibold text-foreground">StackScore Interactive Demo</p>
             <p className="hidden text-xs text-muted-foreground sm:block">
               Interactive client experience preview
             </p>

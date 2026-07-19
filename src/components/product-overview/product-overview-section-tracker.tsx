@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { trackDemoSectionViewed } from "@/lib/analytics/interactive-demo-events";
 import { trackProductOverviewSectionViewed } from "@/lib/analytics/product-overview-events";
 import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 import { PRESENTATION_SECTIONS } from "@/lib/product-overview/presentation-sections";
@@ -36,6 +37,7 @@ export function ProductOverviewSectionTracker() {
           if (!sectionId || viewed.has(sectionId)) continue;
           viewed.add(sectionId);
           trackProductOverviewSectionViewed(sectionId);
+          trackDemoSectionViewed(sectionId);
         }
       },
       { threshold: [0.2, 0.35, 0.5] },

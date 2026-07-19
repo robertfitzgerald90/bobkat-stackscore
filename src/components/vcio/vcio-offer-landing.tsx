@@ -14,6 +14,8 @@ import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
+import { DemoStackscoreExperienceSection } from "@/components/interactive-demo/demo-stackscore-experience-section";
+import { InteractiveDemoButton } from "@/components/interactive-demo/interactive-demo-button";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { buttonVariants } from "@/components/ui/button";
@@ -228,8 +230,15 @@ export function VcioOfferLanding() {
                   <p className="text-sm font-medium text-muted-foreground">StackScore vCIO</p>
                   <p className="mt-2 text-4xl font-semibold tracking-tight text-primary">$300/month</p>
                   <p className="mt-1 text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
-                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <VcioCheckoutButton className="h-11 w-full px-6 text-base sm:w-auto" />
+                    <InteractiveDemoButton
+                      label="Explore the Interactive Demo"
+                      placement="stackscore_page"
+                      returnTo="/vcio-offer"
+                      variant="outline"
+                      className="h-11 w-full px-6 text-base sm:w-auto"
+                    />
                     <ServicesCtaLink
                       cta="generalConsultation"
                       label="Schedule a Consultation"
@@ -250,6 +259,11 @@ export function VcioOfferLanding() {
             </OfferReveal>
           </div>
         </section>
+
+        <DemoStackscoreExperienceSection
+          placement="stackscore_page"
+          returnTo="/vcio-offer"
+        />
 
         <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
           <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">

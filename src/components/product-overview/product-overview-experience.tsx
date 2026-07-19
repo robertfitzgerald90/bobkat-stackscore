@@ -3,6 +3,10 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { DemoConversionCta } from "@/components/interactive-demo/demo-conversion-cta";
+import { DemoEntryScreen } from "@/components/interactive-demo/demo-entry-screen";
+import { DemoHeader } from "@/components/interactive-demo/demo-header";
+import { DemoSessionBootstrap } from "@/components/interactive-demo/demo-session-bootstrap";
 import { AssessmentPreviewSection } from "@/components/product-overview/assessment-preview-section";
 import { DemoPersonalizationLauncher, DemoPersonalizationWizard } from "@/components/product-overview/demo-personalization-wizard";
 import { DemoJourneyOverviewSection } from "@/components/product-overview/demo-journey-overview-section";
@@ -16,12 +20,10 @@ import {
 } from "@/components/product-overview/product-overview-context";
 import { ProductGuidedTour, ProductTourLauncher } from "@/components/product-overview/product-guided-tour";
 import { ProductOverviewFinalCta } from "@/components/product-overview/product-overview-final-cta";
-import { ProductOverviewHeader } from "@/components/product-overview/product-overview-header";
 import { ProductOverviewHero } from "@/components/product-overview/product-overview-hero";
 import { ProductOverviewNav } from "@/components/product-overview/product-overview-nav";
 import { ProductOverviewSectionTracker } from "@/components/product-overview/product-overview-section-tracker";
 import { ProductOverviewSkipLink } from "@/components/product-overview/product-overview-skip-link";
-import { ProductOverviewStickyCta } from "@/components/product-overview/product-overview-sticky-cta";
 import { ProductOverviewTrustStrip } from "@/components/product-overview/product-overview-trust-strip";
 import { ProductOverviewViewTracker } from "@/components/product-overview/product-overview-view-tracker";
 import {
@@ -29,6 +31,7 @@ import {
   ProductPresentationMode,
 } from "@/components/product-overview/product-presentation-mode";
 import { SectionLoadingSkeleton } from "@/components/product-overview/section-loading-skeleton";
+import type { DemoDeepLinkSection } from "@/lib/interactive-demo/routes";
 
 const AssessmentSection = dynamic(
   () =>
@@ -222,15 +225,25 @@ const PlatformOverviewMapSection = dynamic(
   { loading: () => <SectionLoadingSkeleton /> },
 );
 
-function ProductOverviewContent() {
+function ProductOverviewContent({
+  initialSection,
+}: {
+  initialSection?: DemoDeepLinkSection;
+}) {
   const { openDetail, presentationActive } = useProductOverview();
 
   return (
-    <div className="min-w-0 overflow-x-clip bg-background pb-20 sm:pb-0">
+    <div className="min-w-0 overflow-x-clip bg-background pb-24 lg:pb-0">
+      <Suspense fallback={null}>
+        <DemoSessionBootstrap sectionSlug={initialSection} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <DemoEntryScreen />
+      </Suspense>
       <ProductOverviewSkipLink />
       <ProductOverviewViewTracker />
       <ProductOverviewSectionTracker />
-      <ProductOverviewHeader />
+      <DemoHeader />
       <ProductOverviewNav />
       <main id="product-overview-main">
         <ProductOverviewHero
@@ -285,16 +298,20 @@ function ProductOverviewContent() {
       <DemoPersonalizationWizard />
       <ProductGuidedTour />
       <ProductPresentationMode />
-      {!presentationActive ? <ProductOverviewStickyCta /> : null}
+      {!presentationActive ? <DemoConversionCta /> : null}
     </div>
   );
 }
 
-export function ProductOverviewExperience() {
+export function ProductOverviewExperience({
+  initialSection,
+}: {
+  initialSection?: DemoDeepLinkSection;
+} = {}) {
   return (
     <ProductOverviewProvider>
       <InteractiveDemoProvider>
-        <ProductOverviewContent />
+        <ProductOverviewContent initialSection={initialSection} />
       </InteractiveDemoProvider>
     </ProductOverviewProvider>
   );

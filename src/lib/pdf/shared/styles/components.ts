@@ -79,7 +79,6 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   kpiCard: {
     flex: 1,
-    minHeight: 96,
     backgroundColor: COLORS.white,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -88,7 +87,6 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   kpiCardHighlight: {
     flex: 1,
-    minHeight: 96,
     backgroundColor: COLORS.surface,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -116,7 +114,6 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   gaugeCard: {
     flex: 1,
-    minHeight: 96,
     backgroundColor: COLORS.white,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -125,7 +122,6 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   gaugeCardAccent: {
     flex: 1,
-    minHeight: 96,
     backgroundColor: COLORS.surface,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -352,12 +348,18 @@ export const pdfComponentStyles = StyleSheet.create({
   pageHeaderDoc: { fontSize: 7, color: COLORS.muted, marginTop: 2 },
   pageHeaderRight: { alignItems: "flex-end" },
   pageHeaderClient: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: "Helvetica-Bold",
     color: COLORS.slate,
     marginBottom: 2,
   },
-  pageHeaderDate: { fontSize: 7, color: COLORS.muted },
+  pageHeaderScore: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 2,
+  },
+  pageHeaderDate: { fontSize: 8, color: COLORS.muted, lineHeight: 1.4 },
   coverPage: {
     paddingTop: 0,
     paddingBottom: REPORT_SPACING.pagePaddingBottom,

@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     profile,
   });
 
-  const filename = `${sanitizeFilename(companyName)}-stackscore-product-overview.pdf`;
+  const filename = `${sanitizeFilename(companyName)}-stackscore-interactive-demo.pdf`;
 
   return new NextResponse(new Uint8Array(buffer), {
     headers: {

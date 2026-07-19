@@ -1,10 +1,17 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { useInteractiveDemo } from "@/components/product-overview/interactive-demo-context";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  trackDemoAssessmentCtaClicked,
+  trackDemoCompleted,
+  trackDemoDiscoveryCallClicked,
+} from "@/lib/analytics/interactive-demo-events";
 import {
   trackProductOverviewConsultingCtaClicked,
   trackProductOverviewFinalCtaClicked,
@@ -13,6 +20,8 @@ import {
   trackCalBookingClick,
   trackServiceCtaClick,
 } from "@/lib/analytics/marketing-events";
+import { DEMO_CUSTOMER_RECEIVES } from "@/lib/interactive-demo/content";
+import { SOLUTIONS_HOME_PATH } from "@/lib/interactive-demo/routes";
 import { getInteractiveDemoScenario } from "@/lib/product-overview/interactive-demo";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { cn } from "@/lib/utils";
@@ -43,6 +52,7 @@ function DiscoveryCallCta({ placement }: { placement: string }) {
         });
         trackCalBookingClick({ ctaKey: "generalConsultation", placement });
         trackProductOverviewFinalCtaClicked("discovery_call", placement);
+        trackDemoDiscoveryCallClicked(placement);
       }}
     >
       Schedule a Discovery Call
@@ -76,6 +86,24 @@ export function ProductOverviewFinalCta() {
   const { view } = useInteractiveDemo();
   const scenario = getInteractiveDemoScenario();
   const { company, effectiveScore } = view;
+  const completedTracked = useRef(false);
+
+  useEffect(() => {
+    const element = document.getElementById("product-overview-final-cta");
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || completedTracked.current) return;
+        completedTracked.current = true;
+        trackDemoCompleted("demo_completion_panel");
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section id="product-overview-final-cta" className="border-t border-border/70">
@@ -129,6 +157,55 @@ export function ProductOverviewFinalCta() {
         </div>
       </div>
 
+      <div className="bg-background px-4 py-14 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center">
+            <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Imagine This Experience Built Around Your Business
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+              StackScore replaces sample data with a clear view of your organization’s technology
+              maturity, risks, priorities, projects, investments, and improvement roadmap.
+            </p>
+          </div>
+
+          <ul
+            className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-2"
+            aria-label="What customers receive"
+          >
+            {DEMO_CUSTOMER_RECEIVES.map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+            <ProductOverviewAssessmentCta
+              label="Purchase Technology Assessment"
+              placement="demo_completion_panel"
+              variant="default"
+              className="h-12 w-full px-8 text-base sm:w-auto"
+              onBeforeNavigate={() => trackDemoAssessmentCtaClicked("demo_completion_panel")}
+            />
+            <DiscoveryCallCta placement="demo_completion_panel" />
+            <Link
+              href={SOLUTIONS_HOME_PATH}
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "h-12 w-full px-8 text-base sm:w-auto",
+              )}
+              onClick={() =>
+                trackProductOverviewFinalCtaClicked("return_home", "demo_completion_panel")
+              }
+            >
+              Return to Bobkat IT
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <OfferCtaPanel
         headline="Get Your Technology Maturity Assessment"
         supportingText="Understand your technology, approve the highest-priority improvements one phase at a time, measure the results, and continue improving through a living technology roadmap."
@@ -142,11 +219,15 @@ export function ProductOverviewFinalCta() {
         <Link
           href="/assessment-offer"
           className={cn(buttonVariants({ variant: "outline" }), "h-12 w-full px-8 text-base sm:w-auto")}
-          onClick={() => trackProductOverviewFinalCtaClicked("assessment_options", "product_overview_premium_final_cta")}
+          onClick={() =>
+            trackProductOverviewFinalCtaClicked(
+              "assessment_options",
+              "product_overview_premium_final_cta",
+            )
+          }
         >
           Explore StackScore Assessment Options
         </Link>
-        <DiscoveryCallCta placement="product_overview_premium_final_cta" />
         <ConsultingCta placement="product_overview_premium_final_cta" />
       </OfferCtaPanel>
     </section>
