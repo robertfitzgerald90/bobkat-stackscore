@@ -1,7 +1,7 @@
-import { TpWorkspaceHeader } from "@/components/technology-profile/tp-workspace-header";
-import { ClientWorkspaceNav } from "@/components/client-workspace/client-workspace-nav";
+import { ClientWorkspaceApplicationChrome } from "@/components/client-workspace/client-workspace-application-chrome";
 import type { CompletedAssessmentForAuto } from "@/lib/assessments/auto-assessment";
-import { STICKY_CLIENT_WORKSPACE_SHELL_CLASS } from "@/lib/ui/sticky-chrome";
+import { CLIENT_WORKSPACE_CONTENT_PADDING_CLASS } from "@/lib/ui/sticky-chrome";
+import { cn } from "@/lib/utils";
 
 type ClientWorkspaceShellProps = {
   clientId: string;
@@ -29,22 +29,22 @@ export function ClientWorkspaceShell({
   const isCustomer = role === "client";
 
   return (
-    <div className="page-content min-w-0 space-y-6">
+    <div className="page-content min-w-0">
       {!isCustomer ? (
-        <div className={STICKY_CLIENT_WORKSPACE_SHELL_CLASS}>
-          <TpWorkspaceHeader
-            clientId={clientId}
-            clientName={clientName}
-            clientStatus={clientStatus}
-            showAssessClient={showAssessClient}
-            completedAssessments={completedAssessments}
-            draftAssessmentId={draftAssessmentId}
-            nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
-          />
-          <ClientWorkspaceNav clientId={clientId} role={role} />
-        </div>
+        <ClientWorkspaceApplicationChrome
+          clientId={clientId}
+          clientName={clientName}
+          clientStatus={clientStatus}
+          role={role}
+          showAssessClient={showAssessClient}
+          completedAssessments={completedAssessments}
+          draftAssessmentId={draftAssessmentId}
+          nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
+        />
       ) : null}
-      <div className="min-w-0">{children}</div>
+      <div className={cn(CLIENT_WORKSPACE_CONTENT_PADDING_CLASS, "min-w-0 space-y-6")}>
+        {children}
+      </div>
     </div>
   );
 }

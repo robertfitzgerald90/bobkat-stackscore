@@ -23,10 +23,14 @@ export const STICKY_IN_SCROLLPORT_CLASS =
   "sticky top-0 z-30 isolate -mx-4 w-auto border-b border-border/60 bg-background px-4 py-2 shadow-[0_1px_0_0_rgba(15,23,42,0.04)] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8";
 
 /**
- * Client workspace: client context header + section nav as one opaque sticky shell.
+ * Unified client workspace sticky shell: global toolbar + client context + section nav.
+ * Uses opaque sidebar navy so scrolling page content never shows through.
  */
 export const STICKY_CLIENT_WORKSPACE_SHELL_CLASS =
-  "sticky top-0 z-30 isolate -mx-4 space-y-4 border-b border-border/60 bg-background px-4 pb-2 shadow-[0_1px_0_0_rgba(15,23,42,0.04)] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8";
+  "sticky top-0 z-50 isolate w-full border-b border-sidebar-border bg-sidebar text-sidebar-foreground shadow-[0_4px_12px_rgba(0,0,0,0.18)]";
+
+/** Horizontal padding for client workspace page content below the sticky shell. */
+export const CLIENT_WORKSPACE_CONTENT_PADDING_CLASS = "px-4 py-6 sm:px-6 lg:px-8";
 
 /** Matches `html { scroll-padding-top }` for marketing pages. */
 export const MARKETING_SCROLL_PADDING_TOP = "5.5rem";

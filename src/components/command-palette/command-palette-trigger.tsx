@@ -17,7 +17,8 @@ export function CommandPaletteTrigger({ className }: { className?: string }) {
       type="button"
       variant="outline"
       className={cn(
-        "hidden h-9 w-[min(280px,34vw)] justify-between gap-2 border-border/80 bg-background/80 px-3 text-muted-foreground md:inline-flex",
+        "hidden h-9 w-[min(280px,34vw)] justify-between gap-2 px-3 md:inline-flex",
+        "border-border/80 bg-background text-muted-foreground",
         className,
       )}
       onClick={palette.openCommandPalette}

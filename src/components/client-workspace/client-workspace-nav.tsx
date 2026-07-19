@@ -21,16 +21,22 @@ import { cn } from "@/lib/utils";
 type ClientWorkspaceNavProps = {
   clientId: string;
   role: string;
+  variant?: "default" | "workspaceShell";
 };
 
-export function ClientWorkspaceNav({ clientId, role }: ClientWorkspaceNavProps) {
+export function ClientWorkspaceNav({
+  clientId,
+  role,
+  variant = "default",
+}: ClientWorkspaceNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const activeSection = resolveActiveWorkspaceSection(pathname);
   const items = getVisibleWorkspaceNav(role);
+  const isWorkspaceShell = variant === "workspaceShell";
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 bg-sidebar">
       <div className="md:hidden">
         <label htmlFor="workspace-section-nav" className="sr-only">
           Client workspace section
@@ -49,7 +55,14 @@ export function ClientWorkspaceNav({ clientId, role }: ClientWorkspaceNavProps) 
             if (href) router.push(href);
           }}
         >
-      <SelectTrigger id="workspace-section-nav" className="w-full min-w-0 max-w-full">
+          <SelectTrigger
+            id="workspace-section-nav"
+            className={cn(
+              "w-full min-w-0 max-w-full",
+              isWorkspaceShell &&
+                "border-sidebar-border bg-sidebar-accent/30 text-sidebar-foreground",
+            )}
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -64,7 +77,10 @@ export function ClientWorkspaceNav({ clientId, role }: ClientWorkspaceNavProps) 
 
       <nav
         aria-label="Client workspace"
-        className="hidden gap-1 overflow-x-auto border-b border-border/60 pb-px [-ms-overflow-style:none] [scrollbar-width:none] md:flex md:snap-x md:snap-mandatory md:touch-pan-x [&::-webkit-scrollbar]:hidden"
+        className={cn(
+          "hidden gap-1 overflow-x-auto pb-px [-ms-overflow-style:none] [scrollbar-width:none] md:flex md:snap-x md:snap-mandatory md:touch-pan-x [&::-webkit-scrollbar]:hidden",
+          isWorkspaceShell ? "border-b border-sidebar-border/70" : "border-b border-border/60",
+        )}
       >
         {items.map((item) => (
           <WorkspaceNavLink
@@ -72,6 +88,7 @@ export function ClientWorkspaceNav({ clientId, role }: ClientWorkspaceNavProps) 
             clientId={clientId}
             item={item}
             active={item.section === activeSection}
+            variant={variant}
           />
         ))}
       </nav>
@@ -83,18 +100,28 @@ function WorkspaceNavLink({
   clientId,
   item,
   active,
+  variant = "default",
 }: {
   clientId: string;
   item: ClientWorkspaceNavItem;
   active: boolean;
+  variant?: "default" | "workspaceShell";
 }) {
   const href = resolveClientWorkspaceNavHref(clientId, item.section);
+  const isWorkspaceShell = variant === "workspaceShell";
   const className = cn(
     "shrink-0 snap-start rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
-    active
-      ? "bg-primary/10 text-primary"
-      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-    !href && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground",
+    isWorkspaceShell
+      ? active
+        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+      : active
+        ? "bg-primary/10 text-primary"
+        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+    !href &&
+      (isWorkspaceShell
+        ? "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-sidebar-foreground/80"
+        : "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"),
   );
 
   if (!href) {

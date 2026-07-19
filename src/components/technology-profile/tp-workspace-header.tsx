@@ -11,6 +11,7 @@ type TpWorkspaceHeaderProps = {
   completedAssessments: CompletedAssessmentForAuto[];
   draftAssessmentId?: string | null;
   nextRecommendedAssessmentAt?: string | null;
+  variant?: "default" | "workspaceShell";
 };
 
 export function TpWorkspaceHeader({
@@ -21,15 +22,41 @@ export function TpWorkspaceHeader({
   completedAssessments,
   draftAssessmentId,
   nextRecommendedAssessmentAt,
+  variant = "default",
 }: TpWorkspaceHeaderProps) {
+  const isWorkspaceShell = variant === "workspaceShell";
+
   return (
     <header className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <h2 className="page-title">{clientName}</h2>
-          <Badge variant="outline">{formatClientStatus(clientStatus)}</Badge>
+          <h2
+            className={
+              isWorkspaceShell
+                ? "break-words text-2xl font-semibold tracking-tight text-sidebar-foreground sm:text-3xl"
+                : "page-title"
+            }
+          >
+            {clientName}
+          </h2>
+          <Badge
+            variant="outline"
+            className={
+              isWorkspaceShell
+                ? "border-sidebar-border/80 bg-sidebar-accent/40 text-sidebar-foreground"
+                : undefined
+            }
+          >
+            {formatClientStatus(clientStatus)}
+          </Badge>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p
+          className={
+            isWorkspaceShell
+              ? "mt-1 text-sm text-sidebar-foreground/75"
+              : "mt-1 text-sm text-muted-foreground"
+          }
+        >
           What deserves your immediate focus?
         </p>
       </div>
