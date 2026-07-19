@@ -32,7 +32,7 @@ export function ProductOverviewNav() {
   }, [activeSectionId]);
 
   return (
-    <nav aria-label="Product overview sections" className="bg-background/90">
+    <nav aria-label="Product overview sections" className="bg-background">
       <div
         className={cn(
           "mx-auto flex w-full max-w-7xl items-center gap-3 px-4 sm:px-6",

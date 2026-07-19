@@ -40,7 +40,7 @@ export function DemoApplicationShell({ children }: DemoApplicationShellProps) {
       data-compact={isCompact ? "true" : "false"}
       className={cn(
         STICKY_DEMO_SHELL_CLASS,
-        "transition-[box-shadow,background-color] duration-200 ease-out",
+        "transition-[box-shadow] duration-200 ease-out",
         isCompact && "shadow-md",
       )}
     >

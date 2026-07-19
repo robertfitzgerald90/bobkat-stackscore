@@ -1,7 +1,7 @@
 import { TpWorkspaceHeader } from "@/components/technology-profile/tp-workspace-header";
 import { ClientWorkspaceNav } from "@/components/client-workspace/client-workspace-nav";
 import type { CompletedAssessmentForAuto } from "@/lib/assessments/auto-assessment";
-import { STICKY_IN_SCROLLPORT_CLASS } from "@/lib/ui/sticky-chrome";
+import { STICKY_CLIENT_WORKSPACE_SHELL_CLASS } from "@/lib/ui/sticky-chrome";
 
 type ClientWorkspaceShellProps = {
   clientId: string;
@@ -31,7 +31,7 @@ export function ClientWorkspaceShell({
   return (
     <div className="page-content min-w-0 space-y-6">
       {!isCustomer ? (
-        <>
+        <div className={STICKY_CLIENT_WORKSPACE_SHELL_CLASS}>
           <TpWorkspaceHeader
             clientId={clientId}
             clientName={clientName}
@@ -41,10 +41,8 @@ export function ClientWorkspaceShell({
             draftAssessmentId={draftAssessmentId}
             nextRecommendedAssessmentAt={nextRecommendedAssessmentAt}
           />
-          <div className={STICKY_IN_SCROLLPORT_CLASS}>
-            <ClientWorkspaceNav clientId={clientId} role={role} />
-          </div>
-        </>
+          <ClientWorkspaceNav clientId={clientId} role={role} />
+        </div>
       ) : null}
       <div className="min-w-0">{children}</div>
     </div>

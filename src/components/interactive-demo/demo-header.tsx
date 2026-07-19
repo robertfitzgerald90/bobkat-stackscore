@@ -51,7 +51,7 @@ export function DemoHeader() {
 
   return (
     <>
-      <header className="border-b border-border/60 bg-background/80">
+      <header className="border-b border-border/60 bg-background">
         <div
           className={cn(
             "mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6",
