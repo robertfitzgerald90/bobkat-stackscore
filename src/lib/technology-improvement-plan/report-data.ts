@@ -1,6 +1,10 @@
 import type { TipPlanDetail } from "@/lib/technology-improvement-plan/types";
 import type { TipReportData } from "@/lib/pdf/types";
 import { formatGeneratedDate } from "@/lib/pdf/types";
+import {
+  buildExecutiveSummaryFallback,
+  enrichTipPlanForExecutiveReport,
+} from "@/lib/reports/tip-executive-report";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 
 export function buildTipReportData(
@@ -60,17 +64,25 @@ export function buildTipReportData(
       description: outcome.description,
     }));
 
+  const executiveFields = enrichTipPlanForExecutiveReport(plan);
+  const executiveSummaryText =
+    plan.executiveSummary ??
+    plan.wizardState.executiveSummary ??
+    plan.wizardState.globalExecutiveNotes ??
+    buildExecutiveSummaryFallback(
+      plan.clientName,
+      plan.currentScore,
+      projectedScore,
+      plan.profile?.profile.maturityTierLabel ?? null,
+    );
+
   return {
     clientName: plan.clientName,
     title: plan.title,
     version: plan.version,
     generatedDate,
     assessmentName: plan.assessmentName,
-    executiveSummary:
-      plan.executiveSummary ??
-      plan.wizardState.executiveSummary ??
-      plan.wizardState.globalExecutiveNotes ??
-      "",
+    executiveSummary: executiveSummaryText,
     currentScore: plan.currentScore,
     projectedScore,
     scoreImprovement: projectedScore - plan.currentScore,
@@ -89,6 +101,14 @@ export function buildTipReportData(
     journeyPhaseLabel: plan.profile?.journey.phaseLabel ?? "Improve",
     journeyProgressPercent: plan.profile?.journey.progressPercent ?? 0,
     includeInternalDetails,
+    assessmentDate: executiveFields.assessmentDate,
+    overallBusinessRisk: executiveFields.overallBusinessRisk,
+    topBusinessRisks: executiveFields.topBusinessRisks,
+    topOpportunities: executiveFields.topOpportunities,
+    categoryFindings: executiveFields.categoryFindings,
+    strategicInitiatives: executiveFields.strategicInitiatives,
+    phaseInvestmentRows: executiveFields.phaseInvestmentRows,
+    businessValueSnapshot: executiveFields.businessValueSnapshot,
     investmentBreakdown: includeInternalDetails
       ? {
           labor: investment.labor,

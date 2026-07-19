@@ -26,7 +26,7 @@ export function QuarterlyReviewSection() {
   return (
     <section
       id="product-overview-quarterly-review"
-      className="scroll-mt-36 border-t border-border/70 bg-muted/10 px-4 py-10 sm:px-6 sm:py-12"
+      className="scroll-mt-[var(--demo-shell-height,9rem)] border-t border-border/70 bg-muted/10 px-4 py-10 sm:px-6 sm:py-12"
     >
       <div className="mx-auto max-w-7xl">
         <OfferReveal>

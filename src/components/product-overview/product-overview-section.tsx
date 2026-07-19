@@ -45,7 +45,7 @@ export function ProductOverviewSection({
     <section
       ref={sectionRef}
       id={id}
-      className={`scroll-mt-36 border-t border-border/70 px-4 py-10 sm:px-6 sm:py-12 ${className ?? "bg-background"}`}
+      className={`scroll-mt-[var(--demo-shell-height,9rem)] border-t border-border/70 px-4 py-10 sm:px-6 sm:py-12 ${className ?? "bg-background"}`}
     >
       <div className="mx-auto max-w-7xl">
         <OfferReveal>

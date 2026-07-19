@@ -5,7 +5,9 @@ import { Suspense } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { DemoConversionCta } from "@/components/interactive-demo/demo-conversion-cta";
 import { DemoEntryScreen } from "@/components/interactive-demo/demo-entry-screen";
+import { DemoApplicationShell } from "@/components/interactive-demo/demo-application-shell";
 import { DemoHeader } from "@/components/interactive-demo/demo-header";
+import { DemoScrollSpyProvider } from "@/components/interactive-demo/demo-scroll-spy-provider";
 import { DemoSessionBootstrap } from "@/components/interactive-demo/demo-session-bootstrap";
 import { AssessmentPreviewSection } from "@/components/product-overview/assessment-preview-section";
 import { DemoPersonalizationLauncher, DemoPersonalizationWizard } from "@/components/product-overview/demo-personalization-wizard";
@@ -233,7 +235,7 @@ function ProductOverviewContent({
   const { openDetail, presentationActive } = useProductOverview();
 
   return (
-    <div className="min-w-0 overflow-x-clip bg-background pb-24 lg:pb-0">
+    <div className="min-w-0 bg-background pb-24 lg:pb-0">
       <Suspense fallback={null}>
         <DemoSessionBootstrap sectionSlug={initialSection} />
       </Suspense>
@@ -243,8 +245,12 @@ function ProductOverviewContent({
       <ProductOverviewSkipLink />
       <ProductOverviewViewTracker />
       <ProductOverviewSectionTracker />
-      <DemoHeader />
-      <ProductOverviewNav />
+      <DemoScrollSpyProvider>
+        <DemoApplicationShell>
+          <DemoHeader />
+          <ProductOverviewNav />
+        </DemoApplicationShell>
+      </DemoScrollSpyProvider>
       <main id="product-overview-main">
         <ProductOverviewHero
           onOpenDetail={openDetail}

@@ -21,7 +21,7 @@ export function StackscoreEcosystemSection() {
       id={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.sectionId}
       data-demo-interaction={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.interactionMode}
       data-demo-presentation={DEMO_INLINE_DETAIL_SECTIONS.ecosystem.presentation}
-      className="scroll-mt-36 overflow-x-clip border-t border-border/70 bg-background px-4 py-10 sm:px-6 sm:py-12"
+      className="scroll-mt-[var(--demo-shell-height,9rem)] overflow-x-clip border-t border-border/70 bg-background px-4 py-10 sm:px-6 sm:py-12"
     >
       <div className="mx-auto min-w-0 max-w-7xl">
         <OfferReveal>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { generateTipReportPdf } from "@/lib/pdf/generate";
+import { buildExecutiveReportFields } from "@/lib/reports/tip-executive-report";
 import type { TipReportData } from "@/lib/pdf/types";
 
 const minimalTipReport: TipReportData = {
@@ -96,9 +97,23 @@ const minimalTipReport: TipReportData = {
   includeInternalDetails: false,
 };
 
+const executiveFields = buildExecutiveReportFields({
+  categorySummaries: minimalTipReport.categorySummaries,
+  recommendations: minimalTipReport.recommendations,
+  technologyRoadmap: minimalTipReport.technologyRoadmap,
+  currentScore: minimalTipReport.currentScore,
+  projectedScore: minimalTipReport.projectedScore,
+  assessmentDate: "June 15, 2026",
+});
+
+const fullTipReport: TipReportData = {
+  ...minimalTipReport,
+  ...executiveFields,
+};
+
 describe("generateTipReportPdf", () => {
   it("renders a non-empty executive PDF buffer", async () => {
-    const buffer = await generateTipReportPdf(minimalTipReport);
+    const buffer = await generateTipReportPdf(fullTipReport);
     expect(buffer.byteLength).toBeGreaterThan(5000);
     expect(buffer.subarray(0, 4).toString()).toBe("%PDF");
   });

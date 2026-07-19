@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { DemoEnvironmentBadge } from "@/components/interactive-demo/demo-environment-badge";
 import { DemoExitModal } from "@/components/interactive-demo/demo-exit-modal";
+import { useDemoScrollSpy } from "@/components/interactive-demo/demo-scroll-spy-provider";
 import { DemoPersonalizationLauncher } from "@/components/product-overview/demo-personalization-wizard";
 import { useInteractiveDemo } from "@/components/product-overview/interactive-demo-context";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
@@ -21,51 +22,20 @@ import {
   trackDemoAssessmentCtaClicked,
   trackDemoExitClicked,
 } from "@/lib/analytics/interactive-demo-events";
-import { getDemoSectionLabel } from "@/lib/interactive-demo/routes";
 import { readDemoReturnTo } from "@/lib/interactive-demo/session";
-import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 import { cn } from "@/lib/utils";
 
 export function DemoHeader() {
   const { view } = useInteractiveDemo();
+  const { activeSectionLabel, isCompact } = useDemoScrollSpy();
   const [exitOpen, setExitOpen] = useState(false);
   const [returnTo, setReturnTo] = useState<string | null>(null);
-  const [activeSectionLabel, setActiveSectionLabel] = useState<string | null>("Overview");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const companyName = view.company.name;
 
   useEffect(() => {
     setReturnTo(readDemoReturnTo());
-  }, []);
-
-  useEffect(() => {
-    const targets = PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.sectionId).map((item) => ({
-      label: item.label,
-      sectionId: item.sectionId!,
-    }));
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const top = visible[0];
-        if (!top) return;
-        const matched = targets.find((item) => item.sectionId === top.target.id);
-        if (matched) {
-          setActiveSectionLabel(getDemoSectionLabel(matched.sectionId) ?? matched.label);
-        }
-      },
-      { rootMargin: "-35% 0px -50% 0px", threshold: [0.1, 0.25, 0.5] },
-    );
-
-    for (const item of targets) {
-      const element = document.getElementById(item.sectionId);
-      if (element) observer.observe(element);
-    }
-
-    return () => observer.disconnect();
   }, []);
 
   const subtitle = useMemo(() => {
@@ -81,8 +51,14 @@ export function DemoHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+      <header className="border-b border-border/60 bg-background/80">
+        <div
+          className={cn(
+            "mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6",
+            "transition-[padding] duration-200 ease-out",
+            isCompact ? "py-2" : "py-3",
+          )}
+        >
           <div className="flex min-w-0 items-center gap-3">
             <BrandLogo size={32} variant="stacked" className="shrink-0" />
             <div className="min-w-0">
@@ -92,7 +68,14 @@ export function DemoHeader() {
                 </p>
                 <DemoEnvironmentBadge className="hidden sm:inline-flex" />
               </div>
-              <p className="hidden truncate text-xs text-muted-foreground md:block">{subtitle}</p>
+              <p
+                className={cn(
+                  "truncate text-xs text-muted-foreground md:block",
+                  isCompact ? "hidden" : "hidden md:block",
+                )}
+              >
+                {subtitle}
+              </p>
             </div>
           </div>
 

@@ -10,6 +10,7 @@ import path from "path";
 import type { Priority } from "../src/generated/prisma/client";
 import { generateTipReportPdf } from "../src/lib/pdf/generate";
 import type { TipReportData } from "../src/lib/pdf/types";
+import { buildExecutiveReportFields } from "../src/lib/reports/tip-executive-report";
 import type {
   RoadmapPhaseResult,
   TechnologyRoadmap,
@@ -154,6 +155,19 @@ function buildFixture(name: string, phases: RoadmapPhaseResult[]): TipReportData
     journeyPhaseLabel: "Improve",
     journeyProgressPercent: 42,
     includeInternalDetails: false,
+    ...buildExecutiveReportFields({
+      categorySummaries: [
+        { name: "Security & Compliance", score: 52, ratingLabel: "At Risk", hasRecommendations: true },
+        { name: "Infrastructure", score: 61, ratingLabel: "Stable", hasRecommendations: true },
+        { name: "Operations", score: 64, ratingLabel: "Stable", hasRecommendations: false },
+        { name: "Business Continuity", score: 49, ratingLabel: "At Risk", hasRecommendations: true },
+      ],
+      recommendations,
+      technologyRoadmap: roadmap,
+      currentScore: 58,
+      projectedScore: roadmap.totals.projectedFinalStackScore,
+      assessmentDate: "June 15, 2026",
+    }),
   };
 }
 

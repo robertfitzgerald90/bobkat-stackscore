@@ -1,72 +1,65 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useDemoScrollSpy } from "@/components/interactive-demo/demo-scroll-spy-provider";
 import { cn } from "@/lib/utils";
 import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 
-const SECTION_IDS = PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.sectionId).map((item) => ({
-  id: item.id,
-  sectionId: item.sectionId!,
-}));
-
 export function ProductOverviewNav() {
-  const [activeId, setActiveId] = useState("overview");
+  const { activeSectionId, isCompact, scrollToDemoSection } = useDemoScrollSpy();
+  const activeTabRef = useRef<HTMLButtonElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    const tab = activeTabRef.current;
+    const container = scrollContainerRef.current;
+    if (!tab || !container) return;
 
-        const topEntry = visible[0];
-        if (!topEntry) return;
+    const tabLeft = tab.offsetLeft;
+    const tabRight = tabLeft + tab.offsetWidth;
+    const visibleLeft = container.scrollLeft;
+    const visibleRight = visibleLeft + container.clientWidth;
 
-        const matched = SECTION_IDS.find((item) => item.sectionId === topEntry.target.id);
-        if (matched) {
-          setActiveId(matched.id);
-        }
-      },
-      {
-        rootMargin: "-40% 0px -45% 0px",
-        threshold: [0.1, 0.25, 0.5],
-      },
-    );
-
-    for (const item of SECTION_IDS) {
-      const element = document.getElementById(item.sectionId);
-      if (element) observer.observe(element);
+    if (tabLeft < visibleLeft + 16) {
+      container.scrollTo({ left: Math.max(0, tabLeft - 16), behavior: "smooth" });
+    } else if (tabRight > visibleRight - 16) {
+      container.scrollTo({
+        left: tabRight - container.clientWidth + 16,
+        behavior: "smooth",
+      });
     }
-
-    return () => observer.disconnect();
-  }, []);
+  }, [activeSectionId]);
 
   return (
-    <nav
-      aria-label="Product overview sections"
-      className="sticky top-[61px] z-30 border-b border-border/70 bg-background/95 backdrop-blur-md"
-    >
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
+    <nav aria-label="Product overview sections" className="bg-background/90">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-7xl items-center gap-3 px-4 sm:px-6",
+          "transition-[padding] duration-200 ease-out",
+          isCompact ? "py-2" : "py-3",
+        )}
+      >
         <Badge variant="outline" className="hidden shrink-0 sm:inline-flex">
           Interactive Demo
         </Badge>
-        <div className="min-w-0 flex-1 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          ref={scrollContainerRef}
+          className="min-w-0 flex-1 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           <ul className="flex min-w-max items-center gap-2">
             {PRODUCT_OVERVIEW_NAV_ITEMS.map((item) => {
-              const isActive = item.id === activeId;
+              const isActive = item.id === activeSectionId;
 
               return (
                 <li key={item.id}>
                   <button
+                    ref={isActive ? activeTabRef : null}
                     type="button"
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => {
                       if (item.sectionId) {
-                        document.getElementById(item.sectionId)?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
+                        scrollToDemoSection(item.sectionId);
                       }
                     }}
                     className={cn(

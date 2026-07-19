@@ -49,6 +49,40 @@ export type TipCategorySummary = {
   hasRecommendations: boolean;
 };
 
+export type ExecutiveRiskLevel = "Low" | "Moderate" | "High" | "Critical";
+export type ExecutivePriorityLevel = "Low" | "Medium" | "High";
+
+export type TipCategoryFinding = {
+  categoryName: string;
+  currentState: string;
+  businessImpact: string;
+  riskLevel: ExecutiveRiskLevel;
+  priority: ExecutivePriorityLevel;
+};
+
+export type TipStrategicInitiative = {
+  id: string;
+  name: string;
+  businessObjective: string;
+  whyItMatters: string;
+  expectedBenefits: string[];
+  recommendedPhase: string;
+  estimatedInvestment: string;
+  priority: ExecutivePriorityLevel;
+};
+
+export type TipPhaseInvestmentRow = {
+  phaseLabel: string;
+  businessGoal: string;
+  estimatedInvestment: string;
+};
+
+export type TipBusinessValueMetric = {
+  label: string;
+  currentPercent: number;
+  projectedPercent: number;
+};
+
 export type TipInvestmentLineItem = {
   category: string;
   description: string;
@@ -85,6 +119,14 @@ export type TipReportData = {
   journeyPhaseLabel: string;
   journeyProgressPercent: number;
   includeInternalDetails: boolean;
+  assessmentDate: string | null;
+  overallBusinessRisk: ExecutiveRiskLevel;
+  topBusinessRisks: string[];
+  topOpportunities: string[];
+  categoryFindings: TipCategoryFinding[];
+  strategicInitiatives: TipStrategicInitiative[];
+  phaseInvestmentRows: TipPhaseInvestmentRow[];
+  businessValueSnapshot: TipBusinessValueMetric[];
   investmentBreakdown?: {
     labor: number;
     hardware: number;

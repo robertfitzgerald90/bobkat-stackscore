@@ -1,34 +1,25 @@
-import React from "react";
 import { Text, View } from "@react-pdf/renderer";
-import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
+import { BRAND } from "@/lib/branding";
+import { PdfFlowSection } from "@/lib/pdf/shared/components/flow-section";
+import { PdfReportFooter } from "@/lib/pdf/shared/components/report-footer";
+import { PdfReportHeader } from "@/lib/pdf/shared/components/report-header";
+import { PdfKpiCard, PdfKpiRow } from "@/lib/pdf/shared/components/kpi-card";
+import { PdfReportTable } from "@/lib/pdf/shared/components/report-table";
+import { PdfProgressBar } from "@/lib/pdf/shared/components/report-bar";
+import { COLORS } from "@/lib/pdf/shared/colors";
+import { REPORT_SPACING } from "@/lib/pdf/shared/tokens";
+import type { TipReportData } from "@/lib/pdf/types";
 import type {
-  RecommendationCostProfile,
-  RoadmapPhaseInitiative,
-  RoadmapPhaseResult,
-} from "@/lib/technology-improvement-plan/roadmap-engine";
-import type { TipRecommendationView } from "@/lib/technology-improvement-plan/types";
-import { getRating, RATING_LABELS } from "@/lib/scoring";
+  TipBusinessValueMetric,
+  TipCategoryFinding,
+  TipPhaseInvestmentRow,
+  TipStrategicInitiative,
+} from "@/lib/pdf/types";
 import {
-  buildPhaseCompletionOutcomes,
-  buildPhaseExecutiveNarrative,
-  buildPhaseOutcomeBulletsFull,
-  findRecommendationForInitiative,
-  getPhasePriorityLabel,
-  getRoadmapOverviewMetrics,
-  isPhaseRecurringCoveredByRetainer,
-} from "@/lib/reports/tip-presentation";
-import {
-  COLORS,
-  PdfKpiCard,
-  PdfKpiRow,
-  PdfPriorityBadge,
-  PdfProgressBar,
-  PdfReportFooter,
-  PdfReportHeader,
-} from "@/lib/pdf/shared";
-import { pdfReportBodyStyles } from "@/lib/pdf/shared/layout";
-import type { TipCategorySummary, TipReportData } from "@/lib/pdf/types";
-import { tipPdfStyles as styles } from "@/lib/pdf/tip/styles";
+  PRIORITY_BADGE_STYLES,
+  RISK_BADGE_STYLES,
+  tipPdfStyles as styles,
+} from "./styles";
 
 export function PdfTipPageChrome({ data }: { data: TipReportData }) {
   return (
@@ -49,439 +40,395 @@ export function PdfTipPageChrome({ data }: { data: TipReportData }) {
   );
 }
 
-function PdfChecklist({ items }: { items: string[] }) {
-  if (items.length === 0) return null;
-
+export function PdfAssessmentScope() {
   return (
-    <View style={{ marginBottom: 12 }}>
-      {items.map((item) => (
-        <View key={item} style={styles.checklistRow}>
-          <Text style={styles.checklistMark}>✓</Text>
-          <Text style={styles.checklistText}>{item}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
-function formatInitiativeInvestment(profile: RecommendationCostProfile): string {
-  const parts: string[] = [];
-  if (profile.oneTimeInvestment > 0) {
-    parts.push(formatCurrency(profile.oneTimeInvestment));
-  }
-  if (profile.monthlyRecurringInvestment > 0) {
-    parts.push(`${formatCurrency(profile.monthlyRecurringInvestment)}/mo`);
-  }
-  return parts.length > 0 ? parts.join(" + ") : "Scoped in phase investment";
-}
-
-export function PdfMaturityComparison({ data }: { data: TipReportData }) {
-  const currentRating = getRating(data.currentScore);
-  const projectedRating = getRating(data.projectedScore);
-
-  return (
-    <View style={styles.maturityPanel}>
-      <PdfKpiRow>
-        <PdfKpiCard label="Current StackScore" value={data.currentScore} caption={RATING_LABELS[currentRating]} />
-        <PdfKpiCard
-          label="Projected StackScore"
-          value={data.projectedScore}
-          caption={RATING_LABELS[projectedRating]}
-          highlight
-        />
-        <PdfKpiCard
-          label="Expected Improvement"
-          value={`+${data.scoreImprovement}`}
-          caption="Points upon roadmap completion"
-        />
-        <PdfKpiCard
-          label="Journey Progress"
-          value={`${data.journeyProgressPercent}%`}
-          caption={data.journeyPhaseLabel}
-        />
-      </PdfKpiRow>
-      <View style={{ marginTop: 8 }}>
-        <PdfProgressBar percent={data.currentScore} variant="current" />
-        <View style={{ height: 8 }} />
-        <PdfProgressBar percent={data.projectedScore} variant="improvement" />
-      </View>
-    </View>
-  );
-}
-
-export function PdfPillarGrid({ categories }: { categories: TipCategorySummary[] }) {
-  if (categories.length === 0) return null;
-
-  return (
-    <View style={styles.pillarGrid}>
-      {categories.map((category) => {
-        const cardStyle = category.hasRecommendations ? styles.pillarCardPlanned : styles.pillarCard;
-        return (
-          <View key={category.name} style={cardStyle}>
-            <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: COLORS.navy, marginBottom: 4 }}>
-              {category.name}
-            </Text>
-            <Text style={{ fontSize: 16, fontFamily: "Helvetica-Bold", color: COLORS.navy, marginBottom: 2 }}>
-              {category.score}
-            </Text>
-            <Text style={{ fontSize: 9, color: COLORS.muted, marginBottom: 6 }}>{category.ratingLabel}</Text>
-            <PdfProgressBar percent={category.score} variant="current" />
-            <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 6, lineHeight: 1.45 }}>
-              {category.hasRecommendations
-                ? "Improvement initiatives planned in this domain"
-                : "Baseline maturity — no active initiatives in this plan"}
-            </Text>
-          </View>
-        );
-      })}
-    </View>
-  );
-}
-
-export function PdfRoadmapOverview({ data }: { data: TipReportData }) {
-  const roadmap = data.technologyRoadmap;
-  const metrics = getRoadmapOverviewMetrics(data.currentScore, roadmap, data.recommendations);
-
-  return (
-    <View>
-      <View style={styles.roadmapStepActive}>
-        <Text style={styles.phaseEyebrow}>Starting Point</Text>
-        <Text style={{ fontSize: 12, fontFamily: "Helvetica-Bold", color: COLORS.navy }}>
-          Assessment Complete
+    <PdfFlowSection title="Assessment Scope">
+      <View style={styles.scopeBox}>
+        <Text style={styles.scopeText}>
+          This assessment evaluates technology maturity using industry best practices and
+          organizational information provided during the assessment process. It is intended to
+          identify strategic improvement opportunities and support executive decision-making.
+        </Text>
+        <Text style={[styles.scopeText, { marginTop: 8 }]}>
+          This document is not a penetration test, compliance audit, or technical implementation
+          guide. Detailed execution planning, product selection, and deployment methodology are
+          reserved for an ongoing consulting partnership with {BRAND.companyName}.
         </Text>
       </View>
-      {roadmap.phases.map((phase) => (
-        <View key={phase.id}>
-          <Text style={{ fontSize: 11, color: COLORS.muted, textAlign: "center", marginVertical: 4 }}>↓</Text>
-          <View style={styles.roadmapStep}>
-            <Text style={styles.phaseEyebrow}>{phase.subtitle}</Text>
-            <Text style={{ fontSize: 12, fontFamily: "Helvetica-Bold", color: COLORS.navy }}>{phase.name}</Text>
-            <Text style={{ fontSize: 10, color: COLORS.muted, marginTop: 3 }}>{phase.timeline}</Text>
+    </PdfFlowSection>
+  );
+}
+
+export function PdfExecutiveSummaryDashboard({
+  clientName,
+  assessmentDate,
+  currentScore,
+  projectedScore,
+  maturityTierLabel,
+  overallBusinessRisk,
+  executiveSummary,
+  topBusinessRisks,
+  topOpportunities,
+}: {
+  clientName: string;
+  assessmentDate: string;
+  currentScore: number;
+  projectedScore: number;
+  maturityTierLabel: string;
+  overallBusinessRisk: string;
+  executiveSummary: string;
+  topBusinessRisks: string[];
+  topOpportunities: string[];
+}) {
+  return (
+    <PdfFlowSection title="Executive Summary">
+      <View style={styles.executiveHero}>
+        <View style={styles.executiveMetaRow}>
+          <View style={styles.executiveMetaItem}>
+            <Text style={styles.executiveMetaLabel}>Organization</Text>
+            <Text style={styles.executiveMetaValue}>{clientName}</Text>
+          </View>
+          <View style={styles.executiveMetaItem}>
+            <Text style={styles.executiveMetaLabel}>Assessment Date</Text>
+            <Text style={styles.executiveMetaValue}>{assessmentDate}</Text>
+          </View>
+          <View style={styles.executiveMetaItem}>
+            <Text style={styles.executiveMetaLabel}>Overall Business Risk</Text>
+            <Text style={styles.executiveMetaValue}>{overallBusinessRisk}</Text>
           </View>
         </View>
-      ))}
-      <PdfKpiRow>
-        <PdfKpiCard label="Current StackScore" value={metrics.currentScore} />
-        <PdfKpiCard label="Projected StackScore" value={metrics.projectedScore} highlight />
-        <PdfKpiCard label="Score Improvement" value={`+${metrics.scoreImprovement}`} />
-        <PdfKpiCard label="Initiatives" value={metrics.initiativeCount} />
-        <PdfKpiCard label="Phases" value={metrics.phaseCount} />
-      </PdfKpiRow>
-    </View>
-  );
-}
-
-export function PdfInitiativeCard({
-  initiative,
-  recommendation,
-  phase,
-  relatedTitles,
-}: {
-  initiative: RoadmapPhaseInitiative;
-  recommendation?: TipRecommendationView;
-  phase: RoadmapPhaseResult;
-  relatedTitles: string[];
-}) {
-  const businessSummary = recommendation?.executiveNote?.trim() || recommendation?.businessImpact?.trim();
-  const technicalSummary = recommendation?.description?.trim();
-  const effort = recommendation?.suggestedService?.trim() || "Consultant-scoped delivery";
-
-  return (
-    <View style={styles.initiativeCard} minPresenceAhead={120}>
-      <View style={styles.initiativeHeader}>
-        <Text style={styles.initiativeTitle}>{initiative.title}</Text>
-        <PdfPriorityBadge priority={initiative.priority} />
+        <PdfKpiRow>
+          <PdfKpiCard label="StackScore" value={currentScore} caption="Current (0–100)" />
+          <PdfKpiCard
+            label="Projected Score"
+            value={projectedScore}
+            caption="After roadmap"
+            highlight
+          />
+          <PdfKpiCard
+            label="Technology Maturity"
+            value={maturityTierLabel}
+            caption="Current level"
+          />
+        </PdfKpiRow>
       </View>
-
-      <View style={styles.initiativeMetaGrid}>
-        <View style={styles.initiativeMetaPill}>
-          <Text style={styles.initiativeMetaLabel}>Estimated Investment</Text>
-          <Text style={styles.initiativeMetaValue}>
-            {formatInitiativeInvestment(initiative.costProfile)}
-          </Text>
-        </View>
-        <View style={styles.initiativeMetaPill}>
-          <Text style={styles.initiativeMetaLabel}>Expected Score Impact</Text>
-          <Text style={styles.initiativeMetaValue}>
-            +{recommendation?.estimatedImpactPoints ?? 0} points
-          </Text>
-        </View>
-        <View style={styles.initiativeMetaPill}>
-          <Text style={styles.initiativeMetaLabel}>Implementation Effort</Text>
-          <Text style={styles.initiativeMetaValue}>{effort}</Text>
-        </View>
-        <View style={styles.initiativeMetaPill}>
-          <Text style={styles.initiativeMetaLabel}>Status</Text>
-          <Text style={styles.initiativeMetaValue}>Included in {phase.subtitle}</Text>
-        </View>
-      </View>
-
-      {recommendation?.businessImpact ? (
-        <>
-          <Text style={styles.initiativeFieldLabel}>Business Impact</Text>
-          <Text style={styles.initiativeFieldBody}>{recommendation.businessImpact}</Text>
-        </>
-      ) : null}
-
-      {technicalSummary ? (
-        <>
-          <Text style={styles.initiativeFieldLabel}>Technical Summary</Text>
-          <Text style={styles.initiativeFieldBody}>{technicalSummary}</Text>
-        </>
-      ) : null}
-
-      {businessSummary && businessSummary !== recommendation?.businessImpact ? (
-        <>
-          <Text style={styles.initiativeFieldLabel}>Executive Summary</Text>
-          <Text style={styles.initiativeFieldBody}>{businessSummary}</Text>
-        </>
-      ) : null}
-
-      {recommendation?.categoryName ? (
-        <>
-          <Text style={styles.initiativeFieldLabel}>Technology Domain</Text>
-          <Text style={styles.initiativeFieldBody}>{recommendation.categoryName}</Text>
-        </>
-      ) : null}
-
-      {relatedTitles.length > 0 ? (
-        <>
-          <Text style={styles.initiativeFieldLabel}>Related Initiatives in This Phase</Text>
-          <PdfChecklist items={relatedTitles} />
-        </>
-      ) : null}
-    </View>
-  );
-}
-
-export function PdfPhaseSection({
-  data,
-  phase,
-  phaseNumber,
-}: {
-  data: TipReportData;
-  phase: RoadmapPhaseResult;
-  phaseNumber: number;
-}) {
-  const outcomes = buildPhaseOutcomeBulletsFull(phase);
-  const completionOutcomes = buildPhaseCompletionOutcomes(phase);
-  const coveredByRetainer = isPhaseRecurringCoveredByRetainer(phase, data.recommendations);
-  const showMonthly = phase.monthlyRecurringInvestment > 0;
-
-  return (
-    <View break={phaseNumber > 1}>
-      <View style={styles.phaseHero} minPresenceAhead={100}>
-        <Text style={styles.phaseEyebrow}>
-          {phase.subtitle} · Phase {phaseNumber}
-        </Text>
-        <Text style={styles.phaseTitle}>{phase.name}</Text>
-        <Text style={styles.phaseSubtitle}>{phase.timeline}</Text>
-      </View>
-
-      <PdfKpiRow>
-        <PdfKpiCard label="Timeline" value={phase.timeline} />
-        <PdfKpiCard label="Priority" value={getPhasePriorityLabel(phase)} />
-        <PdfKpiCard
-          label="StackScore Improvement"
-          value={`+${phase.stackScoreImprovement}`}
-          caption="Expected points from this phase"
-          highlight
-        />
-        <PdfKpiCard label="Initiatives" value={phase.initiatives.length} />
-      </PdfKpiRow>
 
       <Text style={styles.blockLabel}>Executive Summary</Text>
-      <View style={styles.callout}>
-        <Text style={styles.bodyText}>{buildPhaseExecutiveNarrative(phase)}</Text>
-      </View>
+      <Text style={styles.bodyText}>{executiveSummary}</Text>
 
-      {outcomes.length > 0 ? (
-        <>
-          <Text style={styles.blockLabel}>Business Outcomes</Text>
-          <View style={styles.callout}>
-            <Text style={styles.calloutTitle}>What your organization gains from this phase</Text>
-            <PdfChecklist items={outcomes} />
+      <View style={{ flexDirection: "row", gap: 12, marginTop: 4 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.blockLabel}>Top Business Risks</Text>
+          {topBusinessRisks.map((risk) => (
+            <View key={risk} style={styles.checklistRow}>
+              <Text style={[styles.checklistMark, { color: COLORS.critical }]}>!</Text>
+              <Text style={styles.checklistText}>{risk}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.blockLabel}>Top Opportunities</Text>
+          {topOpportunities.map((item) => (
+            <View key={item} style={styles.checklistRow}>
+              <Text style={styles.checklistMark}>+</Text>
+              <Text style={styles.checklistText}>{item}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    </PdfFlowSection>
+  );
+}
+
+export function PdfBusinessValueSnapshot({
+  metrics,
+}: {
+  metrics: TipBusinessValueMetric[];
+}) {
+  return (
+    <PdfFlowSection
+      title="Business Value Snapshot"
+      subtitle="Projected maturity improvements after completing the strategic roadmap"
+    >
+      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+        {metrics.map((metric) => (
+          <View key={metric.label} style={styles.valueMetricCard}>
+            <Text style={styles.valueMetricLabel}>{metric.label}</Text>
+            <View style={styles.valueMetricCompare}>
+              <View>
+                <Text style={styles.valueMetricCaption}>Current</Text>
+                <Text style={styles.valueMetricValue}>{metric.currentPercent}%</Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.valueMetricCaption}>Projected</Text>
+                <Text style={[styles.valueMetricValue, { color: COLORS.success }]}>
+                  {metric.projectedPercent}%
+                </Text>
+              </View>
+            </View>
+            <PdfProgressBar percent={metric.projectedPercent} variant="improvement" />
           </View>
-        </>
-      ) : null}
-
-      <Text style={styles.blockLabel}>Investment Summary</Text>
-      <PdfKpiRow>
-        <PdfKpiCard
-          label="One-Time Investment"
-          value={formatCurrency(phase.oneTimeInvestment)}
-          caption="Implementation and project delivery"
-        />
-        {showMonthly ? (
-          <PdfKpiCard
-            label="Monthly Recurring"
-            value={
-              coveredByRetainer
-                ? "Included in retainer"
-                : formatCurrency(phase.monthlyRecurringInvestment)
-            }
-            caption={coveredByRetainer ? "Strategic IT Consulting Retainer" : "New ongoing services"}
-            highlight
-          />
-        ) : null}
-        {phase.annualRecurringInvestment > 0 ? (
-          <PdfKpiCard
-            label="Annual Recurring"
-            value={formatCurrency(phase.annualRecurringInvestment)}
-          />
-        ) : null}
-      </PdfKpiRow>
-
-      <Text style={styles.blockLabel}>Included Initiatives</Text>
-      {phase.initiatives.map((initiative) => {
-        const recommendation = findRecommendationForInitiative(
-          data.recommendations,
-          initiative.recommendationId,
-        );
-        const relatedTitles = phase.initiatives
-          .filter((item) => item.recommendationId !== initiative.recommendationId)
-          .map((item) => item.title)
-          .slice(0, 4);
-
-        return (
-          <PdfInitiativeCard
-            key={initiative.recommendationId}
-            initiative={initiative}
-            recommendation={recommendation}
-            phase={phase}
-            relatedTitles={relatedTitles}
-          />
-        );
-      })}
-
-      <Text style={styles.blockLabel}>Expected Results</Text>
-      <View style={styles.callout}>
-        <Text style={styles.calloutTitle}>Upon completion, your organization will have:</Text>
-        <PdfChecklist items={completionOutcomes} />
+        ))}
       </View>
+    </PdfFlowSection>
+  );
+}
 
-      <Text style={styles.blockLabel}>Success Metrics</Text>
-      <PdfChecklist
-        items={[
-          `StackScore improvement of +${phase.stackScoreImprovement} points targeted for this phase`,
-          `Projected cumulative score approaching ${phase.projectedScore}`,
-          `${phase.initiatives.length} prioritized initiative${phase.initiatives.length === 1 ? "" : "s"} delivered with measurable outcomes`,
-        ]}
-      />
+function PdfRiskBadge({ level }: { level: TipCategoryFinding["riskLevel"] }) {
+  const palette = RISK_BADGE_STYLES[level];
+  return (
+    <Text
+      style={[
+        styles.badge,
+        {
+          backgroundColor: palette.bg,
+          color: palette.text,
+          borderColor: palette.border,
+        },
+      ]}
+    >
+      Risk: {level}
+    </Text>
+  );
+}
 
-      <Text style={styles.blockLabel}>Implementation Notes</Text>
-      <Text style={styles.bodyText}>
-        Initiatives in this phase are sequenced to reduce operational risk while building toward the
-        projected maturity score. Delivery windows follow the stated timeline and may be adjusted
-        during quarterly strategic reviews.
-      </Text>
+function PdfPriorityBadge({ level }: { level: TipCategoryFinding["priority"] }) {
+  const palette = PRIORITY_BADGE_STYLES[level];
+  return (
+    <Text
+      style={[
+        styles.badge,
+        {
+          backgroundColor: palette.bg,
+          color: palette.text,
+          borderColor: palette.border,
+        },
+      ]}
+    >
+      Priority: {level}
+    </Text>
+  );
+}
 
-      <Text style={styles.blockLabel}>Risk Reduction</Text>
-      <Text style={styles.bodyText}>
-        Completing {phase.name.toLowerCase()} addresses prioritized gaps identified in the Technology
-        Maturity Assessment and reduces exposure from unresolved {getPhasePriorityLabel(phase).toLowerCase()}{" "}
-        items before advancing to subsequent phases.
-      </Text>
-
-      <Text style={styles.blockLabel}>Business Benefits</Text>
-      <PdfChecklist items={outcomes.length > 0 ? outcomes.slice(0, 4) : completionOutcomes.slice(0, 4)} />
+export function PdfCategoryFindingCard({ finding }: { finding: TipCategoryFinding }) {
+  return (
+    <View style={styles.findingCard}>
+      <View style={styles.findingHeader}>
+        <Text style={styles.findingTitle}>{finding.categoryName}</Text>
+      </View>
+      <View style={styles.badgeRow}>
+        <PdfRiskBadge level={finding.riskLevel} />
+        <PdfPriorityBadge level={finding.priority} />
+      </View>
+      <Text style={styles.fieldLabel}>Current State</Text>
+      <Text style={styles.fieldBody}>{finding.currentState}</Text>
+      <Text style={styles.fieldLabel}>Business Impact</Text>
+      <Text style={styles.fieldBody}>{finding.businessImpact}</Text>
     </View>
   );
 }
 
-export function PdfOverallInvestment({ data }: { data: TipReportData }) {
+export function PdfCurrentStateFindings({
+  findings,
+}: {
+  findings: TipCategoryFinding[];
+}) {
   return (
-    <View>
-      <PdfKpiRow>
-        <PdfKpiCard
-          label="One-Time Investment"
-          value={formatCurrency(data.oneTimeInvestmentTotal)}
-          caption="Total implementation across approved phases"
-        />
-        {data.monthlyRecurringTotal > 0 ? (
-          <PdfKpiCard
-            label="Monthly Recurring"
-            value={formatCurrency(data.monthlyRecurringTotal)}
-            caption="New ongoing services introduced"
-            highlight
-          />
-        ) : null}
-        {data.annualRecurringTotal > 0 ? (
-          <PdfKpiCard
-            label="Expected Annual Investment"
-            value={formatCurrency(data.annualRecurringTotal)}
-            caption="Annualized recurring services"
-          />
-        ) : null}
-        <PdfKpiCard
-          label="Expected Score Increase"
-          value={`+${data.scoreImprovement}`}
-          caption={`${data.currentScore} → ${data.projectedScore}`}
-          highlight
-        />
-      </PdfKpiRow>
+    <PdfFlowSection
+      title="Current State Findings"
+      subtitle="Assessment observations grouped by category — focused on business impact, not technical implementation"
+    >
+      {findings.map((finding) => (
+        <PdfCategoryFindingCard key={finding.categoryName} finding={finding} />
+      ))}
+    </PdfFlowSection>
+  );
+}
+
+export function PdfStrategicInitiativeCard({
+  initiative,
+}: {
+  initiative: TipStrategicInitiative;
+}) {
+  return (
+    <View style={styles.initiativeCard}>
+      <Text style={styles.initiativeTitle}>{initiative.name}</Text>
+      <View style={styles.badgeRow}>
+        <PdfPriorityBadge level={initiative.priority} />
+        <Text
+          style={[
+            styles.badge,
+            {
+              backgroundColor: COLORS.surface,
+              color: COLORS.navy,
+              borderColor: COLORS.border,
+            },
+          ]}
+        >
+          {initiative.recommendedPhase}
+        </Text>
+        <Text
+          style={[
+            styles.badge,
+            {
+              backgroundColor: COLORS.surface,
+              color: COLORS.navy,
+              borderColor: COLORS.border,
+            },
+          ]}
+        >
+          {initiative.estimatedInvestment}
+        </Text>
+      </View>
+      <Text style={styles.fieldLabel}>Business Objective</Text>
+      <Text style={styles.fieldBody}>{initiative.businessObjective}</Text>
+      <Text style={styles.fieldLabel}>Why It Matters</Text>
+      <Text style={styles.fieldBody}>{initiative.whyItMatters}</Text>
+      {initiative.expectedBenefits.length > 0 ? (
+        <>
+          <Text style={styles.fieldLabel}>Expected Benefits</Text>
+          {initiative.expectedBenefits.map((benefit) => (
+            <View key={benefit} style={styles.checklistRow}>
+              <Text style={styles.checklistMark}>+</Text>
+              <Text style={styles.checklistText}>{benefit}</Text>
+            </View>
+          ))}
+        </>
+      ) : null}
+    </View>
+  );
+}
+
+export function PdfStrategicImprovementRoadmap({
+  initiatives,
+}: {
+  initiatives: TipStrategicInitiative[];
+}) {
+  return (
+    <PdfFlowSection
+      title="Strategic Improvement Roadmap"
+      subtitle="What should be accomplished — implementation methodology reserved for consulting engagement"
+    >
+      {initiatives.map((initiative) => (
+        <PdfStrategicInitiativeCard key={initiative.id} initiative={initiative} />
+      ))}
+    </PdfFlowSection>
+  );
+}
+
+export function PdfPhaseInvestmentSummary({
+  rows,
+  totalInvestment,
+  recurringServices,
+  oneTimeInvestments,
+}: {
+  rows: TipPhaseInvestmentRow[];
+  totalInvestment: string;
+  recurringServices: string;
+  oneTimeInvestments: string;
+}) {
+  return (
+    <PdfFlowSection title="Phase Investment Summary">
+      <PdfReportTable
+        columns={[
+          { key: "phase", label: "Phase", width: "18%" },
+          { key: "businessGoal", label: "Business Goal", width: "52%" },
+          { key: "investment", label: "Estimated Investment", width: "30%", align: "right" },
+        ]}
+        rows={rows.map((row) => ({
+          phase: row.phaseLabel,
+          businessGoal: row.businessGoal,
+          investment: row.estimatedInvestment,
+        }))}
+      />
 
       <View style={styles.investmentHero}>
-        <Text style={styles.investmentHeroLabel}>Total One-Time Implementation Investment</Text>
-        <Text style={styles.investmentHeroValue}>{formatCurrency(data.oneTimeInvestmentTotal)}</Text>
-        <Text style={styles.investmentHeroCaption}>
-          Project delivery, professional services, and technology required to execute approved phases.
-          One-time and recurring investments are presented separately for executive clarity.
+        <Text style={styles.investmentHeroLabel}>Estimated Total Investment</Text>
+        <Text style={styles.investmentHeroValue}>{totalInvestment}</Text>
+      </View>
+
+      <View style={{ flexDirection: "row", gap: 12, marginTop: 4 }}>
+        <View style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
+          <Text style={styles.calloutTitle}>Recurring Services</Text>
+          <Text style={styles.bodyText}>{recurringServices}</Text>
+        </View>
+        <View style={[styles.callout, { flex: 1, marginBottom: 0 }]}>
+          <Text style={styles.calloutTitle}>One-Time Investments</Text>
+          <Text style={styles.bodyText}>{oneTimeInvestments}</Text>
+        </View>
+      </View>
+    </PdfFlowSection>
+  );
+}
+
+export function PdfRoadmapToResults() {
+  const benefits = [
+    "Quarterly technology reassessments and StackScore tracking",
+    "Living technology roadmap aligned to business priorities",
+    "Progress tracking against strategic initiatives",
+    "Executive business reviews with measurable outcomes",
+    "Budget planning and investment prioritization",
+    "Vendor management and technology strategy guidance",
+    `StackScore portal access for ongoing visibility`,
+  ];
+
+  return (
+    <PdfFlowSection
+      title="From Roadmap to Results"
+      subtitle="How Strategic IT Consulting turns assessment insights into accountable execution"
+    >
+      <View style={styles.callout}>
+        <Text style={styles.bodyText}>
+          This Technology Improvement Plan identifies where technology creates business risk and
+          where investment will deliver the greatest return. The assessment answers what should be
+          accomplished and why it matters — not how to implement each initiative.
+        </Text>
+        <Text style={[styles.bodyText, { marginBottom: 0 }]}>
+          Strategic IT Consulting provides the ongoing partnership to translate this roadmap into
+          results: prioritized execution, vendor coordination, and executive accountability
+          throughout the journey.
         </Text>
       </View>
 
-      {data.monthlyRecurringTotal > 0 ? (
-        <View style={styles.investmentHeroSecondary}>
-          <Text style={styles.investmentHeroLabel}>Total New Monthly Recurring Investment</Text>
-          <Text style={styles.investmentHeroValue}>
-            {formatCurrency(data.monthlyRecurringTotal)}
-            <Text style={{ fontSize: 14 }}> /month</Text>
-          </Text>
-          <Text style={styles.investmentHeroCaption}>
-            Ongoing services introduced by the roadmap. Recurring costs are never combined with
-            one-time implementation totals.
-          </Text>
+      <Text style={styles.blockLabel}>Partnership Benefits</Text>
+      {benefits.map((benefit) => (
+        <View key={benefit} style={styles.checklistRow}>
+          <Text style={styles.checklistMark}>+</Text>
+          <Text style={styles.checklistText}>{benefit}</Text>
         </View>
-      ) : null}
-    </View>
+      ))}
+    </PdfFlowSection>
   );
 }
 
-export function PdfNextSteps() {
-  const steps = [
+export function PdfExecutiveNextSteps() {
+  const options = [
     {
-      label: "Review Executive Summary",
-      description: "Validate strategic alignment with business priorities and current maturity.",
+      title: "Option 1 — Approve Phase 1",
+      body: "Confirm Phase 1 priorities and investment range. Your consultant will schedule a kickoff to align stakeholders, finalize scope, and begin execution planning under the Strategic IT Consulting engagement.",
     },
     {
-      label: "Approve Phase 1",
-      description: "Authorize the first implementation window independently of later phases.",
+      title: "Option 2 — Schedule a Strategy Session",
+      body: "Meet with your technology advisor to review findings, discuss trade-offs, and refine the roadmap timeline before committing to implementation.",
     },
     {
-      label: "Execute & Measure",
-      description: "Deliver initiatives and validate StackScore and operational improvements.",
-    },
-    {
-      label: "Advance the Roadmap",
-      description: "Approve subsequent phases as priorities and budget allow.",
+      title: "Option 3 — Enroll in Strategic IT Consulting",
+      body: "Establish an ongoing advisory partnership for quarterly reassessments, living roadmap management, executive reviews, and accountable delivery of the full improvement program.",
     },
   ];
 
   return (
-    <View>
-      {steps.map((step, index) => (
-        <View key={step.label} style={styles.nextStepRow}>
-          <Text style={styles.nextStepIndex}>{index + 1}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 11, fontFamily: "Helvetica-Bold", color: COLORS.navy, marginBottom: 3 }}>
-              {step.label}
-            </Text>
-            <Text style={{ fontSize: 10, color: COLORS.muted, lineHeight: 1.5 }}>{step.description}</Text>
-          </View>
+    <PdfFlowSection title="Next Steps">
+      {options.map((option) => (
+        <View key={option.title} style={styles.nextStepCard}>
+          <Text style={styles.nextStepTitle}>{option.title}</Text>
+          <Text style={styles.nextStepBody}>{option.body}</Text>
         </View>
       ))}
-    </View>
+      <Text style={[styles.bodyText, { marginTop: REPORT_SPACING.block, marginBottom: 0 }]}>
+        Contact {BRAND.companyName} at {BRAND.email}
+        {BRAND.phone ? ` or ${BRAND.phone}` : ""} to proceed.
+      </Text>
+    </PdfFlowSection>
   );
 }
-
-export const tipBodyStyles = pdfReportBodyStyles;
