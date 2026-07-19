@@ -4,12 +4,18 @@ import { Calendar, FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { getLatestDraftAssessmentForClientUser } from "@/lib/auth/client-access";
 import {
+  ClientEmptyState,
+  ClientPageHeader,
+  ClientPageShell,
+} from "@/components/client-ui";
+import {
   WorkspaceHubLinks,
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { BookingButton } from "@/components/support/booking-button";
 import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { getBookingUrl } from "@/lib/support/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
@@ -47,16 +53,15 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
     const bookingUrl = getBookingUrl();
 
     return (
-      <div className="mx-auto max-w-3xl space-y-8">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground">
-            Executive-ready deliverables from your technology assessment.
-          </p>
-        </header>
+      <ClientPageShell className="max-w-3xl">
+        <ClientPageHeader
+          eyebrow="Executive Deliverables"
+          title="Reports"
+          description="Executive-ready deliverables from your technology assessment."
+        />
 
         {reportHref ? (
-          <Card className="shadow-sm">
+          <Card className={CLIENT_SURFACE_CARD}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileText className="h-4 w-4 text-primary" />
@@ -82,29 +87,28 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
             </CardContent>
           </Card>
         ) : (
-          <Card className="shadow-sm">
-            <CardContent className="py-12 text-center">
-              <FileText className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-4 font-medium">Report not available yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Complete your assessment to generate your executive report.
-              </p>
-              {draftAssessment ? (
-                <Link href="/assessment/start" className={buttonClassName({ className: "mt-6" })}>
+          <ClientEmptyState
+            icon={FileText}
+            title="Report not available yet"
+            description="Your executive assessment report is generated after you complete a technology assessment."
+            nextStep="Complete or resume your assessment to unlock the report."
+            action={
+              draftAssessment ? (
+                <Link href="/assessment/start" className={buttonClassName({})}>
                   Resume Assessment
                 </Link>
               ) : (
                 <Link
                   href={customerAssessmentDashboardPath(id)}
-                  className={buttonClassName({ variant: "outline", className: "mt-6" })}
+                  className={buttonClassName({ variant: "outline" })}
                 >
                   Back to Assessment Dashboard
                 </Link>
-              )}
-            </CardContent>
-          </Card>
+              )
+            }
+          />
         )}
-      </div>
+      </ClientPageShell>
     );
   }
 

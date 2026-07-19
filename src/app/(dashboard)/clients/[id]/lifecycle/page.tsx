@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { ClientPageShell } from "@/components/client-ui";
 import { LifecycleDashboard } from "@/components/technology-lifecycle/lifecycle-dashboard";
 import { prisma } from "@/lib/db";
 import { getTechnologyLifecycleDashboard } from "@/lib/technology-lifecycle";
@@ -30,8 +31,8 @@ export default async function TechnologyLifecyclePage({ params }: PageProps) {
   if (!dashboard) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <ClientPageShell>
       <LifecycleDashboard dashboard={dashboard} />
-    </div>
+    </ClientPageShell>
   );
 }

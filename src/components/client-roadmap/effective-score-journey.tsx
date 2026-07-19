@@ -1,5 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import type { EffectiveScoreJourney } from "@/lib/client-roadmap/types";
+import { CLIENT_METRIC_WELL, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
@@ -13,20 +14,20 @@ export function EffectiveScoreJourneyView({ journey }: { journey: EffectiveScore
   ];
 
   return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm">
+    <div className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         StackScore Progress
       </p>
       <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-stretch md:gap-3">
         {steps.map((step, index) => (
           <div key={step.label} className="flex flex-1 flex-col items-stretch md:flex-row md:items-center">
-            <div className="flex-1 rounded-lg border bg-slate-50/80 px-3 py-3">
+            <div className={cn("flex-1 px-3 py-3", CLIENT_METRIC_WELL)}>
               <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
                 {step.label}
               </p>
               <p
                 className={cn(
-                  "mt-1 text-2xl font-bold tabular-nums",
+                  "mt-1 text-2xl font-bold tabular-nums tracking-tight",
                   step.emphasize && typeof step.value === "number"
                     ? getScoreTextColorClass(step.value)
                     : "text-foreground",

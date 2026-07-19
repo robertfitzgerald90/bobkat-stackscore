@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { RoadmapPhaseView } from "@/lib/client-roadmap/types";
+import {
+  CLIENT_INTERACTIVE_CARD,
+  CLIENT_METRIC_WELL,
+  CLIENT_SECTION_EYEBROW,
+} from "@/lib/client-ui/tokens";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { buttonClassName } from "@/components/ui/button";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
+import { cn } from "@/lib/utils";
 
 export function RoadmapPhaseCard({
   clientId,
@@ -13,12 +19,10 @@ export function RoadmapPhaseCard({
   phase: RoadmapPhaseView;
 }) {
   return (
-    <article className="rounded-xl border bg-card p-5 shadow-sm">
+    <article className={cn(CLIENT_INTERACTIVE_CARD, "bg-card p-5 shadow-sm")}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[#082f5b]">
-            {phase.subtitle}
-          </p>
+          <p className={cn(CLIENT_SECTION_EYEBROW, "text-xs tracking-wide")}>{phase.subtitle}</p>
           <h3 className="mt-1 text-lg font-semibold tracking-tight">{phase.name}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{phase.timeline}</p>
         </div>
@@ -30,23 +34,21 @@ export function RoadmapPhaseCard({
       </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg bg-slate-50 px-3 py-2">
+        <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             StackScore
           </p>
-          <p className="mt-1 text-sm font-semibold text-emerald-700">
+          <p className="mt-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
             +{phase.expectedScoreImprovement} pts
           </p>
         </div>
-        <div className="rounded-lg bg-slate-50 px-3 py-2">
+        <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             One-Time
           </p>
-          <p className="mt-1 text-sm font-semibold">
-            {formatCurrency(phase.oneTimeInvestment)}
-          </p>
+          <p className="mt-1 text-sm font-semibold">{formatCurrency(phase.oneTimeInvestment)}</p>
         </div>
-        <div className="rounded-lg bg-slate-50 px-3 py-2">
+        <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             Monthly
           </p>
@@ -56,7 +58,7 @@ export function RoadmapPhaseCard({
               : "—"}
           </p>
         </div>
-        <div className="rounded-lg bg-slate-50 px-3 py-2">
+        <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             Proposal
           </p>

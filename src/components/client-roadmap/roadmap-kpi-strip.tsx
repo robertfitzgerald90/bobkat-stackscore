@@ -1,4 +1,5 @@
 import type { ClientRoadmapDashboard } from "@/lib/client-roadmap/types";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
@@ -63,7 +64,7 @@ export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboa
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => (
-        <div key={item.label} className="stat-card rounded-xl border bg-card p-4 shadow-sm">
+        <div key={item.label} className={cn("rounded-xl border bg-card p-4", CLIENT_SURFACE_CARD)}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             {item.label}
           </p>

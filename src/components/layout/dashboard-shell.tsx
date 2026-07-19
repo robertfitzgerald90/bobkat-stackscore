@@ -47,7 +47,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           sidebarCollapsed={hydrated && collapsed}
           onSidebarToggle={toggleCollapsed}
         />
-        <main className="page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/30 p-4 dark:bg-surface-elevated/20 sm:p-6 lg:p-8">
+        <main
+          className={
+            user.role === "client"
+              ? "page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/10 p-4 sm:p-6 lg:p-8"
+              : "page-content flex-1 overflow-y-auto overflow-x-hidden bg-muted/30 p-4 dark:bg-surface-elevated/20 sm:p-6 lg:p-8"
+          }
+        >
           {children}
         </main>
       </div>

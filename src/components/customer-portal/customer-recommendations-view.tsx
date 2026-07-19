@@ -1,9 +1,15 @@
 "use client";
 
 import { Lightbulb } from "lucide-react";
+import {
+  ClientEmptyState,
+  ClientPageHeader,
+  ClientPageShell,
+} from "@/components/client-ui";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
+import { CLIENT_INTERACTIVE_CARD, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { conciseFocusTitle } from "@/lib/client-workspace";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { sortRecommendationsByPriority } from "@/lib/recommendations/sort";
@@ -29,7 +35,8 @@ function RecommendationCard({ recommendation }: { recommendation: ClientRecommen
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-xl border border-border/70 border-l-4 shadow-sm",
+        CLIENT_INTERACTIVE_CARD,
+        "overflow-hidden border-l-4 shadow-sm",
         PRIORITY_ACCENT[recommendation.priority],
       )}
     >
@@ -108,25 +115,20 @@ export function CustomerRecommendationsView({
   const totalOpportunities = visibleRecommendations.length;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-10">
-      <header className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Recommendations</h1>
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          What to improve, why it matters for your business, and how much maturity improvement you
-          can expect from each priority.
-        </p>
-      </header>
+    <ClientPageShell className="max-w-3xl space-y-10">
+      <ClientPageHeader
+        eyebrow="Improvement Priorities"
+        title="Recommendations"
+        description="What to improve, why it matters for your business, and how much maturity improvement you can expect from each priority."
+      />
 
       {visibleRecommendations.length === 0 ? (
-        <Card className="shadow-sm">
-          <CardContent className="py-14 text-center">
-            <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-4 font-medium">No recommendations yet</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Complete your assessment to receive personalized improvement priorities.
-            </p>
-          </CardContent>
-        </Card>
+        <ClientEmptyState
+          icon={Lightbulb}
+          title="No recommendations yet"
+          description="Recommendations appear after your technology assessment identifies the highest-impact improvements for your environment."
+          nextStep="Complete or resume your assessment to receive personalized priorities."
+        />
       ) : (
         <div className="space-y-6">
           {visibleRecommendations.map((recommendation) => (
@@ -135,7 +137,7 @@ export function CustomerRecommendationsView({
         </div>
       )}
 
-      <Card className="border-primary/20 bg-muted/30 shadow-sm">
+      <Card className={cn(CLIENT_SURFACE_CARD, "border-primary/20 bg-muted/30")}>
         <CardHeader className="space-y-2">
           <CardTitle className="text-base">Your complete roadmap</CardTitle>
           <CardDescription className="text-sm leading-relaxed">
@@ -145,6 +147,6 @@ export function CustomerRecommendationsView({
           </CardDescription>
         </CardHeader>
       </Card>
-    </div>
+    </ClientPageShell>
   );
 }

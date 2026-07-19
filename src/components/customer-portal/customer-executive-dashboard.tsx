@@ -8,15 +8,23 @@ import {
   ClipboardList,
   FileText,
   History,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
+import {
+  ClientEmptyState,
+  ClientMetricCard,
+  ClientNextActionCard,
+  ClientPageHeader,
+  ClientPageShell,
+  ClientScoreHero,
+  ClientSectionHeader,
+} from "@/components/client-ui";
 import { BookingButton } from "@/components/support/booking-button";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
@@ -31,33 +39,6 @@ type CustomerExecutiveDashboardProps = {
   detail: TechnologyProfileDetail;
   companyName: string;
 };
-
-function MetricCard({
-  label,
-  value,
-  emphasize = false,
-  sublabel,
-}: {
-  label: string;
-  value: string | number;
-  emphasize?: boolean;
-  sublabel?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-card p-5 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p
-        className={cn(
-          "mt-2 text-3xl font-bold tabular-nums",
-          emphasize && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
-        )}
-      >
-        {value}
-      </p>
-      {sublabel ? <p className="mt-1 text-sm text-muted-foreground">{sublabel}</p> : null}
-    </div>
-  );
-}
 
 export function CustomerExecutiveDashboard({
   detail,
@@ -103,71 +84,54 @@ export function CustomerExecutiveDashboard({
   const historicalAssessments = scoreTrend.filter((point) => point.assessmentId);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <header className="space-y-2">
-        <p className="text-sm font-medium text-muted-foreground">Assessment Dashboard</p>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Welcome back, {welcomeName}
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          {companyName} — your technology health at a glance, what to review next, and the actions
-          that matter most right now.
-        </p>
-      </header>
+    <ClientPageShell>
+      <ClientPageHeader
+        eyebrow="Assessment Dashboard"
+        title={`Welcome back, ${welcomeName}`}
+        description={`${companyName} — your technology health at a glance, what to review next, and the actions that matter most right now.`}
+      />
 
       {!hasCompletedAssessment && !assessmentInProgress ? (
-        <Card className="border-dashed shadow-sm">
-          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <ClipboardList className="mt-0.5 h-5 w-5 text-primary" />
-              <div>
-                <p className="font-semibold">Start your Technology Maturity Assessment</p>
-                <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                  Complete the assessment to receive your StackScore, executive report, prioritized
-                  recommendations, and a clear view of your technology health.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <ClientEmptyState
+          icon={ClipboardList}
+          title="Start your Technology Maturity Assessment"
+          description="Complete the assessment to receive your StackScore, executive report, prioritized recommendations, and a clear view of your technology health."
+          nextStep="Begin the assessment when you are ready."
+          action={
+            <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
+              Start Assessment
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          }
+        />
       ) : null}
 
       {assessmentInProgress ? (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <ClipboardList className="mt-0.5 h-5 w-5 text-primary" />
-              <div>
-                <p className="font-semibold">Your assessment is in progress</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Continue where you left off — your answers are saved automatically.
-                </p>
-              </div>
-            </div>
+        <ClientNextActionCard
+          eyebrow="Assessment in progress"
+          title="Continue your Technology Maturity Assessment"
+          description="Your answers are saved automatically. Resume when you are ready to finish."
+          actions={
             <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
               Resume Assessment
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-          </CardContent>
-        </Card>
+          }
+        />
       ) : null}
 
       {hasCompletedAssessment && nextAction ? (
-        <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
-          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 h-6 w-6 text-primary" />
-              <div>
-                <p className="text-lg font-semibold">Assessment complete</p>
-                <p className="mt-1 text-sm text-muted-foreground">{nextAction.description}</p>
-                {profile.lastAssessedAt ? (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Completed {formatDisplayDate(profile.lastAssessedAt)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
+        <ClientNextActionCard
+          eyebrow="Assessment complete"
+          title={nextAction.label}
+          description={nextAction.description}
+          meta={
+            profile.lastAssessedAt
+              ? `Completed ${formatDisplayDate(profile.lastAssessedAt)}`
+              : undefined
+          }
+          actions={
+            <>
               <Link href={nextAction.href} className={buttonClassName({})}>
                 <FileText className="mr-2 h-4 w-4" />
                 {nextAction.label}
@@ -179,25 +143,42 @@ export function CustomerExecutiveDashboard({
                   icon={<Calendar className="mr-2 h-4 w-4" />}
                 />
               ) : null}
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          }
+        />
+      ) : null}
+
+      {hasCompletedAssessment ? (
+        <ClientScoreHero
+          score={score}
+          maturityLabel={rating ? RATING_LABELS[rating] : profile.maturityTierLabel}
+          sublabel={
+            profile.lastAssessedAt
+              ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
+              : "Complete your assessment"
+          }
+          scoreClassName={score !== null ? getScoreTextColorClass(score) : undefined}
+        />
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
+        <ClientMetricCard
           label="Overall StackScore"
           value={score ?? "—"}
-          emphasize={score !== null}
+          emphasizeClassName={score !== null ? getScoreTextColorClass(score) : undefined}
           sublabel={rating ? RATING_LABELS[rating] : "Complete your assessment"}
         />
-        <MetricCard
+        <ClientMetricCard
           label="Projected Improvement"
           value={journeyScores.projectedScore ?? "—"}
-          emphasize={journeyScores.projectedScore !== null}
+          emphasizeClassName={
+            journeyScores.projectedScore !== null
+              ? getScoreTextColorClass(journeyScores.projectedScore)
+              : undefined
+          }
           sublabel="With recommended actions"
         />
-        <MetricCard
+        <ClientMetricCard
           label="Technology Health"
           value={profile.maturityTierLabel ?? "—"}
           sublabel={
@@ -206,7 +187,7 @@ export function CustomerExecutiveDashboard({
               : undefined
           }
         />
-        <MetricCard
+        <ClientMetricCard
           label="Assessment Status"
           value={
             hasCompletedAssessment
@@ -225,15 +206,13 @@ export function CustomerExecutiveDashboard({
 
       {topStrengths.length > 0 ? (
         <section className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Top Strengths</h2>
-            <p className="text-sm text-muted-foreground">
-              Technology pillars where your organization is performing well.
-            </p>
-          </div>
+          <ClientSectionHeader
+            title="Top Strengths"
+            description="Technology pillars where your organization is performing well."
+          />
           <div className="grid gap-4 sm:grid-cols-3">
             {topStrengths.map((pillar) => (
-              <Card key={pillar.pillarCode} className="shadow-sm">
+              <Card key={pillar.pillarCode} className={CLIENT_SURFACE_CARD}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{pillar.pillarName}</CardTitle>
                   <CardDescription>{pillar.maturityTier ?? "Strong performance"}</CardDescription>
@@ -241,7 +220,7 @@ export function CustomerExecutiveDashboard({
                 <CardContent>
                   <p
                     className={cn(
-                      "text-2xl font-bold tabular-nums",
+                      "text-2xl font-semibold tabular-nums",
                       pillar.percentScore !== null
                         ? getScoreTextColorClass(pillar.percentScore)
                         : undefined,
@@ -258,15 +237,16 @@ export function CustomerExecutiveDashboard({
 
       {topRisks.length > 0 ? (
         <section className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Top Risks</h2>
-            <p className="text-sm text-muted-foreground">
-              Areas that may expose your business to operational or security risk.
-            </p>
-          </div>
+          <ClientSectionHeader
+            title="Top Risks"
+            description="Areas that may expose your business to operational or security risk."
+          />
           <div className="grid gap-4 sm:grid-cols-3">
             {topRisks.map((pillar) => (
-              <Card key={pillar.pillarCode} className="border-destructive/20 shadow-sm">
+              <Card
+                key={pillar.pillarCode}
+                className={cn(CLIENT_SURFACE_CARD, "border-destructive/20")}
+              >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{pillar.pillarName}</CardTitle>
                   <CardDescription>{pillar.maturityTier ?? "Needs attention"}</CardDescription>
@@ -274,7 +254,7 @@ export function CustomerExecutiveDashboard({
                 <CardContent>
                   <p
                     className={cn(
-                      "text-2xl font-bold tabular-nums",
+                      "text-2xl font-semibold tabular-nums",
                       pillar.percentScore !== null
                         ? getScoreTextColorClass(pillar.percentScore)
                         : undefined,
@@ -290,30 +270,32 @@ export function CustomerExecutiveDashboard({
       ) : null}
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">Top Priorities</h2>
-            <p className="text-sm text-muted-foreground">
-              The highest-impact opportunities identified in your assessment.
-            </p>
-          </div>
-          {hasRecommendations ? (
-            <Link href={recommendationsHref} className={buttonClassName({ variant: "outline", size: "sm" })}>
-              View All Recommendations
-            </Link>
-          ) : null}
-        </div>
+        <ClientSectionHeader
+          title="Top Priorities"
+          description="The highest-impact opportunities identified in your assessment."
+          actions={
+            hasRecommendations ? (
+              <Link
+                href={recommendationsHref}
+                className={buttonClassName({ variant: "outline", size: "sm" })}
+              >
+                View All Recommendations
+              </Link>
+            ) : null
+          }
+        />
         {!hasCompletedAssessment ? (
-          <TpEmptyState
+          <ClientEmptyState
             icon={TrendingUp}
             title="Complete your assessment"
-            message="Finish your assessment to see personalized priorities for your organization."
+            description="Finish your assessment to see personalized priorities for your organization."
+            nextStep="Resume or start the Technology Maturity Assessment."
           />
         ) : priorities.length === 0 ? (
-          <TpEmptyState
+          <ClientEmptyState
             icon={TrendingUp}
             title="No priorities identified"
-            message="Your assessment did not surface active recommendations at this time."
+            description="Your assessment did not surface active recommendations at this time."
             positive
           />
         ) : (
@@ -321,7 +303,7 @@ export function CustomerExecutiveDashboard({
             {priorities.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm"
+                className="flex items-start gap-3 rounded-xl border border-border/70 bg-card p-4 shadow-sm"
               >
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0 flex-1 space-y-2">
@@ -331,7 +313,7 @@ export function CustomerExecutiveDashboard({
                       {PRIORITY_LABELS[item.priority]}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
                     {item.businessImpact || item.description}
                   </p>
                   <p className="text-xs font-medium text-foreground">
@@ -346,17 +328,15 @@ export function CustomerExecutiveDashboard({
 
       {historicalAssessments.length > 1 ? (
         <section className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Assessment History</h2>
-            <p className="text-sm text-muted-foreground">
-              Previous assessments that shaped your current StackScore.
-            </p>
-          </div>
+          <ClientSectionHeader
+            title="Assessment History"
+            description="Previous assessments that shaped your current StackScore."
+          />
           <div className="space-y-3">
             {historicalAssessments.map((entry) => (
               <div
                 key={`${entry.assessmentId}-${entry.date}`}
-                className="flex items-center justify-between rounded-xl border border-border/60 bg-card px-4 py-3 shadow-sm"
+                className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-4 py-3 shadow-sm"
               >
                 <div className="flex items-start gap-3">
                   <History className="mt-0.5 h-4 w-4 text-muted-foreground" />
@@ -368,11 +348,19 @@ export function CustomerExecutiveDashboard({
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={cn("text-lg font-bold tabular-nums", getScoreTextColorClass(entry.overallScore))}>
+                  <p
+                    className={cn(
+                      "text-lg font-semibold tabular-nums",
+                      getScoreTextColorClass(entry.overallScore),
+                    )}
+                  >
                     {entry.overallScore}
                   </p>
                   {entry.assessmentId === profile.currentAssessmentId && reportHref ? (
-                    <Link href={reportHref} className="text-xs font-medium text-primary hover:underline">
+                    <Link
+                      href={reportHref}
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
                       View report
                     </Link>
                   ) : null}
@@ -384,7 +372,7 @@ export function CustomerExecutiveDashboard({
       ) : null}
 
       {journeyScores.projectedScore !== null && score !== null ? (
-        <Card className="shadow-sm">
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="h-4 w-4 text-primary" />
@@ -400,17 +388,15 @@ export function CustomerExecutiveDashboard({
 
       {pillarInsights.length > 0 ? (
         <section className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Technology Pillars</h2>
-            <p className="text-sm text-muted-foreground">
-              How each area of your technology environment contributes to overall health.
-            </p>
-          </div>
+          <ClientSectionHeader
+            title="Technology Pillars"
+            description="How each area of your technology environment contributes to overall health."
+          />
           <div className="grid gap-3 sm:grid-cols-2">
             {pillarInsights.map((pillar) => (
               <div
                 key={pillar.pillarCode}
-                className="flex items-center justify-between rounded-lg border border-border/60 bg-card px-4 py-3"
+                className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-4 py-3 shadow-sm"
               >
                 <div className="min-w-0">
                   <p className="font-medium">{pillar.pillarName}</p>
@@ -418,7 +404,7 @@ export function CustomerExecutiveDashboard({
                 </div>
                 <p
                   className={cn(
-                    "text-lg font-bold tabular-nums",
+                    "text-lg font-semibold tabular-nums",
                     pillar.percentScore !== null
                       ? getScoreTextColorClass(pillar.percentScore)
                       : undefined,
@@ -431,6 +417,6 @@ export function CustomerExecutiveDashboard({
           </div>
         </section>
       ) : null}
-    </div>
+    </ClientPageShell>
   );
 }

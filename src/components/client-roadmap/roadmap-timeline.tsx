@@ -1,5 +1,6 @@
 import { Check, Circle, Clock } from "lucide-react";
 import type { ClientRoadmapDashboard } from "@/lib/client-roadmap/types";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { ROADMAP_JOURNEY_MILESTONE_LABELS } from "@/lib/phase-proposals/types";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ function PhaseIcon({ status }: { status: string }) {
     );
   }
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-slate-400">
+    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-border bg-background text-muted-foreground">
       <Circle className="h-3.5 w-3.5" />
     </div>
   );
@@ -28,20 +29,20 @@ function PhaseIcon({ status }: { status: string }) {
 
 export function RoadmapTimeline({ dashboard }: { dashboard: ClientRoadmapDashboard }) {
   return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm">
+    <div className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         Implementation Timeline
       </p>
       <div className="mt-5 space-y-0">
         <div className="grid grid-cols-[2rem_1fr] gap-x-4">
           <div className="flex flex-col items-center">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#082f5b] text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check className="h-4 w-4" />
             </div>
-            <div className="w-px flex-1 bg-slate-200" />
+            <div className="w-px flex-1 bg-border" />
           </div>
           <div className="pb-6">
-            <p className="text-sm font-semibold text-[#082f5b]">Assessment Complete</p>
+            <p className="text-sm font-semibold text-primary">Assessment Complete</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {dashboard.assessmentName ?? "Technology maturity assessment"}
             </p>
@@ -53,7 +54,7 @@ export function RoadmapTimeline({ dashboard }: { dashboard: ClientRoadmapDashboa
             <div className="flex flex-col items-center">
               <PhaseIcon status={phase.status} />
               {index < dashboard.phases.length - 1 ? (
-                <div className="w-px flex-1 bg-slate-200" />
+                <div className="w-px flex-1 bg-border" />
               ) : null}
             </div>
             <div className={cn("pb-6", index === dashboard.phases.length - 1 && "pb-0")}>

@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { ClientPageHeader, ClientPageShell } from "@/components/client-ui";
 import { WorkspaceProjectsList } from "@/components/client-workspace/workspace-projects-list";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { prisma } from "@/lib/db";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -54,6 +56,19 @@ export default async function ClientWorkspaceProjectsPage({ params }: PageProps)
     completedAt: project.completedAt?.toISOString() ?? null,
     recommendationTitle: project.recommendation?.title ?? null,
   }));
+
+  if (isCustomerMode(session.user.role)) {
+    return (
+      <ClientPageShell>
+        <ClientPageHeader
+          eyebrow="Delivery"
+          title="Projects"
+          description="Track improvement work, progress, and expected StackScore impact for your organization."
+        />
+        <WorkspaceProjectsList clientId={client.id} projects={projects} />
+      </ClientPageShell>
+    );
+  }
 
   return (
     <div className="space-y-6">

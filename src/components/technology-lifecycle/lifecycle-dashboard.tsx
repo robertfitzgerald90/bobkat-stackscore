@@ -11,6 +11,11 @@ import {
   Wallet,
 } from "lucide-react";
 import type { TechnologyLifecycleDashboard } from "@/lib/technology-lifecycle/types";
+import {
+  CLIENT_METRIC_WELL,
+  CLIENT_SECTION_EYEBROW,
+  CLIENT_SURFACE_CARD,
+} from "@/lib/client-ui/tokens";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { buttonClassName } from "@/components/ui/button";
@@ -30,8 +35,8 @@ export function LifecycleDashboard({
 }) {
   return (
     <div className="space-y-6">
-      <header className="rounded-xl border bg-card p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#082f5b]">
+      <header className={cn("rounded-xl border bg-card p-6", CLIENT_SURFACE_CARD)}>
+        <p className={cn(CLIENT_SECTION_EYEBROW, "text-xs tracking-wide")}>
           Technology Lifecycle
         </p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
@@ -86,13 +91,13 @@ export function LifecycleDashboard({
         />
       </div>
 
-      <section className="rounded-xl border bg-card p-5 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+      <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+        <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
           Maturity Pillars
         </h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {dashboard.pillars.map((pillar) => (
-            <div key={pillar.key} className="rounded-lg bg-slate-50 px-3 py-2">
+            <div key={pillar.key} className={CLIENT_METRIC_WELL}>
               <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
                 {pillar.label}
               </p>
@@ -110,10 +115,10 @@ export function LifecycleDashboard({
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
+        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
           <div className="flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-[#082f5b]" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+            <Wallet className="h-4 w-4 text-primary" />
+            <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
               Technology Budget Planning
             </h2>
           </div>
@@ -140,10 +145,10 @@ export function LifecycleDashboard({
           </div>
         </section>
 
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
+        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
           <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-[#082f5b]" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+            <CalendarDays className="h-4 w-4 text-primary" />
+            <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
               Technology Refresh Planning
             </h2>
           </div>
@@ -162,7 +167,7 @@ export function LifecycleDashboard({
                         "rounded-full border px-2 py-0.5 text-[0.65rem] font-semibold uppercase",
                         event.urgency === "overdue" && "border-red-200 bg-red-50 text-red-700",
                         event.urgency === "upcoming" && "border-amber-200 bg-amber-50 text-amber-800",
-                        event.urgency === "planned" && "border-slate-200 bg-slate-50 text-slate-700",
+                        event.urgency === "planned" && "border-border bg-muted/40 text-muted-foreground",
                       )}
                     >
                       {event.urgency}
@@ -180,8 +185,8 @@ export function LifecycleDashboard({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+          <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
             Roadmap & Projects
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -207,8 +212,8 @@ export function LifecycleDashboard({
           </div>
         </section>
 
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+          <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
             Managed Services Alignment
           </h2>
           <ul className="mt-4 space-y-2">
@@ -235,8 +240,8 @@ export function LifecycleDashboard({
       </div>
 
       {dashboard.scoreTrends.length > 1 ? (
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+          <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
             Historical Trend
           </h2>
           <div className="mt-4 overflow-x-auto">
@@ -274,9 +279,9 @@ export function LifecycleDashboard({
         </section>
       ) : null}
 
-      <section className="rounded-xl border bg-card p-5 shadow-sm">
+      <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+          <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
             Initiative Effectiveness
           </h2>
           <span className="text-xs text-muted-foreground">
@@ -339,7 +344,7 @@ export function LifecycleDashboard({
 
 function ScoreCard({ label, value }: { label: string; value: number | null }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className={cn("rounded-xl border bg-card p-4", CLIENT_SURFACE_CARD)}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
@@ -362,13 +367,13 @@ function KpiCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className={cn("rounded-xl border bg-card p-4", CLIENT_SURFACE_CARD)}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <div className="mt-2 flex items-center gap-2">
         {icon}
-        <p className="text-2xl font-bold tracking-tight">{value}</p>
+        <p className="text-2xl font-bold tracking-tight tabular-nums">{value}</p>
       </div>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
     </div>
@@ -385,7 +390,7 @@ function BandCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className={cn("rounded-xl border bg-card p-4", CLIENT_SURFACE_CARD)}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
@@ -413,7 +418,7 @@ function BudgetRow({
   emphasize?: boolean;
 }) {
   return (
-    <div className={cn("rounded-lg bg-slate-50 px-3 py-2", emphasize && "bg-[#082f5b]/5")}>
+    <div className={cn(CLIENT_METRIC_WELL, emphasize && "bg-primary/5")}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>

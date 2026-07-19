@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CalendarDays } from "lucide-react";
+import {
+  ClientEmptyState,
+  ClientPageHeader,
+  ClientPageShell,
+} from "@/components/client-ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
+import { CLIENT_INTERACTIVE_CARD, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { prisma } from "@/lib/db";
 import { formatDisplayDate } from "@/lib/display";
 import { getClientVcioEntitlement } from "@/lib/vcio/entitlements";
+import { cn } from "@/lib/utils";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -27,44 +34,38 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
   });
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-primary">StackScore vCIO</p>
-          <h1 className="page-title">Quarterly Reviews</h1>
-          <p className="page-description">
-            Completed and scheduled strategic technology reviews for this workspace.
-          </p>
-        </div>
-        <Link href={`/clients/${clientId}/vcio`} className={buttonVariants({ variant: "outline" })}>
-          Back to vCIO Dashboard
-        </Link>
-      </div>
+    <ClientPageShell className="max-w-5xl">
+      <ClientPageHeader
+        eyebrow="StackScore vCIO"
+        title="Quarterly Reviews"
+        description="Completed and scheduled strategic technology reviews for this workspace."
+        actions={
+          <Link href={`/clients/${clientId}/vcio`} className={buttonVariants({ variant: "outline" })}>
+            Back to vCIO Dashboard
+          </Link>
+        }
+      />
 
       {!entitlement.hasSubscription ? (
-        <Card className="border-dashed">
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            StackScore vCIO is not active for this workspace yet.
-          </CardContent>
-        </Card>
+        <ClientEmptyState
+          icon={CalendarDays}
+          title="vCIO not active yet"
+          description="StackScore vCIO is not active for this workspace yet. Quarterly reviews become available with an active subscription."
+          nextStep="Contact Bobkat IT to activate ongoing advisory and quarterly review cadence."
+        />
       ) : null}
 
       {reviews.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="flex items-start gap-3 p-6">
-            <CalendarDays className="mt-0.5 h-5 w-5 text-primary" />
-            <div>
-              <p className="font-semibold">No quarterly reviews yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Completed reviews will appear here after Bobkat IT prepares and publishes them.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <ClientEmptyState
+          icon={CalendarDays}
+          title="No quarterly reviews yet"
+          description="Quarterly reviews summarize score movement, completed initiatives, open risks, and next-quarter priorities."
+          nextStep="Completed reviews will appear here after Bobkat IT prepares and publishes them."
+        />
       ) : (
         <div className="grid gap-4">
           {reviews.map((review) => (
-            <Card key={review.id}>
+            <Card key={review.id} className={cn(CLIENT_INTERACTIVE_CARD, CLIENT_SURFACE_CARD)}>
               <CardHeader>
                 <CardTitle className="text-base">{review.title}</CardTitle>
               </CardHeader>
@@ -90,6 +91,6 @@ export default async function VcioQuarterlyReviewsPage({ params }: PageProps) {
           ))}
         </div>
       )}
-    </div>
+    </ClientPageShell>
   );
 }

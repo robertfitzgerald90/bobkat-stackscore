@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatDisplayDate } from "@/lib/display";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +53,7 @@ export function QuarterlyReviewSummary({
   onGenerateReport,
 }: QuarterlyReviewSummaryProps) {
   return (
-    <Card className={cn(compact && "shadow-sm")}>
+    <Card className={cn(CLIENT_SURFACE_CARD, compact && "shadow-sm")}>
       <CardHeader className={cn(compact && "pb-3")}>
         <CardTitle className="flex items-center gap-2 text-base">
           <CalendarDays className="h-4 w-4 text-primary" />

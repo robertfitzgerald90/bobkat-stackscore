@@ -7,9 +7,17 @@ import {
   FolderKanban,
   WalletCards,
 } from "lucide-react";
+import {
+  ClientMetricCard,
+  ClientNextActionCard,
+  ClientPageHeader,
+  ClientPageShell,
+  ClientSectionHeader,
+} from "@/components/client-ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { prisma } from "@/lib/db";
 import {
   canUseOngoingVcioFeatures,
@@ -27,32 +35,9 @@ import { QuarterlyReviewSummary } from "@/components/quarterly-reviews/quarterly
 import { currentQuarterLabel } from "@/lib/quarterly-reviews/labels";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 import { getBookingUrl } from "@/lib/support/config";
+import { cn } from "@/lib/utils";
 
 type PageProps = { params: Promise<{ id: string }> };
-
-function MetricCard({
-  label,
-  value,
-  sublabel,
-}: {
-  label: string;
-  value: string | number;
-  sublabel?: string;
-}) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold tabular-nums">{value}</p>
-        {sublabel ? <p className="mt-1 text-sm text-muted-foreground">{sublabel}</p> : null}
-      </CardContent>
-    </Card>
-  );
-}
 
 function AccessAlert({ state }: { state: VcioAccessState }) {
   if (state === "FULL_ACCESS") return null;
@@ -66,7 +51,7 @@ function AccessAlert({ state }: { state: VcioAccessState }) {
           : "StackScore vCIO is not active for this workspace.";
 
   return (
-    <Card className="border-primary/25 bg-primary/5">
+    <Card className={cn(CLIENT_SURFACE_CARD, "border-primary/25 bg-primary/5")}>
       <CardContent className="flex items-start gap-3 p-5">
         <AlertTriangle className="mt-0.5 h-5 w-5 text-primary" />
         <div>
@@ -384,65 +369,65 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-primary">Client Success Dashboard</p>
-          <h1 className="page-title">Welcome back, {client.companyName}</h1>
-          <p className="page-description">
-            Bobkat IT is actively managing your technology strategy, roadmap, reviews, and
-            planning priorities.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          {user.role !== "client" ? (
-            <>
-              <ResendVcioWelcomeButton clientId={clientId} />
-              <ResetVcioOnboardingButton clientId={clientId} />
-            </>
-          ) : null}
-          {client.vcioOnboarding?.status !== "completed" ? (
-            <Link href={`/clients/${clientId}/vcio/onboarding`} className={buttonVariants({ variant: "outline" })}>
-              Complete Onboarding
-            </Link>
-          ) : null}
-          <a href={SERVICES_CTA_DESTINATIONS.generalConsultation.href} className={buttonVariants({ variant: "default" })}>
-            Schedule Strategy Session
-          </a>
-        </div>
-      </div>
+    <ClientPageShell className="space-y-8">
+      <ClientPageHeader
+        eyebrow="Client Success Dashboard"
+        title={`Welcome back, ${client.companyName}`}
+        description="Bobkat IT is actively managing your technology strategy, roadmap, reviews, and planning priorities."
+        actions={
+          <>
+            {user.role !== "client" ? (
+              <>
+                <ResendVcioWelcomeButton clientId={clientId} />
+                <ResetVcioOnboardingButton clientId={clientId} />
+              </>
+            ) : null}
+            {client.vcioOnboarding?.status !== "completed" ? (
+              <Link
+                href={`/clients/${clientId}/vcio/onboarding`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                Complete Onboarding
+              </Link>
+            ) : null}
+            <a
+              href={SERVICES_CTA_DESTINATIONS.generalConsultation.href}
+              className={buttonVariants({ variant: "default" })}
+            >
+              Schedule Strategy Session
+            </a>
+          </>
+        }
+      />
 
       <AccessAlert state={entitlement.accessState} />
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <MetricCard
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <ClientMetricCard
           label="Technology Maturity Score"
-          value={score !== null && score !== undefined ? Number(score).toFixed(0) : "-"}
+          value={score !== null && score !== undefined ? Number(score).toFixed(0) : "—"}
           sublabel={
             client.technologyProfile?.lastAssessedAt
               ? `Assessed ${formatDisplayDate(client.technologyProfile.lastAssessedAt)}`
               : "Complete an assessment to establish a baseline"
           }
         />
-        <MetricCard label="Overall Status" value={overallStatus} />
-        <MetricCard label="Quarterly Review Status" value={qbrStatus} />
-        <MetricCard
+        <ClientMetricCard label="Overall Status" value={overallStatus} />
+        <ClientMetricCard label="Quarterly Review Status" value={qbrStatus} />
+        <ClientMetricCard
           label="Latest Executive Report"
           value={latestExecutiveReport ? "Available" : "Pending"}
-          sublabel={latestExecutiveReport?.title ?? "Complete assessment or QBR to generate reports"}
+          sublabel={
+            latestExecutiveReport?.title ?? "Complete assessment or QBR to generate reports"
+          }
         />
       </div>
 
-      <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
-        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-sm font-medium text-primary">Next Recommended Action</p>
-            <h2 className="mt-1 text-xl font-semibold">{recommendedAction.label}</h2>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              {recommendedAction.description}
-            </p>
-          </div>
-          {recommendedAction.href.startsWith("http") ? (
+      <ClientNextActionCard
+        title={recommendedAction.label}
+        description={recommendedAction.description}
+        actions={
+          recommendedAction.href.startsWith("http") ? (
             <a href={recommendedAction.href} className={buttonVariants({ variant: "default" })}>
               {recommendedAction.label}
             </a>
@@ -450,47 +435,51 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             <Link href={recommendedAction.href} className={buttonVariants({ variant: "default" })}>
               {recommendedAction.label}
             </Link>
-          )}
-        </CardContent>
-      </Card>
+          )
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
+        <ClientMetricCard
           label="Open Recommendations"
           value={client.recommendations.length}
           sublabel="Open, accepted, or in progress"
         />
-        <MetricCard
+        <ClientMetricCard
           label="Active Projects"
           value={activeProjects.length}
           sublabel="Approved, scheduled, or in progress"
         />
-        <MetricCard
+        <ClientMetricCard
           label="Roadmap Progress"
-          value={roadmapProgress !== null ? `${roadmapProgress}%` : "-"}
+          value={roadmapProgress !== null ? `${roadmapProgress}%` : "—"}
           sublabel={latestRoadmap ? latestRoadmap.title : "Create a roadmap to track progress"}
         />
-        <MetricCard
+        <ClientMetricCard
           label="High Priority Risks"
           value={client.technologyProfile?.criticalExposureCount ?? 0}
           sublabel="Critical exposures from current profile"
         />
-        <MetricCard
+        <ClientMetricCard
           label="Upcoming Renewals"
           value={upcomingRenewals.length}
           sublabel="From vendor and lifecycle planning"
         />
-        <MetricCard
+        <ClientMetricCard
           label="Technology Budget"
-          value={formatCurrencyFromCents(budgetTotalCents) ?? "-"}
+          value={formatCurrencyFromCents(budgetTotalCents) ?? "—"}
           sublabel={hasBudget ? "Tracked on technology records" : "Budget planning not established"}
         />
-        <MetricCard
+        <ClientMetricCard
           label="Quarterly Review"
           value={currentQuarterLabel()}
-          sublabel={nextReview ? `Current period ends ${formatDisplayDate(nextReview)}` : "No review period yet"}
+          sublabel={
+            nextReview
+              ? `Current period ends ${formatDisplayDate(nextReview)}`
+              : "No review period yet"
+          }
         />
-        <MetricCard
+        <ClientMetricCard
           label="Subscription"
           value={latestSubscription?.status ?? "none"}
           sublabel={
@@ -501,8 +490,14 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         />
       </div>
 
+      <ClientSectionHeader
+        eyebrow="Progress"
+        title="Checklist and recent activity"
+        description="Track onboarding momentum and the latest strategy deliverables in one place."
+      />
+
       <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-        <Card>
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -531,7 +526,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="text-base">Recent Activity</CardTitle>
           </CardHeader>
@@ -626,7 +621,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         </Card>
       </div>
 
-      <Card>
+      <Card className={CLIENT_SURFACE_CARD}>
         <CardHeader>
           <CardTitle className="text-base">Quick Actions</CardTitle>
         </CardHeader>
@@ -663,7 +658,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           }))}
         />
 
-        <Card>
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <FolderKanban className="h-4 w-4 text-primary" />
@@ -716,7 +711,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -751,7 +746,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           showGenerateReport={user.role !== "client"}
         />
 
-        <Card>
+        <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <WalletCards className="h-4 w-4 text-primary" />
@@ -772,7 +767,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
         </Card>
       </div>
 
-      <Card>
+      <Card className={CLIENT_SURFACE_CARD}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <FileText className="h-4 w-4 text-primary" />
@@ -796,6 +791,6 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           )}
         </CardContent>
       </Card>
-    </div>
+    </ClientPageShell>
   );
 }

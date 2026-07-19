@@ -14,9 +14,15 @@ import {
 } from "@/lib/client-roadmap/labels";
 import type { RecommendationStatus, RoadmapPhaseStatus } from "@/generated/prisma/client";
 import { ROADMAP_JOURNEY_MILESTONE_LABELS } from "@/lib/phase-proposals/types";
+import {
+  CLIENT_METRIC_WELL,
+  CLIENT_SECTION_EYEBROW,
+  CLIENT_SURFACE_CARD,
+} from "@/lib/client-ui/tokens";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { buttonClassName } from "@/components/ui/button";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
+import { cn } from "@/lib/utils";
 
 const PHASE_STATUSES = ROADMAP_PHASE_STATUS_VALUES;
 const INITIATIVE_STATUSES = RECOMMENDATION_STATUS_VALUES;
@@ -103,10 +109,10 @@ export function PhaseWorkspace({
 
   return (
     <div className="space-y-6">
-      <header className="rounded-xl border bg-card p-6 shadow-sm">
+      <header className={cn("rounded-xl border bg-card p-6", CLIENT_SURFACE_CARD)}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#082f5b]">
+            <p className={cn(CLIENT_SECTION_EYEBROW, "text-xs tracking-wide")}>
               {phase.subtitle}
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">{phase.name}</h1>
@@ -252,7 +258,7 @@ export function PhaseWorkspace({
             {phase.journeyMilestones.map((milestone) => (
               <li
                 key={milestone}
-                className="rounded-full border bg-slate-50 px-2.5 py-0.5 text-xs font-semibold text-slate-700"
+                className="rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground"
               >
                 {ROADMAP_JOURNEY_MILESTONE_LABELS[milestone]}
               </li>
@@ -278,7 +284,7 @@ export function PhaseWorkspace({
       <Section title="Included Initiatives">
         <div className="space-y-3">
           {phase.initiatives.map((initiative) => (
-            <article key={initiative.id} className="rounded-lg border bg-slate-50/70 p-4">
+            <article key={initiative.id} className="rounded-lg border border-border/70 bg-muted/20 p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold">{initiative.title}</p>
@@ -365,8 +371,8 @@ export function PhaseWorkspace({
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-xl border bg-card p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">{title}</h2>
+    <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+      <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -374,7 +380,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 function MetaCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-slate-50 px-3 py-2">
+    <div className={CLIENT_METRIC_WELL}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>

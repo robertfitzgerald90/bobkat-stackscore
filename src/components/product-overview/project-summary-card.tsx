@@ -2,6 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CLIENT_INTERACTIVE_TILE,
+  CLIENT_PROGRESS_FILL,
+  CLIENT_PROGRESS_TRACK,
+  CLIENT_SURFACE_CARD,
+} from "@/lib/client-ui/tokens";
 import { cn } from "@/lib/utils";
 import type { DemoProject } from "@/lib/product-overview/types";
 
@@ -17,7 +23,7 @@ export function ProjectSummaryCard({
   onProjectClick,
 }: ProjectSummaryCardProps) {
   return (
-    <Card className="border-border/70 shadow-sm">
+    <Card className={CLIENT_SURFACE_CARD}>
       <CardHeader className={cn("pb-3", compact && "px-4 pt-4")}>
         <CardTitle className={cn("text-base", compact && "text-sm")}>Active Projects</CardTitle>
       </CardHeader>
@@ -27,7 +33,7 @@ export function ProjectSummaryCard({
             key={project.id}
             type="button"
             onClick={() => onProjectClick?.(project.id)}
-            className="w-full rounded-xl border border-border/70 p-4 text-left transition-colors hover:border-primary/30 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(CLIENT_INTERACTIVE_TILE, "w-full p-4 text-left")}
           >
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
@@ -40,9 +46,9 @@ export function ProjectSummaryCard({
               <span>{project.progress}% complete</span>
               <span>Target: {project.targetCompletion}</span>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+            <div className={cn("mt-3", CLIENT_PROGRESS_TRACK)}>
               <div
-                className="h-full rounded-full bg-primary transition-all"
+                className={CLIENT_PROGRESS_FILL}
                 style={{ width: `${project.progress}%` }}
               />
             </div>

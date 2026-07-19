@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { ClientPageHeader, ClientPageShell } from "@/components/client-ui";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import {
   RoadmapDashboard,
@@ -37,19 +38,17 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
     const dashboard = await getClientRoadmapDashboard(id, session.user.role);
 
     return (
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Technology Roadmap</h1>
-          <p className="text-muted-foreground">
-            Track your phased technology journey, approve the next implementation window, and
-            measure StackScore progress over time.
-          </p>
-        </header>
+      <ClientPageShell>
+        <ClientPageHeader
+          eyebrow="Implementation Journey"
+          title="Technology Roadmap"
+          description="Track your phased technology journey, approve the next implementation window, and measure StackScore progress over time."
+        />
         <RoadmapDashboard
           dashboard={dashboard}
           emptyFallback={<RoadmapEmptyState clientId={id} />}
         />
-      </div>
+      </ClientPageShell>
     );
   }
 

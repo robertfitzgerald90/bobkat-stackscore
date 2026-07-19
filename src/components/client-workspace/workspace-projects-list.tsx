@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { FolderKanban } from "lucide-react";
+import { ClientEmptyState } from "@/components/client-ui";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
+import { CLIENT_INTERACTIVE_TILE, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { clientProjectsPath } from "@/lib/clients/paths";
 import { formatPriority } from "@/lib/display";
 import { formatProjectStatus } from "@/lib/projects";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
+import { cn } from "@/lib/utils";
 
 type WorkspaceProjectsListProps = {
   clientId: string;
@@ -16,12 +18,12 @@ type WorkspaceProjectsListProps = {
 
 export function WorkspaceProjectsList({ clientId, projects }: WorkspaceProjectsListProps) {
   return (
-    <Card className="stat-card">
+    <Card className={CLIENT_SURFACE_CARD}>
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-base">
-              <FolderKanban className="h-4 w-4" />
+              <FolderKanban className="h-4 w-4 text-primary" />
               Projects
             </CardTitle>
             <CardDescription>
@@ -42,17 +44,19 @@ export function WorkspaceProjectsList({ clientId, projects }: WorkspaceProjectsL
       </CardHeader>
       <CardContent className="space-y-2">
         {projects.length === 0 ? (
-          <TpEmptyState
+          <ClientEmptyState
             icon={FolderKanban}
             title="No projects yet"
-            message="Convert recommendations into projects to track delivery and score impact."
+            description="Projects turn recommendations into tracked delivery work with owners, milestones, and StackScore impact."
+            nextStep="Convert a recommendation into a project to begin tracking progress."
             positive
+            className="border-0 shadow-none"
           />
         ) : (
           projects.map((project) => (
             <div
               key={project.id}
-              className="rounded-lg border border-border/60 px-3 py-2.5 text-sm"
+              className={cn(CLIENT_INTERACTIVE_TILE, "px-3 py-2.5 text-sm")}
             >
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-semibold">{project.title}</p>
