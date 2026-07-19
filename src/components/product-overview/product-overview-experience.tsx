@@ -1,35 +1,36 @@
 "use client";
 
-import { useState } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { AssessmentSection } from "@/components/product-overview/assessment-section";
+import { BusinessValueSection } from "@/components/product-overview/business-value-section";
+import { CurrentFutureStateSection } from "@/components/product-overview/current-future-state-section";
 import { DemoModeBanner } from "@/components/product-overview/demo-mode-banner";
 import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
 import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
-import { PhaseTeaserSection } from "@/components/product-overview/phase-teaser-section";
+import { Phase3TeaserSection } from "@/components/product-overview/phase-3-teaser-section";
 import { ProductOverviewCTA } from "@/components/product-overview/product-overview-cta";
+import {
+  ProductOverviewProvider,
+  useProductOverview,
+} from "@/components/product-overview/product-overview-context";
 import { ProductOverviewHeader } from "@/components/product-overview/product-overview-header";
 import { ProductOverviewHero } from "@/components/product-overview/product-overview-hero";
 import { ProductOverviewNav } from "@/components/product-overview/product-overview-nav";
 import { ProductOverviewViewTracker } from "@/components/product-overview/product-overview-view-tracker";
-import type { DemoDetailPanel } from "@/lib/product-overview/types";
+import { RecommendationsWorkspaceSection } from "@/components/product-overview/recommendations-workspace-section";
+import { RoadmapExperienceSection } from "@/components/product-overview/roadmap-experience-section";
+import { TechnologyJourneySection } from "@/components/product-overview/technology-journey-section";
 
-export function ProductOverviewExperience() {
-  const [detailPanel, setDetailPanel] = useState<DemoDetailPanel>(null);
+function ProductOverviewContent() {
+  const { detailPanel, openDetail, closeDetail } = useProductOverview();
 
   return (
     <div className="min-w-0 overflow-x-clip bg-background">
       <ProductOverviewViewTracker />
       <ProductOverviewHeader />
-      <ProductOverviewNav
-        onUpcomingClick={(itemId) => {
-          document.getElementById(`product-overview-teaser-${itemId}`)?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-      />
+      <ProductOverviewNav />
       <main>
-        <ProductOverviewHero onOpenDetail={setDetailPanel} />
+        <ProductOverviewHero onOpenDetail={openDetail} />
         <section
           id="product-overview-dashboard"
           className="scroll-mt-36 border-t border-border/70 bg-muted/10 px-4 py-10 sm:px-6 sm:py-12"
@@ -49,15 +50,29 @@ export function ProductOverviewExperience() {
             </div>
             <DemoModeBanner />
             <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_24px_80px_-40px_rgba(8,47,91,0.25)]">
-              <DemoDashboard onOpenDetail={setDetailPanel} />
+              <DemoDashboard onOpenDetail={openDetail} />
             </div>
           </div>
         </section>
-        <PhaseTeaserSection />
+        <TechnologyJourneySection />
+        <AssessmentSection />
+        <CurrentFutureStateSection />
+        <RecommendationsWorkspaceSection />
+        <RoadmapExperienceSection />
+        <BusinessValueSection />
+        <Phase3TeaserSection />
         <ProductOverviewCTA />
       </main>
       <OfferFooter />
-      <MetricDetailDrawer panel={detailPanel} onClose={() => setDetailPanel(null)} />
+      <MetricDetailDrawer panel={detailPanel} onClose={closeDetail} />
     </div>
+  );
+}
+
+export function ProductOverviewExperience() {
+  return (
+    <ProductOverviewProvider>
+      <ProductOverviewContent />
+    </ProductOverviewProvider>
   );
 }

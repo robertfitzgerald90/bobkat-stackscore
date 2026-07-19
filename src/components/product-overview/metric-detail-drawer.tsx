@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetBody,
@@ -9,12 +10,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import {
-  featuredRecommendation,
   getDemoPillarById,
   getDemoProjectById,
   northstarDemoDashboard,
 } from "@/lib/product-overview/demo-dashboard";
+import {
+  getDemoConnectionByPillarId,
+  getDemoConnectionByRecommendationId,
+  getDemoRecommendationById,
+  getDemoRoadmapInitiativeById,
+} from "@/lib/product-overview/demo-strategy";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type MetricDetailDrawerProps = {
@@ -31,6 +38,57 @@ function DetailSection({ label, children }: { label: string; children: React.Rea
   );
 }
 
+function ConnectedLinks({
+  pillarId,
+  recommendationId,
+  roadmapInitiativeId,
+}: {
+  pillarId?: string;
+  recommendationId?: string;
+  roadmapInitiativeId?: string;
+}) {
+  const { openConnectedPillar, openConnectedRecommendation, openConnectedRoadmapInitiative } =
+    useProductOverview();
+
+  return (
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Connected in StackScore</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {pillarId ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => openConnectedPillar(pillarId, "drawer_link")}
+          >
+            View pillar
+          </Button>
+        ) : null}
+        {recommendationId ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => openConnectedRecommendation(recommendationId, "drawer_link")}
+          >
+            View recommendation
+          </Button>
+        ) : null}
+        {roadmapInitiativeId ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => openConnectedRoadmapInitiative(roadmapInitiativeId, "drawer_link")}
+          >
+            View roadmap initiative
+          </Button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) {
   const open = panel !== null;
 
@@ -39,40 +97,156 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
   let body: React.ReactNode = null;
 
   switch (panel?.type) {
-    case "pillar": {
+    case "pillar":
+    case "assessmentPillar": {
       const pillar = getDemoPillarById(panel.pillarId);
+      const connection = getDemoConnectionByPillarId(panel.pillarId);
       title = pillar?.name ?? "Technology Pillar";
-      description = "Pillar score, risk, and improvement context";
+      description =
+        panel.type === "assessmentPillar"
+          ? "Assessment finding, risk, and recommended improvement"
+          : "Pillar score, risk, and improvement context";
       body = pillar ? (
         <div className="space-y-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-4xl font-semibold tabular-nums">{pillar.score}</p>
-            <Badge variant="outline">{pillar.maturityLabel}</Badge>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs text-muted-foreground">Current score</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums">{pillar.score}</p>
+            </div>
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs text-muted-foreground">Target score</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums">{pillar.targetScore}</p>
+            </div>
           </div>
-          <DetailSection label="Summary">{pillar.summary}</DetailSection>
-          <DetailSection label="Primary risk">{pillar.primaryRisk}</DetailSection>
-          <DetailSection label="Example recommendation">{pillar.exampleRecommendation}</DetailSection>
-          <DetailSection label="Target score">{pillar.targetScore}</DetailSection>
-          <DetailSection label="Business impact">{pillar.businessImpact}</DetailSection>
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant="outline">{pillar.maturityLabel}</Badge>
+            <Badge variant={pillar.priorityLevel === "Critical" ? "destructive" : "outline"}>
+              {pillar.priorityLevel} priority
+            </Badge>
+          </div>
+          {panel.type === "assessmentPillar" ? (
+            <>
+              <DetailSection label="Key finding">{pillar.keyFinding}</DetailSection>
+              <DetailSection label="Business risk">{pillar.primaryRisk}</DetailSection>
+              <DetailSection label="Recommended improvement">
+                {pillar.recommendedImprovement}
+              </DetailSection>
+              <DetailSection label="Expected business outcome">
+                {pillar.expectedBusinessOutcome}
+              </DetailSection>
+            </>
+          ) : (
+            <>
+              <DetailSection label="Summary">{pillar.summary}</DetailSection>
+              <DetailSection label="Primary risk">{pillar.primaryRisk}</DetailSection>
+              <DetailSection label="Example recommendation">{pillar.exampleRecommendation}</DetailSection>
+              <DetailSection label="Business impact">{pillar.businessImpact}</DetailSection>
+            </>
+          )}
+          <ConnectedLinks
+            pillarId={pillar.id}
+            recommendationId={connection?.recommendationId}
+            roadmapInitiativeId={connection?.roadmapInitiativeId}
+          />
         </div>
       ) : null;
       break;
     }
     case "recommendation": {
-      title = featuredRecommendation.title;
-      description = "Example recommendation detail";
-      body = (
+      const recommendation = getDemoRecommendationById(panel.recommendationId);
+      const connection = getDemoConnectionByRecommendationId(panel.recommendationId);
+      const roadmapInitiative = recommendation
+        ? getDemoRoadmapInitiativeById(recommendation.relatedRoadmapInitiativeId)
+        : undefined;
+      title = recommendation?.title ?? "Recommendation Detail";
+      description = "Why this recommendation exists and how it connects to the roadmap";
+      body = recommendation ? (
         <div className="space-y-5">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="destructive">{featuredRecommendation.priority} priority</Badge>
-            <Badge variant="outline">{featuredRecommendation.effort} effort</Badge>
+            <Badge variant={recommendation.priority === "Critical" ? "destructive" : "default"}>
+              {recommendation.priority} priority
+            </Badge>
+            <Badge variant="outline">{recommendation.effort} effort</Badge>
+            <Badge variant="outline">{recommendation.status}</Badge>
           </div>
-          <DetailSection label="Estimated cost">{featuredRecommendation.estimatedCost}</DetailSection>
-          <DetailSection label="Target">{featuredRecommendation.target}</DetailSection>
-          <DetailSection label="Why it matters">{featuredRecommendation.whyItMatters}</DetailSection>
-          <DetailSection label="Expected outcome">{featuredRecommendation.expectedOutcome}</DetailSection>
+          <DetailSection label="Why this recommendation exists">{recommendation.whyItMatters}</DetailSection>
+          <DetailSection label="Risk if ignored">{recommendation.riskIfIgnored}</DetailSection>
+          <DetailSection label="Expected benefit">{recommendation.expectedOutcome}</DetailSection>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs text-muted-foreground">Estimated timeline</p>
+              <p className="mt-1 font-medium">{recommendation.estimatedTimeline}</p>
+            </div>
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs text-muted-foreground">Estimated investment</p>
+              <p className="mt-1 font-medium">{recommendation.estimatedCost}</p>
+            </div>
+          </div>
+          <DetailSection label="Dependencies">
+            {recommendation.dependencies.length > 0 ? (
+              <ul className="space-y-1">
+                {recommendation.dependencies.map((dependency) => (
+                  <li key={dependency}>• {dependency}</li>
+                ))}
+              </ul>
+            ) : (
+              "No dependencies recorded."
+            )}
+          </DetailSection>
+          <DetailSection label="Related technology pillar">{recommendation.pillarName}</DetailSection>
+          <DetailSection label="Related roadmap initiative">
+            {roadmapInitiative?.title ?? "Not yet mapped"}
+          </DetailSection>
+          <ConnectedLinks
+            pillarId={connection?.pillarId ?? recommendation.pillarId}
+            recommendationId={recommendation.id}
+            roadmapInitiativeId={connection?.roadmapInitiativeId ?? recommendation.relatedRoadmapInitiativeId}
+          />
         </div>
-      );
+      ) : null;
+      break;
+    }
+    case "roadmapInitiative": {
+      const initiative = getDemoRoadmapInitiativeById(panel.initiativeId);
+      const recommendation = initiative
+        ? getDemoRecommendationById(initiative.relatedRecommendationId)
+        : undefined;
+      title = initiative?.title ?? "Roadmap Initiative";
+      description = "Strategic initiative detail and business outcome";
+      body = initiative ? (
+        <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={initiative.priority === "Critical" ? "destructive" : "outline"}>
+              {initiative.priority} priority
+            </Badge>
+            <Badge variant="outline">{initiative.status}</Badge>
+            <Badge variant="outline">{initiative.quarter}</Badge>
+          </div>
+          <DetailSection label="Description">{initiative.description}</DetailSection>
+          <DetailSection label="Budget">{initiative.budget}</DetailSection>
+          <DetailSection label="Expected business outcome">{initiative.expectedBusinessOutcome}</DetailSection>
+          <DetailSection label="Related recommendation">
+            {recommendation?.title ?? "Not mapped"}
+          </DetailSection>
+          <div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Completion</span>
+              <span>{initiative.completionPercent}%</span>
+            </div>
+            <div className="mt-1 h-2 rounded-full bg-muted">
+              <div
+                className="h-2 rounded-full bg-primary"
+                style={{ width: `${initiative.completionPercent}%` }}
+              />
+            </div>
+          </div>
+          <ConnectedLinks
+            pillarId={initiative.relatedPillarId}
+            recommendationId={initiative.relatedRecommendationId}
+            roadmapInitiativeId={initiative.id}
+          />
+        </div>
+      ) : null;
       break;
     }
     case "project":

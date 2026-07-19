@@ -1,20 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 
 type ProductOverviewNavProps = {
   activeId?: string;
-  onUpcomingClick?: (itemId: string) => void;
 };
 
-export function ProductOverviewNav({
-  activeId = "overview",
-  onUpcomingClick,
-}: ProductOverviewNavProps) {
+const SECTION_IDS = PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.sectionId).map((item) => ({
+  id: item.id,
+  sectionId: item.sectionId!,
+  phase: item.phase,
+  teaserDescription: item.teaserDescription,
+}));
+
+export function ProductOverviewNav({ activeId: activeIdProp }: ProductOverviewNavProps) {
+  const [activeId, setActiveId] = useState(activeIdProp ?? "overview");
   const [hintId, setHintId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        const topEntry = visible[0];
+        if (!topEntry) return;
+
+        const matched = SECTION_IDS.find((item) => item.sectionId === topEntry.target.id);
+        if (matched) {
+          setActiveId(matched.id);
+        }
+      },
+      {
+        rootMargin: "-40% 0px -45% 0px",
+        threshold: [0.1, 0.25, 0.5],
+      },
+    );
+
+    for (const item of SECTION_IDS) {
+      const element = document.getElementById(item.sectionId);
+      if (element) observer.observe(element);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (sectionId: string, itemId: string, phase: 1 | 2 | 3) => {
+    if (phase === 3) {
+      setHintId(itemId);
+    } else {
+      setHintId(null);
+    }
+
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   return (
     <nav
@@ -29,7 +75,7 @@ export function ProductOverviewNav({
           <ul className="flex min-w-max items-center gap-2">
             {PRODUCT_OVERVIEW_NAV_ITEMS.map((item) => {
               const isActive = item.id === activeId;
-              const isUpcoming = item.phase === 2;
+              const isPhase3 = item.phase === 3;
 
               return (
                 <li key={item.id} className="relative">
@@ -38,15 +84,9 @@ export function ProductOverviewNav({
                     aria-current={isActive ? "page" : undefined}
                     aria-describedby={hintId === item.id ? `${item.id}-hint` : undefined}
                     onClick={() => {
-                      if (isUpcoming) {
-                        setHintId(item.id);
-                        onUpcomingClick?.(item.id);
-                        return;
+                      if (item.sectionId) {
+                        scrollToSection(item.sectionId, item.id, item.phase);
                       }
-                      document.getElementById("product-overview-dashboard")?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      });
                     }}
                     className={cn(
                       "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -57,28 +97,26 @@ export function ProductOverviewNav({
                   >
                     {item.label}
                   </button>
-                  {hintId === item.id && isUpcoming ? (
+                  {hintId === item.id && isPhase3 ? (
                     <div
                       id={`${item.id}-hint`}
                       role="status"
                       className="absolute left-0 top-[calc(100%+0.5rem)] z-20 w-64 rounded-lg border border-border bg-popover p-3 text-left shadow-lg"
                     >
-                      <p className="text-xs font-semibold text-foreground">Coming in the full tour</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {item.teaserDescription}
-                      </p>
+                      <p className="text-xs font-semibold text-foreground">Coming in Phase 3</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{item.teaserDescription}</p>
                       <button
                         type="button"
                         className="mt-2 text-xs font-medium text-primary hover:underline"
                         onClick={() => {
                           setHintId(null);
-                          document.getElementById("product-overview-phase-2")?.scrollIntoView({
+                          document.getElementById("product-overview-phase-3")?.scrollIntoView({
                             behavior: "smooth",
                             block: "start",
                           });
                         }}
                       >
-                        View upcoming modules
+                        View Phase 3 preview
                       </button>
                     </div>
                   ) : null}

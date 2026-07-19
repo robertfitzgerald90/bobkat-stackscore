@@ -17,6 +17,7 @@ import {
 import { BudgetSummaryCard } from "@/components/product-overview/budget-summary-card";
 import { NextActionCard } from "@/components/product-overview/next-action-card";
 import { PillarScoreGrid } from "@/components/product-overview/pillar-score-grid";
+import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { ProjectSummaryCard } from "@/components/product-overview/project-summary-card";
 import { QuarterlyReviewCard } from "@/components/product-overview/quarterly-review-card";
 import { RecommendationSummaryCard } from "@/components/product-overview/recommendation-summary-card";
@@ -32,11 +33,20 @@ type DemoDashboardProps = {
 
 export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail }: DemoDashboardProps) {
   const data = northstarDemoDashboard;
+  const { openConnectedPillar, openConnectedRecommendation } = useProductOverview();
 
   function openDetail(panel: DemoDetailPanel) {
     if (!panel) return;
-    if (panel.type === "pillar") trackProductOverviewPillarOpened(panel.pillarId);
-    if (panel.type === "recommendation") trackProductOverviewRecommendationOpened(data.featuredRecommendationId);
+    if (panel.type === "pillar") {
+      trackProductOverviewPillarOpened(panel.pillarId, "dashboard");
+      openConnectedPillar(panel.pillarId, "dashboard_pillar");
+      return;
+    }
+    if (panel.type === "recommendation") {
+      trackProductOverviewRecommendationOpened(panel.recommendationId);
+      openConnectedRecommendation(panel.recommendationId, "dashboard_recommendation");
+      return;
+    }
     if (panel.type === "project") trackProductOverviewProjectOpened(panel.projectId);
     if (panel.type === "roadmap") trackProductOverviewRoadmapPreviewed();
     if (panel.type === "qbr") trackProductOverviewQbrPreviewed();

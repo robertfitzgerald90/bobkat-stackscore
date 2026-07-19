@@ -1,20 +1,14 @@
 import { northstarManufacturing } from "@/lib/product-overview/demo-organization";
-import type { DemoDashboard, DemoRecommendation } from "@/lib/product-overview/types";
+import {
+  DEMO_RECOMMENDATIONS,
+  DEMO_ROADMAP_INITIATIVES,
+  getDemoRecommendationById,
+} from "@/lib/product-overview/demo-strategy";
+import type { DemoDashboard } from "@/lib/product-overview/types";
 
-export const featuredRecommendation: DemoRecommendation = {
-  id: "rec-backup-validation",
-  title: "Implement Centralized Backup Validation",
-  priority: "High",
-  effort: "Medium",
-  estimatedCost: "$12,000–$18,000",
-  target: "Q4 2026",
-  whyItMatters:
-    "Backups currently run across multiple systems without a standardized verification process.",
-  expectedOutcome:
-    "Consistent recovery testing, clearer ownership, and reduced business continuity risk.",
-  isQuickWin: false,
-  isPlannedThisQuarter: true,
-};
+export { getDemoRecommendationById } from "@/lib/product-overview/demo-strategy";
+
+export const featuredRecommendation = DEMO_RECOMMENDATIONS[0]!;
 
 export const northstarDemoDashboard: DemoDashboard = {
   organization: northstarManufacturing,
@@ -48,6 +42,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Establish a quarterly technology steering committee with executive sponsors.",
       targetScore: 84,
       businessImpact: "Improves decision velocity and keeps investments aligned with growth goals.",
+      trend: "up",
+      trendDelta: 4,
+      keyFinding: "Technology priorities exist but lack consistent executive sponsorship.",
+      priorityLevel: "Medium",
+      recommendedImprovement: "Establish a quarterly technology steering committee with executive sponsors.",
+      expectedBusinessOutcome: "Improves decision velocity and keeps investments aligned with growth goals.",
+      statusColor: "success",
+      linkedRecommendationId: "rec-governance-committee",
+      linkedRoadmapInitiativeId: "roadmap-governance-refresh",
     },
     {
       id: "infrastructure",
@@ -59,6 +62,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Refresh core network infrastructure at the main production site.",
       targetScore: 80,
       businessImpact: "Reduces downtime risk and supports modern security controls.",
+      trend: "stable",
+      trendDelta: 0,
+      keyFinding: "Primary facility switching is beyond recommended lifecycle.",
+      priorityLevel: "High",
+      recommendedImprovement: "Replace aging core switches and refresh wireless at the main production site.",
+      expectedBusinessOutcome: "Reduces downtime risk and supports secure connectivity for production systems.",
+      statusColor: "warning",
+      linkedRecommendationId: "rec-network-switches",
+      linkedRoadmapInitiativeId: "roadmap-network-refresh",
     },
     {
       id: "cybersecurity",
@@ -70,6 +82,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Enforce phishing-resistant MFA for privileged accounts.",
       targetScore: 78,
       businessImpact: "Reduces account compromise risk and strengthens cyber-insurance readiness.",
+      trend: "up",
+      trendDelta: 3,
+      keyFinding: "Multi-factor authentication is inconsistently enforced across privileged accounts.",
+      priorityLevel: "Critical",
+      recommendedImprovement: "Deploy phishing-resistant MFA and privileged access controls.",
+      expectedBusinessOutcome: "Reduced cyber risk and stronger cyber insurance readiness.",
+      statusColor: "critical",
+      linkedRecommendationId: "rec-mfa",
+      linkedRoadmapInitiativeId: "roadmap-m365-hardening",
     },
     {
       id: "business-continuity",
@@ -81,6 +102,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Implement centralized backup validation with documented recovery tests.",
       targetScore: 76,
       businessImpact: "Improves resilience and reduces operational disruption during outages.",
+      trend: "up",
+      trendDelta: 2,
+      keyFinding: "Backups run regularly but validation and recovery testing are not standardized.",
+      priorityLevel: "High",
+      recommendedImprovement: "Implement centralized backup validation with documented recovery tests.",
+      expectedBusinessOutcome: "Improves resilience and reduces operational disruption during outages.",
+      statusColor: "warning",
+      linkedRecommendationId: "rec-backup-validation",
+      linkedRoadmapInitiativeId: "roadmap-backup-validation",
     },
     {
       id: "applications-data",
@@ -92,6 +122,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Define data classification and retention policies for manufacturing systems.",
       targetScore: 82,
       businessImpact: "Supports compliance readiness and cleaner collaboration workflows.",
+      trend: "up",
+      trendDelta: 5,
+      keyFinding: "Sensitive operational data lacks consistent retention and access controls.",
+      priorityLevel: "Medium",
+      recommendedImprovement: "Define data classification and retention policies for manufacturing systems.",
+      expectedBusinessOutcome: "Supports compliance readiness and cleaner collaboration workflows.",
+      statusColor: "success",
+      linkedRecommendationId: "rec-data-classification",
+      linkedRoadmapInitiativeId: "roadmap-app-review",
     },
     {
       id: "operations-support",
@@ -103,6 +142,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Standardize incident response playbooks for production systems.",
       targetScore: 85,
       businessImpact: "Shortens resolution time and improves service consistency.",
+      trend: "up",
+      trendDelta: 2,
+      keyFinding: "Troubleshooting relies on tribal knowledge during shift changes.",
+      priorityLevel: "Medium",
+      recommendedImprovement: "Standardize incident response playbooks for production systems.",
+      expectedBusinessOutcome: "Shortens resolution time and improves service consistency.",
+      statusColor: "success",
+      linkedRecommendationId: "rec-endpoint-lifecycle",
+      linkedRoadmapInitiativeId: "roadmap-endpoint-lifecycle",
     },
     {
       id: "people-process",
@@ -114,6 +162,15 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Launch role-based security awareness training for plant and office staff.",
       targetScore: 79,
       businessImpact: "Reduces human-factor risk and improves change adoption.",
+      trend: "stable",
+      trendDelta: 0,
+      keyFinding: "Device replacement and patching policies vary across departments and shifts.",
+      priorityLevel: "Medium",
+      recommendedImprovement: "Standardize endpoint lifecycle and role-based security awareness training.",
+      expectedBusinessOutcome: "Reduces security gaps from aging endpoints and inconsistent patching.",
+      statusColor: "neutral",
+      linkedRecommendationId: "rec-endpoint-lifecycle",
+      linkedRoadmapInitiativeId: "roadmap-endpoint-lifecycle",
     },
     {
       id: "digital-enablement",
@@ -125,8 +182,18 @@ export const northstarDemoDashboard: DemoDashboard = {
       exampleRecommendation: "Connect production metrics to executive dashboards in StackScore.",
       targetScore: 86,
       businessImpact: "Improves visibility for leadership and accelerates operational decisions.",
+      trend: "up",
+      trendDelta: 6,
+      keyFinding: "Operational reporting still requires manual consolidation.",
+      priorityLevel: "Low",
+      recommendedImprovement: "Connect production metrics to executive dashboards in StackScore.",
+      expectedBusinessOutcome: "Improves visibility for leadership and accelerates operational decisions.",
+      statusColor: "success",
+      linkedRecommendationId: "rec-governance-committee",
+      linkedRoadmapInitiativeId: "roadmap-governance-refresh",
     },
   ],
+  recommendations: DEMO_RECOMMENDATIONS,
   featuredRecommendationId: featuredRecommendation.id,
   projects: [
     {
@@ -144,7 +211,7 @@ export const northstarDemoDashboard: DemoDashboard = {
         "Legacy authentication blocked",
         "Security policy documentation finalized",
       ],
-      relatedRecommendation: "Enforce phishing-resistant MFA for privileged accounts.",
+      relatedRecommendation: "Deploy Phishing Resistant MFA",
       businessOutcome: "Closes the highest-priority identity risk before the network refresh begins.",
       budgetRange: "$18,000–$24,000",
     },
@@ -162,7 +229,7 @@ export const northstarDemoDashboard: DemoDashboard = {
         "Hardware standards approved",
         "Implementation schedule confirmed",
       ],
-      relatedRecommendation: "Refresh core network infrastructure at the main production site.",
+      relatedRecommendation: "Replace Aging Core Switches",
       businessOutcome: "Supports secure connectivity for production systems and remote leadership access.",
       budgetRange: "$42,000–$55,000",
     },
@@ -198,7 +265,7 @@ export const northstarDemoDashboard: DemoDashboard = {
         "Executive review scheduled",
         "Employee communication drafted",
       ],
-      relatedRecommendation: "Define data classification and retention policies for manufacturing systems.",
+      relatedRecommendation: "Define Data Classification Policies",
       businessOutcome: "Creates consistent expectations and reduces compliance gaps.",
       budgetRange: "$8,000–$12,000",
     },
@@ -221,6 +288,7 @@ export const northstarDemoDashboard: DemoDashboard = {
       items: ["Application modernization review", "Identity lifecycle improvements"],
     },
   ],
+  roadmapInitiatives: DEMO_ROADMAP_INITIATIVES,
   quarterlyReview: {
     nextReviewDate: "September 15, 2026",
     status: "Preparation in progress",
@@ -247,14 +315,9 @@ export const northstarDemoDashboard: DemoDashboard = {
     reason:
       "This closes the highest-priority identity risk and improves readiness for the next quarterly review.",
     relatedProjectId: "proj-m365-hardening",
-    relatedRecommendationId: "rec-backup-validation",
+    relatedRecommendationId: "rec-mfa",
   },
 };
-
-export function getDemoRecommendationById(id: string): DemoRecommendation | undefined {
-  if (id === featuredRecommendation.id) return featuredRecommendation;
-  return undefined;
-}
 
 export function getDemoPillarById(id: string) {
   return northstarDemoDashboard.pillars.find((pillar) => pillar.id === id);
