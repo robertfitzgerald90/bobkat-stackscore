@@ -1,13 +1,13 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Calendar, FileText, Map } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
+import {
+  RoadmapDashboard,
+  RoadmapEmptyState,
+} from "@/components/client-roadmap/roadmap-dashboard";
 import { TipPlanList } from "@/components/technology-improvement-plan/tip-plan-list";
-import { BookingButton } from "@/components/support/booking-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonClassName } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
+import { getClientRoadmapDashboard } from "@/lib/client-roadmap";
 import { listTipPlans } from "@/lib/technology-improvement-plan";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
@@ -25,68 +25,69 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
   });
   if (!client) notFound();
 
-  if (isCustomerMode(session.user.role)) {
+  const isCustomer = isCustomerMode(session.user.role);
+
+  if (isCustomer) {
     const clientUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { clientId: true },
     });
     if (clientUser?.clientId !== id) notFound();
 
+    const dashboard = await getClientRoadmapDashboard(id, session.user.role);
+
     return (
-      <div className="mx-auto max-w-3xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-8">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Roadmap</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Technology Roadmap</h1>
           <p className="text-muted-foreground">
-            Your personalized technology roadmap will be delivered after your strategy session
-            with the BobKat team.
+            Track your phased technology journey, approve the next implementation window, and
+            measure StackScore progress over time.
           </p>
         </header>
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Map className="h-4 w-4 text-primary" />
-              What happens next
-            </CardTitle>
-            <CardDescription className="leading-relaxed">
-              After completing your assessment and reviewing your executive report, we will work
-              together to build a phased implementation roadmap tailored to your business priorities
-              and budget.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3 sm:flex-row">
-            <Link href={`/clients/${id}/executive-reports`} className={buttonClassName({ variant: "outline" })}>
-              <FileText className="mr-2 h-4 w-4" />
-              View Reports
-            </Link>
-            <BookingButton
-              label="primary"
-              icon={<Calendar className="mr-2 h-4 w-4" />}
-            />
-          </CardContent>
-        </Card>
+        <RoadmapDashboard
+          dashboard={dashboard}
+          emptyFallback={<RoadmapEmptyState clientId={id} />}
+        />
       </div>
     );
   }
 
-  const [plans, roadmapAccess] = await Promise.all([
+  const [dashboard, plans, roadmapAccess] = await Promise.all([
+    getClientRoadmapDashboard(id, session.user.role),
     listTipPlans(id),
     getVcioFeatureAccess(id, "roadmap_collaboration"),
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <WorkspaceSectionHeader
-        title="Roadmap"
-        description="Technology investment planning for this client."
+        title="Technology Roadmap"
+        description="Living implementation roadmap and technology investment planning for this client."
       />
-      <TipPlanList
-        clientId={client.id}
-        clientName={client.companyName}
-        initialPlans={plans}
-        embedded
-        canCreate={roadmapAccess.canEdit}
-        readOnlyReason={roadmapAccess.reason}
+
+      <RoadmapDashboard
+        dashboard={dashboard}
+        emptyFallback={<RoadmapEmptyState clientId={id} />}
       />
+
+      <div className="space-y-4 border-t pt-8">
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">Planning Tools</h2>
+          <p className="text-sm text-muted-foreground">
+            Technology Improvement Plans refine phase sequencing before promoting the active
+            roadmap.
+          </p>
+        </div>
+        <TipPlanList
+          clientId={client.id}
+          clientName={client.companyName}
+          initialPlans={plans}
+          embedded
+          canCreate={roadmapAccess.canEdit}
+          readOnlyReason={roadmapAccess.reason}
+        />
+      </div>
     </div>
   );
 }

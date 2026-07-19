@@ -202,6 +202,23 @@ enum TipWorkflowStep {
   complete
 }
 
+enum ClientRoadmapStatus {
+  draft
+  active
+  completed
+  superseded
+}
+
+enum RoadmapPhaseStatus {
+  planned
+  awaiting_approval
+  approved
+  in_progress
+  completed
+  deferred
+  cancelled
+}
+
 enum NoteType {
   general
   assessment
@@ -256,6 +273,8 @@ model User {
   campaignRecipients                     CampaignRecipient[]            @relation("CampaignRecipientUser")
   tipsPublished                          TechnologyImprovementPlan[]    @relation("TipPublishedBy")
   tipsApproved                           TechnologyImprovementPlan[]    @relation("TipApprovedBy")
+  roadmapPhasesApproved                  ClientRoadmapPhase[]           @relation("RoadmapPhaseApprovedBy")
+  roadmapPhaseEvents                     ClientRoadmapPhaseEvent[]      @relation("RoadmapPhaseEventActor")
   clientContacts                         ClientContact[]
   communicationQueueItemsCreated         CommunicationQueueItem[]       @relation("QueueCreatedBy")
   communicationQueueItemsApproved        CommunicationQueueItem[]       @relation("QueueApprovedBy")
@@ -303,6 +322,7 @@ model Client {
   technologyProfile           TechnologyProfile?
   profileSnapshots            TechnologyProfileSnapshot[]
   improvementPlans            TechnologyImprovementPlan[]
+  clientRoadmaps              ClientRoadmap[]
   quarterlyBusinessReviews    QuarterlyBusinessReview[]
   users                       User[]
   purchases                   AssessmentPurchase[]
@@ -431,6 +451,7 @@ model Assessment {
   currentForProfiles      TechnologyProfile[]               @relation("ProfileCurrentAssessment")
   profileSnapshots        TechnologyProfileSnapshot[]
   improvementPlans        TechnologyImprovementPlan[]
+  clientRoadmaps          ClientRoadmap[]
   purchase                AssessmentPurchase?
   communicationMessages   CommunicationMessage[]
   campaignRecipients      CampaignRecipient[]
@@ -566,6 +587,7 @@ model AssessmentRecommendation {
   createdBy              User                              @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
   project                Project?
   triggers               RecommendationAssessmentTrigger[]
+  roadmapInitiatives     ClientRoadmapInitiative[]
 
   @@index([clientId, dedupeKey])
 }
@@ -691,10 +713,107 @@ model TechnologyImprovementPlan {
   approvedBy              User?                    @relation("TipApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
   approvedByContact       ClientContact?           @relation("TipApprovedByContact", fields: [approvedByContactId], references: [id], onDelete: SetNull)
   document                Document?
+  clientRoadmaps          ClientRoadmap[]
   communicationMessages   CommunicationMessage[]
   communicationQueueItems CommunicationQueueItem[]
   invoices                Invoice[]
   billingDeposits         BillingDeposit[]
+}
+
+model ClientRoadmap {
+  id                  String              @id @default(uuid())
+  clientId            String
+  assessmentId        String
+  tipId               String?
+  status              ClientRoadmapStatus @default(draft)
+  title               String
+  baselineScore       Int
+  projectedFinalScore Int
+  activatedAt         DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  client     Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  assessment Assessment                  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  tip        TechnologyImprovementPlan?  @relation(fields: [tipId], references: [id], onDelete: SetNull)
+  phases     ClientRoadmapPhase[]
+
+  @@index([clientId, status])
+  @@index([assessmentId])
+  @@index([tipId])
+}
+
+model ClientRoadmapPhase {
+  id                          String             @id @default(uuid())
+  roadmapId                   String
+  phaseKey                    String
+  subtitle                    String
+  name                        String
+  timeline                    String
+  sortOrder                   Int
+  executiveSummary            String             @db.Text
+  status                      RoadmapPhaseStatus @default(planned)
+  oneTimeInvestment           Decimal            @default(0) @db.Decimal(12, 2)
+  monthlyRecurringInvestment  Decimal            @default(0) @db.Decimal(12, 2)
+  annualRecurringInvestment   Decimal            @default(0) @db.Decimal(12, 2)
+  expectedScoreImprovement    Int                @default(0)
+  projectedScoreAfterPhase    Int                @default(0)
+  approvedAt                  DateTime?
+  approvedByUserId            String?
+  approvedByContactId         String?
+  proposalGeneratedAt         DateTime?
+  proposalAcceptedAt          DateTime?
+  projectStartedAt            DateTime?
+  projectCompletedAt          DateTime?
+  actualCost                  Decimal?           @db.Decimal(12, 2)
+  actualCompletionDate        DateTime?
+  completionDate              DateTime?
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
+
+  roadmap           ClientRoadmap              @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  approvedBy        User?                      @relation("RoadmapPhaseApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  approvedByContact ClientContact?             @relation("RoadmapPhaseApprovedByContact", fields: [approvedByContactId], references: [id], onDelete: SetNull)
+  initiatives       ClientRoadmapInitiative[]
+  events            ClientRoadmapPhaseEvent[]
+
+  @@index([roadmapId, sortOrder])
+  @@unique([roadmapId, phaseKey])
+}
+
+model ClientRoadmapInitiative {
+  id                         String   @id @default(uuid())
+  phaseId                    String
+  recommendationId           String
+  sortOrder                  Int      @default(0)
+  title                      String
+  estimatedImpactPoints      Int      @default(0)
+  businessOutcomeTitle       String?
+  businessOutcomeDescription String?  @db.Text
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  phase          ClientRoadmapPhase       @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  recommendation AssessmentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@unique([phaseId, recommendationId])
+  @@index([recommendationId])
+}
+
+model ClientRoadmapPhaseEvent {
+  id              String             @id @default(uuid())
+  phaseId         String
+  fromStatus      RoadmapPhaseStatus?
+  toStatus        RoadmapPhaseStatus
+  changedByUserId String
+  note            String?            @db.Text
+  createdAt       DateTime           @default(now())
+
+  phase     ClientRoadmapPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  changedBy User               @relation("RoadmapPhaseEventActor", fields: [changedByUserId], references: [id])
+
+  @@index([phaseId, createdAt])
 }
 
 model QuarterlyBusinessReview {
@@ -1520,6 +1639,7 @@ model ClientContact {
   client                   Client                      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   user                     User?                       @relation(fields: [userId], references: [id], onDelete: SetNull)
   approvedTips             TechnologyImprovementPlan[] @relation("TipApprovedByContact")
+  approvedRoadmapPhases    ClientRoadmapPhase[]        @relation("RoadmapPhaseApprovedByContact")
   invoicesAsBillingContact Invoice[]                   @relation("InvoiceBillingContact")
 
   @@unique([clientId, email])

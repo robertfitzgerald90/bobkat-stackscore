@@ -191,6 +191,13 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
 
   await syncProfileFromAssessmentV2(assessmentId);
 
+  try {
+    const { materializeDraftRoadmap } = await import("@/lib/client-roadmap");
+    await materializeDraftRoadmap(assessmentId);
+  } catch (error) {
+    console.error("Failed to materialize draft technology roadmap", error);
+  }
+
   const recommendations = await getRecommendationsTriggeredByAssessment(assessmentId);
 
   const completed = await prisma.assessment.findUnique({

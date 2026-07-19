@@ -1,0 +1,77 @@
+import type { ClientRoadmapDashboard } from "@/lib/client-roadmap/types";
+import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
+import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { cn } from "@/lib/utils";
+
+export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboard }) {
+  const items = [
+    {
+      label: "Current StackScore",
+      value: dashboard.scoreJourney.baselineScore,
+      score: true,
+    },
+    {
+      label: "Effective StackScore",
+      value: dashboard.scoreJourney.effectiveScore,
+      score: true,
+    },
+    {
+      label: "Projected StackScore",
+      value: dashboard.scoreJourney.projectedFinalScore,
+      score: true,
+    },
+    {
+      label: "Roadmap Completion",
+      value: `${dashboard.metrics.completionPercent}%`,
+    },
+    {
+      label: "Current Phase",
+      value: dashboard.metrics.currentPhaseName ?? "Complete",
+    },
+    {
+      label: "Risk Reduction",
+      value: `${dashboard.metrics.riskReductionPercent}%`,
+    },
+    {
+      label: "Completed Initiatives",
+      value: dashboard.metrics.initiativesCompleted,
+    },
+    {
+      label: "Remaining Initiatives",
+      value: dashboard.metrics.initiativesRemaining,
+    },
+    {
+      label: "Remaining Investment",
+      value: formatCurrency(dashboard.metrics.remainingOneTimeInvestment),
+      hint:
+        dashboard.metrics.remainingMonthlyRecurring > 0
+          ? `+ ${formatCurrency(dashboard.metrics.remainingMonthlyRecurring)}/mo`
+          : undefined,
+    },
+  ];
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      {items.map((item) => (
+        <div key={item.label} className="stat-card rounded-xl border bg-card p-4 shadow-sm">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+            {item.label}
+          </p>
+          <p
+            className={cn(
+              "mt-2 text-2xl font-bold tabular-nums tracking-tight",
+              item.score && typeof item.value === "number"
+                ? getScoreTextColorClass(item.value)
+                : "text-foreground",
+            )}
+          >
+            {item.value}
+          </p>
+          {item.hint ? (
+            <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}

@@ -360,5 +360,12 @@ export async function generateTipPlan(
     });
   });
 
+  try {
+    const { promoteRoadmapFromTip } = await import("@/lib/client-roadmap");
+    await promoteRoadmapFromTip(tipId);
+  } catch (error) {
+    console.error("Failed to promote living technology roadmap from TIP", error);
+  }
+
   return assembleTipPlanDetail(record, role);
 }
