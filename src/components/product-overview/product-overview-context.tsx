@@ -38,6 +38,7 @@ import {
   PRODUCT_TOUR_STEPS,
   TOUR_STORAGE_KEY,
 } from "@/lib/product-overview/demo-partnership";
+import { resolveAnchorElement } from "@/lib/product-overview/feature-popover-types";
 import type { DemoDetailPanel, ProductOverviewHighlight } from "@/lib/product-overview/types";
 
 export type PresentationModeSettings = {
@@ -64,6 +65,7 @@ type ProductOverviewContextValue = {
   personalizationWizardOpen: boolean;
   presentationSettings: PresentationModeSettings;
   detailPanel: DemoDetailPanel;
+  detailAnchor: HTMLElement | null;
   highlight: ProductOverviewHighlight;
   tourActive: boolean;
   tourStep: number;
@@ -79,15 +81,35 @@ type ProductOverviewContextValue = {
   jumpToPresentationStep: (stepIndex: number) => void;
   setPresentationSettings: (settings: Partial<PresentationModeSettings>) => void;
   notifyPresentationInteraction: () => void;
-  openDetail: (panel: DemoDetailPanel) => void;
+  openDetail: (panel: DemoDetailPanel, anchor?: HTMLElement | EventTarget | null) => void;
   closeDetail: () => void;
   setHighlight: (highlight: ProductOverviewHighlight) => void;
   clearHighlight: () => void;
-  openConnectedPillar: (pillarId: string, source?: string) => void;
-  openConnectedRecommendation: (recommendationId: string, source?: string) => void;
-  openConnectedRoadmapInitiative: (initiativeId: string, source?: string) => void;
-  openConnectedProject: (projectId: string, source?: string) => void;
-  openReport: (reportId: string, source?: string) => void;
+  openConnectedPillar: (
+    pillarId: string,
+    source?: string,
+    anchor?: HTMLElement | EventTarget | null,
+  ) => void;
+  openConnectedRecommendation: (
+    recommendationId: string,
+    source?: string,
+    anchor?: HTMLElement | EventTarget | null,
+  ) => void;
+  openConnectedRoadmapInitiative: (
+    initiativeId: string,
+    source?: string,
+    anchor?: HTMLElement | EventTarget | null,
+  ) => void;
+  openConnectedProject: (
+    projectId: string,
+    source?: string,
+    anchor?: HTMLElement | EventTarget | null,
+  ) => void;
+  openReport: (
+    reportId: string,
+    source?: string,
+    anchor?: HTMLElement | EventTarget | null,
+  ) => void;
   isHighlighted: (ids: {
     pillarId?: string;
     recommendationId?: string;
@@ -156,6 +178,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     manualAdvance: false,
   });
   const [detailPanel, setDetailPanel] = useState<DemoDetailPanel>(null);
+  const [detailAnchor, setDetailAnchor] = useState<HTMLElement | null>(null);
   const [highlight, setHighlightState] = useState<ProductOverviewHighlight>({});
   const [tourActive, setTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
@@ -203,66 +226,93 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     setHighlightState({});
   }, []);
 
-  const openDetail = useCallback((panel: DemoDetailPanel) => {
-    setDetailPanel(panel);
-  }, []);
+  const openDetail = useCallback(
+    (panel: DemoDetailPanel, anchor?: HTMLElement | EventTarget | null) => {
+      setDetailPanel(panel);
+      const resolved = resolveAnchorElement(anchor);
+      if (resolved) setDetailAnchor(resolved);
+    },
+    [],
+  );
 
   const closeDetail = useCallback(() => {
     setDetailPanel(null);
+    setDetailAnchor(null);
   }, []);
 
-  const openConnectedPillar = useCallback((pillarId: string, source = "pillar") => {
-    const connection = getProfileConnectionByPillarId(demoProfile, pillarId);
-    setHighlightState({
-      pillarId,
-      recommendationId: connection?.recommendationId,
-      roadmapInitiativeId: connection?.roadmapInitiativeId,
-    });
-    setDetailPanel({ type: "assessmentPillar", pillarId });
-    trackProductOverviewConnectionHighlighted(source);
-  }, [demoProfile]);
+  const openConnectedPillar = useCallback(
+    (pillarId: string, source = "pillar", anchor?: HTMLElement | EventTarget | null) => {
+      const connection = getProfileConnectionByPillarId(demoProfile, pillarId);
+      setHighlightState({
+        pillarId,
+        recommendationId: connection?.recommendationId,
+        roadmapInitiativeId: connection?.roadmapInitiativeId,
+      });
+      setDetailPanel({ type: "assessmentPillar", pillarId });
+      setDetailAnchor(resolveAnchorElement(anchor));
+      trackProductOverviewConnectionHighlighted(source);
+    },
+    [demoProfile],
+  );
 
-  const openConnectedRecommendation = useCallback((recommendationId: string, source = "recommendation") => {
-    setHighlightState((current) => ({
-      ...current,
-      recommendationId,
-    }));
-    setDetailPanel({ type: "recommendation", recommendationId });
-    trackProductOverviewConnectionHighlighted(source);
-  }, []);
-
-  const openConnectedRoadmapInitiative = useCallback(
-    (initiativeId: string, source = "roadmap") => {
+  const openConnectedRecommendation = useCallback(
+    (
+      recommendationId: string,
+      source = "recommendation",
+      anchor?: HTMLElement | EventTarget | null,
+    ) => {
       setHighlightState((current) => ({
         ...current,
-        roadmapInitiativeId: initiativeId,
+        recommendationId,
       }));
-      setDetailPanel({ type: "roadmapInitiative", initiativeId });
+      setDetailPanel({ type: "recommendation", recommendationId });
+      setDetailAnchor(resolveAnchorElement(anchor));
       trackProductOverviewConnectionHighlighted(source);
     },
     [],
   );
 
-  const openConnectedProject = useCallback((projectId: string, source = "project") => {
-    const project = getProfileProjectById(demoProfile, projectId);
-    if (!project) return;
+  const openConnectedRoadmapInitiative = useCallback(
+    (initiativeId: string, source = "roadmap", anchor?: HTMLElement | EventTarget | null) => {
+      setHighlightState((current) => ({
+        ...current,
+        roadmapInitiativeId: initiativeId,
+      }));
+      setDetailPanel({ type: "roadmapInitiative", initiativeId });
+      setDetailAnchor(resolveAnchorElement(anchor));
+      trackProductOverviewConnectionHighlighted(source);
+    },
+    [],
+  );
 
-    setHighlightState({
-      projectId,
-      pillarId: project.pillarId,
-      recommendationId: project.relatedRecommendationId,
-      roadmapInitiativeId: project.relatedRoadmapInitiativeId,
-    });
-    setDetailPanel({ type: "projectExecution", projectId });
-    trackProductOverviewConnectionHighlighted(source);
-  }, [demoProfile]);
+  const openConnectedProject = useCallback(
+    (projectId: string, source = "project", anchor?: HTMLElement | EventTarget | null) => {
+      const project = getProfileProjectById(demoProfile, projectId);
+      if (!project) return;
 
-  const openReport = useCallback((reportId: string, source = "report") => {
-    setHighlightState((current) => ({ ...current, reportId }));
-    setDetailPanel({ type: "report", reportId });
-    trackProductOverviewReportPreviewed(reportId);
-    trackProductOverviewConnectionHighlighted(source);
-  }, []);
+      setHighlightState({
+        projectId,
+        pillarId: project.pillarId,
+        recommendationId: project.relatedRecommendationId,
+        roadmapInitiativeId: project.relatedRoadmapInitiativeId,
+      });
+      setDetailPanel({ type: "projectExecution", projectId });
+      setDetailAnchor(resolveAnchorElement(anchor));
+      trackProductOverviewConnectionHighlighted(source);
+    },
+    [demoProfile],
+  );
+
+  const openReport = useCallback(
+    (reportId: string, source = "report", anchor?: HTMLElement | EventTarget | null) => {
+      setHighlightState((current) => ({ ...current, reportId }));
+      setDetailPanel({ type: "report", reportId });
+      setDetailAnchor(resolveAnchorElement(anchor));
+      trackProductOverviewReportPreviewed(reportId);
+      trackProductOverviewConnectionHighlighted(source);
+    },
+    [],
+  );
 
   const isHighlighted = useCallback(
     (ids: {
@@ -319,6 +369,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     setPersonalization(input);
     setDemoProfile(buildDemoProfile(input));
     setDetailPanel(null);
+    setDetailAnchor(null);
     setHighlightState({});
     setPersonalizationWizardOpen(false);
     trackProductOverviewDemoPersonalized(input.industryId, input.businessGoal);
@@ -327,6 +378,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
   const resetDemoState = useCallback(() => {
     clearAllDemoSessionStorage();
     setDetailPanel(null);
+    setDetailAnchor(null);
     setHighlightState({});
     setTourActive(false);
     setTourStep(0);
@@ -385,6 +437,8 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     (fromStep?: number) => {
       if (presentationActive) return;
       const step = fromStep ?? readTourProgress().currentStep ?? 0;
+      setDetailPanel(null);
+      setDetailAnchor(null);
       setTourActive(true);
       persistTourStep(step);
       trackProductOverviewTourStarted(step);
@@ -438,6 +492,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     (fromStep?: number) => {
       setTourActive(false);
       setDetailPanel(null);
+      setDetailAnchor(null);
       const step = fromStep ?? readPresentationProgress().currentStep ?? 0;
       setPresentationActive(true);
       setPresentationPaused(false);
@@ -530,6 +585,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       personalizationWizardOpen,
       presentationSettings,
       detailPanel,
+      detailAnchor,
       highlight,
       tourActive,
       tourStep,
@@ -574,6 +630,7 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       personalizationWizardOpen,
       presentationSettings,
       detailPanel,
+      detailAnchor,
       highlight,
       tourActive,
       tourStep,

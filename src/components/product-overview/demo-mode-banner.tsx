@@ -24,7 +24,7 @@ export function DemoModeBanner() {
           </div>
           <p className="leading-relaxed text-muted-foreground">
             Changes made during this tour — filters, toggles, roadmap views, industry selection, and
-            detail panels — are temporary and reset automatically when you refresh the page.
+            feature details — are temporary and reset automatically when you refresh the page.
           </p>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <RotateCcw className="h-3.5 w-3.5 shrink-0" aria-hidden />

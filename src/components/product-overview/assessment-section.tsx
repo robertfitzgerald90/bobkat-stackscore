@@ -155,10 +155,11 @@ export function AssessmentSection() {
               <OfferReveal key={pillar.id} delayMs={index * 40}>
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={(event) => {
                     trackProductOverviewPillarOpened(pillar.id, "assessment");
-                    openConnectedPillar(pillar.id, "assessment_pillar");
+                    openConnectedPillar(pillar.id, "assessment_pillar", event.currentTarget);
                   }}
+                  data-demo-feature={`pillar:${pillar.id}`}
                   aria-label={`Open ${pillar.name} assessment details`}
                   className={cn(
                     "w-full rounded-xl border p-4 text-left transition-all hover:border-primary/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

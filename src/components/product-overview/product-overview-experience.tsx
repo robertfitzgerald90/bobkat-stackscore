@@ -9,7 +9,7 @@ import { DemoJourneyOverviewSection } from "@/components/product-overview/demo-j
 import {
   InteractiveDemoProvider,
 } from "@/components/product-overview/interactive-demo-context";
-import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
+import { FeaturePopoverHost } from "@/components/product-overview/feature-popover-host";
 import {
   ProductOverviewProvider,
   useProductOverview,
@@ -223,7 +223,7 @@ const PlatformOverviewMapSection = dynamic(
 );
 
 function ProductOverviewContent() {
-  const { detailPanel, openDetail, closeDetail, presentationActive } = useProductOverview();
+  const { openDetail, presentationActive } = useProductOverview();
 
   return (
     <div className="min-w-0 overflow-x-clip bg-background pb-20 sm:pb-0">
@@ -281,7 +281,7 @@ function ProductOverviewContent() {
         <ProductOverviewFinalCta />
       </main>
       <OfferFooter />
-      <MetricDetailDrawer panel={detailPanel} onClose={closeDetail} />
+      <FeaturePopoverHost />
       <DemoPersonalizationWizard />
       <ProductGuidedTour />
       <ProductPresentationMode />

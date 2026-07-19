@@ -36,12 +36,13 @@ function RoadmapInitiativeButton({
 }: {
   initiative: DemoRoadmapInitiative;
   highlighted: boolean;
-  onClick: () => void;
+  onClick: (anchor: HTMLElement) => void;
 }) {
   return (
     <button
       type="button"
-      onClick={onClick}
+      data-demo-feature={`roadmapInitiative:${initiative.id}`}
+      onClick={(event) => onClick(event.currentTarget)}
       className={cn(
         "w-full rounded-lg border border-border/70 bg-background p-4 text-left transition-all hover:border-primary/30 hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         highlighted && "ring-2 ring-primary ring-offset-2",
@@ -88,8 +89,11 @@ export function RoadmapExperienceSection() {
     })).filter((group) => group.initiatives.length > 0);
   }, [initiatives]);
 
-  const handleInitiativeClick = (initiative: DemoRoadmapInitiative) => {
-    openConnectedRoadmapInitiative(initiative.id, "roadmap_experience");
+  const handleInitiativeClick = (
+    initiative: DemoRoadmapInitiative,
+    anchor: HTMLElement,
+  ) => {
+    openConnectedRoadmapInitiative(initiative.id, "roadmap_experience", anchor);
   };
 
   return (
@@ -145,7 +149,7 @@ export function RoadmapExperienceSection() {
                         key={initiative.id}
                         initiative={initiative}
                         highlighted={isHighlighted({ roadmapInitiativeId: initiative.id })}
-                        onClick={() => handleInitiativeClick(initiative)}
+                        onClick={(anchor) => handleInitiativeClick(initiative, anchor)}
                       />
                     ))}
                   </CardContent>
@@ -166,7 +170,7 @@ export function RoadmapExperienceSection() {
                   <RoadmapInitiativeButton
                     initiative={initiative}
                     highlighted={isHighlighted({ roadmapInitiativeId: initiative.id })}
-                    onClick={() => handleInitiativeClick(initiative)}
+                    onClick={(anchor) => handleInitiativeClick(initiative, anchor)}
                   />
                 </div>
               </OfferReveal>
@@ -188,7 +192,7 @@ export function RoadmapExperienceSection() {
                         key={initiative.id}
                         initiative={initiative}
                         highlighted={isHighlighted({ roadmapInitiativeId: initiative.id })}
-                        onClick={() => handleInitiativeClick(initiative)}
+                        onClick={(anchor) => handleInitiativeClick(initiative, anchor)}
                       />
                     ))}
                   </CardContent>

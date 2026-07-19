@@ -41,9 +41,13 @@ export function StackscoreEcosystemSection() {
                 <div key={node.id} className="flex items-start gap-2">
                   <button
                     type="button"
-                    onClick={() => {
+                    data-demo-feature={`ecosystemNode:${node.id}`}
+                    onClick={(event) => {
                       setActiveNodeId(node.id);
-                      openDetail({ type: "ecosystemNode", nodeId: node.id });
+                      openDetail(
+                        { type: "ecosystemNode", nodeId: node.id },
+                        event.currentTarget,
+                      );
                     }}
                     className={cn(
                       "w-40 rounded-xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-44",

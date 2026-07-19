@@ -10,7 +10,7 @@ import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type ProductOverviewHeroProps = {
-  onOpenDetail: (panel: DemoDetailPanel) => void;
+  onOpenDetail: (panel: DemoDetailPanel, anchor?: HTMLElement | null) => void;
   tourLauncher?: React.ReactNode;
 };
 
@@ -70,9 +70,9 @@ export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverv
             <DemoDashboard
               compact
               readOnly
-              onOpenDetail={(panel) => {
+              onOpenDetail={(panel, anchor) => {
                 scrollToDashboard();
-                onOpenDetail(panel);
+                onOpenDetail(panel, anchor);
               }}
             />
           </div>

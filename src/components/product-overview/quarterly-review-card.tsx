@@ -8,7 +8,7 @@ import type { DemoQuarterlyReview } from "@/lib/product-overview/types";
 type QuarterlyReviewCardProps = {
   review: DemoQuarterlyReview;
   compact?: boolean;
-  onPreview?: () => void;
+  onPreview?: (anchor: HTMLElement) => void;
 };
 
 export function QuarterlyReviewCard({ review, compact = false, onPreview }: QuarterlyReviewCardProps) {
@@ -44,7 +44,11 @@ export function QuarterlyReviewCard({ review, compact = false, onPreview }: Quar
           </dl>
         ) : null}
         {!compact ? (
-          <Button variant="outline" className="w-full sm:w-auto" onClick={onPreview}>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={(event) => onPreview?.(event.currentTarget)}
+          >
             Preview Executive Review
           </Button>
         ) : null}

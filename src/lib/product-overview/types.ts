@@ -332,6 +332,7 @@ export type DemoDetailPanel =
   | { type: "strategicInitiative"; initiativeId: string }
   | { type: "collaborationParticipant"; participantId: string }
   | { type: "ecosystemNode"; nodeId: string }
+  | { type: "budget" }
   | null;
 
 export type DemoTimelineSnapshot = {

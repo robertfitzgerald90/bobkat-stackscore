@@ -843,16 +843,31 @@
   min-height: 0;
 }
 
-/* Interactive demo guided tour — elevate the active section above the soft veil */
+/* Interactive demo — active feature anchor while popover is open */
+[data-feature-popover-anchor="true"] {
+  position: relative;
+  z-index: 70;
+  outline: 2px solid color-mix(in oklab, var(--primary) 85%, transparent);
+  outline-offset: 3px;
+  box-shadow:
+    0 12px 28px -16px rgba(8, 47, 91, 0.45),
+    0 0 0 1px rgba(8, 47, 91, 0.08),
+    0 0 24px rgba(8, 47, 91, 0.22);
+  border-radius: 0.9rem;
+  transition:
+    box-shadow 180ms ease,
+    outline-color 180ms ease;
+}
+
+/* Interactive demo guided tour — highlight the active section (no page veil) */
 [data-tour-spotlight="true"] {
   position: relative !important;
   z-index: 60 !important;
-  transform: scale(1.015);
+  transform: scale(1.01);
   border-radius: 1rem;
-  background-color: var(--background);
   box-shadow:
-    0 28px 64px -24px rgba(8, 47, 91, 0.4),
-    0 0 0 1px rgba(8, 47, 91, 0.08);
+    0 20px 48px -24px rgba(8, 47, 91, 0.35),
+    0 0 0 1px rgba(8, 47, 91, 0.1);
   transition:
     transform 450ms ease,
     box-shadow 450ms ease;

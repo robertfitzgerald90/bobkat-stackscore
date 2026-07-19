@@ -9,7 +9,7 @@ type RoadmapSummaryCardProps = {
   completionPercent: number;
   quarters: DemoRoadmapQuarter[];
   compact?: boolean;
-  onExplore?: () => void;
+  onExplore?: (anchor: HTMLElement) => void;
 };
 
 export function RoadmapSummaryCard({
@@ -49,7 +49,11 @@ export function RoadmapSummaryCard({
           ))}
         </div>
         {!compact ? (
-          <Button variant="outline" className="w-full sm:w-auto" onClick={onExplore}>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={(event) => onExplore?.(event.currentTarget)}
+          >
             Explore Roadmap Preview
           </Button>
         ) : null}

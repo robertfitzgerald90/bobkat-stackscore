@@ -62,7 +62,13 @@ export function StrategicPlanningSection() {
             <OfferReveal key={initiative.id} delayMs={index * 40}>
               <button
                 type="button"
-                onClick={() => openDetail({ type: "strategicInitiative", initiativeId: initiative.id })}
+                data-demo-feature={`strategicInitiative:${initiative.id}`}
+                onClick={(event) =>
+                  openDetail(
+                    { type: "strategicInitiative", initiativeId: initiative.id },
+                    event.currentTarget,
+                  )
+                }
                 className="w-full rounded-xl border border-border/70 bg-card p-5 text-left transition-all hover:border-primary/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="flex items-start justify-between gap-3">

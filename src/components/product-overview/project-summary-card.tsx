@@ -8,13 +8,14 @@ import {
   CLIENT_PROGRESS_TRACK,
   CLIENT_SURFACE_CARD,
 } from "@/lib/client-ui/tokens";
+import { DEMO_FEATURE_ATTR, demoFeatureKey } from "@/lib/product-overview/feature-popover-types";
 import { cn } from "@/lib/utils";
 import type { DemoProject } from "@/lib/product-overview/types";
 
 type ProjectSummaryCardProps = {
   projects: DemoProject[];
   compact?: boolean;
-  onProjectClick?: (projectId: string) => void;
+  onProjectClick?: (projectId: string, anchor: HTMLElement) => void;
 };
 
 export function ProjectSummaryCard({
@@ -32,7 +33,8 @@ export function ProjectSummaryCard({
           <button
             key={project.id}
             type="button"
-            onClick={() => onProjectClick?.(project.id)}
+            {...{ [DEMO_FEATURE_ATTR]: demoFeatureKey("project", project.id) }}
+            onClick={(event) => onProjectClick?.(project.id, event.currentTarget)}
             className={cn(CLIENT_INTERACTIVE_TILE, "w-full p-4 text-left")}
           >
             <div className="flex flex-wrap items-start justify-between gap-2">

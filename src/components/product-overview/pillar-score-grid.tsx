@@ -3,13 +3,14 @@
 import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DEMO_FEATURE_ATTR, demoFeatureKey } from "@/lib/product-overview/feature-popover-types";
 import { cn } from "@/lib/utils";
 import type { DemoPillar } from "@/lib/product-overview/types";
 
 type PillarScoreGridProps = {
   pillars: DemoPillar[];
   compact?: boolean;
-  onPillarClick?: (pillarId: string) => void;
+  onPillarClick?: (pillarId: string, anchor: HTMLElement) => void;
 };
 
 export function PillarScoreGrid({ pillars, compact = false, onPillarClick }: PillarScoreGridProps) {
@@ -29,7 +30,8 @@ export function PillarScoreGrid({ pillars, compact = false, onPillarClick }: Pil
             <button
               key={pillar.id}
               type="button"
-              onClick={() => onPillarClick?.(pillar.id)}
+              {...{ [DEMO_FEATURE_ATTR]: demoFeatureKey("pillar", pillar.id) }}
+              onClick={(event) => onPillarClick?.(pillar.id, event.currentTarget)}
               className="rounded-xl border border-border/70 bg-background p-4 text-left transition-colors hover:border-primary/30 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <div className="flex items-start justify-between gap-2">

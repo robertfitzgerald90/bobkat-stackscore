@@ -7,7 +7,7 @@ import type { DemoNextAction } from "@/lib/product-overview/types";
 
 type NextActionCardProps = {
   nextAction: DemoNextAction;
-  onReview?: () => void;
+  onReview?: (anchor: HTMLElement) => void;
 };
 
 export function NextActionCard({ nextAction, onReview }: NextActionCardProps) {
@@ -25,7 +25,7 @@ export function NextActionCard({ nextAction, onReview }: NextActionCardProps) {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Reason</p>
           <p className="mt-2 text-sm leading-relaxed text-foreground">{nextAction.reason}</p>
         </div>
-        <Button onClick={onReview}>Review Priority</Button>
+        <Button onClick={(event) => onReview?.(event.currentTarget)}>Review Priority</Button>
       </CardContent>
     </Card>
   );

@@ -54,7 +54,10 @@ export function ExecutiveReportLibrarySection() {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => openReport(report.id, "report_library")}
+                    data-demo-feature={`report:${report.id}`}
+                    onClick={(event) =>
+                      openReport(report.id, "report_library", event.currentTarget)
+                    }
                   >
                     Preview Report
                   </Button>

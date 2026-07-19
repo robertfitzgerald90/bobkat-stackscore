@@ -73,9 +73,10 @@ export function QuarterlyReviewSection() {
               <Button
                 type="button"
                 className="h-11 px-8"
-                onClick={() => {
+                data-demo-feature="executiveReview"
+                onClick={(event) => {
                   trackProductOverviewQbrPreviewed();
-                  openDetail({ type: "executiveReview" });
+                  openDetail({ type: "executiveReview" }, event.currentTarget);
                 }}
               >
                 Preview Executive Review

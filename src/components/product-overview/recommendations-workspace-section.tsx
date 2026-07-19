@@ -95,9 +95,14 @@ export function RecommendationsWorkspaceSection() {
               <OfferReveal key={recommendation.id} delayMs={index * 50}>
                 <button
                   type="button"
-                  onClick={() => {
+                  data-demo-feature={`recommendation:${recommendation.id}`}
+                  onClick={(event) => {
                     trackProductOverviewRecommendationOpened(recommendation.id);
-                    openConnectedRecommendation(recommendation.id, "recommendations_workspace");
+                    openConnectedRecommendation(
+                      recommendation.id,
+                      "recommendations_workspace",
+                      event.currentTarget,
+                    );
                   }}
                   className={cn(
                     "w-full rounded-xl border border-border/70 bg-card p-5 text-left transition-all hover:border-primary/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

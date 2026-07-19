@@ -18,13 +18,14 @@ function ProjectCard({
 }: {
   project: DemoProject;
   highlighted: boolean;
-  onClick: () => void;
+  onClick: (anchor: HTMLElement) => void;
 }) {
   return (
     <button
       type="button"
       id={`product-overview-project-${project.id}`}
-      onClick={onClick}
+      data-demo-feature={`project:${project.id}`}
+      onClick={(event) => onClick(event.currentTarget)}
       className={cn(
         "w-full rounded-xl border border-border/70 bg-card p-5 text-left transition-all hover:border-primary/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         highlighted && "ring-2 ring-primary ring-offset-2",
@@ -109,9 +110,9 @@ export function ProjectsWorkspaceSection() {
               <ProjectCard
                 project={project}
                 highlighted={isHighlighted({ projectId: project.id })}
-                onClick={() => {
+                onClick={(anchor) => {
                   trackProductOverviewProjectOpened(project.id);
-                  openConnectedProject(project.id, "projects_workspace");
+                  openConnectedProject(project.id, "projects_workspace", anchor);
                 }}
               />
             </OfferReveal>

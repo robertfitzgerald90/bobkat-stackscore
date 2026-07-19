@@ -47,9 +47,13 @@ export function ClientCollaborationSection() {
               <button
                 key={participant.id}
                 type="button"
-                onClick={() => {
+                data-demo-feature={`collaborationParticipant:${participant.id}`}
+                onClick={(event) => {
                   setActiveParticipantId(participant.id);
-                  openDetail({ type: "collaborationParticipant", participantId: participant.id });
+                  openDetail(
+                    { type: "collaborationParticipant", participantId: participant.id },
+                    event.currentTarget,
+                  );
                 }}
                 className={cn(
                   "rounded-xl border p-4 text-left transition-all hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

@@ -28,7 +28,7 @@ import type { DemoDetailPanel } from "@/lib/product-overview/types";
 type DemoDashboardProps = {
   compact?: boolean;
   readOnly?: boolean;
-  onOpenDetail?: (panel: DemoDetailPanel) => void;
+  onOpenDetail?: (panel: DemoDetailPanel, anchor?: HTMLElement | null) => void;
 };
 
 export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail }: DemoDashboardProps) {
@@ -36,31 +36,31 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
   const data = demoProfile.dashboard;
   const { openConnectedPillar, openConnectedRecommendation, openConnectedProject } = useProductOverview();
 
-  function openDetail(panel: DemoDetailPanel) {
+  function openDetail(panel: DemoDetailPanel, anchor?: HTMLElement | null) {
     if (!panel) return;
     if (panel.type === "pillar") {
       trackProductOverviewPillarOpened(panel.pillarId, "dashboard");
-      openConnectedPillar(panel.pillarId, "dashboard_pillar");
+      openConnectedPillar(panel.pillarId, "dashboard_pillar", anchor);
       return;
     }
     if (panel.type === "recommendation") {
       trackProductOverviewRecommendationOpened(panel.recommendationId);
-      openConnectedRecommendation(panel.recommendationId, "dashboard_recommendation");
+      openConnectedRecommendation(panel.recommendationId, "dashboard_recommendation", anchor);
       return;
     }
     if (panel.type === "project") {
       trackProductOverviewProjectOpened(panel.projectId);
-      openConnectedProject(panel.projectId, "dashboard_project");
+      openConnectedProject(panel.projectId, "dashboard_project", anchor);
       return;
     }
     if (panel.type === "nextAction") {
       trackProductOverviewProjectOpened(data.nextAction.relatedProjectId);
-      openConnectedProject(data.nextAction.relatedProjectId, "next_action");
+      openConnectedProject(data.nextAction.relatedProjectId, "next_action", anchor);
       return;
     }
     if (panel.type === "roadmap") trackProductOverviewRoadmapPreviewed();
     if (panel.type === "qbr") trackProductOverviewQbrPreviewed();
-    onOpenDetail?.(panel);
+    onOpenDetail?.(panel, anchor);
   }
 
   return (
@@ -114,7 +114,7 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
           <div className="xl:col-span-5">
             <NextActionCard
               nextAction={data.nextAction}
-              onReview={() => openDetail({ type: "nextAction" })}
+              onReview={(anchor) => openDetail({ type: "nextAction" }, anchor)}
             />
           </div>
         ) : null}
@@ -123,7 +123,7 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
       <PillarScoreGrid
         pillars={data.pillars}
         compact={compact}
-        onPillarClick={(pillarId) => openDetail({ type: "pillar", pillarId })}
+        onPillarClick={(pillarId, anchor) => openDetail({ type: "pillar", pillarId }, anchor)}
       />
 
       {!compact ? (
@@ -131,26 +131,36 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
           <div className="grid gap-4 xl:grid-cols-2">
             <RecommendationSummaryCard
               metrics={data.metrics}
-              onViewExample={() => openDetail({ type: "recommendation", recommendationId: data.featuredRecommendationId })}
+              onViewExample={(anchor) =>
+                openDetail(
+                  { type: "recommendation", recommendationId: data.featuredRecommendationId },
+                  anchor,
+                )
+              }
             />
             <RoadmapSummaryCard
               completionPercent={data.metrics.roadmapCompletionPercent}
               quarters={data.roadmapQuarters}
-              onExplore={() => openDetail({ type: "roadmap" })}
+              onExplore={(anchor) => openDetail({ type: "roadmap" }, anchor)}
             />
           </div>
 
           <ProjectSummaryCard
             projects={data.projects}
-            onProjectClick={(projectId) => openDetail({ type: "project", projectId })}
+            onProjectClick={(projectId, anchor) =>
+              openDetail({ type: "project", projectId }, anchor)
+            }
           />
 
           <div className="grid gap-4 xl:grid-cols-2">
             <QuarterlyReviewCard
               review={data.quarterlyReview}
-              onPreview={() => openDetail({ type: "qbr" })}
+              onPreview={(anchor) => openDetail({ type: "qbr" }, anchor)}
             />
-            <BudgetSummaryCard budget={data.budget} />
+            <BudgetSummaryCard
+              budget={data.budget}
+              onOpen={(anchor) => openDetail({ type: "budget" }, anchor)}
+            />
           </div>
         </>
       ) : null}

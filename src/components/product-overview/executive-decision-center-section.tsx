@@ -57,9 +57,13 @@ export function ExecutiveDecisionCenterSection() {
             <OfferReveal key={widget.id} delayMs={index * 30}>
               <button
                 type="button"
-                onClick={() => {
+                data-demo-feature={`executiveWidget:${widget.id}`}
+                onClick={(event) => {
                   trackProductOverviewExecutiveDashboardViewed(widget.id);
-                  openDetail({ type: "executiveWidget", widgetId: widget.id });
+                  openDetail(
+                    { type: "executiveWidget", widgetId: widget.id },
+                    event.currentTarget,
+                  );
                 }}
                 className={cn(
                   "w-full rounded-xl border border-border/70 bg-card p-5 text-left shadow-sm transition-all hover:border-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

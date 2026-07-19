@@ -9,7 +9,7 @@ import type { DemoDashboardMetrics } from "@/lib/product-overview/types";
 type RecommendationSummaryCardProps = {
   metrics: DemoDashboardMetrics;
   compact?: boolean;
-  onViewExample?: () => void;
+  onViewExample?: (anchor: HTMLElement) => void;
 };
 
 export function RecommendationSummaryCard({
@@ -42,7 +42,11 @@ export function RecommendationSummaryCard({
           </div>
         </dl>
         {!compact ? (
-          <Button variant="outline" className="w-full sm:w-auto" onClick={onViewExample}>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={(event) => onViewExample?.(event.currentTarget)}
+          >
             View Example Recommendation
           </Button>
         ) : null}
