@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 @import "../styles/report-document-theme.css";
 @import "../styles/tip-executive-report.css";
+@import "../styles/qbr-executive-report.css";
 
 @custom-variant dark (&:is(.dark *, .midnight *));
 
@@ -260,13 +261,15 @@
   .stackscore-report .report-no-print,
   .stackscore-report .print\:hidden,
   .comparison-report .print\:hidden,
-  .qbr-report .print\:hidden {
+  .qbr-report .print\:hidden,
+  .qbr-executive-report .print\:hidden {
     display: none !important;
   }
 
   .stackscore-report,
   .comparison-report,
-  .qbr-report {
+  .qbr-report,
+  .qbr-executive-report {
     color: #111;
   }
 
@@ -277,6 +280,18 @@
     break-inside: avoid;
     box-shadow: none;
     border: 1px solid #ddd;
+  }
+
+  .qbr-executive-report .report-document-executive {
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+    background: #fff !important;
+  }
+
+  .qbr-executive-report .report-section-header {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
   .stackscore-report .report-cover {

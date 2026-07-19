@@ -1,0 +1,774 @@
+/**
+ * Quarterly Business Review — executive document layout (browser preview + print).
+ * Shares StackScore navy tokens from report-document-theme.
+ */
+
+.qbr-executive-report {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.qbr-executive-report .report-document-executive {
+  overflow: visible;
+  box-shadow: var(--report-shadow, 0 10px 40px rgba(8, 47, 91, 0.12));
+}
+
+.qbr-executive-report .report-body-executive {
+  padding: 1.75rem 1.5rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .qbr-executive-report .report-body-executive {
+    padding: 2rem 2rem 2.5rem;
+  }
+}
+
+/* Cover */
+.qbr-executive-report .qbr-report-cover {
+  background: linear-gradient(165deg, #082f5b 0%, #0a3d75 55%, #124a82 100%);
+  color: #ffffff;
+  padding: 2rem 1.5rem 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .qbr-executive-report .qbr-report-cover {
+    padding: 2.5rem 2rem 2.5rem;
+  }
+}
+
+.qbr-executive-report .qbr-report-cover-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.qbr-executive-report .qbr-report-cover-title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.85rem, 4.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-report-cover-client {
+  margin-top: 1rem;
+  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-report-cover-subtitle {
+  margin-top: 0.5rem;
+  max-width: 40rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.qbr-executive-report .qbr-report-cover-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+@media (min-width: 768px) {
+  .qbr-executive-report .qbr-report-cover-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.qbr-executive-report .qbr-report-cover-meta-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.qbr-executive-report .qbr-report-cover-meta-value {
+  margin-top: 0.3rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.35;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-report-cover-score {
+  margin-top: 1.5rem;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.9rem 1.15rem;
+}
+
+.qbr-executive-report .qbr-report-cover-score-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.qbr-executive-report .qbr-report-cover-score-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-report-cover-score-hint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.qbr-executive-report .qbr-report-cover-confidential {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* KPI dashboard */
+.qbr-executive-report .qbr-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+@media (min-width: 640px) {
+  .qbr-executive-report .qbr-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .qbr-executive-report .qbr-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.qbr-executive-report .qbr-kpi-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  padding: 1rem 1.05rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qbr-executive-report .qbr-kpi-card-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.qbr-executive-report .qbr-kpi-card-value {
+  margin-top: 0.45rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-kpi-card-value-positive {
+  color: var(--report-status-strong, #059669);
+}
+
+.qbr-executive-report .qbr-kpi-card-value-warning {
+  color: var(--report-status-at-risk, #d97706);
+}
+
+.qbr-executive-report .qbr-kpi-card-value-critical {
+  color: var(--report-status-critical, #dc2626);
+}
+
+.qbr-executive-report .qbr-kpi-card-hint {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--report-muted, #475569);
+}
+
+/* Prose */
+.qbr-executive-report .qbr-executive-prose {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--report-text, #1e293b);
+}
+
+.qbr-executive-report .qbr-executive-prose-stack {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Category scorecards */
+.qbr-executive-report .qbr-category-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+@media (min-width: 640px) {
+  .qbr-executive-report .qbr-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.qbr-executive-report .qbr-category-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 1rem 1.05rem;
+  box-shadow: 0 8px 24px -18px rgba(8, 47, 91, 0.35);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qbr-executive-report .qbr-category-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.qbr-executive-report .qbr-category-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-category-card-icon {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  background: color-mix(in oklab, var(--report-accent, #082f5b) 10%, white);
+  color: var(--report-accent, #082f5b);
+}
+
+.qbr-executive-report .qbr-category-delta {
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.qbr-executive-report .qbr-category-delta-positive {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.qbr-executive-report .qbr-category-delta-warning {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.qbr-executive-report .qbr-category-delta-neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.qbr-executive-report .qbr-category-scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.qbr-executive-report .qbr-category-score-box {
+  border-radius: 0.65rem;
+  background: var(--report-surface-muted, #f1f5f9);
+  padding: 0.55rem 0.7rem;
+}
+
+.qbr-executive-report .qbr-category-score-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-category-score-value {
+  margin-top: 0.2rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-category-bar-track {
+  margin-top: 0.85rem;
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--report-bar-track, #e2e8f0);
+}
+
+.qbr-executive-report .qbr-category-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--report-accent, #082f5b);
+}
+
+.qbr-executive-report .qbr-category-summary {
+  margin-top: 0.7rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--report-muted, #475569);
+}
+
+/* Work / opportunity cards */
+.qbr-executive-report .qbr-work-list,
+.qbr-executive-report .qbr-opportunity-list,
+.qbr-executive-report .qbr-risk-list,
+.qbr-executive-report .qbr-priority-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.qbr-executive-report .qbr-work-card,
+.qbr-executive-report .qbr-opportunity-card,
+.qbr-executive-report .qbr-risk-card,
+.qbr-executive-report .qbr-priority-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 1.05rem 1.1rem;
+  box-shadow: 0 8px 24px -18px rgba(8, 47, 91, 0.3);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qbr-executive-report .qbr-work-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+}
+
+.qbr-executive-report .qbr-work-icon {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.qbr-executive-report .qbr-work-title,
+.qbr-executive-report .qbr-opportunity-title,
+.qbr-executive-report .qbr-priority-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-work-meta,
+.qbr-executive-report .qbr-opportunity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.qbr-executive-report .qbr-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  background: var(--report-surface-muted, #f8fafc);
+  padding: 0.15rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--report-text, #334155);
+}
+
+.qbr-executive-report .qbr-chip-success {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.qbr-executive-report .qbr-chip-critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.qbr-executive-report .qbr-chip-high {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.qbr-executive-report .qbr-chip-medium {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.qbr-executive-report .qbr-chip-low {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.qbr-executive-report .qbr-work-body,
+.qbr-executive-report .qbr-opportunity-body,
+.qbr-executive-report .qbr-priority-body,
+.qbr-executive-report .qbr-risk-body {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--report-text, #334155);
+}
+
+.qbr-executive-report .qbr-priority-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-priority-group-title:first-child {
+  margin-top: 0;
+}
+
+.qbr-executive-report .qbr-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.qbr-executive-report .qbr-meta-box {
+  border-radius: 0.65rem;
+  background: var(--report-surface-muted, #f1f5f9);
+  padding: 0.5rem 0.65rem;
+}
+
+.qbr-executive-report .qbr-meta-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-meta-value {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--report-heading, #0f172a);
+}
+
+/* Investment */
+.qbr-executive-report .qbr-budget-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+@media (min-width: 640px) {
+  .qbr-executive-report .qbr-budget-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .qbr-executive-report .qbr-budget-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.qbr-executive-report .qbr-budget-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.9rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  padding: 1.05rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qbr-executive-report .qbr-budget-card-emphasize {
+  border-color: color-mix(in oklab, var(--report-accent, #082f5b) 35%, white);
+  background: color-mix(in oklab, var(--report-accent, #082f5b) 6%, white);
+}
+
+.qbr-executive-report .qbr-budget-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.qbr-executive-report .qbr-budget-value {
+  margin-top: 0.4rem;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-bar-compare {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.qbr-executive-report .qbr-bar-row-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-bar-track {
+  margin-top: 0.35rem;
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--report-bar-track, #e2e8f0);
+}
+
+.qbr-executive-report .qbr-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--report-accent, #082f5b);
+}
+
+.qbr-executive-report .qbr-bar-fill-secondary {
+  background: #0ea5e9;
+}
+
+/* Roadmap journey */
+.qbr-executive-report .qbr-roadmap-flow {
+  display: grid;
+  gap: 0;
+}
+
+.qbr-executive-report .qbr-roadmap-step {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  gap: 0.85rem;
+}
+
+.qbr-executive-report .qbr-roadmap-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qbr-executive-report .qbr-roadmap-dot {
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid var(--report-border, #cbd5e1);
+  background: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-roadmap-dot-completed {
+  border-color: #059669;
+  background: #059669;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-roadmap-dot-in_progress {
+  border-color: #d97706;
+  background: #d97706;
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-roadmap-dot-awaiting {
+  border-color: var(--report-accent, #082f5b);
+  background: var(--report-accent, #082f5b);
+  color: #ffffff;
+}
+
+.qbr-executive-report .qbr-roadmap-line {
+  width: 2px;
+  flex: 1;
+  min-height: 1.25rem;
+  background: var(--report-border-light, #e2e8f0);
+}
+
+.qbr-executive-report .qbr-roadmap-card {
+  margin-bottom: 0.85rem;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 1rem 1.05rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qbr-executive-report .qbr-roadmap-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.qbr-executive-report .qbr-roadmap-phase-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-roadmap-phase-time {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-roadmap-phase-body {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--report-text, #334155);
+}
+
+/* Score compare hero */
+.qbr-executive-report .qbr-score-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.95rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  padding: 1.15rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media (min-width: 768px) {
+  .qbr-executive-report .qbr-score-hero {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+}
+
+.qbr-executive-report .qbr-score-hero-card {
+  border-radius: 0.75rem;
+  background: #ffffff;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  padding: 0.9rem 1rem;
+  text-align: center;
+}
+
+.qbr-executive-report .qbr-score-hero-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-score-hero-value {
+  margin-top: 0.35rem;
+  font-size: 2.25rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-heading, #0f172a);
+}
+
+.qbr-executive-report .qbr-score-hero-delta {
+  text-align: center;
+}
+
+.qbr-executive-report .qbr-score-hero-delta-value {
+  font-size: 1.5rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-status-strong, #059669);
+}
+
+.qbr-executive-report .qbr-score-hero-delta-label {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--report-muted, #64748b);
+}
+
+.qbr-executive-report .qbr-empty {
+  border: 1px dashed var(--report-border, #cbd5e1);
+  border-radius: 0.9rem;
+  background: var(--report-surface-muted, #f8fafc);
+  padding: 1.15rem 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--report-muted, #475569);
+}
+
+@media print {
+  .qbr-executive-report .report-document-executive {
+    border: none;
+    box-shadow: none;
+  }
+
+  .qbr-executive-report .qbr-report-cover {
+    break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .qbr-executive-report .qbr-kpi-card,
+  .qbr-executive-report .qbr-category-card,
+  .qbr-executive-report .qbr-work-card,
+  .qbr-executive-report .qbr-opportunity-card,
+  .qbr-executive-report .qbr-budget-card,
+  .qbr-executive-report .qbr-roadmap-card,
+  .qbr-executive-report .qbr-priority-card,
+  .qbr-executive-report .qbr-risk-card,
+  .qbr-executive-report .qbr-score-hero {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none;
+  }
+}
