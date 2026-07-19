@@ -4,9 +4,11 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { AssessmentPreviewSection } from "@/components/product-overview/assessment-preview-section";
-import { DemoModeBanner } from "@/components/product-overview/demo-mode-banner";
 import { DemoPersonalizationLauncher, DemoPersonalizationWizard } from "@/components/product-overview/demo-personalization-wizard";
-import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
+import { DemoJourneyOverviewSection } from "@/components/product-overview/demo-journey-overview-section";
+import {
+  InteractiveDemoProvider,
+} from "@/components/product-overview/interactive-demo-context";
 import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
 import {
   ProductOverviewProvider,
@@ -28,6 +30,70 @@ import {
 } from "@/components/product-overview/product-presentation-mode";
 import { SectionLoadingSkeleton } from "@/components/product-overview/section-loading-skeleton";
 
+const AssessmentSection = dynamic(
+  () =>
+    import("@/components/product-overview/assessment-section").then((module) => ({
+      default: module.AssessmentSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
+const PhasedRoadmapSection = dynamic(
+  () =>
+    import("@/components/product-overview/phased-roadmap-section").then((module) => ({
+      default: module.PhasedRoadmapSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton minHeight="min-h-[32rem]" /> },
+);
+
+const PhaseProposalSection = dynamic(
+  () =>
+    import("@/components/product-overview/phase-proposal-section").then((module) => ({
+      default: module.PhaseProposalSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton minHeight="min-h-[28rem]" /> },
+);
+
+const ImplementationProgressSection = dynamic(
+  () =>
+    import("@/components/product-overview/implementation-progress-section").then((module) => ({
+      default: module.ImplementationProgressSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
+const MeasurableImprovementSection = dynamic(
+  () =>
+    import("@/components/product-overview/measurable-improvement-section").then((module) => ({
+      default: module.MeasurableImprovementSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
+const BudgetPlanningSection = dynamic(
+  () =>
+    import("@/components/product-overview/budget-planning-section").then((module) => ({
+      default: module.BudgetPlanningSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
+const ExecutiveReportLibrarySection = dynamic(
+  () =>
+    import("@/components/product-overview/executive-report-library-section").then((module) => ({
+      default: module.ExecutiveReportLibrarySection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
+const QuarterlyReviewSection = dynamic(
+  () =>
+    import("@/components/product-overview/quarterly-review-section").then((module) => ({
+      default: module.QuarterlyReviewSection,
+    })),
+  { loading: () => <SectionLoadingSkeleton /> },
+);
+
 const TechnologyTimelineSection = dynamic(
   () =>
     import("@/components/product-overview/technology-timeline-section").then((module) => ({
@@ -40,14 +106,6 @@ const TechnologyJourneySection = dynamic(
   () =>
     import("@/components/product-overview/technology-journey-section").then((module) => ({
       default: module.TechnologyJourneySection,
-    })),
-  { loading: () => <SectionLoadingSkeleton /> },
-);
-
-const AssessmentSection = dynamic(
-  () =>
-    import("@/components/product-overview/assessment-section").then((module) => ({
-      default: module.AssessmentSection,
     })),
   { loading: () => <SectionLoadingSkeleton /> },
 );
@@ -68,14 +126,6 @@ const RecommendationsWorkspaceSection = dynamic(
   { loading: () => <SectionLoadingSkeleton minHeight="min-h-[32rem]" /> },
 );
 
-const RoadmapExperienceSection = dynamic(
-  () =>
-    import("@/components/product-overview/roadmap-experience-section").then((module) => ({
-      default: module.RoadmapExperienceSection,
-    })),
-  { loading: () => <SectionLoadingSkeleton minHeight="min-h-[32rem]" /> },
-);
-
 const BusinessValueSection = dynamic(
   () =>
     import("@/components/product-overview/business-value-section").then((module) => ({
@@ -90,30 +140,6 @@ const ProjectsWorkspaceSection = dynamic(
       default: module.ProjectsWorkspaceSection,
     })),
   { loading: () => <SectionLoadingSkeleton minHeight="min-h-[32rem]" /> },
-);
-
-const QuarterlyReviewSection = dynamic(
-  () =>
-    import("@/components/product-overview/quarterly-review-section").then((module) => ({
-      default: module.QuarterlyReviewSection,
-    })),
-  { loading: () => <SectionLoadingSkeleton /> },
-);
-
-const ExecutiveReportLibrarySection = dynamic(
-  () =>
-    import("@/components/product-overview/executive-report-library-section").then((module) => ({
-      default: module.ExecutiveReportLibrarySection,
-    })),
-  { loading: () => <SectionLoadingSkeleton /> },
-);
-
-const BudgetPlanningSection = dynamic(
-  () =>
-    import("@/components/product-overview/budget-planning-section").then((module) => ({
-      default: module.BudgetPlanningSection,
-    })),
-  { loading: () => <SectionLoadingSkeleton /> },
 );
 
 const BusinessOutcomesDashboardSection = dynamic(
@@ -197,7 +223,7 @@ const PlatformOverviewMapSection = dynamic(
 );
 
 function ProductOverviewContent() {
-  const { detailPanel, openDetail, closeDetail, presentationActive, personalization } = useProductOverview();
+  const { detailPanel, openDetail, closeDetail, presentationActive } = useProductOverview();
 
   return (
     <div className="min-w-0 overflow-x-clip bg-background pb-20 sm:pb-0">
@@ -217,43 +243,28 @@ function ProductOverviewContent() {
             </>
           }
         />
-        <section
-          id="product-overview-dashboard"
-          className="scroll-mt-36 border-t border-border/70 bg-muted/10 px-4 py-10 sm:px-6 sm:py-12"
-        >
-          <div className="mx-auto max-w-7xl space-y-6">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-                Client Success Dashboard
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                Experience StackScore from a client&apos;s perspective
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                Explore {personalization.companyName}&apos;s technology command center with realistic
-                scores, priorities, projects, and executive planning signals.
-              </p>
-            </div>
-            <DemoModeBanner />
-            <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_24px_80px_-40px_rgba(8,47,91,0.25)] transition-shadow duration-300 motion-reduce:transition-none hover:shadow-[0_28px_90px_-36px_rgba(8,47,91,0.3)]">
-              <DemoDashboard onOpenDetail={openDetail} />
-            </div>
-          </div>
-        </section>
+
+        <DemoJourneyOverviewSection />
 
         <Suspense fallback={<SectionLoadingSkeleton />}>
+          {/* Guided phased-roadmap journey */}
+          <AssessmentSection />
+          <PhasedRoadmapSection />
+          <PhaseProposalSection />
+          <ImplementationProgressSection />
+          <MeasurableImprovementSection />
+          <BudgetPlanningSection />
+          <ExecutiveReportLibrarySection />
+          <QuarterlyReviewSection />
+
+          {/* Enrichment sections retained below the guided story */}
+          <AssessmentPreviewSection />
           <TechnologyTimelineSection />
           <TechnologyJourneySection />
-          <AssessmentSection />
-          <AssessmentPreviewSection />
           <CurrentFutureStateSection />
           <RecommendationsWorkspaceSection />
-          <RoadmapExperienceSection />
           <BusinessValueSection />
           <ProjectsWorkspaceSection />
-          <QuarterlyReviewSection />
-          <ExecutiveReportLibrarySection />
-          <BudgetPlanningSection />
           <BusinessOutcomesDashboardSection />
           <ContinuousImprovementSection />
           <ClientCollaborationSection />
@@ -282,7 +293,9 @@ function ProductOverviewContent() {
 export function ProductOverviewExperience() {
   return (
     <ProductOverviewProvider>
-      <ProductOverviewContent />
+      <InteractiveDemoProvider>
+        <ProductOverviewContent />
+      </InteractiveDemoProvider>
     </ProductOverviewProvider>
   );
 }

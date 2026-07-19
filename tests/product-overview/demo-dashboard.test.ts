@@ -90,11 +90,13 @@ describe("product overview strategy demo data", () => {
     expect(getDemoRecommendationById("rec-mfa")?.title).toContain("MFA");
   });
 
-  it("maps Phase 2 and Phase 3 navigation sections", () => {
-    expect(PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.phase === 2)).toHaveLength(3);
-    expect(PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.phase === 3)).toHaveLength(4);
-    expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "projects")?.sectionId).toBe(
-      "product-overview-projects",
+  it("maps the guided phased-roadmap navigation sections", () => {
+    expect(PRODUCT_OVERVIEW_NAV_ITEMS).toHaveLength(8);
+    expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "roadmap")?.sectionId).toBe(
+      "product-overview-roadmap",
+    );
+    expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "phase-proposal")?.sectionId).toBe(
+      "product-overview-phase-proposal",
     );
     expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "reports")?.sectionId).toBe(
       "product-overview-reports",
@@ -127,9 +129,12 @@ describe("product overview partnership demo data", () => {
     expect(TECHNOLOGY_TIMELINE_SNAPSHOTS.at(-1)?.metrics.technologyScore).toBe(82);
   });
 
-  it("defines a 10-step guided product tour", () => {
-    expect(PRODUCT_TOUR_STEPS).toHaveLength(10);
+  it("defines an 8-step guided product tour aligned to the phased journey", () => {
+    expect(PRODUCT_TOUR_STEPS).toHaveLength(8);
     expect(PRODUCT_TOUR_STEPS[0]?.sectionId).toBe("product-overview-dashboard");
+    expect(PRODUCT_TOUR_STEPS.some((step) => step.sectionId === "product-overview-phase-proposal")).toBe(
+      true,
+    );
   });
 
   it("defines executive widgets and AI preview cards", () => {
@@ -180,9 +185,10 @@ describe("product overview assessment preview", () => {
 });
 
 describe("product overview presentation mode", () => {
-  it("defines 13 auto-advancing presentation sections", () => {
-    expect(PRESENTATION_SECTIONS).toHaveLength(13);
+  it("defines guided journey presentation sections", () => {
+    expect(PRESENTATION_SECTIONS).toHaveLength(9);
     expect(PRESENTATION_SECTIONS[0]?.sectionId).toBe("product-overview-dashboard");
+    expect(PRESENTATION_SECTIONS.some((section) => section.id === "proposal")).toBe(true);
     expect(PRESENTATION_SECTIONS.at(-1)?.sectionId).toBe("product-overview-final-cta");
   });
 

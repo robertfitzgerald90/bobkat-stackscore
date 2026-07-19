@@ -52,5 +52,7 @@ export function clearAllDemoSessionStorage() {
   sessionStorage.removeItem(ENGAGEMENT_STORAGE_KEY);
   sessionStorage.removeItem("stackscore-product-overview-tour");
   sessionStorage.removeItem("stackscore-product-overview-presentation");
+  sessionStorage.removeItem("stackscore-interactive-demo-v1");
+  window.dispatchEvent(new Event("stackscore-interactive-demo-reset"));
 }
 

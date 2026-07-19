@@ -1,22 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
-import { Button } from "@/components/ui/button";
+import { RoadmapStatusBadge } from "@/components/client-roadmap/roadmap-status-badge";
+import { DemoInvestmentSummary } from "@/components/product-overview/demo-investment-summary";
+import { useInteractiveDemo } from "@/components/product-overview/interactive-demo-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useProductOverview } from "@/components/product-overview/product-overview-context";
-import { trackProductOverviewBudgetPeriodChanged } from "@/lib/analytics/product-overview-events";
-import { formatDemoCurrency } from "@/lib/product-overview/demo-dashboard";
-import type { DemoBudgetPeriodId } from "@/lib/product-overview/types";
+import {
+  formatCurrency,
+  formatMonthlyCurrency,
+  getManagedItCatalogPriceLabel,
+  getStrategicConsultingMonthlyLabel,
+} from "@/lib/product-overview/interactive-demo";
 
 export function BudgetPlanningSection() {
-  const { demoProfile } = useProductOverview();
-  const [periodId, setPeriodId] = useState<DemoBudgetPeriodId>("current-year");
-  const period = useMemo(
-    () => demoProfile.budgetPeriods.find((item) => item.id === periodId) ?? demoProfile.budgetPeriods[0]!,
-    [demoProfile.budgetPeriods, periodId],
-  );
-  const maxCategoryAmount = Math.max(...period.categories.map((category) => category.amount));
+  const { view } = useInteractiveDemo();
+  const { phases, totalOneTimeInvestment, totalMonthlyRecurring, company } = view;
 
   return (
     <section
@@ -27,78 +25,119 @@ export function BudgetPlanningSection() {
         <OfferReveal>
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              Budget Planning
+              Budget & Investment
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Technology Investment Dashboard
+              Investment by phase — not one inflated total
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Align technology spending with your strategic roadmap — from annual plans to
-              multi-year investment visibility.
+              {company.name} can understand cash flow by seeing when one-time implementation work and
+              new monthly services begin. One-time and recurring investments are never combined into
+              a false grand total.
             </p>
           </div>
         </OfferReveal>
 
-        <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Budget period">
-          {demoProfile.budgetPeriods.map((item) => (
-            <Button
-              key={item.id}
-              type="button"
-              size="sm"
-              variant={periodId === item.id ? "default" : "outline"}
-              onClick={() => {
-                setPeriodId(item.id);
-                trackProductOverviewBudgetPeriodChanged(item.id);
-              }}
-              aria-pressed={periodId === item.id}
-            >
-              {item.label}
-            </Button>
-          ))}
-        </div>
-
-        <OfferReveal delayMs={100}>
-          <div className="mt-6 grid gap-4 transition-opacity duration-300 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              ["Annual Budget", period.annual.planned],
-              ["Approved", period.annual.approved],
-              ["Committed", period.annual.committed],
-              ["Remaining", period.annual.remaining],
-            ].map(([label, value]) => (
-              <Card key={label as string} className="border-border/70 shadow-sm">
-                <CardContent className="p-4">
-                  <p className="text-xs text-muted-foreground">{label as string}</p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums">
-                    {formatDemoCurrency(value as number)}
+        <OfferReveal delayMs={80}>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {phases.map((phase) => (
+              <Card key={phase.id} className="border-border/70 shadow-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <CardTitle className="text-lg">
+                      Phase {phase.phaseNumber} — {phase.name}
+                    </CardTitle>
+                    <RoadmapStatusBadge status={phase.status} />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {phase.timeline} · {phase.initiativeCount} initiatives
                   </p>
+                </CardHeader>
+                <CardContent>
+                  <DemoInvestmentSummary
+                    oneTimeInvestment={phase.oneTimeInvestment}
+                    monthlyRecurringInvestment={phase.monthlyRecurringInvestment}
+                    showMonthlyRecurring={phase.showMonthlyRecurring}
+                    monthlyRecurringLabel={phase.monthlyRecurringLabel}
+                    compact
+                  />
+                  {!phase.showMonthlyRecurring ? (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      No new monthly recurring investment in this phase.
+                    </p>
+                  ) : null}
+                  {phase.monthlyRecurringLabel === "strategic_consulting_included" ? (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Advisory work is covered under Strategic IT Consulting (
+                      {getStrategicConsultingMonthlyLabel()}).
+                    </p>
+                  ) : null}
                 </CardContent>
               </Card>
             ))}
           </div>
         </OfferReveal>
 
-        <OfferReveal delayMs={150}>
-          <Card className="mt-6 border-border/70 shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Investment Breakdown</CardTitle>
+        <OfferReveal delayMs={120}>
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <Card className="border-border/70 shadow-sm">
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground">
+                  Total One-Time Implementation Investment
+                </p>
+                <p className="mt-2 text-3xl font-semibold tabular-nums text-foreground">
+                  {formatCurrency(totalOneTimeInvestment)}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/70 shadow-sm">
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground">
+                  Total New Monthly Recurring Investment
+                </p>
+                <p className="mt-2 text-3xl font-semibold tabular-nums text-foreground">
+                  {formatMonthlyCurrency(totalMonthlyRecurring)}
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Includes Managed IT ({getManagedItCatalogPriceLabel()}) and Strategic IT Consulting
+                  where applicable. Annualized figures are shown only when explicitly labeled.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </OfferReveal>
+
+        <OfferReveal delayMs={160}>
+          <Card className="mt-8 border-border/70">
+            <CardHeader>
+              <CardTitle className="text-base">Budget timeline</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {period.categories.map((category) => (
-                <div key={category.id}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-foreground">{category.label}</span>
-                    <span className="tabular-nums text-muted-foreground">
-                      {formatDemoCurrency(category.amount)}
-                    </span>
-                  </div>
-                  <div className="mt-2 h-2 rounded-full bg-muted">
-                    <div
-                      className="h-2 rounded-full bg-primary transition-all duration-500"
-                      style={{ width: `${(category.amount / maxCategoryAmount) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+            <CardContent>
+              <ol className="space-y-3 text-sm text-muted-foreground">
+                <li>
+                  <span className="font-medium text-foreground">At approval — </span>
+                  Phase 1 one-time implementation investment is authorized independently.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">During implementation — </span>
+                  Project delivery work proceeds against the approved phase scope.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">Once services go live — </span>
+                  New monthly Managed IT investment begins for supported devices.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">Later phases — </span>
+                  Additional one-time work is approved separately as priorities allow.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    Strategic IT Consulting retainer —{" "}
+                  </span>
+                  Ongoing roadmap reviews and QBR cadence start at{" "}
+                  {getStrategicConsultingMonthlyLabel()}.
+                </li>
+              </ol>
             </CardContent>
           </Card>
         </OfferReveal>

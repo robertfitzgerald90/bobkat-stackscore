@@ -2,10 +2,13 @@
 
 import { ChevronRight, Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useInteractiveDemo } from "@/components/product-overview/interactive-demo-context";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackProductOverviewPillarOpened } from "@/lib/analytics/product-overview-events";
+import { scrollToSection } from "@/lib/product-overview/polish-classes";
 import type { DemoPillar, PillarStatusColor } from "@/lib/product-overview/types";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +51,9 @@ function TrendIndicator({ pillar }: { pillar: DemoPillar }) {
 
 export function AssessmentSection() {
   const { demoProfile, openConnectedPillar, isHighlighted } = useProductOverview();
-  const { technologyScore, pillars } = demoProfile.dashboard;
+  const { view } = useInteractiveDemo();
+  const { pillars } = demoProfile.dashboard;
+  const { company, assessment } = view;
 
   return (
     <section
@@ -59,14 +64,14 @@ export function AssessmentSection() {
         <OfferReveal>
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              Technology Maturity Assessment
+              Assessment Results
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Executive assessment summary
+              {company.name}&apos;s technology baseline
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Northstar Manufacturing&apos;s assessment establishes a measurable baseline across
-              eight strategic pillars — with clear maturity labels, trends, and improvement targets.
+              StackScore converts assessment findings into an ordered implementation roadmap so the
+              organization can address its highest-priority risks first.
             </p>
           </div>
         </OfferReveal>
@@ -79,30 +84,71 @@ export function AssessmentSection() {
             <CardContent className="flex flex-wrap items-end gap-6">
               <div>
                 <p className="text-5xl font-semibold tabular-nums text-foreground">
-                  {technologyScore.score}
-                  <span className="text-2xl text-muted-foreground"> / {technologyScore.maxScore}</span>
+                  {assessment.initialStackScore}
+                  <span className="text-2xl text-muted-foreground"> / 100</span>
                 </p>
                 <Badge variant="outline" className="mt-3">
-                  {technologyScore.maturityLabel}
+                  Developing
                 </Badge>
               </div>
               <div className="rounded-lg bg-muted/30 px-4 py-3">
-                <p className="text-xs text-muted-foreground">Change since last review</p>
-                <p className="mt-1 text-xl font-semibold text-success">
-                  +{technologyScore.changeSinceLastReview} points
+                <p className="text-xs text-muted-foreground">Available improvement</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">
+                  +{assessment.availableImprovement} points
                 </p>
               </div>
               <div className="rounded-lg bg-muted/30 px-4 py-3">
-                <p className="text-xs text-muted-foreground">Projected target</p>
+                <p className="text-xs text-muted-foreground">Recommended approach</p>
                 <p className="mt-1 text-xl font-semibold text-foreground">
-                  {technologyScore.projectedScore} / {technologyScore.maxScore}
+                  {assessment.phaseCount} independently approvable phases
+                </p>
+              </div>
+              <div className="rounded-lg bg-muted/30 px-4 py-3">
+                <p className="text-xs text-muted-foreground">Generated recommendations</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">
+                  {assessment.recommendationCount}
                 </p>
               </div>
             </CardContent>
           </Card>
         </OfferReveal>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <OfferReveal delayMs={100}>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            <Card className="border-border/70">
+              <CardContent className="p-4">
+                <p className="text-sm font-semibold text-foreground">Strengths</p>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  {assessment.strengths.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="border-border/70">
+              <CardContent className="p-4">
+                <p className="text-sm font-semibold text-foreground">Priority gaps</p>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  {assessment.priorityGaps.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+            <Card className="border-border/70">
+              <CardContent className="p-4">
+                <p className="text-sm font-semibold text-foreground">Primary risks</p>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  {assessment.primaryRisks.map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </OfferReveal>
+
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {pillars.map((pillar, index) => {
             const highlighted = isHighlighted({ pillarId: pillar.id });
             return (
@@ -147,6 +193,18 @@ export function AssessmentSection() {
             );
           })}
         </div>
+
+        <OfferReveal delayMs={160}>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button
+              type="button"
+              className="h-11 px-6"
+              onClick={() => scrollToSection("product-overview-roadmap")}
+            >
+              View Technology Roadmap
+            </Button>
+          </div>
+        </OfferReveal>
       </div>
     </section>
   );

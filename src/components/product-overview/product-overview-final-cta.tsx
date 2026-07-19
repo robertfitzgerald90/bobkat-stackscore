@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
+import { useInteractiveDemo } from "@/components/product-overview/interactive-demo-context";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -12,10 +13,18 @@ import {
   trackCalBookingClick,
   trackServiceCtaClick,
 } from "@/lib/analytics/marketing-events";
-import { ENGAGEMENT_NEXT_STEPS } from "@/lib/product-overview/demo-partnership";
-import { PO_INTERACTIVE_CARD } from "@/lib/product-overview/polish-classes";
+import { getInteractiveDemoScenario } from "@/lib/product-overview/interactive-demo";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { cn } from "@/lib/utils";
+
+const JOURNEY_STEPS = [
+  "Assessment",
+  "Roadmap",
+  "Phase Approval",
+  "Implementation",
+  "Measurable Improvement",
+  "Continuous Strategic Planning",
+] as const;
 
 function DiscoveryCallCta({ placement }: { placement: string }) {
   const destination = SERVICES_CTA_DESTINATIONS.generalConsultation;
@@ -64,36 +73,82 @@ function ConsultingCta({ placement }: { placement: string }) {
 }
 
 export function ProductOverviewFinalCta() {
+  const { view } = useInteractiveDemo();
+  const scenario = getInteractiveDemoScenario();
+  const { company, effectiveScore } = view;
+
   return (
     <section id="product-overview-final-cta" className="border-t border-border/70">
+      <div className="border-b border-border/70 bg-muted/10 px-4 py-12 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Transformation Summary
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            {company.name}
+          </h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border/70 bg-card p-5">
+              <p className="text-xs text-muted-foreground">Initial StackScore</p>
+              <p className="mt-2 text-3xl font-semibold tabular-nums">
+                {scenario.scoreProgression.initialScore}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-card p-5">
+              <p className="text-xs text-muted-foreground">Current score after Phase 1</p>
+              <p className="mt-2 text-3xl font-semibold tabular-nums">{effectiveScore}</p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-card p-5">
+              <p className="text-xs text-muted-foreground">Projected after roadmap</p>
+              <p className="mt-2 text-3xl font-semibold tabular-nums">
+                {scenario.scoreProgression.projectedFinalScore}
+              </p>
+            </div>
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Technology improvement becomes manageable when it is broken into clear, independently
+            approvable phases.
+          </p>
+          <ol className="mx-auto mt-8 flex max-w-3xl flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-2 sm:gap-y-3">
+            {JOURNEY_STEPS.map((step, index) => (
+              <li
+                key={step}
+                className="inline-flex items-center justify-center gap-2 text-sm font-medium text-foreground"
+              >
+                <span className="rounded-full border border-border/70 bg-background px-3 py-1.5">
+                  {step}
+                </span>
+                {index < JOURNEY_STEPS.length - 1 ? (
+                  <span className="hidden text-muted-foreground sm:inline" aria-hidden>
+                    →
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
       <OfferCtaPanel
-        headline="Ready to See Your Technology This Clearly?"
-        supportingText="Every engagement begins with a Technology Maturity Assessment that becomes the foundation for your organization's long-term technology strategy."
+        headline="Get Your Technology Maturity Assessment"
+        supportingText="Understand your technology, approve the highest-priority improvements one phase at a time, measure the results, and continue improving through a living technology roadmap."
         className="bg-gradient-to-b from-muted/20 to-background px-4 py-16 sm:px-6 sm:py-20"
       >
         <ProductOverviewAssessmentCta
-          label="Purchase Your Technology Assessment"
+          label="Get Your Technology Maturity Assessment"
           placement="product_overview_premium_final_cta"
           className="h-12 w-full px-8 text-base sm:w-auto"
         />
+        <Link
+          href="/assessment-offer"
+          className={cn(buttonVariants({ variant: "outline" }), "h-12 w-full px-8 text-base sm:w-auto")}
+          onClick={() => trackProductOverviewFinalCtaClicked("assessment_options", "product_overview_premium_final_cta")}
+        >
+          Explore StackScore Assessment Options
+        </Link>
         <DiscoveryCallCta placement="product_overview_premium_final_cta" />
         <ConsultingCta placement="product_overview_premium_final_cta" />
       </OfferCtaPanel>
-
-      <div className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
-        <h3 className="text-center text-lg font-semibold text-foreground">What happens next</h3>
-        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {ENGAGEMENT_NEXT_STEPS.map((item) => (
-            <li key={item.step} className={cn(PO_INTERACTIVE_CARD, "p-4 shadow-sm")}>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Step {item.step}
-              </p>
-              <p className="mt-2 font-medium text-foreground">{item.label}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
     </section>
   );
 }

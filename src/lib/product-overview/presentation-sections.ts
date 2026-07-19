@@ -8,108 +8,76 @@ export type PresentationSection = {
 
 export const PRESENTATION_SECTIONS: PresentationSection[] = [
   {
-    id: "dashboard",
+    id: "overview",
     sectionId: "product-overview-dashboard",
-    title: "Client Success Dashboard",
+    title: "Demo Overview",
     narrative:
-      "One command center for technology posture, priorities, projects, and executive planning signals.",
-    durationMs: 25_000,
-  },
-  {
-    id: "timeline",
-    sectionId: "product-overview-timeline",
-    title: "Technology Timeline",
-    narrative:
-      "Track measurable maturity gains across an ongoing Strategic IT Consulting partnership.",
+      "Meet the company, see the starting StackScore, and understand the phased improvement journey ahead.",
     durationMs: 22_000,
   },
   {
     id: "assessment",
     sectionId: "product-overview-assessment",
-    title: "Technology Assessment",
+    title: "Assessment Results",
     narrative:
-      "Eight strategic pillars establish a credible baseline for investment and improvement decisions.",
-    durationMs: 25_000,
-  },
-  {
-    id: "recommendations",
-    sectionId: "product-overview-recommendations",
-    title: "Recommendations",
-    narrative:
-      "Prioritized improvements with business impact, effort, and investment estimates — not a static report.",
-    durationMs: 25_000,
+      "Pillar scores and priority gaps convert into an ordered roadmap — not one oversized investment ask.",
+    durationMs: 22_000,
   },
   {
     id: "roadmap",
     sectionId: "product-overview-roadmap",
-    title: "Strategic Roadmap",
+    title: "Technology Roadmap",
     narrative:
-      "Quarter-by-quarter planning connects recommendations, budget, and business priorities.",
+      "Four independently approvable phases with separated one-time and monthly investments.",
+    durationMs: 28_000,
+  },
+  {
+    id: "proposal",
+    sectionId: "product-overview-phase-proposal",
+    title: "Phase Proposal",
+    narrative:
+      "Phase 1 can be approved without committing to the full roadmap. Demo approval is local only.",
     durationMs: 25_000,
   },
   {
-    id: "projects",
-    sectionId: "product-overview-projects",
-    title: "Project Execution",
+    id: "implementation",
+    sectionId: "product-overview-implementation",
+    title: "Implementation Progress",
     narrative:
-      "Initiatives become managed projects with owners, milestones, and measurable outcomes.",
-    durationMs: 25_000,
-  },
-  {
-    id: "quarterly-review",
-    sectionId: "product-overview-quarterly-review",
-    title: "Quarterly Reviews",
-    narrative:
-      "Executive accountability every quarter with score movement, completed work, and next priorities.",
+      "Approved phases become living delivery with initiative status and business outcomes.",
     durationMs: 22_000,
   },
   {
-    id: "reports",
-    sectionId: "product-overview-reports",
-    title: "Executive Reports",
+    id: "improvement",
+    sectionId: "product-overview-measurable-improvement",
+    title: "Measurable Improvement",
     narrative:
-      "Polished leadership reports generated from live platform data instead of one-off slide decks.",
+      "Completed work raises the effective StackScore and unlocks the next recommended phase.",
     durationMs: 22_000,
   },
   {
     id: "budget",
     sectionId: "product-overview-budget",
-    title: "Budget Planning",
+    title: "Budget & Investment",
     narrative:
-      "Align approved spend, committed dollars, and remaining capacity with your technology roadmap.",
-    durationMs: 22_000,
+      "Review one-time and monthly recurring investments by phase — never a false grand total.",
+    durationMs: 20_000,
   },
   {
-    id: "planning",
-    sectionId: "product-overview-strategic-planning",
-    title: "Strategic Planning",
+    id: "reports",
+    sectionId: "product-overview-reports",
+    title: "Reports & Planning",
     narrative:
-      "Next-quarter, 12-month, and three-year planning keep technology aligned with business growth.",
-    durationMs: 22_000,
-  },
-  {
-    id: "executive-decisions",
-    sectionId: "product-overview-executive-decisions",
-    title: "Executive Decision Center",
-    narrative:
-      "Technology, budget, project, and risk signals with clear business context for leadership.",
-    durationMs: 22_000,
-  },
-  {
-    id: "ecosystem",
-    sectionId: "product-overview-ecosystem",
-    title: "StackScore Ecosystem",
-    narrative:
-      "Assessment through continuous improvement — technology strategy that drives business growth.",
-    durationMs: 25_000,
+      "Assessment, executive roadmap, phase proposal, progress, QBR, and budget reports stay connected.",
+    durationMs: 20_000,
   },
   {
     id: "final-cta",
     sectionId: "product-overview-final-cta",
     title: "Begin Your Technology Strategy",
     narrative:
-      "Every engagement starts with a Technology Maturity Assessment and evolves into ongoing partnership.",
-    durationMs: 28_000,
+      "Get a Technology Maturity Assessment and improve through a living, phased roadmap.",
+    durationMs: 24_000,
   },
 ];
 

@@ -1,5 +1,9 @@
 import type { ProductOverviewNavItem } from "@/lib/product-overview/types";
 
+/**
+ * Guided Interactive StackScore Experience navigation.
+ * Intentionally shorter than the full page — this is a product story, not an admin sandbox.
+ */
 export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
   {
     id: "overview",
@@ -8,66 +12,66 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     sectionId: "product-overview-dashboard",
   },
   {
-    id: "my-technology",
-    label: "My Technology",
-    phase: 2,
-    sectionId: "product-overview-journey",
-    teaserTitle: "Technology Maturity Assessment",
+    id: "assessment",
+    label: "Assessment",
+    phase: 1,
+    sectionId: "product-overview-assessment",
+    teaserTitle: "Assessment Results",
     teaserDescription:
-      "See how assessments translate into pillar scores, maturity labels, and executive-ready insights.",
-  },
-  {
-    id: "recommendations",
-    label: "Recommendations",
-    phase: 2,
-    sectionId: "product-overview-recommendations",
-    teaserTitle: "Recommendations",
-    teaserDescription:
-      "Prioritized improvements with effort, cost, and business impact — not just a static report.",
+      "See pillar scores, risks, and how findings become an independently approvable roadmap.",
   },
   {
     id: "roadmap",
     label: "Roadmap",
     phase: 2,
     sectionId: "product-overview-roadmap",
-    teaserTitle: "Strategic Roadmap",
+    teaserTitle: "Technology Roadmap",
     teaserDescription:
-      "Quarter-by-quarter planning that connects recommendations, projects, and budget decisions.",
+      "Four phases with separated one-time and monthly investments — approve one phase at a time.",
   },
   {
-    id: "projects",
-    label: "Projects",
-    phase: 3,
-    sectionId: "product-overview-projects",
-    teaserTitle: "Project Management",
+    id: "phase-proposal",
+    label: "Proposal",
+    phase: 2,
+    sectionId: "product-overview-phase-proposal",
+    teaserTitle: "Phase Proposal",
     teaserDescription:
-      "Track initiative progress, milestones, owners, and outcomes in one workspace.",
+      "Preview a Phase 1 proposal and simulate approval without creating a real record.",
   },
   {
-    id: "quarterly-review",
-    label: "Quarterly Review",
+    id: "implementation",
+    label: "Implementation",
     phase: 3,
-    sectionId: "product-overview-quarterly-review",
-    teaserTitle: "Quarterly Reviews",
+    sectionId: "product-overview-implementation",
+    teaserTitle: "Implementation Progress",
     teaserDescription:
-      "Executive-ready review summaries with score movement, completed work, and next priorities.",
+      "See how an approved phase becomes living delivery with clear initiative status.",
+  },
+  {
+    id: "improvement",
+    label: "Improvement",
+    phase: 3,
+    sectionId: "product-overview-measurable-improvement",
+    teaserTitle: "Measurable Improvement",
+    teaserDescription:
+      "Completed work increases the effective StackScore and unlocks the next recommended phase.",
   },
   {
     id: "budget",
     label: "Budget",
     phase: 3,
     sectionId: "product-overview-budget",
-    teaserTitle: "Budget Planning",
+    teaserTitle: "Investment by Phase",
     teaserDescription:
-      "Align approved spend, committed dollars, and remaining capacity with your technology roadmap.",
+      "Review one-time and monthly recurring investments by phase — never a false grand total.",
   },
   {
     id: "reports",
     label: "Reports",
     phase: 3,
     sectionId: "product-overview-reports",
-    teaserTitle: "Executive Reports",
+    teaserTitle: "Reports & Planning",
     teaserDescription:
-      "Share polished leadership reports built from live platform data instead of one-off slide decks.",
+      "Executive roadmap, phase proposal, progress, QBR, and budget reports from connected data.",
   },
 ];

@@ -286,7 +286,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Engineering",
-      "report-improvement-plan": "Technology Improvement Plan — Design Operations",
+      "report-phase-proposal": "Phase Proposal — Design Operations",
     },
   },
   "financial-services": {
@@ -340,7 +340,7 @@ const PATCHES: Record<Exclude<DemoIndustryId, "manufacturing">, IndustryPatch> =
     },
     reportTitles: {
       "report-assessment": "Technology Maturity Assessment — Financial Services",
-      "report-strategic-summary": "Strategic Technology Summary — Advisory Operations",
+      "report-roadmap-progress": "Roadmap Progress Report — Advisory Operations",
     },
   },
   retail: {

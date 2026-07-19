@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import { trackProductOverviewQbrPreviewed } from "@/lib/analytics/product-overview-events";
+import { getStrategicConsultingMonthlyLabel } from "@/lib/product-overview/interactive-demo";
 
 export function QuarterlyReviewSection() {
   const { demoProfile, openDetail } = useProductOverview();
@@ -79,6 +80,25 @@ export function QuarterlyReviewSection() {
               >
                 Preview Executive Review
               </Button>
+            </CardContent>
+          </Card>
+        </OfferReveal>
+
+        <OfferReveal delayMs={120}>
+          <Card className="mt-6 border-primary/20 bg-primary/5 shadow-sm">
+            <CardContent className="p-6">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+                Ongoing Strategic Guidance
+              </p>
+              <p className="mt-2 text-lg font-semibold text-foreground">
+                Technology Roadmap Reviews · Quarterly Business Reviews · Lifecycle Planning ·
+                Budget Forecasting · Risk Monitoring
+              </p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Strategic IT Consulting keeps the living roadmap accountable after Phase 1 —
+                starting at {getStrategicConsultingMonthlyLabel()} from the production consulting
+                price.
+              </p>
             </CardContent>
           </Card>
         </OfferReveal>
