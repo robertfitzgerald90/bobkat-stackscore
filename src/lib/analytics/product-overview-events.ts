@@ -23,6 +23,11 @@ export const PRODUCT_OVERVIEW_ANALYTICS_EVENTS = {
   PLANNING_VIEWED: "product_overview_planning_viewed",
   EXECUTIVE_DASHBOARD_VIEWED: "product_overview_executive_dashboard_viewed",
   FINAL_CTA_CLICKED: "product_overview_final_cta_clicked",
+  PRESENTATION_STARTED: "product_overview_presentation_started",
+  PRESENTATION_COMPLETED: "product_overview_presentation_completed",
+  PRESENTATION_EXITED: "product_overview_presentation_exited",
+  SECTION_ENGAGEMENT: "product_overview_section_engagement",
+  CONSULTING_CTA_CLICKED: "product_overview_consulting_cta_clicked",
 } as const;
 
 export type ProductOverviewAnalyticsEventName =
@@ -46,6 +51,8 @@ const ALLOWED_PROPERTY_KEYS = new Set([
   "widget_id",
   "tour_step",
   "cta_type",
+  "presentation_step",
+  "engagement_count",
 ]);
 
 function sanitizeProperties(properties?: MarketingAnalyticsProperties) {
@@ -185,6 +192,35 @@ export function trackProductOverviewExecutiveDashboardViewed(widgetId?: string) 
 export function trackProductOverviewFinalCtaClicked(ctaType: string, placement: string) {
   trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.FINAL_CTA_CLICKED, {
     cta_type: ctaType,
+    placement,
+  });
+}
+
+export function trackProductOverviewPresentationStarted(step = 0) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.PRESENTATION_STARTED, {
+    presentation_step: step,
+  });
+}
+
+export function trackProductOverviewPresentationCompleted() {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.PRESENTATION_COMPLETED);
+}
+
+export function trackProductOverviewPresentationExited(step: number) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.PRESENTATION_EXITED, {
+    presentation_step: step,
+  });
+}
+
+export function trackProductOverviewSectionEngagement(sectionId: string, engagementCount: number) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.SECTION_ENGAGEMENT, {
+    section_id: sectionId,
+    engagement_count: engagementCount,
+  });
+}
+
+export function trackProductOverviewConsultingCtaClicked(placement: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.CONSULTING_CTA_CLICKED, {
     placement,
   });
 }

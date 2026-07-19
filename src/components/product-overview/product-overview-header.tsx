@@ -1,11 +1,16 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import {
+  ProductPresentationLauncher,
+} from "@/components/product-overview/product-presentation-mode";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 
 export function ProductOverviewHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <BrandLogo size={32} variant="stacked" className="shrink-0" />
           <div className="min-w-0">
@@ -16,9 +21,10 @@ export function ProductOverviewHeader() {
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <Badge variant="secondary" className="hidden sm:inline-flex">
+          <Badge variant="secondary" className="hidden lg:inline-flex">
             Public Demo
           </Badge>
+          <ProductPresentationLauncher className="hidden md:inline-flex" />
           <ServicesCtaLink
             cta="purchaseAssessment"
             label="Get Your StackScore"

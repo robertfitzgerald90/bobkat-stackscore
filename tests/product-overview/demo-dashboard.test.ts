@@ -22,6 +22,10 @@ import {
   PRODUCT_TOUR_STEPS,
   TECHNOLOGY_TIMELINE_SNAPSHOTS,
 } from "@/lib/product-overview/demo-partnership";
+import {
+  PRESENTATION_SECTIONS,
+  PRESENTATION_STORAGE_KEY,
+} from "@/lib/product-overview/presentation-sections";
 
 describe("product overview demo dashboard", () => {
   it("uses the Northstar Manufacturing demo organization", () => {
@@ -124,5 +128,25 @@ describe("product overview partnership demo data", () => {
     expect(EXECUTIVE_DECISION_WIDGETS.length).toBe(8);
     expect(AI_INSIGHTS_PREVIEWS.length).toBe(7);
     expect(CLIENT_SUCCESS_OUTCOMES.length).toBeGreaterThanOrEqual(7);
+  });
+});
+
+describe("product overview presentation mode", () => {
+  it("defines 13 auto-advancing presentation sections", () => {
+    expect(PRESENTATION_SECTIONS).toHaveLength(13);
+    expect(PRESENTATION_SECTIONS[0]?.sectionId).toBe("product-overview-dashboard");
+    expect(PRESENTATION_SECTIONS.at(-1)?.sectionId).toBe("product-overview-final-cta");
+  });
+
+  it("uses 20–30 second dwell times per section", () => {
+    for (const section of PRESENTATION_SECTIONS) {
+      expect(section.durationMs).toBeGreaterThanOrEqual(20_000);
+      expect(section.durationMs).toBeLessThanOrEqual(30_000);
+      expect(section.narrative.length).toBeGreaterThan(20);
+    }
+  });
+
+  it("persists presentation progress in session storage", () => {
+    expect(PRESENTATION_STORAGE_KEY).toBe("stackscore-product-overview-presentation");
   });
 });

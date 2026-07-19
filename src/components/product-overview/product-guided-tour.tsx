@@ -10,6 +10,7 @@ export function ProductGuidedTour() {
   const {
     tourActive,
     tourStep,
+    presentationActive,
     nextTourStep,
     previousTourStep,
     skipTour,
@@ -38,7 +39,21 @@ export function ProductGuidedTour() {
     };
   }, [tourActive, step]);
 
-  if (!tourActive || !step) return null;
+  useEffect(() => {
+    if (!tourActive) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        skipTour();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [skipTour, tourActive]);
+
+  if (!tourActive || presentationActive || !step) return null;
 
   const progress = ((tourStep + 1) / PRODUCT_TOUR_STEPS.length) * 100;
   const isLastStep = tourStep === PRODUCT_TOUR_STEPS.length - 1;
@@ -49,7 +64,7 @@ export function ProductGuidedTour() {
 
       {targetRect ? (
         <div
-          className="pointer-events-none absolute rounded-xl ring-4 ring-primary ring-offset-4 ring-offset-transparent transition-all duration-300"
+          className="pointer-events-none absolute rounded-xl ring-4 ring-primary ring-offset-4 ring-offset-transparent transition-all duration-300 motion-reduce:transition-none"
           style={{
             top: targetRect.top - 8,
             left: targetRect.left - 8,
@@ -78,7 +93,7 @@ export function ProductGuidedTour() {
 
           <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-primary transition-all duration-300"
+              className="h-full rounded-full bg-primary transition-all duration-300 motion-reduce:transition-none"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -119,7 +134,7 @@ export function ProductGuidedTour() {
 }
 
 export function ProductTourLauncher({ className }: { className?: string }) {
-  const { startTour, tourActive } = useProductOverview();
+  const { startTour, tourActive, presentationActive } = useProductOverview();
 
   return (
     <Button
@@ -127,7 +142,7 @@ export function ProductTourLauncher({ className }: { className?: string }) {
       variant="outline"
       className={className}
       onClick={() => startTour(0)}
-      disabled={tourActive}
+      disabled={tourActive || presentationActive}
     >
       Take the 5 Minute Tour
     </Button>

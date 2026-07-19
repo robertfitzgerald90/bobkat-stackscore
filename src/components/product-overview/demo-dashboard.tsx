@@ -23,6 +23,7 @@ import { QuarterlyReviewCard } from "@/components/product-overview/quarterly-rev
 import { RecommendationSummaryCard } from "@/components/product-overview/recommendation-summary-card";
 import { RoadmapSummaryCard } from "@/components/product-overview/roadmap-summary-card";
 import { TechnologyScoreCard } from "@/components/product-overview/technology-score-card";
+import { PO_INTERACTIVE_TILE, PO_METRIC_VALUE } from "@/lib/product-overview/polish-classes";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type DemoDashboardProps = {
@@ -90,9 +91,11 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
               ["Approved Spend", formatDemoCurrency(data.metrics.approvedSpend)],
               ["Projected Score", `${data.technologyScore.projectedScore}/${data.technologyScore.maxScore}`],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-lg bg-muted/30 p-3">
+              <div key={label} className={cn(PO_INTERACTIVE_TILE, "p-3")}>
                 <p className="text-xs text-muted-foreground">{label}</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
+                <p className={cn("mt-1 text-sm font-semibold text-foreground", PO_METRIC_VALUE)}>
+                  {value}
+                </p>
               </div>
             ))}
           </CardContent>

@@ -5,6 +5,7 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
 import { Button } from "@/components/ui/button";
 import { trackProductOverviewExploreClicked } from "@/lib/analytics/product-overview-events";
+import { scrollToSection } from "@/lib/product-overview/polish-classes";
 import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
@@ -16,10 +17,7 @@ type ProductOverviewHeroProps = {
 export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverviewHeroProps) {
   function scrollToDashboard() {
     trackProductOverviewExploreClicked("hero");
-    document.getElementById("product-overview-dashboard")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    scrollToSection("product-overview-dashboard", "start");
   }
 
   return (

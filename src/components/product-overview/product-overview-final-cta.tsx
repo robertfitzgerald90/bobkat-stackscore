@@ -4,13 +4,16 @@ import Link from "next/link";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
 import { buttonVariants } from "@/components/ui/button";
-import { ServicesCtaLink } from "@/components/services/services-cta-link";
-import { trackProductOverviewFinalCtaClicked } from "@/lib/analytics/product-overview-events";
+import {
+  trackProductOverviewConsultingCtaClicked,
+  trackProductOverviewFinalCtaClicked,
+} from "@/lib/analytics/product-overview-events";
 import {
   trackCalBookingClick,
   trackServiceCtaClick,
 } from "@/lib/analytics/marketing-events";
 import { ENGAGEMENT_NEXT_STEPS } from "@/lib/product-overview/demo-partnership";
+import { PO_INTERACTIVE_CARD } from "@/lib/product-overview/polish-classes";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +41,28 @@ function DiscoveryCallCta({ placement }: { placement: string }) {
   );
 }
 
+function ConsultingCta({ placement }: { placement: string }) {
+  const destination = SERVICES_CTA_DESTINATIONS.vcioOffer;
+
+  return (
+    <Link
+      href={destination.href}
+      className={cn(buttonVariants({ variant: "ghost" }), "h-12 w-full px-8 text-base sm:w-auto")}
+      onClick={() => {
+        trackServiceCtaClick({
+          ctaKey: "vcioOffer",
+          linkType: "internal",
+          placement,
+        });
+        trackProductOverviewConsultingCtaClicked(placement);
+        trackProductOverviewFinalCtaClicked("strategic_consulting", placement);
+      }}
+    >
+      Learn About Strategic IT Consulting
+    </Link>
+  );
+}
+
 export function ProductOverviewFinalCta() {
   return (
     <section id="product-overview-final-cta" className="border-t border-border/70">
@@ -52,16 +77,14 @@ export function ProductOverviewFinalCta() {
           className="h-12 w-full px-8 text-base sm:w-auto"
         />
         <DiscoveryCallCta placement="product_overview_premium_final_cta" />
+        <ConsultingCta placement="product_overview_premium_final_cta" />
       </OfferCtaPanel>
 
       <div className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
         <h3 className="text-center text-lg font-semibold text-foreground">What happens next</h3>
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {ENGAGEMENT_NEXT_STEPS.map((item) => (
-            <li
-              key={item.step}
-              className="rounded-xl border border-border/70 bg-card p-4 shadow-sm"
-            >
+            <li key={item.step} className={cn(PO_INTERACTIVE_CARD, "p-4 shadow-sm")}>
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
                 Step {item.step}
               </p>
