@@ -49,7 +49,7 @@ export function ProductOverviewNav() {
     >
       <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
         <Badge variant="outline" className="hidden shrink-0 sm:inline-flex">
-          Interactive Product Tour
+          Interactive Demo
         </Badge>
         <div className="min-w-0 flex-1 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <ul className="flex min-w-max items-center gap-2">

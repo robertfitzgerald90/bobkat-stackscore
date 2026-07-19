@@ -31,7 +31,7 @@ import {
   PRESENTATION_SECTIONS,
   PRESENTATION_STORAGE_KEY,
 } from "@/lib/product-overview/presentation-sections";
-import { scrollToSection } from "@/lib/product-overview/polish-classes";
+import { scrollToSection, scrollToTourTarget } from "@/lib/product-overview/polish-classes";
 import { clearAllDemoSessionStorage } from "@/lib/product-overview/section-engagement";
 import { recordSectionEngagement } from "@/lib/product-overview/section-engagement";
 import {
@@ -287,7 +287,10 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
   const scrollToTourStep = useCallback((stepIndex: number) => {
     const step = PRODUCT_TOUR_STEPS[stepIndex];
     if (!step) return;
-    scrollToSection(step.sectionId);
+    // Delay slightly so layout settles before measuring for the spotlight.
+    window.requestAnimationFrame(() => {
+      scrollToTourTarget(step.sectionId);
+    });
   }, []);
 
   const goToPresentationStep = useCallback(

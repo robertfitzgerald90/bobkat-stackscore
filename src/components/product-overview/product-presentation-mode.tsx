@@ -64,14 +64,22 @@ export function ProductPresentationMode() {
   useEffect(() => {
     if (!presentationActive || !section) return;
 
+    document.querySelectorAll('[data-tour-spotlight="true"]').forEach((node) => {
+      node.removeAttribute("data-tour-spotlight");
+    });
+
+    const element = document.getElementById(section.sectionId);
+    if (element) {
+      element.setAttribute("data-tour-spotlight", "true");
+    }
+
     const updateRect = () => {
-      const element = document.getElementById(section.sectionId);
-      if (element) setTargetRect(element.getBoundingClientRect());
+      const target = document.getElementById(section.sectionId);
+      if (target) setTargetRect(target.getBoundingClientRect());
     };
 
     updateRect();
     const resizeObserver = new ResizeObserver(updateRect);
-    const element = document.getElementById(section.sectionId);
     if (element) resizeObserver.observe(element);
 
     window.addEventListener("resize", updateRect);
@@ -81,6 +89,7 @@ export function ProductPresentationMode() {
       resizeObserver.disconnect();
       window.removeEventListener("resize", updateRect);
       window.removeEventListener("scroll", updateRect, true);
+      element?.removeAttribute("data-tour-spotlight");
     };
   }, [presentationActive, section]);
 
@@ -138,17 +147,18 @@ export function ProductPresentationMode() {
       aria-modal="false"
       aria-labelledby="presentation-title"
     >
-      <div className="absolute inset-0 bg-[#08162b]/40 backdrop-blur-[1px] motion-reduce:backdrop-blur-none" />
+      <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px] motion-reduce:backdrop-blur-none" />
 
       {targetRect ? (
         <div
-          className="absolute rounded-2xl ring-4 ring-primary ring-offset-4 ring-offset-transparent transition-all duration-500 motion-reduce:transition-none"
+          className="tour-spotlight-ring absolute z-[55] rounded-2xl border-2 border-primary transition-all duration-500 motion-reduce:transition-none motion-reduce:animate-none"
           style={{
-            top: targetRect.top - 10,
-            left: targetRect.left - 10,
-            width: targetRect.width + 20,
-            height: targetRect.height + 20,
-            boxShadow: "0 0 0 9999px rgba(8, 22, 43, 0.45)",
+            top: targetRect.top - 32,
+            left: targetRect.left - 32,
+            width: targetRect.width + 64,
+            height: targetRect.height + 64,
+            boxShadow:
+              "0 24px 60px -20px rgba(8, 47, 91, 0.45), 0 0 36px rgba(8, 47, 91, 0.32)",
           }}
         />
       ) : null}

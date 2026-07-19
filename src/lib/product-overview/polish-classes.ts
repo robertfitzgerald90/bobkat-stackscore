@@ -20,3 +20,27 @@ export function scrollToSection(sectionId: string, block: ScrollLogicalPosition 
     block,
   });
 }
+
+/**
+ * Centers a tour target in the available viewport, leaving room for sticky chrome
+ * and the fixed tour panel (bottom on mobile, right on desktop).
+ */
+export function scrollToTourTarget(sectionId: string) {
+  const element = document.getElementById(sectionId);
+  if (!element) return;
+
+  const rect = element.getBoundingClientRect();
+  const absoluteTop = window.scrollY + rect.top;
+  const headerReserve = 130;
+  const isMobile = window.innerWidth < 640;
+  const panelReserve = isMobile ? 320 : 48;
+  const availableHeight = Math.max(240, window.innerHeight - headerReserve - panelReserve);
+  const verticalPadding = 32;
+  const targetScroll =
+    absoluteTop - headerReserve - Math.max(verticalPadding, (availableHeight - rect.height) / 2);
+
+  window.scrollTo({
+    top: Math.max(0, targetScroll),
+    behavior: getScrollBehavior(),
+  });
+}

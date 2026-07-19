@@ -842,3 +842,51 @@
   flex: 1 1 auto;
   min-height: 0;
 }
+
+/* Interactive demo guided tour — elevate the active section above the soft veil */
+[data-tour-spotlight="true"] {
+  position: relative !important;
+  z-index: 60 !important;
+  transform: scale(1.015);
+  border-radius: 1rem;
+  background-color: var(--background);
+  box-shadow:
+    0 28px 64px -24px rgba(8, 47, 91, 0.4),
+    0 0 0 1px rgba(8, 47, 91, 0.08);
+  transition:
+    transform 450ms ease,
+    box-shadow 450ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tour-spotlight="true"] {
+    transform: none;
+    transition: none;
+  }
+
+  .tour-spotlight-ring {
+    animation: none !important;
+  }
+}
+
+@keyframes tour-spotlight-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 24px 60px -20px rgba(8, 47, 91, 0.45),
+      0 0 0 1px rgba(8, 47, 91, 0.1),
+      0 0 28px rgba(8, 47, 91, 0.28);
+    border-color: #082f5b;
+  }
+  50% {
+    box-shadow:
+      0 24px 60px -20px rgba(8, 47, 91, 0.5),
+      0 0 0 1px rgba(8, 47, 91, 0.16),
+      0 0 42px rgba(8, 47, 91, 0.42);
+    border-color: #0a3d75;
+  }
+}
+
+.tour-spotlight-ring {
+  animation: tour-spotlight-pulse 3.5s ease-in-out infinite;
+}

@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Document the public Interactive StackScore Experience (`/product-overview`) after alignment with the production phased Technology Roadmap, phase proposals, and effective StackScore journey.
+Document the public Interactive StackScore Experience (`/demo`, formerly `/product-overview`) after alignment with the production phased Technology Roadmap, phase proposals, and effective StackScore journey.
+
+Legacy URL `/product-overview` permanently redirects to `/demo`.
 
 ## Demo scenario structure
 
