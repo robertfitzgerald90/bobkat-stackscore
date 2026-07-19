@@ -42,11 +42,10 @@ export function OfferReveal({ children, className, delayMs = 0, variant = "defau
       ref={ref}
       className={cn(
         "transition-all duration-[850ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+        variant === "image" && "origin-top",
         visible
           ? "translate-y-0 scale-100 opacity-100"
-          : variant === "image"
-            ? "translate-y-8 scale-[0.96] opacity-0"
-            : "translate-y-6 scale-[0.98] opacity-0",
+          : "translate-y-6 scale-[0.98] opacity-0",
         className,
       )}
       style={{ transitionDelay: visible ? `${delayMs}ms` : "0ms" }}

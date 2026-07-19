@@ -2,11 +2,12 @@
 
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
+import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
+import { DemoDashboardPreview } from "@/components/product-overview/demo-dashboard-preview";
 import { ProductOverviewAssessmentCta } from "@/components/product-overview/product-overview-assessment-cta";
 import { Button } from "@/components/ui/button";
 import { trackProductOverviewExploreClicked } from "@/lib/analytics/product-overview-events";
 import { scrollToSection } from "@/lib/product-overview/polish-classes";
-import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
 import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type ProductOverviewHeroProps = {
@@ -21,11 +22,11 @@ export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverv
   }
 
   return (
-    <section className="relative overflow-hidden px-4 pb-10 pt-8 sm:px-6 sm:pb-12 sm:pt-10">
+    <section className="relative overflow-x-clip px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 md:pb-16">
       <OfferHeroBackground />
 
-      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-10">
-        <div className="max-w-2xl">
+      <div className="relative mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-12">
+        <div className="max-w-2xl lg:pt-2">
           <OfferReveal>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               The Technology Success Platform
@@ -45,7 +46,10 @@ export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverv
             </p>
           </OfferReveal>
 
-          <OfferReveal delayMs={180} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <OfferReveal
+            delayMs={180}
+            className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+          >
             <Button size="lg" className="h-11 px-8 text-base shadow-md" onClick={scrollToDashboard}>
               Explore the Platform
             </Button>
@@ -65,8 +69,8 @@ export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverv
           </OfferReveal>
         </div>
 
-        <OfferReveal delayMs={300} variant="image" className="min-w-0">
-          <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_24px_80px_-32px_rgba(8,47,91,0.35)]">
+        <OfferReveal delayMs={300} variant="image" className="min-w-0 origin-top">
+          <DemoDashboardPreview>
             <DemoDashboard
               compact
               readOnly
@@ -75,7 +79,7 @@ export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverv
                 onOpenDetail(panel, anchor);
               }}
             />
-          </div>
+          </DemoDashboardPreview>
         </OfferReveal>
       </div>
     </section>
