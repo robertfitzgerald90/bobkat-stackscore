@@ -79,6 +79,11 @@ export function estimateBusinessValueMetricCardHeight(): number {
   return 72;
 }
 
+/** First row of snapshot cards (two 48%-width cards). */
+export function estimateBusinessValueFirstRowHeight(metricCount: number): number {
+  return metricCount > 0 ? estimateBusinessValueMetricCardHeight() : 0;
+}
+
 export function estimateExecutiveHeroHeight(): number {
   return 118;
 }

@@ -59,12 +59,15 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
     );
   const assessmentDate = data.assessmentDate ?? data.generatedDate;
 
+  const pageChrome = <PdfTipPageChrome data={data} />;
+
   return (
     <Document
       title={`${data.clientName} — Technology Improvement Plan`}
       author={BRAND.companyName}
       subject="Technology Improvement Plan"
     >
+      {/* Chapter 1 — Cover */}
       <Page size="LETTER" style={tipPageStyles.cover} wrap={false}>
         <PdfTipReportFooter
           generatedDate={data.generatedDate}
@@ -166,8 +169,9 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
         </View>
       </Page>
 
+      {/* Chapter 2 — Assessment Scope + Executive Summary */}
       <Page size="LETTER" style={tipPageStyles.body} wrap>
-        <PdfTipPageChrome data={data} />
+        {pageChrome}
         <PdfAssessmentScope />
         <PdfExecutiveSummaryDashboard
           clientName={data.clientName}
@@ -180,15 +184,35 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
           topBusinessRisks={data.topBusinessRisks}
           topOpportunities={data.topOpportunities}
         />
+      </Page>
+
+      {/* Chapter 3 — Business Value Snapshot (+ findings continue on this chapter) */}
+      <Page size="LETTER" style={tipPageStyles.body} wrap>
+        {pageChrome}
         <PdfBusinessValueSnapshot metrics={data.businessValueSnapshot} />
         <PdfCurrentStateFindings findings={data.categoryFindings} />
+      </Page>
+
+      {/* Chapter 4 — Strategic Improvement Roadmap (implementation phases) */}
+      <Page size="LETTER" style={tipPageStyles.body} wrap>
+        {pageChrome}
         <PdfStrategicImprovementRoadmap initiatives={data.strategicInitiatives} />
+      </Page>
+
+      {/* Chapter 5 — Phase Investment Summary */}
+      <Page size="LETTER" style={tipPageStyles.body} wrap>
+        {pageChrome}
         <PdfPhaseInvestmentSummary
           rows={data.phaseInvestmentRows}
           totalInvestment={formatTotalInvestment(data)}
           recurringServices={formatRecurringServices(data)}
           oneTimeInvestments={formatOneTimeInvestments(data)}
         />
+      </Page>
+
+      {/* Chapter 6 — Outcomes + next steps */}
+      <Page size="LETTER" style={tipPageStyles.body} wrap>
+        {pageChrome}
         <PdfRoadmapToResults />
         <PdfExecutiveNextSteps />
       </Page>

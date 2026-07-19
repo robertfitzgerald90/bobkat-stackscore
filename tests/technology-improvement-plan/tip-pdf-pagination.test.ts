@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   canKeepCardIntact,
   cardStartPresence,
+  estimateBusinessValueFirstRowHeight,
   estimateBusinessValueMetricCardHeight,
   estimateInitiativeCardHeight,
   estimateSectionChromeHeight,
@@ -55,6 +56,12 @@ describe("TIP PDF pagination helpers", () => {
     const intro = estimateSectionIntroHeight(true, metric);
     expect(intro).toBe(chrome + metric);
     expect(intro).toBeGreaterThan(TIP_PAGINATION.sectionWithSubtitle);
+  });
+
+  it("uses the first metric row height for Business Value Snapshot intro grouping", () => {
+    expect(estimateBusinessValueFirstRowHeight(0)).toBe(0);
+    expect(estimateBusinessValueFirstRowHeight(1)).toBe(estimateBusinessValueMetricCardHeight());
+    expect(estimateBusinessValueFirstRowHeight(2)).toBe(estimateBusinessValueMetricCardHeight());
   });
 
   it("requests enough start presence for intact cards", () => {

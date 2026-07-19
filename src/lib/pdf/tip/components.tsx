@@ -8,6 +8,7 @@ import { PdfTipReportHeader } from "@/lib/pdf/tip/header";
 import {
   canKeepCardIntact,
   cardStartPresence,
+  estimateBusinessValueFirstRowHeight,
   estimateBusinessValueMetricCardHeight,
   estimateCalloutIntroHeight,
   estimateExecutiveHeroHeight,
@@ -209,15 +210,25 @@ export function PdfBusinessValueSnapshot({
 }: {
   metrics: TipBusinessValueMetric[];
 }) {
-  const [firstMetric, ...remainingMetrics] = metrics;
+  const firstRowMetrics = metrics.slice(0, 2);
+  const remainingMetrics = metrics.slice(2);
 
   return (
     <PdfTipSection
       title="Business Value Snapshot"
       subtitle="Projected maturity improvements after completing the strategic roadmap"
-      firstBlockMinHeight={firstMetric ? estimateBusinessValueMetricCardHeight() : 0}
+      firstBlockMinHeight={estimateBusinessValueFirstRowHeight(firstRowMetrics.length)}
       firstBlock={
-        firstMetric ? <PdfBusinessValueMetricCard metric={firstMetric} /> : null
+        firstRowMetrics.length > 0 ? (
+          <View
+            wrap={false}
+            style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}
+          >
+            {firstRowMetrics.map((metric) => (
+              <PdfBusinessValueMetricCard key={metric.label} metric={metric} />
+            ))}
+          </View>
+        ) : null
       }
     >
       {remainingMetrics.length > 0 ? (
@@ -569,7 +580,6 @@ export function PdfStrategicImprovementRoadmap({
 
   return (
     <PdfTipSection
-      breakBefore
       title="Strategic Improvement Roadmap"
       subtitle="What should be accomplished — implementation methodology reserved for consulting engagement"
       firstBlockMinHeight={firstBlockMinHeight}
@@ -656,7 +666,6 @@ export function PdfPhaseInvestmentSummary({
 }) {
   return (
     <PdfTipSection
-      breakBefore
       title="Phase Investment Summary"
       firstBlockMinHeight={estimateInvestmentTableHeight(rows.length)}
       firstBlock={<PdfTipInvestmentTable rows={rows} />}
@@ -746,7 +755,6 @@ export function PdfExecutiveNextSteps() {
 
   return (
     <PdfTipSection
-      breakBefore
       title="Next Steps"
       firstBlockMinHeight={firstOption ? estimateNextStepCardHeight() : 0}
       firstBlock={
