@@ -1,14 +1,6 @@
 import type { Priority } from "@/generated/prisma/client";
+import { createDefaultPhaseAssignments } from "@/lib/technology-improvement-plan/roadmap-engine";
 import type { TipInvestmentDraft, TipRoadmapPhase, TipWizardState } from "./types";
-
-const DEFAULT_MARGIN_PERCENT = 35;
-
-const PRIORITY_PHASE_LABELS: Record<Priority, string> = {
-  critical: "Phase 1 — Critical Stabilization",
-  high: "Phase 2 — High-Priority Improvements",
-  medium: "Phase 3 — Operational Maturity",
-  low: "Phase 4 — Strategic Enhancements",
-};
 
 type RecommendationSeed = {
   id: string;
@@ -16,6 +8,8 @@ type RecommendationSeed = {
   estimatedImpactPoints: number;
   suggestedService: string | null;
 };
+
+const DEFAULT_MARGIN_PERCENT = 35;
 
 export function createDefaultInvestment(
   recommendations: RecommendationSeed[],
@@ -38,34 +32,9 @@ export function createDefaultInvestment(
 
 export function createDefaultRoadmapPhases(
   recommendations: RecommendationSeed[],
+  recommendationOrder: string[] = recommendations.map((rec) => rec.id),
 ): TipRoadmapPhase[] {
-  const priorityOrder: Priority[] = ["critical", "high", "medium", "low"];
-  const phases: TipRoadmapPhase[] = [];
-
-  for (const priority of priorityOrder) {
-    const ids = recommendations
-      .filter((rec) => rec.priority === priority)
-      .map((rec) => rec.id);
-    if (ids.length === 0) continue;
-
-    phases.push({
-      id: `phase-${priority}`,
-      label: PRIORITY_PHASE_LABELS[priority],
-      sortOrder: phases.length,
-      recommendationIds: ids,
-    });
-  }
-
-  if (phases.length === 0 && recommendations.length > 0) {
-    phases.push({
-      id: "phase-1",
-      label: "Phase 1 — Foundation",
-      sortOrder: 0,
-      recommendationIds: recommendations.map((rec) => rec.id),
-    });
-  }
-
-  return phases;
+  return createDefaultPhaseAssignments(recommendations, recommendationOrder);
 }
 
 export function createDefaultWizardState(
@@ -82,7 +51,7 @@ export function createDefaultWizardState(
     globalConsultantNotes: "",
     globalExecutiveNotes: "",
     investment: createDefaultInvestment(recommendations),
-    roadmapPhases: createDefaultRoadmapPhases(recommendations),
+    roadmapPhases: createDefaultRoadmapPhases(recommendations, active),
     executiveSummary: "",
     frozenAt: null,
   };

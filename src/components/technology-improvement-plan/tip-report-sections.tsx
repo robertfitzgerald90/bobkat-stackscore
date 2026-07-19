@@ -1,21 +1,27 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight, Check } from "lucide-react";
 import { BRAND } from "@/lib/branding";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
-import { getPriorityTimeline } from "@/lib/recommendations/display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import {
+  buildApprovalIntro,
+  buildPhaseCompletionOutcomes,
+  buildPhaseExecutiveNarrative,
+  buildPhaseOutcomeBullets,
   buildTipExecutiveFallback,
-  getRoadmapPhaseObjectives,
-  getRoadmapPhaseTimeline,
+  findRecommendationForInitiative,
+  getPhasePriorityLabel,
+  getRoadmapOverviewMetrics,
+  isPhaseRecurringCoveredByRetainer,
+  ROADMAP_NEXT_STEPS,
   TIP_MATURITY_TARGET,
 } from "@/lib/reports/tip-presentation";
 import type { TipReportData } from "@/lib/pdf/types";
+import type { RoadmapPhaseResult } from "@/lib/technology-improvement-plan/roadmap-engine";
 import { ReportExecutiveSummary } from "@/components/reports/report-executive-summary";
 import { ReportPageBreak, ReportPrintLeadGroup } from "@/components/reports";
-import { ReportPriorityBadge } from "@/components/reports/report-priority-badge";
 import { ReportSection } from "@/components/reports/report-section";
 import { cn } from "@/lib/utils";
 import { getReportTypeMeta } from "@/lib/reports/meta";
@@ -137,7 +143,7 @@ export function TipMaturityHero({
           />
         </div>
         <p className="tip-journey-strip-meta">
-          Journey progress: {journeyProgressPercent}% · Projected improvement: +{scoreImprovement}{" "}
+          Journey progress: {journeyProgressPercent}% · Available improvement: +{scoreImprovement}{" "}
           points · Maturity target: {TIP_MATURITY_TARGET}+
         </p>
       </div>
@@ -168,7 +174,7 @@ export function TipExecutiveSummarySection({
   return (
     <ReportSection
       title="Executive Summary"
-      subtitle="Business context, profile trajectory, and expected outcomes"
+      subtitle="Strategic context for a phased technology roadmap"
       documentTheme={DOCUMENT_THEME}
     >
       <ReportPrintLeadGroup>
@@ -187,6 +193,19 @@ export function TipExecutiveSummarySection({
             ))}
           </div>
         )}
+      </ReportPrintLeadGroup>
+    </ReportSection>
+  );
+}
+
+export function TipCurrentMaturitySection({ data }: { data: TipReportData }) {
+  return (
+    <ReportSection
+      title="Current Technology Maturity"
+      subtitle="Where the organization stands today and the improvement trajectory ahead"
+      documentTheme={DOCUMENT_THEME}
+    >
+      <ReportPrintLeadGroup>
         <TipMaturityHero
           currentScore={data.currentScore}
           projectedScore={data.projectedScore}
@@ -195,44 +214,10 @@ export function TipExecutiveSummarySection({
           journeyProgressPercent={data.journeyProgressPercent}
         />
       </ReportPrintLeadGroup>
-    </ReportSection>
-  );
-}
 
-export function TipBusinessOutcomesSection({ data }: { data: TipReportData }) {
-  if (data.businessOutcomes.length === 0) return null;
-
-  return (
-    <ReportSection
-      title="Expected Business Outcomes"
-      subtitle="Primary value drivers from prioritized initiatives"
-      documentTheme={DOCUMENT_THEME}
-    >
-      <div className="tip-outcome-grid">
-        {data.businessOutcomes.map((outcome, index) => (
-          <article key={outcome.title} className="tip-outcome-card">
-            <p className="tip-outcome-card-index">Outcome {index + 1}</p>
-            <p className="tip-outcome-card-title">{outcome.title}</p>
-            <p className="tip-outcome-card-body">{outcome.description}</p>
-          </article>
-        ))}
-      </div>
-    </ReportSection>
-  );
-}
-
-export function TipPillarScorecardsSection({ data }: { data: TipReportData }) {
-  if (data.categorySummaries.length === 0) return null;
-
-  return (
-    <ReportSection
-      title="Technology Pillars"
-      subtitle="Executive scorecard by domain — highlighted pillars include planned improvements"
-      documentTheme={DOCUMENT_THEME}
-    >
-      <div className="tip-pillar-grid">
-        {data.categorySummaries.map((category, index) => {
-          const card = (
+      {data.categorySummaries.length > 0 ? (
+        <div className="tip-pillar-grid mt-6">
+          {data.categorySummaries.map((category) => (
             <article
               key={category.name}
               className={cn(
@@ -270,158 +255,246 @@ export function TipPillarScorecardsSection({ data }: { data: TipReportData }) {
                 <span className="tip-pillar-scorecard-badge">Improvement planned</span>
               ) : null}
             </article>
-          );
-
-          if (index === 0) {
-            return <ReportPrintLeadGroup key={category.name}>{card}</ReportPrintLeadGroup>;
-          }
-          return card;
-        })}
-      </div>
+          ))}
+        </div>
+      ) : null}
     </ReportSection>
   );
 }
 
-export function TipRecommendationsSection({ data }: { data: TipReportData }) {
+export function TipRoadmapOverviewSection({ data }: { data: TipReportData }) {
+  const roadmap = data.technologyRoadmap;
+  const metrics = getRoadmapOverviewMetrics(
+    data.currentScore,
+    roadmap,
+    data.recommendations,
+  );
+
   return (
     <ReportSection
-      title="Prioritized Recommendations"
-      subtitle="Initiatives ordered by business impact and implementation priority"
+      title="Technology Roadmap Overview"
+      subtitle="A sequenced journey from assessment through strategic enhancement"
       documentTheme={DOCUMENT_THEME}
     >
-      <div className="tip-recommendation-list">
-        {data.recommendations.map((rec, index) => {
-          const card = (
-            <article
-              key={rec.id}
-              className="tip-recommendation-card tip-recommendation-card-accent"
-            >
-              <div className="tip-recommendation-header">
-                <p className="tip-recommendation-title">{rec.title}</p>
-                <ReportPriorityBadge priority={rec.priority} documentTheme={DOCUMENT_THEME} />
-              </div>
-              <div className="tip-recommendation-meta-grid">
-                <div className="tip-recommendation-meta-box">
-                  <p className="tip-recommendation-meta-label">Expected Outcome</p>
-                  <p className="tip-recommendation-meta-value">
-                    +{rec.estimatedImpactPoints} StackScore pts
-                  </p>
-                </div>
-                <div className="tip-recommendation-meta-box">
-                  <p className="tip-recommendation-meta-label">Implementation Window</p>
-                  <p className="tip-recommendation-meta-value">
-                    {getPriorityTimeline(rec.priority)}
-                  </p>
-                </div>
-                <div className="tip-recommendation-meta-box">
-                  <p className="tip-recommendation-meta-label">Category</p>
-                  <p className="tip-recommendation-meta-value">{rec.categoryName}</p>
-                </div>
-              </div>
-              <div className="tip-recommendation-body">
-                <p className="tip-recommendation-field-label">Business Impact</p>
-                <p className="tip-recommendation-field-value">{rec.businessImpact}</p>
-                {rec.suggestedService ? (
-                  <>
-                    <p className="tip-recommendation-field-label mt-3">Recommended Service</p>
-                    <p className="tip-recommendation-field-value">{rec.suggestedService}</p>
-                  </>
-                ) : null}
-                {rec.executiveNote ? (
-                  <>
-                    <p className="tip-recommendation-field-label mt-3">Executive Note</p>
-                    <p className="tip-recommendation-field-value">{rec.executiveNote}</p>
-                  </>
-                ) : null}
-              </div>
-            </article>
-          );
+      <ReportPrintLeadGroup>
+        <div className="tip-roadmap-overview-flow">
+          <div className="tip-roadmap-overview-node tip-roadmap-overview-node-start">
+            <p className="tip-roadmap-overview-node-label">Starting Point</p>
+            <p className="tip-roadmap-overview-node-title">Assessment Complete</p>
+          </div>
 
-          if (index === 0) {
-            return <ReportPrintLeadGroup key={rec.id}>{card}</ReportPrintLeadGroup>;
-          }
-          return card;
-        })}
-      </div>
+          {roadmap.phases.map((phase) => (
+            <div key={phase.id} className="tip-roadmap-overview-step">
+              <ArrowDown className="tip-roadmap-overview-arrow" aria-hidden />
+              <div className="tip-roadmap-overview-node">
+                <p className="tip-roadmap-overview-node-label">{phase.subtitle}</p>
+                <p className="tip-roadmap-overview-node-title">{phase.name}</p>
+                <p className="tip-roadmap-overview-node-meta">{phase.timeline}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="tip-roadmap-overview-metrics">
+          <OverviewMetric label="Current StackScore" value={String(metrics.currentScore)} />
+          <OverviewMetric
+            label="Projected StackScore"
+            value={String(metrics.projectedScore)}
+            emphasis
+          />
+          <OverviewMetric
+            label="Available Improvement"
+            value={`+${metrics.scoreImprovement}`}
+          />
+          <OverviewMetric label="Initiatives" value={String(metrics.initiativeCount)} />
+          <OverviewMetric label="Implementation Phases" value={String(metrics.phaseCount)} />
+        </div>
+      </ReportPrintLeadGroup>
     </ReportSection>
   );
 }
 
-export function TipRoadmapSection({ data }: { data: TipReportData }) {
+function OverviewMetric({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className={cn("tip-roadmap-overview-metric", emphasis && "tip-roadmap-overview-metric-emphasis")}>
+      <p className="tip-roadmap-overview-metric-label">{label}</p>
+      <p className="tip-roadmap-overview-metric-value">{value}</p>
+    </div>
+  );
+}
+
+export function TipPhaseDetailSections({ data }: { data: TipReportData }) {
+  const phases = data.technologyRoadmap.phases;
+  if (phases.length === 0) return null;
+
   return (
     <ReportSection
-      title="Phased Implementation Roadmap"
-      subtitle="Sequential delivery plan with projected profile progression and business objectives"
+      title="Implementation Phases"
+      subtitle="Each phase is designed for independent approval and incremental delivery"
       documentTheme={DOCUMENT_THEME}
     >
-      <div className="tip-roadmap-timeline">
-        {data.roadmapPhases.map((phase, index) => {
-          const objectives = getRoadmapPhaseObjectives(phase);
-          const timeline = getRoadmapPhaseTimeline(phase);
-          const isActive = index === 0;
-
+      <div className="tip-phase-stack">
+        {phases.map((phase, index) => {
+          const card = <TipPhaseDetailCard data={data} phase={phase} />;
+          if (index === 0) {
+            return <ReportPrintLeadGroup key={phase.id}>{card}</ReportPrintLeadGroup>;
+          }
           return (
-            <div key={phase.id} className="tip-roadmap-phase">
-              <div className="tip-roadmap-phase-rail">
-                <div
-                  className={cn(
-                    "tip-roadmap-phase-dot",
-                    isActive && "tip-roadmap-phase-dot-active",
-                  )}
-                >
-                  {index + 1}
-                </div>
-                {index < data.roadmapPhases.length - 1 ? (
-                  <div className="tip-roadmap-phase-line" aria-hidden />
-                ) : null}
-              </div>
-
-              <article
-                className={cn(
-                  "tip-roadmap-phase-card",
-                  isActive && "tip-roadmap-phase-card-active",
-                )}
-              >
-                <div className="tip-roadmap-phase-header">
-                  <div>
-                    <p className="tip-roadmap-phase-label">{phase.label}</p>
-                    <p className="tip-roadmap-phase-timeline">{timeline}</p>
-                  </div>
-                  <div className="tip-roadmap-phase-score-block">
-                    <p
-                      className={cn(
-                        "tip-roadmap-phase-score",
-                        getReportScoreTextClass(phase.projectedScore),
-                      )}
-                    >
-                      {phase.projectedScore}
-                    </p>
-                    <p className="tip-roadmap-phase-delta">+{phase.scoreDelta} points</p>
-                  </div>
-                </div>
-
-                <ul className="tip-roadmap-initiatives">
-                  {phase.recommendations.map((rec) => (
-                    <li key={rec.id}>{rec.title}</li>
-                  ))}
-                </ul>
-
-                {objectives.length > 0 ? (
-                  <div className="tip-roadmap-objectives">
-                    <p className="tip-roadmap-objectives-label">Business objectives</p>
-                    <ul className="tip-roadmap-objectives-list">
-                      {objectives.map((objective) => (
-                        <li key={objective.slice(0, 48)}>{objective}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </article>
+            <div key={phase.id} className="contents">
+              {card}
             </div>
           );
         })}
       </div>
     </ReportSection>
+  );
+}
+
+function TipPhaseDetailCard({
+  data,
+  phase,
+}: {
+  data: TipReportData;
+  phase: RoadmapPhaseResult;
+}) {
+  const outcomes = buildPhaseOutcomeBullets(phase);
+  const completionOutcomes = buildPhaseCompletionOutcomes(phase);
+  const coveredByRetainer = isPhaseRecurringCoveredByRetainer(phase, data.recommendations);
+  const showMonthly = phase.monthlyRecurringInvestment > 0;
+
+  return (
+    <article className="tip-phase-section">
+      <header className="tip-phase-header">
+        <div>
+          <p className="tip-phase-subtitle">{phase.subtitle}</p>
+          <h3 className="tip-phase-title">{phase.name}</h3>
+        </div>
+        <div className="tip-phase-meta-grid">
+          <PhaseMeta label="Timeline" value={phase.timeline} />
+          <PhaseMeta label="Priority" value={getPhasePriorityLabel(phase)} />
+          <PhaseMeta
+            label="Expected StackScore Improvement"
+            value={`+${phase.stackScoreImprovement} Points`}
+            emphasis
+          />
+        </div>
+      </header>
+
+      <div className="tip-phase-block">
+        <p className="tip-phase-block-label">Executive Summary</p>
+        <p className="tip-executive-prose">{buildPhaseExecutiveNarrative(phase)}</p>
+      </div>
+
+      {outcomes.length > 0 ? (
+        <div className="tip-phase-block">
+          <p className="tip-phase-block-label">Business Outcomes</p>
+          <ul className="tip-outcome-checklist">
+            {outcomes.map((outcome) => (
+              <li key={outcome}>
+                <Check className="tip-outcome-check" aria-hidden />
+                <span>{outcome}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="tip-phase-block">
+        <p className="tip-phase-block-label">Included Initiatives</p>
+        <div className="tip-phase-initiative-list">
+          {phase.initiatives.map((initiative) => {
+            const recommendation = findRecommendationForInitiative(
+              data.recommendations,
+              initiative.recommendationId,
+            );
+            return (
+              <article key={initiative.recommendationId} className="tip-phase-initiative">
+                <p className="tip-phase-initiative-title">{initiative.title}</p>
+                {recommendation?.description ? (
+                  <p className="tip-phase-initiative-desc">{recommendation.description}</p>
+                ) : null}
+                {recommendation?.businessImpact ? (
+                  <p className="tip-phase-initiative-benefit">
+                    <span>Business benefit:</span> {recommendation.businessImpact}
+                  </p>
+                ) : null}
+                <p className="tip-phase-initiative-impact">
+                  Estimated StackScore contribution: +
+                  {recommendation?.estimatedImpactPoints ?? 0} points
+                </p>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="tip-phase-investment">
+        <p className="tip-phase-block-label">Investment Summary</p>
+        <div className="tip-phase-investment-grid">
+          <div className="tip-phase-investment-card">
+            <p className="tip-phase-investment-label">One-Time Implementation Investment</p>
+            <p className="tip-phase-investment-value">
+              {formatCurrency(phase.oneTimeInvestment)}
+            </p>
+          </div>
+          {showMonthly ? (
+            <div className="tip-phase-investment-card">
+              <p className="tip-phase-investment-label">New Monthly Recurring Investment</p>
+              {coveredByRetainer ? (
+                <p className="tip-phase-investment-retainer">
+                  Included in Strategic IT Consulting Retainer
+                </p>
+              ) : (
+                <p className="tip-phase-investment-value">
+                  {formatCurrency(phase.monthlyRecurringInvestment)}
+                  <span className="tip-phase-investment-suffix">/month</span>
+                </p>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="tip-phase-completion">
+        <p className="tip-phase-block-label">Phase Completion Outcome</p>
+        <p className="tip-phase-completion-intro">
+          Upon completion of this phase your organization will have:
+        </p>
+        <ul className="tip-outcome-checklist">
+          {completionOutcomes.map((outcome) => (
+            <li key={outcome}>
+              <Check className="tip-outcome-check" aria-hidden />
+              <span>{outcome}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  );
+}
+
+function PhaseMeta({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <div className={cn("tip-phase-meta", emphasis && "tip-phase-meta-emphasis")}>
+      <p className="tip-phase-meta-label">{label}</p>
+      <p className="tip-phase-meta-value">{value}</p>
+    </div>
   );
 }
 
@@ -433,39 +506,72 @@ type TipInvestmentSectionProps = {
 export function TipInvestmentSection({ data, isAdmin = false }: TipInvestmentSectionProps) {
   return (
     <ReportSection
-      title="Investment Summary"
-      subtitle="Professional services and technology investment required to execute this plan"
+      title="Overall Investment Summary"
+      subtitle="One-time implementation and recurring services are presented separately"
       documentTheme={DOCUMENT_THEME}
     >
-      <div className="tip-investment-table">
-        <div className="tip-investment-table-head">
-          <span>Category</span>
-          <span>Description</span>
-          <span className="text-right">Amount</span>
+      <div className="tip-investment-totals">
+        <div className="tip-investment-total-card">
+          <p className="tip-investment-total-label">Total One-Time Implementation Investment</p>
+          <p className="tip-investment-total-value">
+            {formatCurrency(data.oneTimeInvestmentTotal)}
+          </p>
+          <p className="tip-investment-total-caption">
+            Project delivery, professional services, and technology required to execute approved
+            phases.
+          </p>
         </div>
-        {data.investmentLineItems.map((row, index) => (
-          <div
-            key={row.category}
-            className={cn(
-              "tip-investment-table-row",
-              index % 2 === 1 && "tip-investment-table-row-alt",
-            )}
-          >
-            <span className="tip-investment-table-category">{row.category}</span>
-            <span className="tip-investment-table-desc">{row.description}</span>
-            <span className="tip-investment-table-amount">{formatCurrency(row.amount)}</span>
+
+        {data.monthlyRecurringTotal > 0 ? (
+          <div className="tip-investment-total-card tip-investment-total-card-secondary">
+            <p className="tip-investment-total-label">Total New Monthly Recurring Investment</p>
+            <p className="tip-investment-total-value">
+              {formatCurrency(data.monthlyRecurringTotal)}
+              <span className="tip-phase-investment-suffix">/month</span>
+            </p>
+            <p className="tip-investment-total-caption">
+              Ongoing services introduced by the roadmap. Recurring investment is never combined
+              with one-time implementation cost.
+            </p>
           </div>
-        ))}
+        ) : null}
+
+        {data.annualRecurringTotal > 0 ? (
+          <div className="tip-investment-total-card tip-investment-total-card-tertiary">
+            <p className="tip-investment-total-label">Total Annual Recurring Investment</p>
+            <p className="tip-investment-total-value">
+              {formatCurrency(data.annualRecurringTotal)}
+              <span className="tip-phase-investment-suffix">/year</span>
+            </p>
+          </div>
+        ) : null}
       </div>
 
-      <div className="tip-investment-total">
-        <p className="tip-investment-total-label">Total Client Investment</p>
-        <p className="tip-investment-total-value">{formatCurrency(data.clientInvestmentTotal)}</p>
-        <p className="tip-investment-total-caption">
-          All professional services, technology, and implementation costs required to execute this
-          improvement plan.
-        </p>
-      </div>
+      {data.investmentLineItems.length > 0 ? (
+        <div className="tip-investment-table mt-4">
+          <div className="tip-investment-table-head">
+            <span>Category</span>
+            <span>Description</span>
+            <span className="text-right">Amount</span>
+          </div>
+          {data.investmentLineItems.map((row, index) => (
+            <div
+              key={row.category}
+              className={cn(
+                "tip-investment-table-row",
+                index % 2 === 1 && "tip-investment-table-row-alt",
+              )}
+            >
+              <span className="tip-investment-table-category">{row.category}</span>
+              <span className="tip-investment-table-desc">{row.description}</span>
+              <span className="tip-investment-table-amount">
+                {formatCurrency(row.amount)}
+                {row.category.toLowerCase().includes("monthly") ? "/mo" : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       {isAdmin && data.investmentBreakdown ? (
         <div className="mt-4 rounded-lg border border-dashed border-amber-300 bg-amber-50/80 p-4 print:hidden">
@@ -477,6 +583,7 @@ export function TipInvestmentSection({ data, isAdmin = false }: TipInvestmentSec
             <p>Margin amount: {formatCurrency(data.investmentBreakdown.marginAmount)}</p>
             <p>Labor: {formatCurrency(data.investmentBreakdown.labor)}</p>
             <p>Hardware: {formatCurrency(data.investmentBreakdown.hardware)}</p>
+            <p>Legacy combined total: {formatCurrency(data.clientInvestmentTotal)}</p>
           </div>
         </div>
       ) : null}
@@ -484,18 +591,72 @@ export function TipInvestmentSection({ data, isAdmin = false }: TipInvestmentSec
   );
 }
 
-export function TipApprovalSection({ clientName }: { clientName: string }) {
+export function TipNextStepsSection() {
+  return (
+    <ReportSection
+      title="Next Steps"
+      subtitle="Implementation is incremental — approve and deliver one phase at a time"
+      documentTheme={DOCUMENT_THEME}
+    >
+      <div className="tip-next-steps-flow">
+        {ROADMAP_NEXT_STEPS.map((step, index) => (
+          <div key={step.label} className="tip-next-steps-item">
+            <div className="tip-next-steps-node">
+              <p className="tip-next-steps-index">{index + 1}</p>
+              <div>
+                <p className="tip-next-steps-label">{step.label}</p>
+                <p className="tip-next-steps-desc">{step.description}</p>
+              </div>
+            </div>
+            {index < ROADMAP_NEXT_STEPS.length - 1 ? (
+              <ArrowDown className="tip-next-steps-arrow" aria-hidden />
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </ReportSection>
+  );
+}
+
+export function TipApprovalSection({
+  clientName,
+  phases,
+}: {
+  clientName: string;
+  phases: RoadmapPhaseResult[];
+}) {
   return (
     <ReportSection
       title="Approval"
-      subtitle="Authorization to proceed with the initiatives outlined in this plan"
+      subtitle="Phases may be approved independently as priorities and budget allow"
       documentTheme={DOCUMENT_THEME}
     >
       <div className="tip-approval-block">
-        <p className="tip-executive-prose">
-          By signing below, {clientName} acknowledges review of this Technology Improvement Plan
-          and approves the proposed initiatives and investment summarized above.
-        </p>
+        <p className="tip-executive-prose">{buildApprovalIntro(clientName)}</p>
+
+        <div className="tip-approval-phase-list" data-approval-phases>
+          {phases.map((phase) => (
+            <div key={phase.id} className="tip-approval-phase-row" data-phase-id={phase.id}>
+              <div className="tip-approval-checkbox" aria-hidden />
+              <div className="tip-approval-phase-copy">
+                <p className="tip-approval-phase-title">
+                  {phase.subtitle} — {phase.name}
+                </p>
+                <p className="tip-approval-phase-meta">
+                  Timeline {phase.timeline} · One-time {formatCurrency(phase.oneTimeInvestment)}
+                  {phase.monthlyRecurringInvestment > 0
+                    ? ` · Monthly ${formatCurrency(phase.monthlyRecurringInvestment)}`
+                    : ""}
+                </p>
+              </div>
+              <div className="tip-approval-phase-sign">
+                <div className="tip-signature-line tip-signature-line-compact" />
+                <p className="tip-signature-label">Phase signature / date</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="tip-signature-line" />
         <p className="tip-signature-label">Authorized Signature</p>
         <div className="tip-signature-line" />
@@ -584,4 +745,29 @@ function TipMaturityScoreMini({
       </div>
     </div>
   );
+}
+
+/** @deprecated Prefer TipCurrentMaturitySection — retained for any external imports */
+export function TipPillarScorecardsSection({ data }: { data: TipReportData }) {
+  return <TipCurrentMaturitySection data={data} />;
+}
+
+/** @deprecated Flat recommendation list replaced by phased initiative sections */
+export function TipRecommendationsSection() {
+  return null;
+}
+
+/** @deprecated Prefer TipRoadmapOverviewSection + TipPhaseDetailSections */
+export function TipRoadmapSection({ data }: { data: TipReportData }) {
+  return (
+    <>
+      <TipRoadmapOverviewSection data={data} />
+      <TipPhaseDetailSections data={data} />
+    </>
+  );
+}
+
+/** @deprecated Prefer outcomes inside each phase */
+export function TipBusinessOutcomesSection() {
+  return null;
 }

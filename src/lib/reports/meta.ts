@@ -10,7 +10,7 @@ export const REPORT_TYPE_META: Record<ReportType, ReportTypeMeta> = {
   technology_improvement_plan: {
     title: "Technology Improvement Plan",
     subtitle:
-      "A strategic roadmap to strengthen technology resilience, reduce risk, and deliver measurable business outcomes.",
+      "A phased technology roadmap developed by your Virtual CIO — approve and implement one phase at a time.",
     attribution: "generated",
   },
   technology_progress: {

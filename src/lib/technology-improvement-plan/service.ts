@@ -121,6 +121,7 @@ export async function assembleTipPlanDetail(
     investment,
     investmentInternal: isAdmin ? derived.investmentInternal : investment,
     roadmapPhases: derived.roadmapPhases,
+    technologyRoadmap: derived.technologyRoadmap,
     currentScore,
     projectedScore: derived.projectedScore,
     assessmentName: record.assessment?.assessmentName ?? null,

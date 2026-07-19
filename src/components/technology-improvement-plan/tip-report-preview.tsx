@@ -11,14 +11,14 @@ import {
 } from "@/components/reports";
 import {
   TipApprovalSection,
-  TipBusinessOutcomesSection,
+  TipCurrentMaturitySection,
   TipExecutiveSummarySection,
   TipInvestmentSection,
   TipJourneyClosingSection,
-  TipPillarScorecardsSection,
-  TipRecommendationsSection,
+  TipNextStepsSection,
+  TipPhaseDetailSections,
   TipReportCover,
-  TipRoadmapSection,
+  TipRoadmapOverviewSection,
 } from "@/components/technology-improvement-plan/tip-report-sections";
 
 type TipReportPreviewProps = {
@@ -86,22 +86,25 @@ export function TipReportPreview({
               isEditable={isEditable}
               onExecutiveSummaryChange={onExecutiveSummaryChange}
             />
-
-            <TipBusinessOutcomesSection data={data} />
-            <TipPillarScorecardsSection data={data} />
+            <TipCurrentMaturitySection data={data} />
           </TipPreviewPage>
 
           <TipPreviewPage pageIndex={2} activePageIndex={activePageIndex}>
-            <TipRecommendationsSection data={data} />
-            <TipRoadmapSection data={data} />
+            <TipRoadmapOverviewSection data={data} />
           </TipPreviewPage>
 
           <TipPreviewPage pageIndex={3} activePageIndex={activePageIndex}>
+            <TipPhaseDetailSections data={data} />
+          </TipPreviewPage>
+
+          <TipPreviewPage pageIndex={4} activePageIndex={activePageIndex}>
             <TipInvestmentSection data={data} isAdmin={isAdmin} />
-            <TipApprovalSection clientName={data.clientName} />
-
+            <TipNextStepsSection />
+            <TipApprovalSection
+              clientName={data.clientName}
+              phases={data.technologyRoadmap.phases}
+            />
             <TipJourneyClosingSection data={data} />
-
             <ReportFooter confidentialFor={data.clientName} documentTheme />
           </TipPreviewPage>
         </ReportBody>

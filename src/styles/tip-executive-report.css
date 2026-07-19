@@ -651,6 +651,485 @@
   color: var(--report-muted, #64748b);
 }
 
+/* Roadmap overview */
+.tip-executive-report .tip-roadmap-overview-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.tip-executive-report .tip-roadmap-overview-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tip-executive-report .tip-roadmap-overview-arrow,
+.tip-executive-report .tip-next-steps-arrow {
+  height: 1rem;
+  width: 1rem;
+  color: var(--report-muted, #64748b);
+  margin: 0.25rem 0;
+}
+
+.tip-executive-report .tip-roadmap-overview-node {
+  width: 100%;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.875rem 1rem;
+}
+
+.tip-executive-report .tip-roadmap-overview-node-start {
+  background: linear-gradient(180deg, #eef4f8 0%, #ffffff 100%);
+  border-color: rgba(8, 47, 91, 0.28);
+}
+
+.tip-executive-report .tip-roadmap-overview-node-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-roadmap-overview-node-title {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-roadmap-overview-node-meta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-roadmap-overview-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-roadmap-overview-metrics {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-roadmap-overview-metric {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: var(--report-surface, #f8fafc);
+  padding: 0.875rem;
+}
+
+.tip-executive-report .tip-roadmap-overview-metric-emphasis {
+  background: linear-gradient(180deg, #eef4f8 0%, #ffffff 100%);
+  border-color: rgba(8, 47, 91, 0.28);
+}
+
+.tip-executive-report .tip-roadmap-overview-metric-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-roadmap-overview-metric-value {
+  margin-top: 0.375rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-accent, #082f5b);
+}
+
+/* Phase detail sections */
+.tip-executive-report .tip-phase-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tip-executive-report .tip-phase-section {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.875rem;
+  background: #ffffff;
+  padding: 1.25rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.tip-executive-report .tip-phase-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--report-border-light, #e2e8f0);
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-phase-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.tip-executive-report .tip-phase-subtitle {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-phase-title {
+  margin-top: 0.25rem;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-phase-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  min-width: min(100%, 20rem);
+}
+
+.tip-executive-report .tip-phase-meta {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.625rem;
+  background: var(--report-surface, #f8fafc);
+  padding: 0.625rem 0.75rem;
+}
+
+.tip-executive-report .tip-phase-meta-emphasis {
+  grid-column: 1 / -1;
+  background: #ecfdf5;
+  border-color: rgba(5, 150, 105, 0.25);
+}
+
+.tip-executive-report .tip-phase-meta-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-phase-meta-value {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-phase-block {
+  margin-top: 1.125rem;
+}
+
+.tip-executive-report .tip-phase-block-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--report-accent, #082f5b);
+  margin-bottom: 0.5rem;
+}
+
+.tip-executive-report .tip-outcome-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tip-executive-report .tip-outcome-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--report-text, #1e293b);
+}
+
+.tip-executive-report .tip-outcome-check {
+  height: 1rem;
+  width: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: var(--report-status-strong, #059669);
+}
+
+.tip-executive-report .tip-phase-initiative-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tip-executive-report .tip-phase-initiative {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.625rem;
+  background: var(--report-surface, #f8fafc);
+  padding: 0.875rem 1rem;
+}
+
+.tip-executive-report .tip-phase-initiative-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-phase-initiative-desc {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-phase-initiative-benefit {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--report-text, #1e293b);
+}
+
+.tip-executive-report .tip-phase-initiative-benefit span {
+  font-weight: 600;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-phase-initiative-impact {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--report-status-strong, #059669);
+}
+
+.tip-executive-report .tip-phase-investment {
+  margin-top: 1.125rem;
+}
+
+.tip-executive-report .tip-phase-investment-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .tip-executive-report .tip-phase-investment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-phase-investment-card {
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.tip-executive-report .tip-phase-investment-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-phase-investment-value {
+  margin-top: 0.375rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--report-accent, #082f5b);
+  line-height: 1.1;
+}
+
+.tip-executive-report .tip-phase-investment-suffix {
+  margin-left: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-phase-investment-retainer {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--report-accent, #082f5b);
+}
+
+.tip-executive-report .tip-phase-completion {
+  margin-top: 1.125rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--report-border-light, #e2e8f0);
+}
+
+.tip-executive-report .tip-phase-completion-intro {
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--report-text, #1e293b);
+}
+
+/* Investment totals */
+.tip-executive-report .tip-investment-totals {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-investment-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tip-executive-report .tip-investment-total-card {
+  border-radius: 0.75rem;
+  background: var(--report-accent, #082f5b);
+  padding: 1.25rem 1.5rem;
+  color: #ffffff;
+}
+
+.tip-executive-report .tip-investment-total-card-secondary {
+  background: #0a3d75;
+}
+
+.tip-executive-report .tip-investment-total-card-tertiary {
+  background: #124a82;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-investment-total-card-tertiary {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Next steps */
+.tip-executive-report .tip-next-steps-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tip-executive-report .tip-next-steps-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tip-executive-report .tip-next-steps-node {
+  width: 100%;
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.875rem 1rem;
+}
+
+.tip-executive-report .tip-next-steps-index {
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--report-accent, #082f5b);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.tip-executive-report .tip-next-steps-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-next-steps-desc {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--report-muted, #64748b);
+}
+
+/* Approval phases */
+.tip-executive-report .tip-approval-phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.tip-executive-report .tip-approval-phase-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  border: 1px solid var(--report-border-light, #e2e8f0);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--report-surface, #f8fafc);
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-approval-phase-row {
+    grid-template-columns: auto 1fr minmax(10rem, 14rem);
+    align-items: center;
+  }
+}
+
+.tip-executive-report .tip-approval-checkbox {
+  height: 1.125rem;
+  width: 1.125rem;
+  margin-top: 0.125rem;
+  border: 1.5px solid var(--report-accent, #082f5b);
+  border-radius: 0.25rem;
+  background: #ffffff;
+}
+
+.tip-executive-report .tip-approval-phase-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--report-heading, #0f172a);
+}
+
+.tip-executive-report .tip-approval-phase-meta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--report-muted, #64748b);
+}
+
+.tip-executive-report .tip-approval-phase-sign {
+  grid-column: 2;
+}
+
+@media (min-width: 768px) {
+  .tip-executive-report .tip-approval-phase-sign {
+    grid-column: auto;
+  }
+}
+
+.tip-executive-report .tip-signature-line-compact {
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
 /* Investment */
 .tip-executive-report .tip-investment-table {
   overflow: hidden;
@@ -832,13 +1311,17 @@
   .tip-executive-report .tip-recommendation-card,
   .tip-executive-report .tip-roadmap-phase,
   .tip-executive-report .tip-investment-total,
+  .tip-executive-report .tip-investment-total-card,
+  .tip-executive-report .tip-phase-section,
+  .tip-executive-report .tip-roadmap-overview-node,
   .tip-executive-report .tip-closing-hero {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .tip-executive-report .report-section-header,
-  .tip-executive-report .report-print-keep-with-next {
+  .tip-executive-report .report-print-keep-with-next,
+  .tip-executive-report .tip-phase-header {
     break-after: avoid;
     page-break-after: avoid;
   }
@@ -847,7 +1330,11 @@
   .tip-executive-report .tip-outcome-card,
   .tip-executive-report .tip-pillar-scorecard,
   .tip-executive-report .tip-recommendation-card,
-  .tip-executive-report .tip-roadmap-phase-card {
+  .tip-executive-report .tip-roadmap-phase-card,
+  .tip-executive-report .tip-phase-section,
+  .tip-executive-report .tip-phase-investment,
+  .tip-executive-report .tip-investment-totals,
+  .tip-executive-report .tip-approval-phase-row {
     break-inside: avoid;
     page-break-inside: avoid;
   }

@@ -6,15 +6,22 @@ import {
   View,
 } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { getPriorityTimeline } from "@/lib/recommendations/display";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import {
+  buildApprovalIntro,
+  buildPhaseCompletionOutcomes,
+  buildPhaseExecutiveNarrative,
+  buildPhaseOutcomeBullets,
   buildTipExecutiveFallback,
-  getRoadmapPhaseObjectives,
-  getRoadmapPhaseTimeline,
+  findRecommendationForInitiative,
+  getPhasePriorityLabel,
+  getRoadmapOverviewMetrics,
+  isPhaseRecurringCoveredByRetainer,
+  ROADMAP_NEXT_STEPS,
   TIP_MATURITY_TARGET,
 } from "@/lib/reports/tip-presentation";
+import type { RoadmapPhaseResult } from "@/lib/technology-improvement-plan/roadmap-engine";
 import {
   COLORS,
   PDF_SCORE_BAR,
@@ -22,7 +29,6 @@ import {
   PdfReportFooter,
   PdfReportHeader,
   PdfJourneyClosingHero,
-  PdfPriorityBadge,
   PdfSectionTitle,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
@@ -52,85 +58,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.slate,
     backgroundColor: COLORS.white,
-  },
-  coverHero: {
-    backgroundColor: COLORS.navy,
-    paddingTop: 56,
-    paddingBottom: 48,
-    paddingHorizontal: 54,
-  },
-  coverProduct: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.72)",
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-    marginBottom: 8,
-  },
-  coverTitle: {
-    fontSize: 30,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.white,
-    lineHeight: 1.15,
-    marginBottom: 10,
-  },
-  coverSubtitle: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.88)",
-    lineHeight: 1.6,
-    maxWidth: 420,
-  },
-  coverBody: {
-    paddingHorizontal: 54,
-    paddingTop: 36,
-    flexGrow: 1,
-  },
-  coverBrandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 28,
-  },
-  coverBrandLogo: { width: 56, height: 56, objectFit: "contain" },
-  coverPreparedBy: {
-    fontSize: 12,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    marginBottom: 3,
-  },
-  coverFinePrint: { fontSize: 9, color: COLORS.muted, lineHeight: 1.5 },
-  coverClientName: {
-    fontSize: 24,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    marginBottom: 24,
-    lineHeight: 1.25,
-  },
-  coverMetaGrid: { flexDirection: "row", flexWrap: "wrap", gap: 20, marginBottom: 24 },
-  coverMetaBlock: { minWidth: 130 },
-  coverMetaLabel: {
-    fontSize: 7,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.9,
-    marginBottom: 4,
-  },
-  coverMetaValue: {
-    fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.slate,
-    lineHeight: 1.4,
-  },
-  coverConfidential: {
-    marginTop: 28,
-    paddingTop: 18,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  coverConfidentialText: {
-    fontSize: 8,
-    color: COLORS.muted,
-    lineHeight: 1.6,
-    letterSpacing: 0.2,
   },
   sectionBlock: { marginBottom: 22 },
   bodyText: { fontSize: 10, lineHeight: 1.7, color: COLORS.slate, marginBottom: 8 },
@@ -238,32 +165,7 @@ const styles = StyleSheet.create({
   },
   journeyFill: { height: 10, backgroundColor: COLORS.accent, borderRadius: 5 },
   journeyMeta: { fontSize: 8, color: COLORS.muted, lineHeight: 1.5 },
-  outcomeGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  outcomeCard: {
-    width: "48%",
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 8,
-    padding: 14,
-    minHeight: 88,
-  },
-  outcomeIndex: {
-    fontSize: 6,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 4,
-  },
-  outcomeTitle: {
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    marginBottom: 6,
-    lineHeight: 1.4,
-  },
-  outcomeText: { fontSize: 8, color: COLORS.muted, lineHeight: 1.55 },
-  pillarGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  pillarGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14 },
   pillarCard: {
     width: "48%",
     borderWidth: 1,
@@ -331,185 +233,253 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.4,
   },
-  recommendationCard: {
-    marginBottom: 12,
+  overviewNode: {
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
     backgroundColor: COLORS.white,
-    borderTopWidth: 3,
-    borderTopColor: COLORS.navy,
-    overflow: "hidden",
-  },
-  recommendationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
-    padding: 14,
-    paddingBottom: 10,
-  },
-  recommendationTitle: {
-    flex: 1,
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    lineHeight: 1.4,
-  },
-  recMetaRow: {
-    flexDirection: "row",
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingBottom: 12,
-  },
-  recMetaBox: {
-    flex: 1,
-    backgroundColor: COLORS.surface,
-    borderRadius: 6,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  recMetaLabel: {
-    fontSize: 6,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginBottom: 4,
-  },
-  recMetaValue: {
-    fontSize: 8,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-    lineHeight: 1.4,
-  },
-  recBody: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: "#F1F5F9",
     padding: 12,
-    paddingHorizontal: 14,
-  },
-  recFieldLabel: {
-    fontSize: 6,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
     marginBottom: 4,
   },
-  recFieldValue: { fontSize: 9, lineHeight: 1.6, color: COLORS.slate },
-  roadmapPhaseRow: { flexDirection: "row", gap: 10, marginBottom: 4 },
-  roadmapRail: { width: 28, alignItems: "center" },
-  roadmapDot: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  roadmapDotActive: {
-    borderColor: COLORS.navy,
-    backgroundColor: COLORS.navy,
-  },
-  roadmapDotText: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.muted },
-  roadmapDotTextActive: { fontSize: 8, fontFamily: "Helvetica-Bold", color: COLORS.white },
-  roadmapLine: {
-    width: 2,
-    flexGrow: 1,
-    minHeight: 16,
-    backgroundColor: COLORS.border,
-    marginTop: 4,
-  },
-  roadmapCard: {
-    flex: 1,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 8,
-    backgroundColor: COLORS.white,
-    padding: 14,
-  },
-  roadmapCardActive: {
-    flex: 1,
-    marginBottom: 14,
+  overviewNodeStart: {
     borderWidth: 1,
     borderColor: COLORS.navy,
     borderRadius: 8,
     backgroundColor: COLORS.navyLight,
-    padding: 14,
+    padding: 12,
+    marginBottom: 4,
   },
-  roadmapHeader: {
+  overviewArrow: {
+    fontSize: 10,
+    color: COLORS.muted,
+    textAlign: "center",
+    marginVertical: 2,
+  },
+  overviewLabel: {
+    fontSize: 6,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.7,
+    marginBottom: 3,
+  },
+  overviewTitle: {
+    fontSize: 11,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+  },
+  overviewMeta: {
+    fontSize: 8,
+    color: COLORS.muted,
+    marginTop: 3,
+  },
+  metricRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 8,
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 12,
   },
-  roadmapLabel: { flex: 1, fontSize: 10, fontFamily: "Helvetica-Bold", color: COLORS.navy },
-  roadmapTimeline: {
+  metricCard: {
+    width: "18%",
+    minWidth: 90,
+    flexGrow: 1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    padding: 10,
+  },
+  metricCardEmphasis: {
+    width: "18%",
+    minWidth: 90,
+    flexGrow: 1,
+    borderWidth: 1,
+    borderColor: COLORS.navy,
+    borderRadius: 8,
+    backgroundColor: COLORS.navyLight,
+    padding: 10,
+  },
+  metricLabel: {
+    fontSize: 6,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  metricValue: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+  },
+  phaseCard: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 10,
+    backgroundColor: COLORS.white,
+    padding: 14,
+    marginBottom: 16,
+  },
+  phaseSubtitle: {
     fontSize: 7,
     fontFamily: "Helvetica-Bold",
     color: COLORS.navy,
     textTransform: "uppercase",
-    letterSpacing: 0.4,
-    marginTop: 3,
+    letterSpacing: 0.9,
+    marginBottom: 3,
   },
-  roadmapScoreBlock: { alignItems: "flex-end" },
-  roadmapScore: { fontSize: 16, fontFamily: "Helvetica-Bold", color: COLORS.navy },
-  roadmapDelta: { fontSize: 7, fontFamily: "Helvetica-Bold", color: COLORS.success, marginTop: 2 },
-  roadmapInitiative: { fontSize: 8, color: COLORS.slate, lineHeight: 1.55, marginBottom: 3 },
-  roadmapObjectives: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+  phaseTitle: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 10,
   },
-  table: {
+  phaseMetaRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  phaseMetaBox: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 6,
+    backgroundColor: COLORS.surface,
+    padding: 8,
+  },
+  phaseMetaBoxEmphasis: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "rgba(5,150,105,0.35)",
+    borderRadius: 6,
+    backgroundColor: COLORS.successBg,
+    padding: 8,
+  },
+  phaseMetaLabel: {
+    fontSize: 6,
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 3,
+  },
+  phaseMetaValue: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    lineHeight: 1.35,
+  },
+  phaseBlockLabel: {
+    fontSize: 7,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    textTransform: "uppercase",
+    letterSpacing: 0.7,
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  checklistItem: {
+    flexDirection: "row",
+    gap: 6,
+    marginBottom: 4,
+    alignItems: "flex-start",
+  },
+  checkMark: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.success,
+    width: 10,
+  },
+  checklistText: {
+    flex: 1,
+    fontSize: 9,
+    lineHeight: 1.5,
+    color: COLORS.slate,
+  },
+  initiativeCard: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 6,
+    backgroundColor: COLORS.surface,
+    padding: 10,
+    marginBottom: 8,
+  },
+  initiativeTitle: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 4,
+  },
+  initiativeDesc: {
+    fontSize: 8,
+    color: COLORS.muted,
+    lineHeight: 1.5,
+    marginBottom: 4,
+  },
+  initiativeBenefit: {
+    fontSize: 8,
+    color: COLORS.slate,
+    lineHeight: 1.5,
+    marginBottom: 4,
+  },
+  initiativeImpact: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.success,
+  },
+  investmentRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 4,
+  },
+  investmentCard: {
+    flex: 1,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
-    overflow: "hidden",
-    marginBottom: 14,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: COLORS.navy,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  tableHeaderCell: {
-    fontSize: 7,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.white,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    padding: 12,
     backgroundColor: COLORS.white,
   },
-  tableRowAlt: { backgroundColor: COLORS.surface },
-  tableCellCategory: { width: "24%", fontSize: 9, fontFamily: "Helvetica-Bold", color: COLORS.navy },
-  tableCellDesc: { width: "52%", fontSize: 8, color: COLORS.muted, paddingRight: 8, lineHeight: 1.5 },
-  tableCellAmount: {
-    width: "24%",
-    fontSize: 9,
+  investmentLabel: {
+    fontSize: 6,
     fontFamily: "Helvetica-Bold",
-    color: COLORS.slate,
-    textAlign: "right",
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  investmentValue: {
+    fontSize: 16,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+  },
+  investmentSuffix: {
+    fontSize: 9,
+    fontFamily: "Helvetica",
+    color: COLORS.muted,
+  },
+  retainerText: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    lineHeight: 1.4,
+  },
+  completionBox: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
   totalPanel: {
     backgroundColor: COLORS.navy,
     borderRadius: 8,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 10,
+  },
+  totalPanelSecondary: {
+    backgroundColor: "#0a3d75",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 10,
   },
   totalLabel: {
     fontSize: 7,
@@ -519,24 +489,101 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   totalValue: {
-    fontSize: 26,
+    fontSize: 22,
     fontFamily: "Helvetica-Bold",
     color: COLORS.white,
     lineHeight: 1,
   },
-  totalCaption: { fontSize: 8, color: "rgba(255,255,255,0.85)", marginTop: 8, lineHeight: 1.5 },
+  totalCaption: {
+    fontSize: 8,
+    color: "rgba(255,255,255,0.85)",
+    marginTop: 8,
+    lineHeight: 1.5,
+  },
+  nextStepRow: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: COLORS.white,
+  },
+  nextStepIndex: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.navy,
+    color: COLORS.white,
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    textAlign: "center",
+    paddingTop: 3,
+  },
+  nextStepLabel: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 2,
+  },
+  nextStepDesc: {
+    fontSize: 8,
+    color: COLORS.muted,
+    lineHeight: 1.45,
+  },
+  approvalPhaseRow: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    padding: 10,
+    marginBottom: 8,
+  },
+  approvalCheckbox: {
+    width: 12,
+    height: 12,
+    borderWidth: 1.5,
+    borderColor: COLORS.navy,
+    borderRadius: 2,
+    marginTop: 2,
+  },
+  approvalPhaseTitle: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 2,
+  },
+  approvalPhaseMeta: {
+    fontSize: 7,
+    color: COLORS.muted,
+    marginBottom: 6,
+  },
+  approvalSignLine: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.slate,
+    width: 140,
+    marginTop: 4,
+    marginBottom: 2,
+  },
   signatureBlock: {
     marginTop: 6,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    paddingTop: 12,
   },
   signatureLine: {
     borderBottomWidth: 1,
     borderBottomColor: COLORS.slate,
     width: 220,
-    marginTop: 28,
+    marginTop: 24,
     marginBottom: 6,
+  },
+  signatureLabel: {
+    fontSize: 9,
+    color: COLORS.muted,
   },
   closingScoreRow: { flexDirection: "row", gap: 10, marginTop: 14 },
 });
@@ -591,7 +638,7 @@ function PdfMaturityHero({ data }: { data: TipReportData }) {
           <View style={[styles.journeyFill, { width: journeyWidth }]} />
         </View>
         <Text style={styles.journeyMeta}>
-          Journey progress: {data.journeyProgressPercent}% · Projected improvement: +
+          Journey progress: {data.journeyProgressPercent}% · Available improvement: +
           {data.scoreImprovement} points · Maturity target: {TIP_MATURITY_TARGET}+
         </Text>
       </View>
@@ -628,37 +675,222 @@ function PdfPillarScorecard({ category }: { category: TipCategorySummary }) {
   );
 }
 
-function InvestmentTable({ data }: { data: TipReportData }) {
+function PdfRoadmapOverview({ data }: { data: TipReportData }) {
+  const roadmap = data.technologyRoadmap;
+  const metrics = getRoadmapOverviewMetrics(
+    data.currentScore,
+    roadmap,
+    data.recommendations,
+  );
+
   return (
-    <View wrap={false}>
-      <View style={styles.table}>
-        <View style={styles.tableHeader}>
-          <Text style={[styles.tableHeaderCell, { width: "24%" }]}>Category</Text>
-          <Text style={[styles.tableHeaderCell, { width: "52%" }]}>Description</Text>
-          <Text style={[styles.tableHeaderCell, { width: "24%", textAlign: "right" }]}>
-            Amount
+    <View>
+      <View wrap={false} style={styles.overviewNodeStart}>
+        <Text style={styles.overviewLabel}>Starting Point</Text>
+        <Text style={styles.overviewTitle}>Assessment Complete</Text>
+      </View>
+      {roadmap.phases.map((phase) => (
+        <View key={phase.id} wrap={false}>
+          <Text style={styles.overviewArrow}>↓</Text>
+          <View style={styles.overviewNode}>
+            <Text style={styles.overviewLabel}>{phase.subtitle}</Text>
+            <Text style={styles.overviewTitle}>{phase.name}</Text>
+            <Text style={styles.overviewMeta}>{phase.timeline}</Text>
+          </View>
+        </View>
+      ))}
+      <View style={styles.metricRow}>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Current StackScore</Text>
+          <Text style={styles.metricValue}>{metrics.currentScore}</Text>
+        </View>
+        <View style={styles.metricCardEmphasis}>
+          <Text style={styles.metricLabel}>Projected StackScore</Text>
+          <Text style={styles.metricValue}>{metrics.projectedScore}</Text>
+        </View>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Available Improvement</Text>
+          <Text style={styles.metricValue}>+{metrics.scoreImprovement}</Text>
+        </View>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Initiatives</Text>
+          <Text style={styles.metricValue}>{metrics.initiativeCount}</Text>
+        </View>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Phases</Text>
+          <Text style={styles.metricValue}>{metrics.phaseCount}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function PdfPhaseSection({
+  data,
+  phase,
+}: {
+  data: TipReportData;
+  phase: RoadmapPhaseResult;
+}) {
+  const outcomes = buildPhaseOutcomeBullets(phase);
+  const completionOutcomes = buildPhaseCompletionOutcomes(phase);
+  const coveredByRetainer = isPhaseRecurringCoveredByRetainer(phase, data.recommendations);
+  const showMonthly = phase.monthlyRecurringInvestment > 0;
+
+  return (
+    <View style={styles.phaseCard} wrap={false}>
+      <Text style={styles.phaseSubtitle}>{phase.subtitle}</Text>
+      <Text style={styles.phaseTitle}>{phase.name}</Text>
+
+      <View style={styles.phaseMetaRow}>
+        <View style={styles.phaseMetaBox}>
+          <Text style={styles.phaseMetaLabel}>Timeline</Text>
+          <Text style={styles.phaseMetaValue}>{phase.timeline}</Text>
+        </View>
+        <View style={styles.phaseMetaBox}>
+          <Text style={styles.phaseMetaLabel}>Priority</Text>
+          <Text style={styles.phaseMetaValue}>{getPhasePriorityLabel(phase)}</Text>
+        </View>
+        <View style={styles.phaseMetaBoxEmphasis}>
+          <Text style={styles.phaseMetaLabel}>Expected StackScore Improvement</Text>
+          <Text style={styles.phaseMetaValue}>+{phase.stackScoreImprovement} Points</Text>
+        </View>
+      </View>
+
+      <Text style={styles.phaseBlockLabel}>Executive Summary</Text>
+      <Text style={styles.bodyText}>{buildPhaseExecutiveNarrative(phase)}</Text>
+
+      {outcomes.length > 0 ? (
+        <>
+          <Text style={styles.phaseBlockLabel}>Business Outcomes</Text>
+          {outcomes.map((outcome) => (
+            <View key={outcome} style={styles.checklistItem}>
+              <Text style={styles.checkMark}>✓</Text>
+              <Text style={styles.checklistText}>{outcome}</Text>
+            </View>
+          ))}
+        </>
+      ) : null}
+
+      <Text style={styles.phaseBlockLabel}>Included Initiatives</Text>
+      {phase.initiatives.map((initiative) => {
+        const recommendation = findRecommendationForInitiative(
+          data.recommendations,
+          initiative.recommendationId,
+        );
+        return (
+          <View key={initiative.recommendationId} style={styles.initiativeCard} wrap={false}>
+            <Text style={styles.initiativeTitle}>{initiative.title}</Text>
+            {recommendation?.description ? (
+              <Text style={styles.initiativeDesc}>{recommendation.description}</Text>
+            ) : null}
+            {recommendation?.businessImpact ? (
+              <Text style={styles.initiativeBenefit}>
+                Business benefit: {recommendation.businessImpact}
+              </Text>
+            ) : null}
+            <Text style={styles.initiativeImpact}>
+              Estimated StackScore contribution: +
+              {recommendation?.estimatedImpactPoints ?? 0} points
+            </Text>
+          </View>
+        );
+      })}
+
+      <Text style={styles.phaseBlockLabel}>Investment Summary</Text>
+      <View style={styles.investmentRow} wrap={false}>
+        <View style={styles.investmentCard}>
+          <Text style={styles.investmentLabel}>One-Time Implementation Investment</Text>
+          <Text style={styles.investmentValue}>
+            {formatCurrency(phase.oneTimeInvestment)}
           </Text>
         </View>
-        {data.investmentLineItems.map((row, index) => (
-          <View
-            key={row.category}
-            style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}
-          >
-            <Text style={styles.tableCellCategory}>{row.category}</Text>
-            <Text style={styles.tableCellDesc}>{row.description}</Text>
-            <Text style={styles.tableCellAmount}>{formatCurrency(row.amount)}</Text>
+        {showMonthly ? (
+          <View style={styles.investmentCard}>
+            <Text style={styles.investmentLabel}>New Monthly Recurring Investment</Text>
+            {coveredByRetainer ? (
+              <Text style={styles.retainerText}>
+                Included in Strategic IT Consulting Retainer
+              </Text>
+            ) : (
+              <Text style={styles.investmentValue}>
+                {formatCurrency(phase.monthlyRecurringInvestment)}
+                <Text style={styles.investmentSuffix}>/month</Text>
+              </Text>
+            )}
+          </View>
+        ) : null}
+      </View>
+
+      <View style={styles.completionBox} wrap={false}>
+        <Text style={styles.phaseBlockLabel}>Phase Completion Outcome</Text>
+        <Text style={styles.bodyText}>
+          Upon completion of this phase your organization will have:
+        </Text>
+        {completionOutcomes.map((outcome) => (
+          <View key={outcome} style={styles.checklistItem}>
+            <Text style={styles.checkMark}>✓</Text>
+            <Text style={styles.checklistText}>{outcome}</Text>
           </View>
         ))}
       </View>
+    </View>
+  );
+}
+
+function PdfOverallInvestment({ data }: { data: TipReportData }) {
+  return (
+    <View wrap={false}>
       <View style={styles.totalPanel}>
-        <Text style={styles.totalLabel}>Total Client Investment</Text>
-        <Text style={styles.totalValue}>{formatCurrency(data.clientInvestmentTotal)}</Text>
+        <Text style={styles.totalLabel}>Total One-Time Implementation Investment</Text>
+        <Text style={styles.totalValue}>
+          {formatCurrency(data.oneTimeInvestmentTotal)}
+        </Text>
         <Text style={styles.totalCaption}>
-          All professional services, technology, and implementation costs required to execute this
-          improvement plan.
+          Project delivery, professional services, and technology required to execute approved
+          phases.
         </Text>
       </View>
+      {data.monthlyRecurringTotal > 0 ? (
+        <View style={styles.totalPanelSecondary}>
+          <Text style={styles.totalLabel}>Total New Monthly Recurring Investment</Text>
+          <Text style={styles.totalValue}>
+            {formatCurrency(data.monthlyRecurringTotal)}
+            <Text style={styles.investmentSuffix}> /month</Text>
+          </Text>
+          <Text style={styles.totalCaption}>
+            Ongoing services introduced by the roadmap. One-time and recurring investments are
+            never combined into a single figure.
+          </Text>
+        </View>
+      ) : null}
+      {data.annualRecurringTotal > 0 ? (
+        <View style={styles.totalPanelSecondary}>
+          <Text style={styles.totalLabel}>Total Annual Recurring Investment</Text>
+          <Text style={styles.totalValue}>
+            {formatCurrency(data.annualRecurringTotal)}
+            <Text style={styles.investmentSuffix}> /year</Text>
+          </Text>
+        </View>
+      ) : null}
     </View>
+  );
+}
+
+function PdfPageChrome({ data }: { data: TipReportData }) {
+  return (
+    <>
+      <PdfReportHeader
+        clientName={data.clientName}
+        generatedDate={data.generatedDate}
+        documentLabel="Technology Improvement Plan"
+      />
+      <PdfReportFooter
+        generatedDate={data.generatedDate}
+        clientName={data.clientName}
+        documentVersion={String(data.version)}
+      />
+    </>
   );
 }
 
@@ -668,6 +900,7 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
   const executiveText =
     data.executiveSummary ||
     buildTipExecutiveFallback(data.clientName, data.currentScore, data.projectedScore);
+  const phases = data.technologyRoadmap.phases;
 
   return (
     <Document
@@ -681,11 +914,10 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
           clientName={data.clientName}
           documentVersion={String(data.version)}
         />
-
         <PdfCoverPage
           eyebrow={`Generated by ${BRAND.productName}`}
           title="Technology Improvement Plan"
-          subtitle="A strategic roadmap to strengthen technology resilience, reduce risk, and deliver measurable business outcomes"
+          subtitle="A phased technology roadmap developed by your Virtual CIO — approve and implement one phase at a time"
           clientName={data.clientName}
           meta={[
             { label: "Document Version", value: `v${data.version}` },
@@ -702,236 +934,121 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportHeader
-          clientName={data.clientName}
-          generatedDate={data.generatedDate}
-          documentLabel="Technology Improvement Plan"
-        />
-        <PdfReportFooter
-          generatedDate={data.generatedDate}
-          clientName={data.clientName}
-          documentVersion={String(data.version)}
-        />
+        <PdfPageChrome data={data} />
 
         <View style={styles.sectionBlock}>
           <PdfSectionTitle
             title="Executive Summary"
-            subtitle="Business context, profile trajectory, and expected outcomes"
+            subtitle="Strategic context for a phased technology roadmap"
           />
           <Text style={styles.bodyText}>{executiveText}</Text>
-          <PdfMaturityHero data={data} />
         </View>
 
-        {data.businessOutcomes.length > 0 ? (
-          <View style={styles.sectionBlock}>
-            <PdfSectionTitle
-              title="Expected Business Outcomes"
-              subtitle="Primary value drivers from prioritized initiatives"
-            />
-            <View style={styles.outcomeGrid}>
-              {data.businessOutcomes.map((outcome, index) => (
-                <View key={outcome.title} wrap={false} style={styles.outcomeCard}>
-                  <Text style={styles.outcomeIndex}>Outcome {index + 1}</Text>
-                  <Text style={styles.outcomeTitle}>{outcome.title}</Text>
-                  <Text style={styles.outcomeText}>{outcome.description}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        ) : null}
-
-        {data.categorySummaries.length > 0 ? (
-          <View style={styles.sectionBlock}>
-            <PdfSectionTitle
-              title="Technology Pillars"
-              subtitle="Executive scorecard by domain — highlighted pillars include planned improvements"
-            />
+        <View style={styles.sectionBlock}>
+          <PdfSectionTitle
+            title="Current Technology Maturity"
+            subtitle="Where the organization stands today and the improvement trajectory ahead"
+          />
+          <PdfMaturityHero data={data} />
+          {data.categorySummaries.length > 0 ? (
             <View style={styles.pillarGrid}>
               {data.categorySummaries.map((category) => (
                 <PdfPillarScorecard key={category.name} category={category} />
               ))}
             </View>
-          </View>
-        ) : null}
+          ) : null}
+        </View>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportHeader
-          clientName={data.clientName}
-          generatedDate={data.generatedDate}
-          documentLabel="Technology Improvement Plan"
-        />
-        <PdfReportFooter
-          generatedDate={data.generatedDate}
-          clientName={data.clientName}
-          documentVersion={String(data.version)}
-        />
-
+        <PdfPageChrome data={data} />
         <View style={styles.sectionBlock}>
           <PdfSectionTitle
-            title="Prioritized Recommendations"
-            subtitle="Initiatives ordered by business impact and implementation priority"
+            title="Technology Roadmap Overview"
+            subtitle="A sequenced journey from assessment through strategic enhancement"
           />
-          {data.recommendations.map((rec) => (
-            <View key={rec.id} wrap={false} style={styles.recommendationCard}>
-              <View style={styles.recommendationHeader}>
-                <Text style={styles.recommendationTitle}>{rec.title}</Text>
-                <PdfPriorityBadge priority={rec.priority} />
-              </View>
-              <View style={styles.recMetaRow}>
-                <View style={styles.recMetaBox}>
-                  <Text style={styles.recMetaLabel}>Expected Outcome</Text>
-                  <Text style={styles.recMetaValue}>+{rec.estimatedImpactPoints} StackScore pts</Text>
-                </View>
-                <View style={styles.recMetaBox}>
-                  <Text style={styles.recMetaLabel}>Implementation Window</Text>
-                  <Text style={styles.recMetaValue}>{getPriorityTimeline(rec.priority)}</Text>
-                </View>
-                <View style={styles.recMetaBox}>
-                  <Text style={styles.recMetaLabel}>Category</Text>
-                  <Text style={styles.recMetaValue}>{rec.categoryName}</Text>
-                </View>
-              </View>
-              <View style={styles.recBody}>
-                <Text style={styles.recFieldLabel}>Business Impact</Text>
-                <Text style={styles.recFieldValue}>{rec.businessImpact}</Text>
-                {rec.suggestedService ? (
-                  <>
-                    <Text style={[styles.recFieldLabel, { marginTop: 8 }]}>Recommended Service</Text>
-                    <Text style={styles.recFieldValue}>{rec.suggestedService}</Text>
-                  </>
-                ) : null}
-                {rec.executiveNote ? (
-                  <>
-                    <Text style={[styles.recFieldLabel, { marginTop: 8 }]}>Executive Note</Text>
-                    <Text style={styles.recFieldValue}>{rec.executiveNote}</Text>
-                  </>
-                ) : null}
-              </View>
-            </View>
+          <PdfRoadmapOverview data={data} />
+        </View>
+      </Page>
+
+      <Page size="LETTER" style={styles.page} wrap>
+        <PdfPageChrome data={data} />
+        <View style={styles.sectionBlock}>
+          <PdfSectionTitle
+            title="Implementation Phases"
+            subtitle="Each phase is designed for independent approval and incremental delivery"
+          />
+          {phases.map((phase) => (
+            <PdfPhaseSection key={phase.id} data={data} phase={phase} />
           ))}
         </View>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportHeader
-          clientName={data.clientName}
-          generatedDate={data.generatedDate}
-          documentLabel="Technology Improvement Plan"
-        />
-        <PdfReportFooter
-          generatedDate={data.generatedDate}
-          clientName={data.clientName}
-          documentVersion={String(data.version)}
-        />
+        <PdfPageChrome data={data} />
 
         <View style={styles.sectionBlock}>
           <PdfSectionTitle
-            title="Phased Implementation Roadmap"
-            subtitle="Sequential delivery plan with projected profile progression and business objectives"
+            title="Overall Investment Summary"
+            subtitle="One-time implementation and recurring services are presented separately"
           />
-          {data.roadmapPhases.map((phase, index) => {
-            const objectives = getRoadmapPhaseObjectives(phase);
-            const timeline = getRoadmapPhaseTimeline(phase);
-            const isActive = index === 0;
-
-            return (
-              <View key={phase.id} wrap={false} style={styles.roadmapPhaseRow}>
-                <View style={styles.roadmapRail}>
-                  <View style={[styles.roadmapDot, isActive ? styles.roadmapDotActive : {}]}>
-                    <Text style={isActive ? styles.roadmapDotTextActive : styles.roadmapDotText}>
-                      {index + 1}
-                    </Text>
-                  </View>
-                  {index < data.roadmapPhases.length - 1 ? <View style={styles.roadmapLine} /> : null}
-                </View>
-                <View style={isActive ? styles.roadmapCardActive : styles.roadmapCard}>
-                  <View style={styles.roadmapHeader}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.roadmapLabel}>{phase.label}</Text>
-                      <Text style={styles.roadmapTimeline}>{timeline}</Text>
-                    </View>
-                    <View style={styles.roadmapScoreBlock}>
-                      <Text style={styles.roadmapScore}>{phase.projectedScore}</Text>
-                      <Text style={styles.roadmapDelta}>+{phase.scoreDelta} points</Text>
-                    </View>
-                  </View>
-                  {phase.recommendations.map((rec) => (
-                    <Text key={rec.id} style={styles.roadmapInitiative}>
-                      • {rec.title}
-                    </Text>
-                  ))}
-                  {objectives.length > 0 ? (
-                    <View style={styles.roadmapObjectives}>
-                      <Text style={styles.recFieldLabel}>Business objectives</Text>
-                      {objectives.map((objective) => (
-                        <Text key={objective.slice(0, 48)} style={styles.roadmapInitiative}>
-                          — {objective}
-                        </Text>
-                      ))}
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-            );
-          })}
+          <PdfOverallInvestment data={data} />
         </View>
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap={false}>
-        <PdfReportHeader
-          clientName={data.clientName}
-          generatedDate={data.generatedDate}
-          documentLabel="Technology Improvement Plan"
-        />
-        <PdfReportFooter
-          generatedDate={data.generatedDate}
-          clientName={data.clientName}
-          documentVersion={String(data.version)}
-        />
 
         <View style={styles.sectionBlock}>
           <PdfSectionTitle
-            title="Investment Summary"
-            subtitle="Professional services and technology investment required to execute this plan"
+            title="Next Steps"
+            subtitle="Implementation is incremental — approve and deliver one phase at a time"
           />
-          <InvestmentTable data={data} />
+          {ROADMAP_NEXT_STEPS.map((step, index) => (
+            <View key={step.label} style={styles.nextStepRow} wrap={false}>
+              <Text style={styles.nextStepIndex}>{index + 1}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nextStepLabel}>{step.label}</Text>
+                <Text style={styles.nextStepDesc}>{step.description}</Text>
+              </View>
+            </View>
+          ))}
         </View>
 
         <View wrap={false} style={styles.signatureBlock}>
           <PdfSectionTitle
             title="Approval"
-            subtitle="Authorization to proceed with the initiatives outlined in this plan"
+            subtitle="Phases may be approved independently as priorities and budget allow"
           />
-          <Text style={styles.bodyText}>
-            By signing below, {data.clientName} acknowledges review of this Technology Improvement
-            Plan and approves the proposed initiatives and investment summarized above.
-          </Text>
+          <Text style={styles.bodyText}>{buildApprovalIntro(data.clientName)}</Text>
+          {phases.map((phase) => (
+            <View key={phase.id} style={styles.approvalPhaseRow} wrap={false}>
+              <View style={styles.approvalCheckbox} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.approvalPhaseTitle}>
+                  {phase.subtitle} — {phase.name}
+                </Text>
+                <Text style={styles.approvalPhaseMeta}>
+                  Timeline {phase.timeline} · One-time {formatCurrency(phase.oneTimeInvestment)}
+                  {phase.monthlyRecurringInvestment > 0
+                    ? ` · Monthly ${formatCurrency(phase.monthlyRecurringInvestment)}`
+                    : ""}
+                </Text>
+                <View style={styles.approvalSignLine} />
+                <Text style={styles.signatureLabel}>Phase signature / date</Text>
+              </View>
+            </View>
+          ))}
           <Text style={styles.signatureLine} />
-          <Text style={[styles.recFieldValue, { marginBottom: 14 }]}>Authorized Signature</Text>
+          <Text style={[styles.signatureLabel, { marginBottom: 14 }]}>Authorized Signature</Text>
           <Text style={styles.signatureLine} />
-          <Text style={styles.recFieldValue}>Date</Text>
+          <Text style={styles.signatureLabel}>Date</Text>
         </View>
       </Page>
 
       <Page size="LETTER" style={styles.page} wrap={false}>
-        <PdfReportHeader
-          clientName={data.clientName}
-          generatedDate={data.generatedDate}
-          documentLabel="Technology Improvement Plan"
-        />
-        <PdfReportFooter
-          generatedDate={data.generatedDate}
-          clientName={data.clientName}
-          documentVersion={String(data.version)}
-        />
-
+        <PdfPageChrome data={data} />
         <PdfJourneyClosingHero
           title="Your Technology Journey"
           subtitle={`${BRAND.companyName} partners with organizations through Assess → Improve → Maintain to deliver measurable, lasting technology outcomes.`}
           activePhaseLabel={data.journeyPhaseLabel}
         />
-
         <View wrap={false} style={styles.closingScoreRow}>
           <View style={styles.maturityCard}>
             <Text style={styles.maturityCardLabel}>Starting StackScore</Text>
@@ -966,7 +1083,6 @@ export function TipReportDocument({ data }: { data: TipReportData }) {
             </View>
           </View>
         </View>
-
         <Text style={[styles.bodyText, { color: COLORS.muted, marginTop: 10, textAlign: "center" }]}>
           Generated by {BRAND.productName} on {formatGeneratedDate()} · {BRAND.companyName} ·{" "}
           {BRAND.website}

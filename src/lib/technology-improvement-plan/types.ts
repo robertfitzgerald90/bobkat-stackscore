@@ -5,6 +5,7 @@ import type {
   UserRole,
 } from "@/generated/prisma/client";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
+import type { TechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
 
 export type { TipWorkflowStep };
 
@@ -100,6 +101,12 @@ export type TipRoadmapPhaseView = {
   recommendations: TipRecommendationView[];
   projectedScore: number;
   scoreDelta: number;
+  executiveSummary?: string;
+  timeline?: string;
+  oneTimeInvestment?: number;
+  monthlyRecurringInvestment?: number;
+  annualRecurringInvestment?: number;
+  businessOutcomes?: Array<{ title: string; description: string }>;
 };
 
 export type TipPlanSummary = {
@@ -121,6 +128,9 @@ export type TipSelectionSummary = {
   excludedCount: number;
   deferredCount: number;
   clientInvestmentTotal: number;
+  oneTimeInvestmentTotal: number;
+  monthlyRecurringTotal: number;
+  annualRecurringTotal: number;
   laborTotal: number;
   hardwareTotal: number;
   servicesTotal: number;
@@ -142,6 +152,7 @@ export type TipPlanDetail = TipPlanSummary & {
   investment: TipInvestmentView;
   investmentInternal: TipInvestmentView;
   roadmapPhases: TipRoadmapPhaseView[];
+  technologyRoadmap: TechnologyRoadmap;
   currentScore: number;
   projectedScore: number;
   assessmentName: string | null;

@@ -35,29 +35,30 @@ export function buildTipReportData(
     [];
 
   const investment = plan.investmentInternal;
+  const roadmap = plan.technologyRoadmap;
+  const projectedScore = roadmap.totals.projectedFinalStackScore || plan.projectedScore;
 
   const investmentLineItems = [
     {
-      category: "Professional Services",
-      description: "Consulting, engineering, and implementation labor for prioritized initiatives",
-      amount: investment.labor,
+      category: "One-Time Implementation Investment",
+      description:
+        "Professional services, equipment, and project delivery across approved roadmap phases",
+      amount: roadmap.totals.totalOneTimeInvestment,
     },
     {
-      category: "Technology & Hardware",
-      description: "Equipment, licensing, and infrastructure required to support improvements",
-      amount: investment.hardware,
-    },
-    {
-      category: "Managed Services",
-      description: "Ongoing service delivery, monitoring, and operational support components",
-      amount: investment.services,
+      category: "New Monthly Recurring Investment",
+      description: "Ongoing managed services and operational support introduced by the roadmap",
+      amount: roadmap.totals.totalMonthlyRecurring,
     },
   ].filter((item) => item.amount > 0);
 
-  const businessOutcomes = plan.recommendations.slice(0, 4).map((rec) => ({
-    title: rec.title,
-    description: rec.businessImpact,
-  }));
+  const businessOutcomes = roadmap.phases
+    .flatMap((phase) => phase.businessOutcomes)
+    .slice(0, 4)
+    .map((outcome) => ({
+      title: outcome.title,
+      description: outcome.description,
+    }));
 
   return {
     clientName: plan.clientName,
@@ -71,13 +72,17 @@ export function buildTipReportData(
       plan.wizardState.globalExecutiveNotes ??
       "",
     currentScore: plan.currentScore,
-    projectedScore: plan.projectedScore,
-    scoreImprovement: plan.projectedScore - plan.currentScore,
+    projectedScore,
+    scoreImprovement: projectedScore - plan.currentScore,
     maturityTier: plan.profile?.profile.maturityTier ?? null,
     maturityTierLabel: plan.profile?.profile.maturityTierLabel ?? null,
     recommendations: plan.recommendations,
     roadmapPhases: plan.roadmapPhases,
+    technologyRoadmap: roadmap,
     clientInvestmentTotal: investment.clientTotal,
+    oneTimeInvestmentTotal: roadmap.totals.totalOneTimeInvestment,
+    monthlyRecurringTotal: roadmap.totals.totalMonthlyRecurring,
+    annualRecurringTotal: roadmap.totals.totalAnnualRecurring,
     investmentLineItems,
     categorySummaries,
     businessOutcomes,

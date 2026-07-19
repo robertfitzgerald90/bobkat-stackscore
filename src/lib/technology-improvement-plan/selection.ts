@@ -4,9 +4,12 @@ import {
   RECOMMENDATION_PRIORITY_ORDER,
 } from "@/lib/recommendations/display";
 import {
-  createDefaultInvestment,
-  createDefaultRoadmapPhases,
-} from "@/lib/technology-improvement-plan/defaults";
+  buildTechnologyRoadmap,
+  createDefaultPhaseAssignments,
+  enrichRoadmapPhaseViews,
+} from "@/lib/technology-improvement-plan/roadmap-engine";
+import type { TechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
+import { createDefaultInvestment } from "@/lib/technology-improvement-plan/defaults";
 import { buildPlaybookViews } from "@/lib/technology-improvement-plan/playbooks";
 import { computeInvestmentView } from "@/lib/technology-improvement-plan/pricing";
 import {
@@ -132,8 +135,9 @@ export function recalculateInvestmentForSelection(
 
 export function recalculateRoadmapForSelection(
   includedSeeds: RecommendationSeed[],
+  recommendationOrder: string[],
 ): TipWizardState["roadmapPhases"] {
-  return createDefaultRoadmapPhases(includedSeeds);
+  return createDefaultPhaseAssignments(includedSeeds, recommendationOrder);
 }
 
 export function syncWizardStateAfterSelectionChange(
@@ -159,7 +163,7 @@ export function syncWizardStateAfterSelectionChange(
     ...state,
     recommendationOrder,
     investment: recalculateInvestmentForSelection(includedSeeds, state),
-    roadmapPhases: recalculateRoadmapForSelection(includedSeeds),
+    roadmapPhases: recalculateRoadmapForSelection(includedSeeds, recommendationOrder),
   };
 }
 
@@ -170,6 +174,7 @@ export type TipDerivedPlanState = {
   playbooks: TipPlaybookView[];
   investmentInternal: TipInvestmentView;
   roadmapPhases: TipRoadmapPhaseView[];
+  technologyRoadmap: TechnologyRoadmap;
   projectedScore: number;
   selectionSummary: TipSelectionSummary;
 };
@@ -184,11 +189,18 @@ export function computeTipDerivedState(
   const deferredRecommendations = buildRecommendationsByStatus(seeds, state, "deferred");
   const investmentInternal = computeInvestmentView(state.investment);
   const projectedScore = computeOverallProjectedScore(currentScore, recommendations);
-  const roadmapPhases = buildRoadmapPhaseViews(
+  const roadmapPhaseViews = buildRoadmapPhaseViews(
     currentScore,
     recommendations,
     state.roadmapPhases,
   );
+  const technologyRoadmap = buildTechnologyRoadmap({
+    currentScore,
+    recommendations,
+    phaseAssignments: state.roadmapPhases,
+    investmentDraft: state.investment,
+  });
+  const roadmapPhases = enrichRoadmapPhaseViews(technologyRoadmap, roadmapPhaseViews);
   const playbooks = buildPlaybookViews(recommendations);
 
   return {
@@ -198,12 +210,16 @@ export function computeTipDerivedState(
     playbooks,
     investmentInternal,
     roadmapPhases,
+    technologyRoadmap,
     projectedScore,
     selectionSummary: {
       includedCount: recommendations.length,
       excludedCount: excludedRecommendations.length,
       deferredCount: deferredRecommendations.length,
       clientInvestmentTotal: investmentInternal.clientTotal,
+      oneTimeInvestmentTotal: technologyRoadmap.totals.totalOneTimeInvestment,
+      monthlyRecurringTotal: technologyRoadmap.totals.totalMonthlyRecurring,
+      annualRecurringTotal: technologyRoadmap.totals.totalAnnualRecurring,
       laborTotal: investmentInternal.labor,
       hardwareTotal: investmentInternal.hardware,
       servicesTotal: investmentInternal.services,
@@ -391,6 +407,7 @@ export function applyWizardStateToPlan(
     investment,
     investmentInternal: plan.isAdmin ? derived.investmentInternal : investment,
     roadmapPhases: derived.roadmapPhases,
+    technologyRoadmap: derived.technologyRoadmap,
     projectedScore: derived.projectedScore,
   };
 }

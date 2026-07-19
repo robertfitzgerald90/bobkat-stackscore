@@ -1,6 +1,7 @@
 import type { AssessmentResultsSummary } from "@/lib/assessments/results-summary";
 import type { Priority, MaturityTier } from "@/generated/prisma/client";
 import type { TipRecommendationView, TipRoadmapPhaseView } from "@/lib/technology-improvement-plan/types";
+import type { TechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
 
 export type AssessmentReportData = {
   clientName: string;
@@ -73,7 +74,11 @@ export type TipReportData = {
   maturityTierLabel: string | null;
   recommendations: TipRecommendationView[];
   roadmapPhases: TipRoadmapPhaseView[];
+  technologyRoadmap: TechnologyRoadmap;
   clientInvestmentTotal: number;
+  oneTimeInvestmentTotal: number;
+  monthlyRecurringTotal: number;
+  annualRecurringTotal: number;
   investmentLineItems: TipInvestmentLineItem[];
   categorySummaries: TipCategorySummary[];
   businessOutcomes: TipBusinessOutcome[];
