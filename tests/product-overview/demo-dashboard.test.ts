@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { northstarDemoDashboard } from "@/lib/product-overview/demo-dashboard";
 import {
+  DEMO_BUDGET_PERIODS,
+  DEMO_BUSINESS_OUTCOME_KPIS,
+  DEMO_EXECUTIVE_REPORTS,
+  DEMO_EXECUTIVE_REVIEW,
+  PLATFORM_MAP_STEPS,
+  getDemoReportPreviewById,
+} from "@/lib/product-overview/demo-execution";
+import {
   DEMO_RECOMMENDATIONS,
   DEMO_ROADMAP_INITIATIVES,
   JOURNEY_STAGES,
@@ -32,8 +40,17 @@ describe("product overview demo dashboard", () => {
     expect(northstarDemoDashboard.pillars[0]?.linkedRecommendationId).toBeTruthy();
   });
 
-  it("defines four active projects", () => {
+  it("defines four active projects with Phase 3 execution fields", () => {
     expect(northstarDemoDashboard.projects).toHaveLength(4);
+    expect(northstarDemoDashboard.projects[0]?.timelinePhases.length).toBeGreaterThan(0);
+    expect(northstarDemoDashboard.projects[0]?.relatedRecommendationId).toBeTruthy();
+    expect(northstarDemoDashboard.projects.some((p) => p.title === "Disaster Recovery Validation")).toBe(true);
+  });
+
+  it("includes extended quarterly review metrics", () => {
+    expect(northstarDemoDashboard.quarterlyReview.currentScore).toBe(68);
+    expect(northstarDemoDashboard.quarterlyReview.previousScore).toBe(62);
+    expect(northstarDemoDashboard.quarterlyReview.budgetUtilizationPercent).toBe(61);
   });
 
   it("includes recommendations and roadmap initiatives for Phase 2", () => {
@@ -57,5 +74,29 @@ describe("product overview strategy demo data", () => {
   it("maps Phase 2 and Phase 3 navigation sections", () => {
     expect(PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.phase === 2)).toHaveLength(3);
     expect(PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.phase === 3)).toHaveLength(4);
+    expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "projects")?.sectionId).toBe(
+      "product-overview-projects",
+    );
+    expect(PRODUCT_OVERVIEW_NAV_ITEMS.find((item) => item.id === "reports")?.sectionId).toBe(
+      "product-overview-reports",
+    );
+  });
+});
+
+describe("product overview execution demo data", () => {
+  it("defines six executive reports with React previews", () => {
+    expect(DEMO_EXECUTIVE_REPORTS).toHaveLength(6);
+    expect(getDemoReportPreviewById("report-assessment")?.sections.length).toBeGreaterThan(0);
+  });
+
+  it("defines budget periods", () => {
+    expect(DEMO_BUDGET_PERIODS).toHaveLength(3);
+    expect(DEMO_BUDGET_PERIODS[0]?.categories).toHaveLength(6);
+  });
+
+  it("defines business outcome KPIs and executive review content", () => {
+    expect(DEMO_BUSINESS_OUTCOME_KPIS.length).toBeGreaterThanOrEqual(8);
+    expect(DEMO_EXECUTIVE_REVIEW.executiveRecommendations.length).toBeGreaterThan(0);
+    expect(PLATFORM_MAP_STEPS).toHaveLength(8);
   });
 });

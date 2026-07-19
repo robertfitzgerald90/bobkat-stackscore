@@ -2,24 +2,30 @@
 
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
 import { AssessmentSection } from "@/components/product-overview/assessment-section";
+import { BudgetPlanningSection } from "@/components/product-overview/budget-planning-section";
+import { BusinessOutcomesDashboardSection } from "@/components/product-overview/business-outcomes-dashboard-section";
 import { BusinessValueSection } from "@/components/product-overview/business-value-section";
 import { CurrentFutureStateSection } from "@/components/product-overview/current-future-state-section";
 import { DemoModeBanner } from "@/components/product-overview/demo-mode-banner";
 import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
+import { ExecutiveReportLibrarySection } from "@/components/product-overview/executive-report-library-section";
 import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
-import { Phase3TeaserSection } from "@/components/product-overview/phase-3-teaser-section";
-import { ProductOverviewCTA } from "@/components/product-overview/product-overview-cta";
+import { PlatformOverviewMapSection } from "@/components/product-overview/platform-overview-map-section";
 import {
   ProductOverviewProvider,
   useProductOverview,
 } from "@/components/product-overview/product-overview-context";
+import { ProductOverviewFinalCta } from "@/components/product-overview/product-overview-final-cta";
 import { ProductOverviewHeader } from "@/components/product-overview/product-overview-header";
 import { ProductOverviewHero } from "@/components/product-overview/product-overview-hero";
 import { ProductOverviewNav } from "@/components/product-overview/product-overview-nav";
 import { ProductOverviewViewTracker } from "@/components/product-overview/product-overview-view-tracker";
+import { ProjectsWorkspaceSection } from "@/components/product-overview/projects-workspace-section";
+import { QuarterlyReviewSection } from "@/components/product-overview/quarterly-review-section";
 import { RecommendationsWorkspaceSection } from "@/components/product-overview/recommendations-workspace-section";
 import { RoadmapExperienceSection } from "@/components/product-overview/roadmap-experience-section";
 import { TechnologyJourneySection } from "@/components/product-overview/technology-journey-section";
+import { WhyClientsLoveSection } from "@/components/product-overview/why-clients-love-section";
 
 function ProductOverviewContent() {
   const { detailPanel, openDetail, closeDetail } = useProductOverview();
@@ -60,8 +66,14 @@ function ProductOverviewContent() {
         <RecommendationsWorkspaceSection />
         <RoadmapExperienceSection />
         <BusinessValueSection />
-        <Phase3TeaserSection />
-        <ProductOverviewCTA />
+        <ProjectsWorkspaceSection />
+        <QuarterlyReviewSection />
+        <ExecutiveReportLibrarySection />
+        <BudgetPlanningSection />
+        <BusinessOutcomesDashboardSection />
+        <WhyClientsLoveSection />
+        <PlatformOverviewMapSection />
+        <ProductOverviewFinalCta />
       </main>
       <OfferFooter />
       <MetricDetailDrawer panel={detailPanel} onClose={closeDetail} />

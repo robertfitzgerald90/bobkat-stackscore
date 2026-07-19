@@ -38,7 +38,7 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     id: "projects",
     label: "Projects",
     phase: 3,
-    sectionId: "product-overview-phase-3",
+    sectionId: "product-overview-projects",
     teaserTitle: "Project Management",
     teaserDescription:
       "Track initiative progress, milestones, owners, and outcomes in one workspace.",
@@ -47,7 +47,7 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     id: "quarterly-review",
     label: "Quarterly Review",
     phase: 3,
-    sectionId: "product-overview-phase-3",
+    sectionId: "product-overview-quarterly-review",
     teaserTitle: "Quarterly Reviews",
     teaserDescription:
       "Executive-ready review summaries with score movement, completed work, and next priorities.",
@@ -56,7 +56,7 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     id: "budget",
     label: "Budget",
     phase: 3,
-    sectionId: "product-overview-phase-3",
+    sectionId: "product-overview-budget",
     teaserTitle: "Budget Planning",
     teaserDescription:
       "Align approved spend, committed dollars, and remaining capacity with your technology roadmap.",
@@ -65,11 +65,9 @@ export const PRODUCT_OVERVIEW_NAV_ITEMS: ProductOverviewNavItem[] = [
     id: "reports",
     label: "Reports",
     phase: 3,
-    sectionId: "product-overview-phase-3",
+    sectionId: "product-overview-reports",
     teaserTitle: "Executive Reports",
     teaserDescription:
       "Share polished leadership reports built from live platform data instead of one-off slide decks.",
   },
 ];
-
-export const PHASE_3_TEASER_MODULES = PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.phase === 3);

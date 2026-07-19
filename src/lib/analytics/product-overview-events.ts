@@ -14,6 +14,8 @@ export const PRODUCT_OVERVIEW_ANALYTICS_EVENTS = {
   JOURNEY_STAGE_CLICKED: "product_overview_journey_stage_clicked",
   ROADMAP_VIEW_CHANGED: "product_overview_roadmap_view_changed",
   CONNECTION_HIGHLIGHTED: "product_overview_connection_highlighted",
+  REPORT_PREVIEWED: "product_overview_report_previewed",
+  BUDGET_PERIOD_CHANGED: "product_overview_budget_period_changed",
 } as const;
 
 export type ProductOverviewAnalyticsEventName =
@@ -30,6 +32,8 @@ const ALLOWED_PROPERTY_KEYS = new Set([
   "stage_id",
   "view_mode",
   "trigger",
+  "report_id",
+  "budget_period",
 ]);
 
 function sanitizeProperties(properties?: MarketingAnalyticsProperties) {
@@ -117,5 +121,17 @@ export function trackProductOverviewRoadmapViewChanged(viewMode: string) {
 export function trackProductOverviewConnectionHighlighted(trigger: string) {
   trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.CONNECTION_HIGHLIGHTED, {
     trigger,
+  });
+}
+
+export function trackProductOverviewReportPreviewed(reportId: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.REPORT_PREVIEWED, {
+    report_id: reportId,
+  });
+}
+
+export function trackProductOverviewBudgetPeriodChanged(budgetPeriod: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.BUDGET_PERIOD_CHANGED, {
+    budget_period: budgetPeriod,
   });
 }

@@ -5,20 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
 
-type ProductOverviewNavProps = {
-  activeId?: string;
-};
-
 const SECTION_IDS = PRODUCT_OVERVIEW_NAV_ITEMS.filter((item) => item.sectionId).map((item) => ({
   id: item.id,
   sectionId: item.sectionId!,
-  phase: item.phase,
-  teaserDescription: item.teaserDescription,
 }));
 
-export function ProductOverviewNav({ activeId: activeIdProp }: ProductOverviewNavProps) {
-  const [activeId, setActiveId] = useState(activeIdProp ?? "overview");
-  const [hintId, setHintId] = useState<string | null>(null);
+export function ProductOverviewNav() {
+  const [activeId, setActiveId] = useState("overview");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -49,19 +42,6 @@ export function ProductOverviewNav({ activeId: activeIdProp }: ProductOverviewNa
     return () => observer.disconnect();
   }, []);
 
-  const scrollToSection = (sectionId: string, itemId: string, phase: 1 | 2 | 3) => {
-    if (phase === 3) {
-      setHintId(itemId);
-    } else {
-      setHintId(null);
-    }
-
-    document.getElementById(sectionId)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
   return (
     <nav
       aria-label="Product overview sections"
@@ -75,17 +55,18 @@ export function ProductOverviewNav({ activeId: activeIdProp }: ProductOverviewNa
           <ul className="flex min-w-max items-center gap-2">
             {PRODUCT_OVERVIEW_NAV_ITEMS.map((item) => {
               const isActive = item.id === activeId;
-              const isPhase3 = item.phase === 3;
 
               return (
-                <li key={item.id} className="relative">
+                <li key={item.id}>
                   <button
                     type="button"
                     aria-current={isActive ? "page" : undefined}
-                    aria-describedby={hintId === item.id ? `${item.id}-hint` : undefined}
                     onClick={() => {
                       if (item.sectionId) {
-                        scrollToSection(item.sectionId, item.id, item.phase);
+                        document.getElementById(item.sectionId)?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
                       }
                     }}
                     className={cn(
@@ -97,29 +78,6 @@ export function ProductOverviewNav({ activeId: activeIdProp }: ProductOverviewNa
                   >
                     {item.label}
                   </button>
-                  {hintId === item.id && isPhase3 ? (
-                    <div
-                      id={`${item.id}-hint`}
-                      role="status"
-                      className="absolute left-0 top-[calc(100%+0.5rem)] z-20 w-64 rounded-lg border border-border bg-popover p-3 text-left shadow-lg"
-                    >
-                      <p className="text-xs font-semibold text-foreground">Coming in Phase 3</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{item.teaserDescription}</p>
-                      <button
-                        type="button"
-                        className="mt-2 text-xs font-medium text-primary hover:underline"
-                        onClick={() => {
-                          setHintId(null);
-                          document.getElementById("product-overview-phase-3")?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                          });
-                        }}
-                      >
-                        View Phase 3 preview
-                      </button>
-                    </div>
-                  ) : null}
                 </li>
               );
             })}

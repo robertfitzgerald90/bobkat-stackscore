@@ -10,12 +10,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { ProjectMilestoneTimeline } from "@/components/product-overview/project-milestone-timeline";
+import { ReportPreviewLayout } from "@/components/product-overview/report-preview-layout";
 import { useProductOverview } from "@/components/product-overview/product-overview-context";
 import {
   getDemoPillarById,
   getDemoProjectById,
   northstarDemoDashboard,
 } from "@/lib/product-overview/demo-dashboard";
+import { DEMO_EXECUTIVE_REVIEW, getDemoReportPreviewById } from "@/lib/product-overview/demo-execution";
 import {
   getDemoConnectionByPillarId,
   getDemoConnectionByRecommendationId,
@@ -42,13 +45,20 @@ function ConnectedLinks({
   pillarId,
   recommendationId,
   roadmapInitiativeId,
+  projectId,
 }: {
   pillarId?: string;
   recommendationId?: string;
   roadmapInitiativeId?: string;
+  projectId?: string;
 }) {
-  const { openConnectedPillar, openConnectedRecommendation, openConnectedRoadmapInitiative } =
-    useProductOverview();
+  const {
+    openConnectedPillar,
+    openConnectedRecommendation,
+    openConnectedRoadmapInitiative,
+    openConnectedProject,
+    openDetail,
+  } = useProductOverview();
 
   return (
     <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
@@ -84,6 +94,24 @@ function ConnectedLinks({
             View roadmap initiative
           </Button>
         ) : null}
+        {projectId ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => openConnectedProject(projectId, "drawer_link")}
+          >
+            View project
+          </Button>
+        ) : null}
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => openDetail({ type: "executiveReview" })}
+        >
+          View quarterly review
+        </Button>
       </div>
     </div>
   );
@@ -250,26 +278,49 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       break;
     }
     case "project":
+    case "projectExecution":
     case "nextAction": {
       const projectId =
-        panel.type === "project"
-          ? panel.projectId
-          : northstarDemoDashboard.nextAction.relatedProjectId;
+        panel.type === "nextAction"
+          ? northstarDemoDashboard.nextAction.relatedProjectId
+          : panel.type === "project" || panel.type === "projectExecution"
+            ? panel.projectId
+            : "";
       const project = getDemoProjectById(projectId);
+      const roadmapInitiative = project
+        ? getDemoRoadmapInitiativeById(project.relatedRoadmapInitiativeId)
+        : undefined;
+      const isFullProject = panel.type === "projectExecution";
       title = project?.title ?? "Project Detail";
-      description = panel.type === "nextAction" ? "Priority project detail" : "Active project detail";
+      description = isFullProject
+        ? "Project execution detail with milestones, risks, and business outcomes"
+        : panel.type === "nextAction"
+          ? "Priority project detail"
+          : "Active project detail";
       body = project ? (
         <div className="space-y-5">
           <div className="flex flex-wrap items-center gap-3">
+            <Badge variant={project.priority === "Critical" ? "destructive" : "outline"}>
+              {project.priority} priority
+            </Badge>
             <Badge variant="outline">{project.status}</Badge>
             <span className="text-sm text-muted-foreground">{project.progress}% complete</span>
           </div>
           {panel.type === "nextAction" ? (
             <DetailSection label="Recommended action">{northstarDemoDashboard.nextAction.body}</DetailSection>
           ) : null}
-          <DetailSection label="Description">{project.description}</DetailSection>
-          <DetailSection label="Owner">{project.owner}</DetailSection>
-          <DetailSection label="Target completion">{project.targetCompletion}</DetailSection>
+          {isFullProject ? (
+            <>
+              <DetailSection label="Project summary">{project.description}</DetailSection>
+              <DetailSection label="Business objective">{project.businessObjective}</DetailSection>
+              <DetailSection label="Timeline">{project.targetCompletion}</DetailSection>
+              <DetailSection label="Project milestone timeline">
+                <ProjectMilestoneTimeline phases={project.timelinePhases} compact />
+              </DetailSection>
+            </>
+          ) : (
+            <DetailSection label="Description">{project.description}</DetailSection>
+          )}
           <DetailSection label="Milestones">
             <ul className="space-y-1">
               {project.milestones.map((milestone) => (
@@ -277,9 +328,65 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
               ))}
             </ul>
           </DetailSection>
-          <DetailSection label="Related recommendation">{project.relatedRecommendation}</DetailSection>
-          <DetailSection label="Business outcome">{project.businessOutcome}</DetailSection>
           <DetailSection label="Budget range">{project.budgetRange}</DetailSection>
+          {isFullProject ? (
+            <>
+              <DetailSection label="Current risks">
+                <ul className="space-y-1">
+                  {project.currentRisks.map((risk) => (
+                    <li key={risk}>• {risk}</li>
+                  ))}
+                </ul>
+              </DetailSection>
+              <DetailSection label="Dependencies">
+                <ul className="space-y-1">
+                  {project.dependencies.map((dependency) => (
+                    <li key={dependency}>• {dependency}</li>
+                  ))}
+                </ul>
+              </DetailSection>
+              <DetailSection label="Expected outcome">{project.businessOutcome}</DetailSection>
+              <div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Completion progress</span>
+                  <span>{project.progress}%</span>
+                </div>
+                <div className="mt-1 h-2 rounded-full bg-muted">
+                  <div
+                    className="h-2 rounded-full bg-primary"
+                    style={{ width: `${project.progress}%` }}
+                  />
+                </div>
+              </div>
+              <DetailSection label="Related recommendation">{project.relatedRecommendation}</DetailSection>
+              <DetailSection label="Related roadmap initiative">
+                {roadmapInitiative?.title ?? project.relatedRoadmapInitiativeId}
+              </DetailSection>
+              <DetailSection label="Related quarterly review">
+                {northstarDemoDashboard.quarterlyReview.nextReviewDate}
+              </DetailSection>
+              <DetailSection label="Project notes">
+                <ul className="space-y-1">
+                  {project.projectNotes.map((note) => (
+                    <li key={note}>• {note}</li>
+                  ))}
+                </ul>
+              </DetailSection>
+            </>
+          ) : (
+            <>
+              <DetailSection label="Owner">{project.owner}</DetailSection>
+              <DetailSection label="Target completion">{project.targetCompletion}</DetailSection>
+              <DetailSection label="Related recommendation">{project.relatedRecommendation}</DetailSection>
+              <DetailSection label="Business outcome">{project.businessOutcome}</DetailSection>
+            </>
+          )}
+          <ConnectedLinks
+            pillarId={project.pillarId}
+            recommendationId={project.relatedRecommendationId}
+            roadmapInitiativeId={project.relatedRoadmapInitiativeId}
+            projectId={project.id}
+          />
         </div>
       ) : null;
       break;
@@ -329,6 +436,83 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
           </div>
         </div>
       );
+      break;
+    }
+    case "executiveReview": {
+      const review = DEMO_EXECUTIVE_REVIEW;
+      const qbr = northstarDemoDashboard.quarterlyReview;
+      title = "Executive Quarterly Review";
+      description = `Northstar Manufacturing · ${qbr.nextReviewDate}`;
+      body = (
+        <div className="space-y-5">
+          <DetailSection label="Executive summary">
+            <ul className="space-y-2">
+              {review.executiveSummary.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Technology score trend">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {review.scoreTrend.map((point) => (
+                <div key={point.quarter} className="rounded-lg bg-muted/30 p-3 text-center">
+                  <p className="text-xs text-muted-foreground">{point.quarter}</p>
+                  <p className="mt-1 text-lg font-semibold">{point.score}</p>
+                </div>
+              ))}
+            </div>
+          </DetailSection>
+          <DetailSection label="Completed initiatives">
+            <ul className="space-y-1">
+              {review.completedInitiatives.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Open risks">
+            <ul className="space-y-1">
+              {review.openRisks.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Budget summary">
+            <ul className="space-y-1">
+              {review.budgetSummary.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Roadmap progress">
+            <ul className="space-y-1">
+              {review.roadmapProgress.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Top priorities next quarter">
+            <ul className="space-y-1">
+              {review.topPrioritiesNextQuarter.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+          <DetailSection label="Executive recommendations">
+            <ul className="space-y-1">
+              {review.executiveRecommendations.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </DetailSection>
+        </div>
+      );
+      break;
+    }
+    case "report": {
+      const preview = getDemoReportPreviewById(panel.reportId);
+      title = preview?.title ?? "Report Preview";
+      description = preview?.subtitle ?? "Executive report preview";
+      body = preview ? <ReportPreviewLayout preview={preview} /> : null;
       break;
     }
     default:

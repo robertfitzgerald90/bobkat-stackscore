@@ -33,7 +33,7 @@ type DemoDashboardProps = {
 
 export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail }: DemoDashboardProps) {
   const data = northstarDemoDashboard;
-  const { openConnectedPillar, openConnectedRecommendation } = useProductOverview();
+  const { openConnectedPillar, openConnectedRecommendation, openConnectedProject } = useProductOverview();
 
   function openDetail(panel: DemoDetailPanel) {
     if (!panel) return;
@@ -47,7 +47,16 @@ export function DemoDashboard({ compact = false, readOnly = false, onOpenDetail 
       openConnectedRecommendation(panel.recommendationId, "dashboard_recommendation");
       return;
     }
-    if (panel.type === "project") trackProductOverviewProjectOpened(panel.projectId);
+    if (panel.type === "project") {
+      trackProductOverviewProjectOpened(panel.projectId);
+      openConnectedProject(panel.projectId, "dashboard_project");
+      return;
+    }
+    if (panel.type === "nextAction") {
+      trackProductOverviewProjectOpened(northstarDemoDashboard.nextAction.relatedProjectId);
+      openConnectedProject(northstarDemoDashboard.nextAction.relatedProjectId, "next_action");
+      return;
+    }
     if (panel.type === "roadmap") trackProductOverviewRoadmapPreviewed();
     if (panel.type === "qbr") trackProductOverviewQbrPreviewed();
     onOpenDetail?.(panel);

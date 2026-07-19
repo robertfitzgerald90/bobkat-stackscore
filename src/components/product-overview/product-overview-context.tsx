@@ -1,7 +1,11 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { trackProductOverviewConnectionHighlighted } from "@/lib/analytics/product-overview-events";
+import {
+  trackProductOverviewConnectionHighlighted,
+  trackProductOverviewReportPreviewed,
+} from "@/lib/analytics/product-overview-events";
+import { getDemoProjectById } from "@/lib/product-overview/demo-dashboard";
 import { getDemoConnectionByPillarId } from "@/lib/product-overview/demo-strategy";
 import type { DemoDetailPanel, ProductOverviewHighlight } from "@/lib/product-overview/types";
 
@@ -15,10 +19,14 @@ type ProductOverviewContextValue = {
   openConnectedPillar: (pillarId: string, source?: string) => void;
   openConnectedRecommendation: (recommendationId: string, source?: string) => void;
   openConnectedRoadmapInitiative: (initiativeId: string, source?: string) => void;
+  openConnectedProject: (projectId: string, source?: string) => void;
+  openReport: (reportId: string, source?: string) => void;
   isHighlighted: (ids: {
     pillarId?: string;
     recommendationId?: string;
     roadmapInitiativeId?: string;
+    projectId?: string;
+    reportId?: string;
   }) => boolean;
 };
 
@@ -76,17 +84,42 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
     [],
   );
 
+  const openConnectedProject = useCallback((projectId: string, source = "project") => {
+    const project = getDemoProjectById(projectId);
+    if (!project) return;
+
+    setHighlightState({
+      projectId,
+      pillarId: project.pillarId,
+      recommendationId: project.relatedRecommendationId,
+      roadmapInitiativeId: project.relatedRoadmapInitiativeId,
+    });
+    setDetailPanel({ type: "projectExecution", projectId });
+    trackProductOverviewConnectionHighlighted(source);
+  }, []);
+
+  const openReport = useCallback((reportId: string, source = "report") => {
+    setHighlightState((current) => ({ ...current, reportId }));
+    setDetailPanel({ type: "report", reportId });
+    trackProductOverviewReportPreviewed(reportId);
+    trackProductOverviewConnectionHighlighted(source);
+  }, []);
+
   const isHighlighted = useCallback(
     (ids: {
       pillarId?: string;
       recommendationId?: string;
       roadmapInitiativeId?: string;
+      projectId?: string;
+      reportId?: string;
     }) => {
       if (ids.pillarId && highlight.pillarId === ids.pillarId) return true;
       if (ids.recommendationId && highlight.recommendationId === ids.recommendationId) return true;
       if (ids.roadmapInitiativeId && highlight.roadmapInitiativeId === ids.roadmapInitiativeId) {
         return true;
       }
+      if (ids.projectId && highlight.projectId === ids.projectId) return true;
+      if (ids.reportId && highlight.reportId === ids.reportId) return true;
       return false;
     },
     [highlight],
@@ -103,6 +136,8 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       openConnectedPillar,
       openConnectedRecommendation,
       openConnectedRoadmapInitiative,
+      openConnectedProject,
+      openReport,
       isHighlighted,
     }),
     [
@@ -115,6 +150,8 @@ export function ProductOverviewProvider({ children }: { children: React.ReactNod
       openConnectedPillar,
       openConnectedRecommendation,
       openConnectedRoadmapInitiative,
+      openConnectedProject,
+      openReport,
       isHighlighted,
     ],
   );

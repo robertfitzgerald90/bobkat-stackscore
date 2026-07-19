@@ -80,6 +80,12 @@ export type DemoRecommendation = {
   isPlannedThisQuarter?: boolean;
 };
 
+export type DemoProjectTimelinePhase = {
+  id: string;
+  label: string;
+  status: "completed" | "current" | "upcoming";
+};
+
 export type DemoProject = {
   id: string;
   title: string;
@@ -92,6 +98,17 @@ export type DemoProject = {
   relatedRecommendation: string;
   businessOutcome: string;
   budgetRange: string;
+  priority: "Critical" | "High" | "Medium" | "Low";
+  pillarId: string;
+  pillarName: string;
+  relatedRecommendationId: string;
+  relatedRoadmapInitiativeId: string;
+  relatedQuarterlyReviewId: string;
+  businessObjective: string;
+  timelinePhases: DemoProjectTimelinePhase[];
+  currentRisks: string[];
+  dependencies: string[];
+  projectNotes: string[];
 };
 
 export type DemoRoadmapQuarter = {
@@ -121,6 +138,97 @@ export type DemoQuarterlyReview = {
   recommendationsClosed: number;
   budgetVariance: string;
   executiveSummary: string[];
+  currentScore: number;
+  previousScore: number;
+  openHighPriority: number;
+  roadmapCompletionPercent: number;
+  budgetUtilizationPercent: number;
+};
+
+export type DemoExecutiveReview = {
+  executiveSummary: string[];
+  scoreTrend: { quarter: string; score: number }[];
+  completedInitiatives: string[];
+  openRisks: string[];
+  budgetSummary: string[];
+  roadmapProgress: string[];
+  topPrioritiesNextQuarter: string[];
+  executiveRecommendations: string[];
+};
+
+export type DemoExecutiveReportType =
+  | "assessment"
+  | "improvement-plan"
+  | "qbr"
+  | "roadmap"
+  | "budget"
+  | "strategic-summary";
+
+export type DemoExecutiveReport = {
+  id: string;
+  title: string;
+  description: string;
+  generatedDate: string;
+  reportType: DemoExecutiveReportType;
+};
+
+export type DemoReportPreviewSection = {
+  heading: string;
+  body?: string;
+  bullets?: string[];
+};
+
+export type DemoReportPreview = {
+  reportId: string;
+  title: string;
+  subtitle: string;
+  generatedDate: string;
+  sections: DemoReportPreviewSection[];
+  metrics?: { label: string; value: string }[];
+};
+
+export type DemoBudgetCategory = {
+  id: string;
+  label: string;
+  amount: number;
+};
+
+export type DemoBudgetPeriodId = "current-year" | "next-year" | "three-year";
+
+export type DemoBudgetPeriod = {
+  id: DemoBudgetPeriodId;
+  label: string;
+  annual: DemoBudgetPlan;
+  categories: DemoBudgetCategory[];
+};
+
+export type DemoBusinessOutcomeKpi = {
+  id: string;
+  label: string;
+  currentValue: string;
+  targetValue?: string;
+  detail?: string;
+};
+
+export type DemoValueProposition = {
+  id: string;
+  title: string;
+  description: string;
+  icon:
+    | "compass"
+    | "target"
+    | "trending"
+    | "shield"
+    | "wallet"
+    | "lock"
+    | "refresh"
+    | "sparkles";
+};
+
+export type DemoPlatformMapStep = {
+  id: string;
+  label: string;
+  description: string;
 };
 
 export type DemoBudgetPlan = {
@@ -204,6 +312,8 @@ export type ProductOverviewHighlight = {
   pillarId?: string;
   recommendationId?: string;
   roadmapInitiativeId?: string;
+  projectId?: string;
+  reportId?: string;
 };
 
 export type DemoDetailPanel =
@@ -211,8 +321,11 @@ export type DemoDetailPanel =
   | { type: "assessmentPillar"; pillarId: string }
   | { type: "recommendation"; recommendationId: string }
   | { type: "project"; projectId: string }
+  | { type: "projectExecution"; projectId: string }
   | { type: "roadmap" }
   | { type: "roadmapInitiative"; initiativeId: string }
   | { type: "qbr" }
+  | { type: "executiveReview" }
+  | { type: "report"; reportId: string }
   | { type: "nextAction" }
   | null;
