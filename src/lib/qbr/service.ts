@@ -96,6 +96,73 @@ async function loadRoadmapPhases(clientId: string, currentScore: number | null) 
   return derived.roadmapPhases;
 }
 
+function decimalToNumber(value: { toNumber?: () => number } | number | null | undefined): number {
+  if (value == null) return 0;
+  if (typeof value === "number") return value;
+  if (typeof value.toNumber === "function") return value.toNumber();
+  return Number(value);
+}
+
+async function loadLivingRoadmapForQbr(clientId: string) {
+  const roadmap = await prisma.clientRoadmap.findFirst({
+    where: { clientId, status: { in: ["active", "draft"] } },
+    orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
+    include: {
+      phases: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          initiatives: { select: { id: true, title: true } },
+        },
+      },
+    },
+  });
+
+  if (!roadmap) {
+    return {
+      livingRoadmapPhases: [],
+      budgetForecast: null as null | {
+        completedInvestment: number;
+        plannedInvestment: number;
+        deferredInvestment: number;
+        monthlyServices: number;
+        estimatedThreeYearInvestment: number;
+      },
+    };
+  }
+
+  const { computeLifecycleBudget } = await import("@/lib/technology-lifecycle/budget");
+  const phaseInputs = roadmap.phases.map((phase) => ({
+    status: phase.status,
+    oneTimeInvestment: decimalToNumber(phase.oneTimeInvestment),
+    monthlyRecurringInvestment: decimalToNumber(phase.monthlyRecurringInvestment),
+    annualRecurringInvestment: decimalToNumber(phase.annualRecurringInvestment),
+  }));
+  const budget = computeLifecycleBudget(phaseInputs, [], 0);
+
+  return {
+    livingRoadmapPhases: roadmap.phases.map((phase) => ({
+      phaseName: `${phase.subtitle} — ${phase.name}`,
+      timeframe: phase.timeline,
+      initiativeCount: phase.initiatives.length,
+      summary:
+        phase.initiatives
+          .slice(0, 3)
+          .map((item) => item.title)
+          .join("; ") || phase.executiveSummary,
+      status: phase.status,
+      oneTimeInvestment: decimalToNumber(phase.oneTimeInvestment),
+      monthlyRecurringInvestment: decimalToNumber(phase.monthlyRecurringInvestment),
+    })),
+    budgetForecast: {
+      completedInvestment: budget.completedInvestment,
+      plannedInvestment: budget.plannedInvestment,
+      deferredInvestment: budget.deferredInvestment,
+      monthlyServices: budget.monthlyServices,
+      estimatedThreeYearInvestment: budget.estimatedThreeYearInvestment,
+    },
+  };
+}
+
 async function assembleQbrReportData(record: QbrRecord): Promise<QbrReportData> {
   await ensureTechnologyProfile(record.clientId);
 
@@ -160,7 +227,10 @@ async function assembleQbrReportData(record: QbrRecord): Promise<QbrReportData> 
   ]);
 
   const currentStackScore = profileView?.overallStackScore ?? null;
-  const roadmapPhases = await loadRoadmapPhases(record.clientId, currentStackScore);
+  const [roadmapPhases, livingRoadmap] = await Promise.all([
+    loadRoadmapPhases(record.clientId, currentStackScore),
+    loadLivingRoadmapForQbr(record.clientId),
+  ]);
 
   return buildQbrReportData({
     qbr: {
@@ -200,6 +270,8 @@ async function assembleQbrReportData(record: QbrRecord): Promise<QbrReportData> 
     })),
     assessmentsCompletedInPeriod,
     roadmapPhases,
+    livingRoadmapPhases: livingRoadmap.livingRoadmapPhases,
+    budgetForecast: livingRoadmap.budgetForecast,
     businessGoalLabel: client?.primaryBusinessGoal
       ? formatPrimaryBusinessGoal(client.primaryBusinessGoal)
       : null,
@@ -395,6 +467,11 @@ export async function generateQuarterlyBusinessReview(
         status: "generated",
         generatedAt: new Date(),
         executiveSummary,
+        snapshotJson: report as unknown as Prisma.InputJsonValue,
+        budgetForecastJson: (report.budgetForecast ?? {}) as Prisma.InputJsonValue,
+        technologyRisksJson: report.technologyRisks as unknown as Prisma.InputJsonValue,
+        strategicRecommendationsJson:
+          report.strategicRecommendations as unknown as Prisma.InputJsonValue,
       },
     });
 

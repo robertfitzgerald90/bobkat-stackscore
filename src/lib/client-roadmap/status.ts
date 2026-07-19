@@ -112,6 +112,18 @@ export async function updateRoadmapPhaseStatus(input: {
     return next;
   });
 
+  if (isCompletion) {
+    const { evaluateAndPersistPhaseOpportunities } = await import(
+      "@/lib/technology-lifecycle/service"
+    );
+    await evaluateAndPersistPhaseOpportunities({
+      clientId: input.clientId,
+      roadmapId: phase.roadmapId,
+      phaseId: phase.id,
+      phaseName: `${phase.subtitle} — ${phase.name}`,
+    });
+  }
+
   return updated;
 }
 

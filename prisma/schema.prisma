@@ -150,6 +150,10 @@ enum DocumentType {
   evidence
   technology_improvement_plan
   quarterly_business_review
+  technology_lifecycle_report
+  technology_budget_report
+  roadmap_progress_report
+  annual_technology_report
   other
 }
 
@@ -359,6 +363,7 @@ model Client {
   vcioOnboarding              VcioOnboarding?
   vcioQuarterlyReviews        VcioQuarterlyReview[]
   snapshotLeads               TechnologySnapshotLead[]
+  lifecycleOpportunities      LifecycleOpportunity[]
 }
 
 model AssessmentCategory {
@@ -853,22 +858,76 @@ model PhaseProposal {
 }
 
 model ClientRoadmapInitiative {
-  id                         String   @id @default(uuid())
+  id                         String    @id @default(uuid())
   phaseId                    String
   recommendationId           String
-  sortOrder                  Int      @default(0)
+  sortOrder                  Int       @default(0)
   title                      String
-  estimatedImpactPoints      Int      @default(0)
+  estimatedImpactPoints      Int       @default(0)
   businessOutcomeTitle       String?
-  businessOutcomeDescription String?  @db.Text
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
+  businessOutcomeDescription String?   @db.Text
+  estimatedOneTimeCost       Decimal?  @db.Decimal(12, 2)
+  actualOneTimeCost          Decimal?  @db.Decimal(12, 2)
+  actualScoreIncrease        Int?
+  businessValueNotes         String?   @db.Text
+  /// AI-ready metadata for future ROI analysis / recommendation drafting
+  effectivenessJson          Json?
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
 
   phase          ClientRoadmapPhase       @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   recommendation AssessmentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
 
   @@unique([phaseId, recommendationId])
   @@index([recommendationId])
+}
+
+enum LifecycleOpportunityStatus {
+  open
+  accepted
+  deferred
+  dismissed
+  converted
+}
+
+enum LifecycleOpportunitySource {
+  phase_complete
+  reassessment
+  technology_aging
+  compliance_change
+  business_growth
+  refresh_cycle
+  emerging_risk
+  manual
+}
+
+model LifecycleOpportunity {
+  id                         String                      @id @default(uuid())
+  clientId                   String
+  roadmapId                  String?
+  phaseId                    String?
+  recommendationId           String?
+  source                     LifecycleOpportunitySource
+  status                     LifecycleOpportunityStatus  @default(open)
+  title                      String
+  description                String                      @db.Text
+  priority                   Priority                    @default(medium)
+  estimatedImpactPoints      Int                         @default(0)
+  estimatedOneTimeInvestment Decimal                     @default(0) @db.Decimal(12, 2)
+  relatedServiceKey          String?
+  /// AI-ready context payload for future opportunity drafting
+  metadataJson               Json?
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  dismissedAt                DateTime?
+  convertedAt                DateTime?
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, status])
+  @@index([roadmapId])
+  @@index([phaseId])
+  @@index([source])
 }
 
 model ClientRoadmapPhaseEvent {
@@ -887,17 +946,22 @@ model ClientRoadmapPhaseEvent {
 }
 
 model QuarterlyBusinessReview {
-  id                String                        @id @default(uuid())
-  clientId          String
-  reviewPeriodStart DateTime
-  reviewPeriodEnd   DateTime
-  title             String
-  status            QuarterlyBusinessReviewStatus @default(draft)
-  executiveSummary  String?                       @db.Text
-  generatedAt       DateTime?
-  createdByUserId   String
-  createdAt         DateTime                      @default(now())
-  updatedAt         DateTime                      @updatedAt
+  id                             String                        @id @default(uuid())
+  clientId                       String
+  reviewPeriodStart              DateTime
+  reviewPeriodEnd                DateTime
+  title                          String
+  status                         QuarterlyBusinessReviewStatus @default(draft)
+  executiveSummary               String?                       @db.Text
+  generatedAt                    DateTime?
+  createdByUserId                String
+  /// Immutable report snapshot for history, CRM sync, and future AI assistants
+  snapshotJson                   Json?
+  budgetForecastJson             Json?
+  technologyRisksJson            Json?
+  strategicRecommendationsJson   Json?
+  createdAt                      DateTime                      @default(now())
+  updatedAt                      DateTime                      @updatedAt
 
   client    Client    @relation(fields: [clientId], references: [id])
   createdBy User      @relation(fields: [createdByUserId], references: [id])

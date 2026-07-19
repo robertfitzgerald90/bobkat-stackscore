@@ -320,6 +320,68 @@ export function QbrReportView({
             )}
           </ReportSection>
 
+          {data.budgetForecast ? (
+            <ReportSection title="Budget Forecast">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <Card className="stat-card">
+                  <CardHeader>
+                    <CardDescription>Completed investment</CardDescription>
+                    <CardTitle className="text-lg">
+                      ${data.budgetForecast.completedInvestment.toLocaleString()}
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+                <Card className="stat-card">
+                  <CardHeader>
+                    <CardDescription>Planned investment</CardDescription>
+                    <CardTitle className="text-lg">
+                      ${data.budgetForecast.plannedInvestment.toLocaleString()}
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+                <Card className="stat-card">
+                  <CardHeader>
+                    <CardDescription>Estimated 3-year investment</CardDescription>
+                    <CardTitle className="text-lg">
+                      ${data.budgetForecast.estimatedThreeYearInvestment.toLocaleString()}
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+              </div>
+            </ReportSection>
+          ) : null}
+
+          {data.technologyRisks.length > 0 ? (
+            <ReportSection title="Technology Risks">
+              <ul className="space-y-2">
+                {data.technologyRisks.map((risk) => (
+                  <li
+                    key={risk}
+                    className="rounded-lg border border-border/60 px-3 py-2 text-sm"
+                  >
+                    {risk}
+                  </li>
+                ))}
+              </ul>
+            </ReportSection>
+          ) : null}
+
+          {data.strategicRecommendations.length > 0 ? (
+            <ReportSection title="Strategic Recommendations">
+              <ol className="space-y-2">
+                {data.strategicRecommendations.map((item, index) => (
+                  <li
+                    key={`${index}-${item}`}
+                    className="flex items-start gap-3 rounded-lg border border-border/60 p-3"
+                  >
+                    <Target className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span className="text-sm">{item}</span>
+                  </li>
+                ))}
+              </ol>
+            </ReportSection>
+          ) : null}
+
           <ReportSection title="Business Goal Progress">
             {data.businessGoalLabel ? (
               <p className="mb-2 text-sm font-medium">{data.businessGoalLabel}</p>

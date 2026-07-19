@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   BookOpen,
+  Briefcase,
   CalendarDays,
   ClipboardList,
   FileText,
@@ -49,6 +51,12 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       href: customerHref(clientId, "recommendations"),
       label: "Recommendations",
       icon: Lightbulb,
+      requiresClient: true,
+    },
+    {
+      href: customerHref(clientId, "lifecycle"),
+      label: "Technology Lifecycle",
+      icon: Activity,
       requiresClient: true,
     },
     {
@@ -101,6 +109,7 @@ export function getConsultantSidebarNav(
   const items: SidebarNavItem[] = [
     { href: "/portfolio", label: "Portfolio", icon: LayoutGrid, portfolioOnly: true },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/consulting", label: "Consulting Workspace", icon: Briefcase },
     { href: "/clients", label: "Clients", icon: Users },
     { href: "/assessments", label: "Assessments", icon: ClipboardList },
     { href: "/projects", label: "Projects", icon: FolderKanban },
@@ -110,6 +119,11 @@ export function getConsultantSidebarNav(
       icon: Lightbulb,
     },
     { href: clientScoped("roadmap"), label: "Roadmaps", icon: Map },
+    {
+      href: clientScoped("lifecycle"),
+      label: "Lifecycle",
+      icon: Activity,
+    },
     {
       href: clientScoped("executive-reports"),
       label: "Reports",

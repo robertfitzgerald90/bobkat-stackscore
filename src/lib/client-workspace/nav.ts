@@ -5,6 +5,7 @@
 
 export const CLIENT_WORKSPACE_SECTIONS = [
   "overview",
+  "lifecycle",
   "vcio",
   "journey",
   "roadmap",
@@ -33,6 +34,7 @@ export type ClientWorkspaceNavItem = {
 /** DOC-201 navigation order and labels. */
 export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "overview", label: "Overview", isOverview: true },
+  { section: "lifecycle", label: "Technology Lifecycle" },
   { section: "vcio", label: "vCIO Dashboard" },
   { section: "journey", label: "Technology Journey" },
   { section: "roadmap", label: "Roadmap" },
@@ -52,6 +54,7 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
 /** Sections reachable by customer portal users (matches sidebar). */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
+  "lifecycle",
   "vcio",
   "roadmap",
   "quarterly-reviews",
@@ -80,6 +83,8 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
+    case "lifecycle":
+      return `/clients/${clientId}/lifecycle`;
     case "vcio":
       return `/clients/${clientId}/vcio`;
     case "quarterly-reviews":
@@ -113,6 +118,7 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   if (rest.startsWith("/technology-profile") || rest.startsWith("/overview")) {
     return "overview";
   }
+  if (rest.startsWith("/lifecycle")) return "lifecycle";
   if (rest.startsWith("/journey")) return "journey";
   if (rest.startsWith("/vcio")) return "vcio";
   if (rest.startsWith("/quarterly-reviews")) return "quarterly-reviews";

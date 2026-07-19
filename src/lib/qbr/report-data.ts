@@ -3,6 +3,7 @@ import { formatDisplayDate } from "@/lib/display";
 import { buildQbrExecutiveSummary } from "@/lib/qbr/executive-summary";
 import { formatReviewPeriodLabel, isWithinReviewPeriod } from "@/lib/qbr/periods";
 import type {
+  QbrBudgetForecast,
   QbrCategoryImprovement,
   QbrProjectSummary,
   QbrRecommendationSummary,
@@ -60,6 +61,10 @@ type BuildQbrReportInput = {
   }>;
   assessmentsCompletedInPeriod: number;
   roadmapPhases: TipRoadmapPhaseView[];
+  livingRoadmapPhases?: QbrRoadmapPhaseSummary[];
+  budgetForecast?: QbrBudgetForecast | null;
+  technologyRisks?: string[];
+  strategicRecommendations?: string[];
   businessGoalLabel: string | null;
   technologyVision: string | null;
 };
@@ -239,7 +244,11 @@ export function buildQbrReportData(input: BuildQbrReportInput): QbrReportData {
     qbr.reviewPeriodStart,
     qbr.reviewPeriodEnd,
   );
-  const roadmapPhases = buildRoadmapPhases(input.roadmapPhases);
+  const tipRoadmapPhases = buildRoadmapPhases(input.roadmapPhases);
+  const roadmapPhases =
+    input.livingRoadmapPhases && input.livingRoadmapPhases.length > 0
+      ? input.livingRoadmapPhases
+      : tipRoadmapPhases;
   const journeyEvents = input.journeyEvents.filter((event) =>
     isWithinReviewPeriod(new Date(event.occurredAt), {
       start: qbr.reviewPeriodStart,
@@ -250,6 +259,23 @@ export function buildQbrReportData(input: BuildQbrReportInput): QbrReportData {
   const generatedDateLabel = qbr.generatedAt
     ? formatDisplayDate(qbr.generatedAt)
     : formatDisplayDate(new Date());
+
+  const technologyRisks =
+    input.technologyRisks ??
+    remainingOpportunities
+      .filter((item) => item.priority === "critical" || item.priority === "high")
+      .slice(0, 5)
+      .map((item) => item.title);
+
+  const strategicRecommendations =
+    input.strategicRecommendations ??
+    [
+      ...roadmapPhases
+        .filter((phase) => !phase.status || phase.status !== "completed")
+        .slice(0, 3)
+        .map((phase) => `Advance ${phase.phaseName}: ${phase.summary}`),
+      ...remainingOpportunities.slice(0, 3).map((item) => item.title),
+    ].slice(0, 6);
 
   const draft: QbrReportData = {
     id: qbr.id,
@@ -276,6 +302,9 @@ export function buildQbrReportData(input: BuildQbrReportInput): QbrReportData {
     resolvedRecommendations: periodResolved,
     remainingOpportunities,
     roadmapPhases,
+    budgetForecast: input.budgetForecast ?? null,
+    technologyRisks,
+    strategicRecommendations,
     businessGoalLabel: input.businessGoalLabel,
     businessGoalProgress: buildBusinessGoalProgress(input.businessGoalLabel, scoreChange),
     technologyVision: input.technologyVision,

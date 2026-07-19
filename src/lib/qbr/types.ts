@@ -44,6 +44,17 @@ export type QbrRoadmapPhaseSummary = {
   timeframe: string;
   initiativeCount: number;
   summary: string;
+  status?: string;
+  oneTimeInvestment?: number;
+  monthlyRecurringInvestment?: number;
+};
+
+export type QbrBudgetForecast = {
+  completedInvestment: number;
+  plannedInvestment: number;
+  deferredInvestment: number;
+  monthlyServices: number;
+  estimatedThreeYearInvestment: number;
 };
 
 export type QbrReportData = {
@@ -71,6 +82,9 @@ export type QbrReportData = {
   resolvedRecommendations: QbrRecommendationSummary[];
   remainingOpportunities: QbrRecommendationSummary[];
   roadmapPhases: QbrRoadmapPhaseSummary[];
+  budgetForecast: QbrBudgetForecast | null;
+  technologyRisks: string[];
+  strategicRecommendations: string[];
   businessGoalLabel: string | null;
   businessGoalProgress: string;
   technologyVision: string | null;

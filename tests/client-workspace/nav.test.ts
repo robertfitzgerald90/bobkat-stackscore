@@ -18,6 +18,7 @@ describe("resolveClientWorkspaceNavHref", () => {
       "/clients/c1/recommendations",
     );
     expect(resolveClientWorkspaceNavHref("c1", "roadmap")).toBe("/clients/c1/roadmap");
+    expect(resolveClientWorkspaceNavHref("c1", "lifecycle")).toBe("/clients/c1/lifecycle");
     expect(resolveClientWorkspaceNavHref("c1", "assessments")).toBe(
       "/clients/c1/assessments",
     );
@@ -49,6 +50,7 @@ describe("resolveActiveWorkspaceSection", () => {
       "recommendations",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/roadmap")).toBe("roadmap");
+    expect(resolveActiveWorkspaceSection("/clients/c1/lifecycle")).toBe("lifecycle");
     expect(resolveActiveWorkspaceSection("/clients/c1/vcio")).toBe("vcio");
     expect(resolveActiveWorkspaceSection("/clients/c1/vcio/onboarding")).toBe("vcio");
     expect(resolveActiveWorkspaceSection("/clients/c1/quarterly-reviews")).toBe(
@@ -85,6 +87,7 @@ describe("getVisibleWorkspaceNav", () => {
     const sections = getVisibleWorkspaceNav("client").map((item) => item.section);
     expect(sections).toEqual([
       "overview",
+      "lifecycle",
       "vcio",
       "roadmap",
       "quarterly-reviews",
@@ -96,7 +99,8 @@ describe("getVisibleWorkspaceNav", () => {
   });
 
   it("shows the full DOC-201 nav for internal roles", () => {
-    expect(getVisibleWorkspaceNav("admin")).toHaveLength(15);
+    expect(getVisibleWorkspaceNav("admin")).toHaveLength(16);
     expect(getVisibleWorkspaceNav("admin")[0]?.section).toBe("overview");
+    expect(getVisibleWorkspaceNav("admin")[1]?.section).toBe("lifecycle");
   });
 });
