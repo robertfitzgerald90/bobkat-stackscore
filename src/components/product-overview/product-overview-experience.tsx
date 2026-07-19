@@ -250,61 +250,61 @@ function ProductOverviewContent({
           <DemoHeader />
           <ProductOverviewNav />
         </DemoApplicationShell>
+        <main id="product-overview-main">
+          <ProductOverviewHero
+            onOpenDetail={openDetail}
+            tourLauncher={
+              <>
+                <DemoPersonalizationLauncher className="h-11 px-6 text-base" />
+                <ProductTourLauncher className="h-11 px-8 text-base" />
+                <ProductPresentationLauncher className="h-11 px-6 text-base md:hidden" />
+              </>
+            }
+          />
+
+          <DemoJourneyOverviewSection />
+
+          <Suspense fallback={<SectionLoadingSkeleton />}>
+            {/* Guided phased-roadmap journey */}
+            <AssessmentSection />
+            <PhasedRoadmapSection />
+            <PhaseProposalSection />
+            <ImplementationProgressSection />
+            <MeasurableImprovementSection />
+            <BudgetPlanningSection />
+            <ExecutiveReportLibrarySection />
+            <QuarterlyReviewSection />
+
+            {/* Enrichment sections retained below the guided story */}
+            <AssessmentPreviewSection />
+            <TechnologyTimelineSection />
+            <TechnologyJourneySection />
+            <CurrentFutureStateSection />
+            <RecommendationsWorkspaceSection />
+            <BusinessValueSection />
+            <ProjectsWorkspaceSection />
+            <BusinessOutcomesDashboardSection />
+            <ContinuousImprovementSection />
+            <ClientCollaborationSection />
+            <StrategicPlanningSection />
+            <ExecutiveDecisionCenterSection />
+            <AiInsightsPreviewSection />
+            <ClientSuccessOutcomesSection />
+            <WhyClientsLoveSection />
+            <StackscoreEcosystemSection />
+            <PlatformOverviewMapSection />
+          </Suspense>
+
+          <ProductOverviewTrustStrip />
+          <ProductOverviewFinalCta />
+        </main>
+        <OfferFooter />
+        <FeaturePopoverHost />
+        <DemoPersonalizationWizard />
+        <ProductGuidedTour />
+        <ProductPresentationMode />
+        {!presentationActive ? <DemoConversionCta /> : null}
       </DemoScrollSpyProvider>
-      <main id="product-overview-main">
-        <ProductOverviewHero
-          onOpenDetail={openDetail}
-          tourLauncher={
-            <>
-              <DemoPersonalizationLauncher className="h-11 px-6 text-base" />
-              <ProductTourLauncher className="h-11 px-8 text-base" />
-              <ProductPresentationLauncher className="h-11 px-6 text-base md:hidden" />
-            </>
-          }
-        />
-
-        <DemoJourneyOverviewSection />
-
-        <Suspense fallback={<SectionLoadingSkeleton />}>
-          {/* Guided phased-roadmap journey */}
-          <AssessmentSection />
-          <PhasedRoadmapSection />
-          <PhaseProposalSection />
-          <ImplementationProgressSection />
-          <MeasurableImprovementSection />
-          <BudgetPlanningSection />
-          <ExecutiveReportLibrarySection />
-          <QuarterlyReviewSection />
-
-          {/* Enrichment sections retained below the guided story */}
-          <AssessmentPreviewSection />
-          <TechnologyTimelineSection />
-          <TechnologyJourneySection />
-          <CurrentFutureStateSection />
-          <RecommendationsWorkspaceSection />
-          <BusinessValueSection />
-          <ProjectsWorkspaceSection />
-          <BusinessOutcomesDashboardSection />
-          <ContinuousImprovementSection />
-          <ClientCollaborationSection />
-          <StrategicPlanningSection />
-          <ExecutiveDecisionCenterSection />
-          <AiInsightsPreviewSection />
-          <ClientSuccessOutcomesSection />
-          <WhyClientsLoveSection />
-          <StackscoreEcosystemSection />
-          <PlatformOverviewMapSection />
-        </Suspense>
-
-        <ProductOverviewTrustStrip />
-        <ProductOverviewFinalCta />
-      </main>
-      <OfferFooter />
-      <FeaturePopoverHost />
-      <DemoPersonalizationWizard />
-      <ProductGuidedTour />
-      <ProductPresentationMode />
-      {!presentationActive ? <DemoConversionCta /> : null}
     </div>
   );
 }

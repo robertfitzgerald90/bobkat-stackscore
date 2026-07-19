@@ -3,6 +3,7 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { buildTechnologySnapshotUrl } from "@/lib/assessment-invitation/snapshot-url";
+import { STICKY_SITE_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
 const navLinkClassName =
@@ -16,7 +17,7 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
   const snapshotHref = buildTechnologySnapshotUrl(invitationContext);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+    <header className={STICKY_SITE_HEADER_CLASS}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/assessment-invitation"

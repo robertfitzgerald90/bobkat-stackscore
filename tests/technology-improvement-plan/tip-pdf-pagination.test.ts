@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   canKeepCardIntact,
   cardStartPresence,
+  estimateBusinessValueMetricCardHeight,
   estimateInitiativeCardHeight,
+  estimateSectionChromeHeight,
+  estimateSectionIntroHeight,
 } from "@/lib/pdf/tip/pagination";
-import { TIP_PDF_PAGE } from "@/lib/pdf/tip/tokens";
+import { TIP_PAGINATION, TIP_PDF_PAGE } from "@/lib/pdf/tip/tokens";
 import type { TipStrategicInitiative } from "@/lib/pdf/types";
 
 function makeInitiative(overrides: Partial<TipStrategicInitiative> = {}): TipStrategicInitiative {
@@ -44,6 +47,14 @@ describe("TIP PDF pagination helpers", () => {
     });
     const height = estimateInitiativeCardHeight(oversized);
     expect(canKeepCardIntact(height)).toBe(false);
+  });
+
+  it("groups section chrome with the first content block height budget", () => {
+    const chrome = estimateSectionChromeHeight(true);
+    const metric = estimateBusinessValueMetricCardHeight();
+    const intro = estimateSectionIntroHeight(true, metric);
+    expect(intro).toBe(chrome + metric);
+    expect(intro).toBeGreaterThan(TIP_PAGINATION.sectionWithSubtitle);
   });
 
   it("requests enough start presence for intact cards", () => {

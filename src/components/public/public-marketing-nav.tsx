@@ -17,6 +17,7 @@ import {
 import { trackDemoCtaClicked } from "@/lib/analytics/interactive-demo-events";
 import { buildDemoHref } from "@/lib/interactive-demo/routes";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
+import { STICKY_SITE_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
 type PublicMarketingNavProps = {
@@ -42,7 +43,7 @@ export function PublicMarketingNav({ active }: PublicMarketingNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+    <header className={STICKY_SITE_HEADER_CLASS}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/solutions" className="min-w-0 shrink transition-opacity hover:opacity-90">
           <BrandLogo size={32} showText className="gap-2" />

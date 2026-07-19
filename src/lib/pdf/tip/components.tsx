@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
 import { PdfProgressBar } from "@/lib/pdf/shared/components/report-bar";
@@ -7,8 +8,14 @@ import { PdfTipReportHeader } from "@/lib/pdf/tip/header";
 import {
   canKeepCardIntact,
   cardStartPresence,
+  estimateBusinessValueMetricCardHeight,
+  estimateCalloutIntroHeight,
+  estimateExecutiveHeroHeight,
   estimateFindingCardHeight,
   estimateInitiativeCardHeight,
+  estimateInvestmentTableHeight,
+  estimateNextStepCardHeight,
+  estimateScopeBoxHeight,
 } from "@/lib/pdf/tip/pagination";
 import { PdfTipSection } from "@/lib/pdf/tip/section";
 import { TIP_PAGINATION } from "@/lib/pdf/tip/tokens";
@@ -45,20 +52,24 @@ export function PdfTipPageChrome({ data }: { data: TipReportData }) {
 
 export function PdfAssessmentScope() {
   return (
-    <PdfTipSection title="Assessment Scope">
-      <View wrap={false} style={styles.scopeBox}>
-        <Text style={styles.scopeText}>
-          This assessment evaluates technology maturity using industry best practices and
-          organizational information provided during the assessment process. It is intended to
-          identify strategic improvement opportunities and support executive decision-making.
-        </Text>
-        <Text style={[styles.scopeText, { marginTop: 5 }]}>
-          This document is not a penetration test, compliance audit, or technical implementation
-          guide. Detailed execution planning, product selection, and deployment methodology are
-          reserved for an ongoing consulting partnership with {BRAND.companyName}.
-        </Text>
-      </View>
-    </PdfTipSection>
+    <PdfTipSection
+      title="Assessment Scope"
+      firstBlockMinHeight={estimateScopeBoxHeight()}
+      firstBlock={
+        <View wrap={false} style={styles.scopeBox}>
+          <Text style={styles.scopeText}>
+            This assessment evaluates technology maturity using industry best practices and
+            organizational information provided during the assessment process. It is intended to
+            identify strategic improvement opportunities and support executive decision-making.
+          </Text>
+          <Text style={[styles.scopeText, { marginTop: 5 }]}>
+            This document is not a penetration test, compliance audit, or technical implementation
+            guide. Detailed execution planning, product selection, and deployment methodology are
+            reserved for an ongoing consulting partnership with {BRAND.companyName}.
+          </Text>
+        </View>
+      }
+    />
   );
 }
 
@@ -104,38 +115,42 @@ export function PdfExecutiveSummaryDashboard({
   topOpportunities: string[];
 }) {
   return (
-    <PdfTipSection title="Executive Summary">
-      <View wrap={false} style={styles.executiveHero}>
-        <View style={styles.executiveMetaRow}>
-          <View style={styles.executiveMetaItem}>
-            <Text style={styles.executiveMetaLabel}>Organization</Text>
-            <Text style={styles.executiveMetaValue}>{clientName}</Text>
+    <PdfTipSection
+      title="Executive Summary"
+      firstBlockMinHeight={estimateExecutiveHeroHeight()}
+      firstBlock={
+        <View wrap={false} style={styles.executiveHero}>
+          <View style={styles.executiveMetaRow}>
+            <View style={styles.executiveMetaItem}>
+              <Text style={styles.executiveMetaLabel}>Organization</Text>
+              <Text style={styles.executiveMetaValue}>{clientName}</Text>
+            </View>
+            <View style={styles.executiveMetaItem}>
+              <Text style={styles.executiveMetaLabel}>Assessment Date</Text>
+              <Text style={styles.executiveMetaValue}>{assessmentDate}</Text>
+            </View>
+            <View style={styles.executiveMetaItem}>
+              <Text style={styles.executiveMetaLabel}>Overall Business Risk</Text>
+              <Text style={styles.executiveMetaValue}>{overallBusinessRisk}</Text>
+            </View>
           </View>
-          <View style={styles.executiveMetaItem}>
-            <Text style={styles.executiveMetaLabel}>Assessment Date</Text>
-            <Text style={styles.executiveMetaValue}>{assessmentDate}</Text>
-          </View>
-          <View style={styles.executiveMetaItem}>
-            <Text style={styles.executiveMetaLabel}>Overall Business Risk</Text>
-            <Text style={styles.executiveMetaValue}>{overallBusinessRisk}</Text>
+          <View style={styles.kpiRow}>
+            <PdfTipKpiCard label="StackScore" value={currentScore} caption="Current (0–100)" />
+            <PdfTipKpiCard
+              label="Projected Score"
+              value={projectedScore}
+              caption="After roadmap"
+              highlight
+            />
+            <PdfTipKpiCard
+              label="Technology Maturity"
+              value={maturityTierLabel}
+              caption="Current level"
+            />
           </View>
         </View>
-        <View style={styles.kpiRow}>
-          <PdfTipKpiCard label="StackScore" value={currentScore} caption="Current (0–100)" />
-          <PdfTipKpiCard
-            label="Projected Score"
-            value={projectedScore}
-            caption="After roadmap"
-            highlight
-          />
-          <PdfTipKpiCard
-            label="Technology Maturity"
-            value={maturityTierLabel}
-            caption="Current level"
-          />
-        </View>
-      </View>
-
+      }
+    >
       <Text style={styles.bodyText} orphans={2} widows={2}>
         {executiveSummary}
       </Text>
@@ -168,36 +183,50 @@ export function PdfExecutiveSummaryDashboard({
   );
 }
 
+function PdfBusinessValueMetricCard({ metric }: { metric: TipBusinessValueMetric }) {
+  return (
+    <View wrap={false} style={styles.valueMetricCard}>
+      <Text style={styles.valueMetricLabel}>{metric.label}</Text>
+      <View style={styles.valueMetricCompare}>
+        <View>
+          <Text style={styles.valueMetricCaption}>Current</Text>
+          <Text style={styles.valueMetricValue}>{metric.currentPercent}%</Text>
+        </View>
+        <View style={{ alignItems: "flex-end" }}>
+          <Text style={styles.valueMetricCaption}>Projected</Text>
+          <Text style={[styles.valueMetricValue, { color: COLORS.success }]}>
+            {metric.projectedPercent}%
+          </Text>
+        </View>
+      </View>
+      <PdfProgressBar percent={metric.projectedPercent} variant="improvement" height={5} />
+    </View>
+  );
+}
+
 export function PdfBusinessValueSnapshot({
   metrics,
 }: {
   metrics: TipBusinessValueMetric[];
 }) {
+  const [firstMetric, ...remainingMetrics] = metrics;
+
   return (
     <PdfTipSection
       title="Business Value Snapshot"
       subtitle="Projected maturity improvements after completing the strategic roadmap"
+      firstBlockMinHeight={firstMetric ? estimateBusinessValueMetricCardHeight() : 0}
+      firstBlock={
+        firstMetric ? <PdfBusinessValueMetricCard metric={firstMetric} /> : null
+      }
     >
-      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
-        {metrics.map((metric) => (
-          <View key={metric.label} wrap={false} style={styles.valueMetricCard}>
-            <Text style={styles.valueMetricLabel}>{metric.label}</Text>
-            <View style={styles.valueMetricCompare}>
-              <View>
-                <Text style={styles.valueMetricCaption}>Current</Text>
-                <Text style={styles.valueMetricValue}>{metric.currentPercent}%</Text>
-              </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.valueMetricCaption}>Projected</Text>
-                <Text style={[styles.valueMetricValue, { color: COLORS.success }]}>
-                  {metric.projectedPercent}%
-                </Text>
-              </View>
-            </View>
-            <PdfProgressBar percent={metric.projectedPercent} variant="improvement" height={5} />
-          </View>
-        ))}
-      </View>
+      {remainingMetrics.length > 0 ? (
+        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+          {remainingMetrics.map((metric) => (
+            <PdfBusinessValueMetricCard key={metric.label} metric={metric} />
+          ))}
+        </View>
+      ) : null}
     </PdfTipSection>
   );
 }
@@ -303,23 +332,55 @@ function PdfInitiativeBenefits({ benefits }: { benefits: string[] }) {
   );
 }
 
-export function PdfCategoryFindingCard({ finding }: { finding: TipCategoryFinding }) {
+export function PdfCategoryFindingCard({
+  finding,
+  part = "full",
+  skipLeadSentinel = false,
+}: {
+  finding: TipCategoryFinding;
+  part?: "full" | "lead" | "tail";
+  skipLeadSentinel?: boolean;
+}) {
   const estimated = estimateFindingCardHeight(finding);
   const keepIntact = canKeepCardIntact(estimated);
 
   const startPresence = cardStartPresence(estimated, TIP_PAGINATION.findingCard);
 
+  const leadBody = (
+    <>
+      <Text style={styles.findingTitle}>{finding.categoryName}</Text>
+      <View style={styles.badgeRow}>
+        <PdfRiskBadge level={finding.riskLevel} />
+        <PdfPriorityBadge level={finding.priority} />
+      </View>
+      <PdfFieldBlock label="Current State" body={finding.currentState} />
+    </>
+  );
+
+  if (part === "tail") {
+    return (
+      <View style={styles.findingCard}>
+        <PdfFieldBlock label="Business Impact" body={finding.businessImpact} />
+      </View>
+    );
+  }
+
+  if (part === "lead") {
+    return (
+      <View style={styles.findingCard}>
+        <View wrap={false}>{leadBody}</View>
+      </View>
+    );
+  }
+
   if (keepIntact) {
     return (
       <>
-        <View style={{ height: 0 }} minPresenceAhead={startPresence} />
+        {!skipLeadSentinel ? (
+          <View style={{ height: 0 }} minPresenceAhead={startPresence} />
+        ) : null}
         <View wrap={false} style={styles.findingCard}>
-          <Text style={styles.findingTitle}>{finding.categoryName}</Text>
-          <View style={styles.badgeRow}>
-            <PdfRiskBadge level={finding.riskLevel} />
-            <PdfPriorityBadge level={finding.priority} />
-          </View>
-          <PdfFieldBlock label="Current State" body={finding.currentState} />
+          {leadBody}
           <PdfFieldBlock label="Business Impact" body={finding.businessImpact} />
         </View>
       </>
@@ -328,7 +389,9 @@ export function PdfCategoryFindingCard({ finding }: { finding: TipCategoryFindin
 
   return (
     <>
-      <View style={{ height: 0 }} minPresenceAhead={TIP_PAGINATION.findingCard} />
+      {!skipLeadSentinel ? (
+        <View style={{ height: 0 }} minPresenceAhead={TIP_PAGINATION.findingCard} />
+      ) : null}
       <View style={styles.findingCard}>
         <View wrap={false}>
           <Text style={styles.findingTitle} minPresenceAhead={TIP_PAGINATION.initiativeHeader}>
@@ -351,12 +414,43 @@ export function PdfCurrentStateFindings({
 }: {
   findings: TipCategoryFinding[];
 }) {
+  const [firstFinding, ...remainingFindings] = findings;
+  let firstBlock: ReactNode = null;
+  let firstBlockMinHeight = 0;
+  const leadingChildren: ReactNode[] = [];
+
+  if (firstFinding) {
+    const estimated = estimateFindingCardHeight(firstFinding);
+    if (canKeepCardIntact(estimated)) {
+      firstBlock = (
+        <PdfCategoryFindingCard finding={firstFinding} skipLeadSentinel />
+      );
+      firstBlockMinHeight = estimated;
+    } else {
+      firstBlock = (
+        <PdfCategoryFindingCard finding={firstFinding} part="lead" skipLeadSentinel />
+      );
+      firstBlockMinHeight = TIP_PAGINATION.findingLeadFragment;
+      leadingChildren.push(
+        <PdfCategoryFindingCard
+          key={`${firstFinding.categoryName}-tail`}
+          finding={firstFinding}
+          part="tail"
+          skipLeadSentinel
+        />,
+      );
+    }
+  }
+
   return (
     <PdfTipSection
       title="Current State Findings"
       subtitle="Assessment observations grouped by category — focused on business impact, not technical implementation"
+      firstBlockMinHeight={firstBlockMinHeight}
+      firstBlock={firstBlock}
     >
-      {findings.map((finding) => (
+      {leadingChildren}
+      {remainingFindings.map((finding) => (
         <PdfCategoryFindingCard key={finding.categoryName} finding={finding} />
       ))}
     </PdfTipSection>
@@ -369,22 +463,50 @@ export function PdfCurrentStateFindings({
  */
 export function PdfStrategicInitiativeCard({
   initiative,
+  part = "full",
+  skipLeadSentinel = false,
 }: {
   initiative: TipStrategicInitiative;
+  part?: "full" | "lead" | "tail";
+  skipLeadSentinel?: boolean;
 }) {
   const estimated = estimateInitiativeCardHeight(initiative);
   const keepIntact = canKeepCardIntact(estimated);
   const startPresence = cardStartPresence(estimated, TIP_PAGINATION.initiativeFirstField);
 
+  const leadBody = (
+    <>
+      <Text style={styles.initiativeTitle}>{initiative.name}</Text>
+      <PdfInitiativeBadges initiative={initiative} />
+      <PdfFieldBlock label="Business Objective" body={initiative.businessObjective} />
+    </>
+  );
+
+  if (part === "tail") {
+    return (
+      <View style={styles.initiativeCard}>
+        <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
+        <PdfInitiativeBenefits benefits={initiative.expectedBenefits} />
+      </View>
+    );
+  }
+
+  if (part === "lead") {
+    return (
+      <View style={styles.initiativeCard}>
+        <View wrap={false}>{leadBody}</View>
+      </View>
+    );
+  }
+
   if (keepIntact) {
     return (
       <>
-        {/* Sentinel: do not begin the card unless enough printable height remains. */}
-        <View style={{ height: 0 }} minPresenceAhead={startPresence} />
+        {!skipLeadSentinel ? (
+          <View style={{ height: 0 }} minPresenceAhead={startPresence} />
+        ) : null}
         <View wrap={false} style={styles.initiativeCard}>
-          <Text style={styles.initiativeTitle}>{initiative.name}</Text>
-          <PdfInitiativeBadges initiative={initiative} />
-          <PdfFieldBlock label="Business Objective" body={initiative.businessObjective} />
+          {leadBody}
           <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
           <PdfInitiativeBenefits benefits={initiative.expectedBenefits} />
         </View>
@@ -394,7 +516,9 @@ export function PdfStrategicInitiativeCard({
 
   return (
     <>
-      <View style={{ height: 0 }} minPresenceAhead={TIP_PAGINATION.initiativeFirstField} />
+      {!skipLeadSentinel ? (
+        <View style={{ height: 0 }} minPresenceAhead={TIP_PAGINATION.initiativeFirstField} />
+      ) : null}
       <View style={styles.initiativeCard}>
         <View wrap={false}>
           <Text style={styles.initiativeTitle} minPresenceAhead={TIP_PAGINATION.initiativeHeader}>
@@ -415,13 +539,44 @@ export function PdfStrategicImprovementRoadmap({
 }: {
   initiatives: TipStrategicInitiative[];
 }) {
+  const [firstInitiative, ...remainingInitiatives] = initiatives;
+  let firstBlock: ReactNode = null;
+  let firstBlockMinHeight = 0;
+  const leadingChildren: ReactNode[] = [];
+
+  if (firstInitiative) {
+    const estimated = estimateInitiativeCardHeight(firstInitiative);
+    if (canKeepCardIntact(estimated)) {
+      firstBlock = (
+        <PdfStrategicInitiativeCard initiative={firstInitiative} skipLeadSentinel />
+      );
+      firstBlockMinHeight = estimated;
+    } else {
+      firstBlock = (
+        <PdfStrategicInitiativeCard initiative={firstInitiative} part="lead" skipLeadSentinel />
+      );
+      firstBlockMinHeight = TIP_PAGINATION.initiativeLeadFragment;
+      leadingChildren.push(
+        <PdfStrategicInitiativeCard
+          key={`${firstInitiative.id}-tail`}
+          initiative={firstInitiative}
+          part="tail"
+          skipLeadSentinel
+        />,
+      );
+    }
+  }
+
   return (
     <PdfTipSection
       breakBefore
       title="Strategic Improvement Roadmap"
       subtitle="What should be accomplished — implementation methodology reserved for consulting engagement"
+      firstBlockMinHeight={firstBlockMinHeight}
+      firstBlock={firstBlock}
     >
-      {initiatives.map((initiative) => (
+      {leadingChildren}
+      {remainingInitiatives.map((initiative) => (
         <PdfStrategicInitiativeCard key={initiative.id} initiative={initiative} />
       ))}
     </PdfTipSection>
@@ -500,13 +655,13 @@ export function PdfPhaseInvestmentSummary({
   oneTimeInvestments: string;
 }) {
   return (
-    <PdfTipSection breakBefore title="Phase Investment Summary">
-      <PdfTipInvestmentTable rows={rows} />
-
-      <View
-        wrap={false}
-        minPresenceAhead={TIP_PAGINATION.investmentBlock}
-      >
+    <PdfTipSection
+      breakBefore
+      title="Phase Investment Summary"
+      firstBlockMinHeight={estimateInvestmentTableHeight(rows.length)}
+      firstBlock={<PdfTipInvestmentTable rows={rows} />}
+    >
+      <View wrap={false} minPresenceAhead={TIP_PAGINATION.investmentBlock}>
         <View style={styles.investmentHero}>
           <Text style={styles.investmentHeroLabel}>Estimated Total Investment</Text>
           <Text style={styles.investmentHeroValue}>{totalInvestment}</Text>
@@ -542,20 +697,22 @@ export function PdfRoadmapToResults() {
     <PdfTipSection
       title="From Roadmap to Results"
       subtitle="How Strategic IT Consulting turns assessment insights into accountable execution"
+      firstBlockMinHeight={estimateCalloutIntroHeight(2)}
+      firstBlock={
+        <View wrap={false} style={styles.callout}>
+          <Text style={styles.bodyText}>
+            This Technology Improvement Plan identifies where technology creates business risk and
+            where investment will deliver the greatest return. The assessment answers what should be
+            accomplished and why it matters — not how to implement each initiative.
+          </Text>
+          <Text style={[styles.bodyText, { marginBottom: 0 }]}>
+            Strategic IT Consulting provides the ongoing partnership to translate this roadmap into
+            results: prioritized execution, vendor coordination, and executive accountability
+            throughout the journey.
+          </Text>
+        </View>
+      }
     >
-      <View wrap={false} style={styles.callout}>
-        <Text style={styles.bodyText}>
-          This Technology Improvement Plan identifies where technology creates business risk and
-          where investment will deliver the greatest return. The assessment answers what should be
-          accomplished and why it matters — not how to implement each initiative.
-        </Text>
-        <Text style={[styles.bodyText, { marginBottom: 0 }]}>
-          Strategic IT Consulting provides the ongoing partnership to translate this roadmap into
-          results: prioritized execution, vendor coordination, and executive accountability
-          throughout the journey.
-        </Text>
-      </View>
-
       <Text style={styles.blockLabel} minPresenceAhead={28}>
         Partnership Benefits
       </Text>
@@ -585,9 +742,27 @@ export function PdfExecutiveNextSteps() {
     },
   ];
 
+  const [firstOption, ...remainingOptions] = options;
+
   return (
-    <PdfTipSection breakBefore title="Next Steps">
-      {options.map((option) => (
+    <PdfTipSection
+      breakBefore
+      title="Next Steps"
+      firstBlockMinHeight={firstOption ? estimateNextStepCardHeight() : 0}
+      firstBlock={
+        firstOption ? (
+          <View
+            wrap={false}
+            minPresenceAhead={TIP_PAGINATION.nextStepCard}
+            style={styles.nextStepCard}
+          >
+            <Text style={styles.nextStepTitle}>{firstOption.title}</Text>
+            <Text style={styles.nextStepBody}>{firstOption.body}</Text>
+          </View>
+        ) : null
+      }
+    >
+      {remainingOptions.map((option) => (
         <View
           key={option.title}
           wrap={false}

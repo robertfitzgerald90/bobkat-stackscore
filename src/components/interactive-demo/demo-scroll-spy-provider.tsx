@@ -16,6 +16,7 @@ import {
   resolveActiveDemoSection,
 } from "@/lib/product-overview/demo-scroll-spy";
 import { getScrollBehavior } from "@/lib/product-overview/polish-classes";
+import { DEMO_SHELL_HEIGHT_VAR } from "@/lib/ui/sticky-chrome";
 
 type DemoScrollSpyContextValue = {
   activeSectionId: string;
@@ -98,12 +99,13 @@ export function DemoScrollSpyProvider({ children }: { children: ReactNode }) {
   }, [updateActiveSection]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--demo-shell-height", `${shellHeight}px`);
+    document.documentElement.style.setProperty(DEMO_SHELL_HEIGHT_VAR, `${shellHeight}px`);
     document.documentElement.style.scrollPaddingTop = `${shellHeight}px`;
 
     return () => {
-      document.documentElement.style.removeProperty("--demo-shell-height");
-      document.documentElement.style.scrollPaddingTop = "";
+      document.documentElement.style.removeProperty(DEMO_SHELL_HEIGHT_VAR);
+      // Drop the demo override so CSS `scroll-padding-top: var(--site-header-offset)` applies again.
+      document.documentElement.style.removeProperty("scroll-padding-top");
     };
   }, [shellHeight]);
 

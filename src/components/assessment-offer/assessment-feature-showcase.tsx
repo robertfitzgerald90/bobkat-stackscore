@@ -21,6 +21,7 @@ import {
   PRODUCT_SCREENSHOT_CLASS,
   STACKED_PRODUCT_SCREENSHOT_CLASS,
 } from "./product-screenshot-styles";
+import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
 function sectionGridClass(
@@ -211,7 +212,7 @@ export function AssessmentFeatureShowcase({
     const previewFirst = imageFirst;
 
     return (
-      <article id={section.id} className="scroll-mt-24">
+      <article id={section.id} className={MARKETING_SCROLL_MT_CLASS}>
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-12 xl:gap-14">
           <OfferReveal
             delayMs={index * 40}
@@ -236,7 +237,7 @@ export function AssessmentFeatureShowcase({
 
   if (isStacked) {
     return (
-      <article id={section.id} className="scroll-mt-24">
+      <article id={section.id} className={MARKETING_SCROLL_MT_CLASS}>
         <div className="flex flex-col gap-10 lg:gap-12 xl:gap-16">
           <OfferReveal delayMs={index * 40}>
             <div className="max-w-3xl space-y-0">
@@ -319,7 +320,7 @@ export function AssessmentFeatureShowcase({
   );
 
   return (
-    <article id={section.id} className="scroll-mt-24">
+    <article id={section.id} className={MARKETING_SCROLL_MT_CLASS}>
       <div
         className={cn(
           "grid items-center gap-12 lg:gap-14 xl:gap-16",

@@ -166,16 +166,19 @@
 
 @layer base {
   html {
-    overflow-x: clip;
+    /* clip avoids creating a scroll containment that breaks position:sticky */
+    @apply overflow-x-clip font-sans;
+    /* h-14 marketing header + breathing room for in-page anchors */
+    --site-header-height: 3.5rem;
+    --site-header-offset: 5.5rem;
+    /* Marketing default; Interactive Demo overrides this inline via shell height */
+    scroll-padding-top: var(--site-header-offset);
   }
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-  }
-  html {
-    @apply font-sans;
+    @apply min-w-0 overflow-x-clip bg-background text-foreground antialiased;
   }
   h1,
   h2,

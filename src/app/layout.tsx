@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="overflow-x-clip" suppressHydrationWarning>
-      <body className={`${inter.variable} min-w-0 overflow-x-hidden font-sans antialiased`}>
+      <body className={`${inter.variable} min-w-0 overflow-x-clip font-sans antialiased`}>
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />

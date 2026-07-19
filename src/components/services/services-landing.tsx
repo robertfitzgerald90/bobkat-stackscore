@@ -24,6 +24,7 @@ import {
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
 function ServiceKeywordBadge({ keyword }: { keyword: string }) {
@@ -86,7 +87,10 @@ function FeaturedProductSection({ product }: { product: FeaturedProductItem }) {
           <SolutionViewTracker
             solutionId={product.id}
             solutionTitle={product.title}
-            className="scroll-mt-24 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/[0.08] via-card to-card p-4 shadow-md sm:p-6 lg:p-8"
+            className={cn(
+              MARKETING_SCROLL_MT_CLASS,
+              "overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-b from-primary/[0.08] via-card to-card p-4 shadow-md sm:p-6 lg:p-8",
+            )}
           >
             <ServiceScreenshot
               src={product.image.src}
@@ -151,7 +155,10 @@ function ServiceSection({ service }: { service: ServiceCatalogItem }) {
         solutionId={service.id}
         solutionTitle={service.title}
         id={service.id}
-        className="scroll-mt-24 rounded-2xl border border-border/60 bg-card p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-6 lg:p-8"
+        className={cn(
+          MARKETING_SCROLL_MT_CLASS,
+          "rounded-2xl border border-border/60 bg-card p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-6 lg:p-8",
+        )}
       >
         <div
           className={cn(
@@ -228,7 +235,10 @@ function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
           <SolutionViewTracker
             solutionId={service.id}
             solutionTitle={service.title}
-            className="scroll-mt-24 rounded-2xl border border-dashed border-border/70 bg-card/80 p-4 shadow-sm sm:p-6 lg:p-8"
+            className={cn(
+              MARKETING_SCROLL_MT_CLASS,
+              "rounded-2xl border border-dashed border-border/70 bg-card/80 p-4 shadow-sm sm:p-6 lg:p-8",
+            )}
           >
             <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.12fr] lg:gap-10">
               <div className="space-y-6">

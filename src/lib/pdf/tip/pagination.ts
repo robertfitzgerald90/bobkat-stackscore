@@ -70,6 +70,43 @@ export function estimateFindingCardHeight(finding: TipCategoryFinding): number {
   return padY + title + badges + current + impact + TIP_PDF_SPACING.block + 16;
 }
 
+/** Section accent, title rule, and optional subtitle chrome (pt). */
+export function estimateSectionChromeHeight(hasSubtitle: boolean): number {
+  return hasSubtitle ? 52 : 40;
+}
+
+export function estimateBusinessValueMetricCardHeight(): number {
+  return 72;
+}
+
+export function estimateExecutiveHeroHeight(): number {
+  return 118;
+}
+
+export function estimateScopeBoxHeight(): number {
+  return 58;
+}
+
+export function estimateCalloutIntroHeight(paragraphCount = 2): number {
+  return 34 + paragraphCount * 26;
+}
+
+export function estimateNextStepCardHeight(): number {
+  return 56;
+}
+
+export function estimateInvestmentTableHeight(rowCount: number): number {
+  return 26 + rowCount * 22;
+}
+
+/** Header chrome + first block — used to keep section titles with their opening content. */
+export function estimateSectionIntroHeight(
+  hasSubtitle: boolean,
+  firstBlockHeight: number,
+): number {
+  return estimateSectionChromeHeight(hasSubtitle) + firstBlockHeight;
+}
+
 export function canKeepCardIntact(estimatedHeight: number): boolean {
   return (
     estimatedHeight <=

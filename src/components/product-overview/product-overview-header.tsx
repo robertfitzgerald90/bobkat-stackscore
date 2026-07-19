@@ -8,10 +8,12 @@ import {
 import { ProductOverviewPdfButton } from "@/components/product-overview/product-overview-pdf-button";
 import { DemoPersonalizationLauncher } from "@/components/product-overview/demo-personalization-wizard";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { STICKY_SITE_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
 
+/** @deprecated Live demo uses DemoApplicationShell; kept for reference only. */
 export function ProductOverviewHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">
+    <header className={STICKY_SITE_HEADER_CLASS}>
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <BrandLogo size={32} variant="stacked" className="shrink-0" />

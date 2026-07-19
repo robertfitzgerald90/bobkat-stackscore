@@ -69,10 +69,16 @@ export const TIP_PAGINATION = {
   initiativeFirstField: 72,
   fieldBlock: 40,
   findingCard: 140,
+  /** Lead fragment of a split finding card (title + badges + first field). */
+  findingLeadFragment: 100,
+  /** Lead fragment of a split initiative card. */
+  initiativeLeadFragment: 88,
   nextStepCard: 64,
   investmentBlock: 88,
   table: 72,
   tableRow: 28,
   /** Cards taller than this share of the printable area may split by group. */
   maxUnbrokenCardRatio: 0.9,
+  /** Intro groups taller than this share use minPresenceAhead only (not wrap={false}). */
+  maxIntroRatio: 0.45,
 } as const;

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { STICKY_IN_SCROLLPORT_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS: Array<{
@@ -31,7 +32,12 @@ export function CommunicationsSubnav({ isAdmin = false }: CommunicationsSubnavPr
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap gap-2 border-b border-border pb-4">
+    <nav
+      className={cn(
+        STICKY_IN_SCROLLPORT_CLASS,
+        "mb-4 flex flex-wrap gap-2 border-border pb-3",
+      )}
+    >
       {NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => {
         const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
 

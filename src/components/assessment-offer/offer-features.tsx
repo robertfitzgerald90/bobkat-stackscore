@@ -1,6 +1,8 @@
 import { CalendarCheck, CheckCircle2 } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { OFFER_FEATURES } from "@/lib/assessment-offer/content";
+import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
+import { cn } from "@/lib/utils";
 import { OfferFeatureGrid } from "./offer-feature-grid";
 import { OfferReveal } from "./offer-reveal";
 
@@ -67,7 +69,10 @@ export function OfferFeatures() {
       title="Everything you need to move from insight to action"
       features={OFFER_FEATURES}
       columns={3}
-      sectionClassName="scroll-mt-24 bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24"
+      sectionClassName={cn(
+        MARKETING_SCROLL_MT_CLASS,
+        "bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24",
+      )}
       afterContent={<ReviewSessionPanel />}
     />
   );
