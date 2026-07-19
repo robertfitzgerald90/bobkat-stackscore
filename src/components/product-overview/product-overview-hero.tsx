@@ -10,9 +10,10 @@ import type { DemoDetailPanel } from "@/lib/product-overview/types";
 
 type ProductOverviewHeroProps = {
   onOpenDetail: (panel: DemoDetailPanel) => void;
+  tourLauncher?: React.ReactNode;
 };
 
-export function ProductOverviewHero({ onOpenDetail }: ProductOverviewHeroProps) {
+export function ProductOverviewHero({ onOpenDetail, tourLauncher }: ProductOverviewHeroProps) {
   function scrollToDashboard() {
     trackProductOverviewExploreClicked("hero");
     document.getElementById("product-overview-dashboard")?.scrollIntoView({
@@ -46,10 +47,11 @@ export function ProductOverviewHero({ onOpenDetail }: ProductOverviewHeroProps) 
             </p>
           </OfferReveal>
 
-          <OfferReveal delayMs={180} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <OfferReveal delayMs={180} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <Button size="lg" className="h-11 px-8 text-base shadow-md" onClick={scrollToDashboard}>
               Explore the Platform
             </Button>
+            {tourLauncher}
             <ProductOverviewAssessmentCta
               label="Start Your Technology Assessment"
               placement="product_overview_hero"

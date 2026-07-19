@@ -328,4 +328,96 @@ export type DemoDetailPanel =
   | { type: "executiveReview" }
   | { type: "report"; reportId: string }
   | { type: "nextAction" }
+  | { type: "executiveWidget"; widgetId: string }
+  | { type: "strategicInitiative"; initiativeId: string }
+  | { type: "collaborationParticipant"; participantId: string }
+  | { type: "ecosystemNode"; nodeId: string }
   | null;
+
+export type DemoTimelineSnapshot = {
+  id: string;
+  label: string;
+  period: string;
+  metrics: {
+    technologyScore: number;
+    maturityLabel: MaturityLabel;
+    openRecommendations: number;
+    activeProjects: number;
+    roadmapCompletionPercent: number;
+    annualTechnologyPlan: number;
+    approvedSpend: number;
+    highPriorityRecommendations: number;
+  };
+  summary: string;
+};
+
+export type DemoImprovementLoopStage = {
+  id: string;
+  label: string;
+  whatHappens: string;
+  whyItMatters: string;
+  whoBenefits: string;
+};
+
+export type DemoCollaborationParticipant = {
+  id: string;
+  label: string;
+  role: string;
+  description: string;
+  connections: string[];
+};
+
+export type DemoStrategicPlanningTab = {
+  id: "next-quarter" | "twelve-month" | "three-year";
+  label: string;
+  initiatives: DemoStrategicInitiative[];
+};
+
+export type DemoStrategicInitiative = {
+  id: string;
+  title: string;
+  summary: string;
+  priority: "Critical" | "High" | "Medium";
+  timeframe: string;
+  businessOutcome: string;
+};
+
+export type DemoExecutiveWidget = {
+  id: string;
+  label: string;
+  value: string;
+  status: "healthy" | "attention" | "critical" | "neutral";
+  whyExecutivesCare: string;
+  businessImplications: string;
+  suggestedAction: string;
+};
+
+export type DemoAiInsightPreview = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+export type DemoSuccessOutcome = {
+  id: string;
+  label: string;
+  value: string;
+  detail?: string;
+};
+
+export type DemoEcosystemNode = {
+  id: string;
+  label: string;
+  description: string;
+  businessValue: string;
+};
+
+export type DemoProductTourStep = {
+  id: string;
+  stepNumber: number;
+  title: string;
+  sectionId: string;
+  featureDescription: string;
+  whyItMatters: string;
+  businessValue: string;
+};

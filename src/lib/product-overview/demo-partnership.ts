@@ -1,0 +1,676 @@
+import type {
+  DemoAiInsightPreview,
+  DemoCollaborationParticipant,
+  DemoEcosystemNode,
+  DemoExecutiveWidget,
+  DemoImprovementLoopStage,
+  DemoProductTourStep,
+  DemoStrategicPlanningTab,
+  DemoSuccessOutcome,
+  DemoTimelineSnapshot,
+} from "@/lib/product-overview/types";
+
+export const TECHNOLOGY_TIMELINE_SNAPSHOTS: DemoTimelineSnapshot[] = [
+  {
+    id: "assessment-2026",
+    label: "2026 Assessment",
+    period: "June 2026",
+    metrics: {
+      technologyScore: 58,
+      maturityLabel: "Developing",
+      openRecommendations: 18,
+      activeProjects: 0,
+      roadmapCompletionPercent: 0,
+      annualTechnologyPlan: 95_000,
+      approvedSpend: 0,
+      highPriorityRecommendations: 7,
+    },
+    summary: "Baseline assessment establishes measurable technology maturity and prioritized improvement areas.",
+  },
+  {
+    id: "roadmap-created",
+    label: "Technology Roadmap",
+    period: "July 2026",
+    metrics: {
+      technologyScore: 58,
+      maturityLabel: "Developing",
+      openRecommendations: 16,
+      activeProjects: 0,
+      roadmapCompletionPercent: 8,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 24_000,
+      highPriorityRecommendations: 6,
+    },
+    summary: "Recommendations convert into a multi-quarter roadmap aligned with executive priorities and budget.",
+  },
+  {
+    id: "projects-begin",
+    label: "Projects Begin",
+    period: "August 2026",
+    metrics: {
+      technologyScore: 62,
+      maturityLabel: "Developing",
+      openRecommendations: 15,
+      activeProjects: 2,
+      roadmapCompletionPercent: 18,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 38_000,
+      highPriorityRecommendations: 5,
+    },
+    summary: "Identity protection and policy standardization projects launch with clear owners and milestones.",
+  },
+  {
+    id: "qbr-1",
+    label: "Quarterly Review #1",
+    period: "September 2026",
+    metrics: {
+      technologyScore: 68,
+      maturityLabel: "Developing",
+      openRecommendations: 14,
+      activeProjects: 4,
+      roadmapCompletionPercent: 28,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 51_000,
+      highPriorityRecommendations: 5,
+    },
+    summary: "First executive quarterly review shows +6 point score improvement and two completed initiatives.",
+  },
+  {
+    id: "score-improves",
+    label: "Technology Score Improves",
+    period: "October 2026",
+    metrics: {
+      technologyScore: 72,
+      maturityLabel: "Defined",
+      openRecommendations: 12,
+      activeProjects: 4,
+      roadmapCompletionPercent: 35,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 58_000,
+      highPriorityRecommendations: 4,
+    },
+    summary: "Maturity gains accelerate as security hardening and backup validation reach validation milestones.",
+  },
+  {
+    id: "infra-modernization",
+    label: "Infrastructure Modernization",
+    period: "November 2026",
+    metrics: {
+      technologyScore: 76,
+      maturityLabel: "Defined",
+      openRecommendations: 10,
+      activeProjects: 3,
+      roadmapCompletionPercent: 48,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 68_000,
+      highPriorityRecommendations: 3,
+    },
+    summary: "Network refresh completes while disaster recovery validation provides auditable recovery readiness.",
+  },
+  {
+    id: "qbr-2",
+    label: "Quarterly Review #2",
+    period: "December 2026",
+    metrics: {
+      technologyScore: 78,
+      maturityLabel: "Defined",
+      openRecommendations: 9,
+      activeProjects: 3,
+      roadmapCompletionPercent: 55,
+      annualTechnologyPlan: 118_000,
+      approvedSpend: 72_000,
+      highPriorityRecommendations: 3,
+    },
+    summary: "Second quarterly review confirms sustained progress, budget discipline, and reduced critical risks.",
+  },
+  {
+    id: "strategic-planning",
+    label: "Strategic Planning",
+    period: "January 2027",
+    metrics: {
+      technologyScore: 80,
+      maturityLabel: "Managed",
+      openRecommendations: 8,
+      activeProjects: 2,
+      roadmapCompletionPercent: 62,
+      annualTechnologyPlan: 142_000,
+      approvedSpend: 78_000,
+      highPriorityRecommendations: 2,
+    },
+    summary: "Leadership aligns next-year investments with a refreshed 12-month plan and three-year vision.",
+  },
+  {
+    id: "annual-review",
+    label: "Annual Technology Review",
+    period: "March 2027",
+    metrics: {
+      technologyScore: 82,
+      maturityLabel: "Managed",
+      openRecommendations: 7,
+      activeProjects: 2,
+      roadmapCompletionPercent: 68,
+      annualTechnologyPlan: 142_000,
+      approvedSpend: 82_000,
+      highPriorityRecommendations: 2,
+    },
+    summary: "Annual review confirms Northstar's transformation from reactive IT to a managed technology strategy.",
+  },
+];
+
+export const CONTINUOUS_IMPROVEMENT_LOOP: DemoImprovementLoopStage[] = [
+  {
+    id: "assess",
+    label: "Assess",
+    whatHappens: "Measure technology maturity across strategic pillars and establish a current-state baseline.",
+    whyItMatters: "Leaders cannot improve what they cannot measure.",
+    whoBenefits: "CEO, CIO, and technology steering committee",
+  },
+  {
+    id: "recommend",
+    label: "Recommend",
+    whatHappens: "Prioritize improvements by business impact, risk, and investment required.",
+    whyItMatters: "Focuses limited budget on the highest-value work.",
+    whoBenefits: "Executive team and department leaders",
+  },
+  {
+    id: "plan",
+    label: "Plan",
+    whatHappens: "Convert recommendations into a sequenced roadmap with budget and timing.",
+    whyItMatters: "Creates accountability and prevents reactive decision-making.",
+    whoBenefits: "CFO, CIO, and project sponsors",
+  },
+  {
+    id: "execute",
+    label: "Execute",
+    whatHappens: "Manage initiatives through projects with milestones, owners, and progress tracking.",
+    whyItMatters: "Strategy only creates value when it is executed consistently.",
+    whoBenefits: "IT staff, project owners, and operations leaders",
+  },
+  {
+    id: "review",
+    label: "Review",
+    whatHappens: "Conduct executive quarterly reviews with score movement and completed work.",
+    whyItMatters: "Maintains executive visibility and course-correction cadence.",
+    whoBenefits: "CEO, board advisors, and executive sponsors",
+  },
+  {
+    id: "measure",
+    label: "Measure",
+    whatHappens: "Track maturity scores, project completion, budget accuracy, and risk reduction.",
+    whyItMatters: "Proves ROI and sustains investment confidence.",
+    whoBenefits: "CFO, CIO, and business unit leaders",
+  },
+  {
+    id: "improve",
+    label: "Improve",
+    whatHappens: "Close recommendations, refine priorities, and update the strategic plan.",
+    whyItMatters: "Technology maturity is a continuous journey, not a one-time project.",
+    whoBenefits: "Entire leadership team",
+  },
+  {
+    id: "repeat",
+    label: "Repeat",
+    whatHappens: "Begin the next improvement cycle with updated assessment signals and fresh priorities.",
+    whyItMatters: "StackScore never becomes stale — the platform evolves with your business.",
+    whoBenefits: "Organization-wide stakeholders",
+  },
+];
+
+export const COLLABORATION_PARTICIPANTS: DemoCollaborationParticipant[] = [
+  {
+    id: "technology-advisor",
+    label: "Technology Advisor",
+    role: "Strategic IT Consulting Partner",
+    description:
+      "Guides assessment interpretation, roadmap prioritization, and quarterly executive reviews.",
+    connections: ["Executive Team", "Roadmap", "Quarterly Reviews", "Reports"],
+  },
+  {
+    id: "executive-team",
+    label: "Executive Team",
+    role: "Decision Makers",
+    description:
+      "Reviews technology score movement, approves investments, and sets strategic direction.",
+    connections: ["Technology Advisor", "Reports", "Budget", "Strategic Planning"],
+  },
+  {
+    id: "it-staff",
+    label: "IT Staff",
+    role: "Implementation Team",
+    description:
+      "Executes projects, maintains systems, and provides operational context for recommendations.",
+    connections: ["Projects", "Roadmap", "Meeting Notes", "Technology Advisor"],
+  },
+  {
+    id: "business-leaders",
+    label: "Business Leaders",
+    role: "Department Sponsors",
+    description:
+      "Connect technology initiatives to business outcomes and operational priorities.",
+    connections: ["Projects", "Reports", "Strategic Planning", "Executive Team"],
+  },
+];
+
+export const COLLABORATION_ARTIFACTS = [
+  { id: "projects", label: "Projects", description: "Shared initiative progress and milestone accountability" },
+  { id: "reports", label: "Reports", description: "Executive-ready reporting everyone references" },
+  { id: "roadmap", label: "Roadmap", description: "Single source of truth for technology priorities" },
+  { id: "meeting-notes", label: "Meeting Notes", description: "Quarterly review decisions captured and tracked" },
+];
+
+export const STRATEGIC_PLANNING_TABS: DemoStrategicPlanningTab[] = [
+  {
+    id: "next-quarter",
+    label: "Next Quarter",
+    initiatives: [
+      {
+        id: "sp-m365-complete",
+        title: "Complete Microsoft 365 Security Hardening",
+        summary: "Finish privileged account MFA enforcement and legacy authentication blocking.",
+        priority: "Critical",
+        timeframe: "Q3 2026",
+        businessOutcome: "Closes highest-priority identity risk before infrastructure refresh.",
+      },
+      {
+        id: "sp-backup-test",
+        title: "Execute Backup Validation Recovery Test",
+        summary: "Conduct first centralized recovery test with executive observer.",
+        priority: "High",
+        timeframe: "Q3 2026",
+        businessOutcome: "Provides auditable proof of recovery readiness.",
+      },
+      {
+        id: "sp-policy-rollout",
+        title: "Roll Out Technology Policy Standards",
+        summary: "Finalize and communicate acceptable use and device lifecycle policies.",
+        priority: "Medium",
+        timeframe: "Q3 2026",
+        businessOutcome: "Creates consistent expectations and reduces compliance gaps.",
+      },
+    ],
+  },
+  {
+    id: "twelve-month",
+    label: "12 Month Plan",
+    initiatives: [
+      {
+        id: "sp-network-refresh",
+        title: "Network Infrastructure Refresh",
+        summary: "Replace aging switching and wireless at the primary production facility.",
+        priority: "High",
+        timeframe: "Q4 2026",
+        businessOutcome: "Reduces downtime risk and supports modern security controls.",
+      },
+      {
+        id: "sp-dr-exercise",
+        title: "Disaster Recovery Exercise",
+        summary: "Structured recovery exercise using documented procedures and validated paths.",
+        priority: "High",
+        timeframe: "Q4 2026",
+        businessOutcome: "Improves incident response confidence and audit readiness.",
+      },
+      {
+        id: "sp-security-improvements",
+        title: "Security Improvements Program",
+        summary: "Extend identity lifecycle improvements beyond privileged accounts.",
+        priority: "High",
+        timeframe: "Q1 2027",
+        businessOutcome: "Reduces orphaned accounts and strengthens access governance.",
+      },
+      {
+        id: "sp-lifecycle-planning",
+        title: "Endpoint Lifecycle Planning",
+        summary: "Standardize refresh cycles and patching policies across all locations.",
+        priority: "Medium",
+        timeframe: "Q1 2027",
+        businessOutcome: "Reduces security gaps from aging endpoints.",
+      },
+    ],
+  },
+  {
+    id: "three-year",
+    label: "3 Year Vision",
+    initiatives: [
+      {
+        id: "sp-cloud-modernization",
+        title: "Cloud Modernization",
+        summary: "Evaluate cloud-first strategies for manufacturing and corporate workloads.",
+        priority: "Medium",
+        timeframe: "2027–2028",
+        businessOutcome: "Improves scalability and reduces infrastructure capital burden.",
+      },
+      {
+        id: "sp-vendor-strategy",
+        title: "Vendor Strategy",
+        summary: "Consolidate vendor relationships and optimize contract renewals.",
+        priority: "Medium",
+        timeframe: "2027",
+        businessOutcome: "Reduces duplicate spend and improves contract visibility.",
+      },
+      {
+        id: "sp-tech-standards",
+        title: "Technology Standards",
+        summary: "Establish enterprise-wide technology standards and governance framework.",
+        priority: "High",
+        timeframe: "2027–2029",
+        businessOutcome: "Improves decision velocity and reduces technical debt.",
+      },
+      {
+        id: "sp-budget-forecasting",
+        title: "Budget Forecasting",
+        summary: "Multi-year technology investment model tied to business growth projections.",
+        priority: "High",
+        timeframe: "2027–2029",
+        businessOutcome: "Enables predictable technology spending aligned with business plans.",
+      },
+    ],
+  },
+];
+
+export const EXECUTIVE_DECISION_WIDGETS: DemoExecutiveWidget[] = [
+  {
+    id: "technology-health",
+    label: "Technology Health",
+    value: "68 / 100",
+    status: "attention",
+    whyExecutivesCare: "Technology posture directly affects operational risk and competitive readiness.",
+    businessImplications: "Score improvement of +6 this quarter indicates the roadmap is working.",
+    suggestedAction: "Maintain investment pace through Q4 priority completion.",
+  },
+  {
+    id: "budget-health",
+    label: "Budget Health",
+    value: "61% utilized",
+    status: "healthy",
+    whyExecutivesCare: "Technology spending must align with approved plans without surprise overruns.",
+    businessImplications: "Spending remains 3% under plan with clear remaining capacity.",
+    suggestedAction: "Approve Q4 network refresh commitment from remaining budget.",
+  },
+  {
+    id: "project-health",
+    label: "Project Health",
+    value: "4 active",
+    status: "healthy",
+    whyExecutivesCare: "Projects translate strategy into measurable operational change.",
+    businessImplications: "Two projects on track, one in planning, one approaching validation.",
+    suggestedAction: "Prioritize M365 hardening completion before network refresh begins.",
+  },
+  {
+    id: "risk-level",
+    label: "Risk Level",
+    value: "Moderate",
+    status: "attention",
+    whyExecutivesCare: "Unaddressed technology risks can disrupt operations and compliance.",
+    businessImplications: "Critical identity risks declining; infrastructure risk remains elevated.",
+    suggestedAction: "Review open risks in the next quarterly executive session.",
+  },
+  {
+    id: "business-impact",
+    label: "Business Impact",
+    value: "High",
+    status: "healthy",
+    whyExecutivesCare: "Technology investments must connect to measurable business outcomes.",
+    businessImplications: "Current initiatives address insurance readiness, compliance, and uptime.",
+    suggestedAction: "Continue linking project outcomes to quarterly review metrics.",
+  },
+  {
+    id: "compliance-readiness",
+    label: "Compliance Readiness",
+    value: "Improving",
+    status: "healthy",
+    whyExecutivesCare: "Auditors and insurers expect documented controls and recovery proof.",
+    businessImplications: "Policy standardization and backup validation strengthen audit posture.",
+    suggestedAction: "Schedule disaster recovery exercise before year-end audit cycle.",
+  },
+  {
+    id: "vendor-health",
+    label: "Vendor Health",
+    value: "Needs review",
+    status: "attention",
+    whyExecutivesCare: "Vendor sprawl increases cost and creates support gaps.",
+    businessImplications: "Vendor inventory cleanup planned for Q4 2026.",
+    suggestedAction: "Include vendor consolidation in next strategic planning session.",
+  },
+  {
+    id: "upcoming-decisions",
+    label: "Upcoming Decisions",
+    value: "3 pending",
+    status: "neutral",
+    whyExecutivesCare: "Executive decisions unblock projects and maintain roadmap momentum.",
+    businessImplications: "Network refresh approval, DR exercise scheduling, and policy rollout sign-off.",
+    suggestedAction: "Address pending decisions in September 15 quarterly review.",
+  },
+];
+
+export const AI_INSIGHTS_PREVIEWS: DemoAiInsightPreview[] = [
+  {
+    id: "trend-detection",
+    title: "Technology trend detection",
+    description: "Identify emerging technology risks and opportunities before they impact operations.",
+  },
+  {
+    id: "budget-forecasting",
+    title: "Budget forecasting",
+    description: "Predict technology spending needs based on roadmap progress and lifecycle data.",
+  },
+  {
+    id: "rec-prioritization",
+    title: "Recommendation prioritization",
+    description: "AI-assisted ranking of recommendations by business impact and risk reduction.",
+  },
+  {
+    id: "lifecycle-forecasting",
+    title: "Lifecycle forecasting",
+    description: "Anticipate end-of-life events for infrastructure, endpoints, and software.",
+  },
+  {
+    id: "risk-prediction",
+    title: "Risk prediction",
+    description: "Surface likely risk scenarios based on maturity trends and open gaps.",
+  },
+  {
+    id: "vendor-optimization",
+    title: "Vendor optimization",
+    description: "Identify consolidation opportunities and contract renewal priorities.",
+  },
+  {
+    id: "executive-summaries",
+    title: "Executive summaries",
+    description: "Generate leadership-ready summaries from live platform data.",
+  },
+];
+
+export const CLIENT_SUCCESS_OUTCOMES: DemoSuccessOutcome[] = [
+  { id: "tech-score", label: "Technology Score", value: "58 → 82" },
+  { id: "critical-risks", label: "Critical Risks", value: "9 → 2" },
+  { id: "completed-projects", label: "Completed Projects", value: "14" },
+  { id: "budget-accuracy", label: "Budget Accuracy", value: "97%" },
+  { id: "quarterly-reviews", label: "Quarterly Reviews", value: "8" },
+  { id: "business-continuity", label: "Business Continuity", value: "Improved", detail: "Validated recovery readiness" },
+  { id: "cyber-maturity", label: "Cybersecurity Maturity", value: "+20 points" },
+];
+
+export const ECOSYSTEM_NODES: DemoEcosystemNode[] = [
+  {
+    id: "assessment",
+    label: "Technology Assessment",
+    description: "Establish a measurable baseline across eight strategic pillars.",
+    businessValue: "Replaces uncertainty with executive-ready clarity.",
+  },
+  {
+    id: "score",
+    label: "Technology Score",
+    description: "Translate findings into a maturity score leadership can track over time.",
+    businessValue: "Creates a single metric for technology health.",
+  },
+  {
+    id: "recommendations",
+    label: "Recommendations",
+    description: "Prioritize improvements by business impact, risk, and investment.",
+    businessValue: "Focuses budget on what matters most.",
+  },
+  {
+    id: "roadmap",
+    label: "Roadmap",
+    description: "Sequence initiatives across quarters aligned with business priorities.",
+    businessValue: "Turns strategy into an executable plan.",
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    description: "Execute initiatives with milestones, owners, and measurable progress.",
+    businessValue: "Delivers tangible operational improvement.",
+  },
+  {
+    id: "quarterly-reviews",
+    label: "Quarterly Reviews",
+    description: "Measure progress through executive business reviews.",
+    businessValue: "Sustains accountability and executive alignment.",
+  },
+  {
+    id: "reports",
+    label: "Reports",
+    description: "Share polished leadership reports from live platform data.",
+    businessValue: "Eliminates one-off slide decks and report fatigue.",
+  },
+  {
+    id: "technology-strategy",
+    label: "Technology Strategy",
+    description: "Continuous strategic planning tied to business growth objectives.",
+    businessValue: "Keeps technology aligned with business direction.",
+  },
+  {
+    id: "business-growth",
+    label: "Business Growth",
+    description: "Technology enables operational efficiency, risk reduction, and competitive advantage.",
+    businessValue: "Technology becomes a growth enabler, not a cost center.",
+  },
+];
+
+export const PRODUCT_TOUR_STEPS: DemoProductTourStep[] = [
+  {
+    id: "tour-dashboard",
+    stepNumber: 1,
+    title: "Client Success Dashboard",
+    sectionId: "product-overview-dashboard",
+    featureDescription: "Your technology command center with scores, priorities, projects, and planning signals.",
+    whyItMatters: "Leaders need one place to understand technology posture at a glance.",
+    businessValue: "Replaces scattered reports with executive-ready visibility.",
+  },
+  {
+    id: "tour-assessment",
+    stepNumber: 2,
+    title: "Technology Assessment",
+    sectionId: "product-overview-assessment",
+    featureDescription: "Pillar scores, maturity labels, and assessment findings across eight strategic areas.",
+    whyItMatters: "You cannot improve what you have not measured.",
+    businessValue: "Establishes a credible baseline for investment decisions.",
+  },
+  {
+    id: "tour-recommendations",
+    stepNumber: 3,
+    title: "Recommendations",
+    sectionId: "product-overview-recommendations",
+    featureDescription: "Prioritized improvements with effort, cost, and business impact.",
+    whyItMatters: "Focuses limited resources on the highest-value work.",
+    businessValue: "Eliminates reactive IT prioritization.",
+  },
+  {
+    id: "tour-roadmap",
+    stepNumber: 4,
+    title: "Strategic Roadmap",
+    sectionId: "product-overview-roadmap",
+    featureDescription: "Multi-quarter planning that connects recommendations to timing and budget.",
+    whyItMatters: "Strategy requires sequencing, not just a punch list.",
+    businessValue: "Aligns technology investments with business priorities.",
+  },
+  {
+    id: "tour-projects",
+    stepNumber: 5,
+    title: "Project Management",
+    sectionId: "product-overview-projects",
+    featureDescription: "Track initiative progress, milestones, owners, and outcomes.",
+    whyItMatters: "Plans only create value when they are executed.",
+    businessValue: "Delivers measurable operational improvement.",
+  },
+  {
+    id: "tour-qbr",
+    stepNumber: 6,
+    title: "Quarterly Reviews",
+    sectionId: "product-overview-quarterly-review",
+    featureDescription: "Executive quarterly reviews with score movement and completed work.",
+    whyItMatters: "Sustains executive accountability every quarter.",
+    businessValue: "Keeps technology on the leadership agenda.",
+  },
+  {
+    id: "tour-reports",
+    stepNumber: 7,
+    title: "Executive Reports",
+    sectionId: "product-overview-reports",
+    featureDescription: "Polished leadership reports generated from live platform data.",
+    whyItMatters: "Executives need concise, credible reporting — not slide decks.",
+    businessValue: "Saves hours of manual report preparation.",
+  },
+  {
+    id: "tour-budget",
+    stepNumber: 8,
+    title: "Budget Planning",
+    sectionId: "product-overview-budget",
+    featureDescription: "Technology investment dashboard with approved, committed, and remaining capacity.",
+    whyItMatters: "Technology spending must align with strategic priorities.",
+    businessValue: "Improves budget accuracy and investment confidence.",
+  },
+  {
+    id: "tour-planning",
+    stepNumber: 9,
+    title: "Strategic Planning",
+    sectionId: "product-overview-strategic-planning",
+    featureDescription: "Next quarter, 12-month, and three-year technology planning workspace.",
+    whyItMatters: "Long-term technology success requires forward-looking planning.",
+    businessValue: "Connects daily decisions to multi-year business goals.",
+  },
+  {
+    id: "tour-improvement",
+    stepNumber: 10,
+    title: "Continuous Improvement",
+    sectionId: "product-overview-continuous-improvement",
+    featureDescription: "An ongoing improvement cycle that keeps StackScore current and actionable.",
+    whyItMatters: "Technology maturity is a journey, not a destination.",
+    businessValue: "Ensures the platform never becomes stale.",
+  },
+];
+
+export const ENGAGEMENT_NEXT_STEPS = [
+  { step: 1, label: "Purchase Assessment", description: "Begin with a Technology Maturity Assessment." },
+  { step: 2, label: "Complete Onboarding", description: "Share organization context and technology environment." },
+  { step: 3, label: "Technology Review", description: "Collaborate on assessment scope and executive priorities." },
+  { step: 4, label: "Receive Assessment", description: "Review pillar scores, findings, and prioritized recommendations." },
+  { step: 5, label: "Build Roadmap", description: "Convert recommendations into a sequenced technology roadmap." },
+  { step: 6, label: "Begin Strategic IT Consulting", description: "Partner ongoing for execution, reviews, and continuous improvement." },
+];
+
+export const TOUR_STORAGE_KEY = "stackscore-product-overview-tour";
+
+export function getTimelineSnapshotById(id: string) {
+  return TECHNOLOGY_TIMELINE_SNAPSHOTS.find((snapshot) => snapshot.id === id);
+}
+
+export function getExecutiveWidgetById(id: string) {
+  return EXECUTIVE_DECISION_WIDGETS.find((widget) => widget.id === id);
+}
+
+export function getStrategicInitiativeById(id: string) {
+  for (const tab of STRATEGIC_PLANNING_TABS) {
+    const initiative = tab.initiatives.find((item) => item.id === id);
+    if (initiative) return initiative;
+  }
+  return undefined;
+}
+
+export function getCollaborationParticipantById(id: string) {
+  return COLLABORATION_PARTICIPANTS.find((participant) => participant.id === id);
+}
+
+export function getEcosystemNodeById(id: string) {
+  return ECOSYSTEM_NODES.find((node) => node.id === id);
+}

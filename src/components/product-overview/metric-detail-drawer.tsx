@@ -20,6 +20,12 @@ import {
 } from "@/lib/product-overview/demo-dashboard";
 import { DEMO_EXECUTIVE_REVIEW, getDemoReportPreviewById } from "@/lib/product-overview/demo-execution";
 import {
+  getCollaborationParticipantById,
+  getEcosystemNodeById,
+  getExecutiveWidgetById,
+  getStrategicInitiativeById,
+} from "@/lib/product-overview/demo-partnership";
+import {
   getDemoConnectionByPillarId,
   getDemoConnectionByRecommendationId,
   getDemoRecommendationById,
@@ -513,6 +519,69 @@ export function MetricDetailDrawer({ panel, onClose }: MetricDetailDrawerProps) 
       title = preview?.title ?? "Report Preview";
       description = preview?.subtitle ?? "Executive report preview";
       body = preview ? <ReportPreviewLayout preview={preview} /> : null;
+      break;
+    }
+    case "executiveWidget": {
+      const widget = getExecutiveWidgetById(panel.widgetId);
+      title = widget?.label ?? "Executive Insight";
+      description = "Why executives care and what to do next";
+      body = widget ? (
+        <div className="space-y-5">
+          <p className="text-3xl font-semibold">{widget.value}</p>
+          <DetailSection label="Why executives care">{widget.whyExecutivesCare}</DetailSection>
+          <DetailSection label="Business implications">{widget.businessImplications}</DetailSection>
+          <DetailSection label="Suggested next action">{widget.suggestedAction}</DetailSection>
+        </div>
+      ) : null;
+      break;
+    }
+    case "strategicInitiative": {
+      const initiative = getStrategicInitiativeById(panel.initiativeId);
+      title = initiative?.title ?? "Strategic Initiative";
+      description = "Strategic planning summary";
+      body = initiative ? (
+        <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={initiative.priority === "Critical" ? "destructive" : "outline"}>
+              {initiative.priority}
+            </Badge>
+            <Badge variant="outline">{initiative.timeframe}</Badge>
+          </div>
+          <DetailSection label="Summary">{initiative.summary}</DetailSection>
+          <DetailSection label="Expected business outcome">{initiative.businessOutcome}</DetailSection>
+        </div>
+      ) : null;
+      break;
+    }
+    case "collaborationParticipant": {
+      const participant = getCollaborationParticipantById(panel.participantId);
+      title = participant?.label ?? "Collaboration";
+      description = participant?.role ?? "Team alignment";
+      body = participant ? (
+        <div className="space-y-5">
+          <DetailSection label="Role">{participant.role}</DetailSection>
+          <DetailSection label="How they stay aligned">{participant.description}</DetailSection>
+          <DetailSection label="Connected through">
+            <ul className="space-y-1">
+              {participant.connections.map((connection) => (
+                <li key={connection}>• {connection}</li>
+              ))}
+            </ul>
+          </DetailSection>
+        </div>
+      ) : null;
+      break;
+    }
+    case "ecosystemNode": {
+      const node = getEcosystemNodeById(panel.nodeId);
+      title = node?.label ?? "StackScore Ecosystem";
+      description = "How this capability connects to business growth";
+      body = node ? (
+        <div className="space-y-5">
+          <DetailSection label="Description">{node.description}</DetailSection>
+          <DetailSection label="Business value">{node.businessValue}</DetailSection>
+        </div>
+      ) : null;
       break;
     }
     default:

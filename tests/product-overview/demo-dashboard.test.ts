@@ -15,6 +15,13 @@ import {
   getDemoRecommendationById,
 } from "@/lib/product-overview/demo-strategy";
 import { PRODUCT_OVERVIEW_NAV_ITEMS } from "@/lib/product-overview/navigation";
+import {
+  AI_INSIGHTS_PREVIEWS,
+  CLIENT_SUCCESS_OUTCOMES,
+  EXECUTIVE_DECISION_WIDGETS,
+  PRODUCT_TOUR_STEPS,
+  TECHNOLOGY_TIMELINE_SNAPSHOTS,
+} from "@/lib/product-overview/demo-partnership";
 
 describe("product overview demo dashboard", () => {
   it("uses the Northstar Manufacturing demo organization", () => {
@@ -98,5 +105,24 @@ describe("product overview execution demo data", () => {
     expect(DEMO_BUSINESS_OUTCOME_KPIS.length).toBeGreaterThanOrEqual(8);
     expect(DEMO_EXECUTIVE_REVIEW.executiveRecommendations.length).toBeGreaterThan(0);
     expect(PLATFORM_MAP_STEPS).toHaveLength(8);
+  });
+});
+
+describe("product overview partnership demo data", () => {
+  it("defines technology timeline snapshots with evolving metrics", () => {
+    expect(TECHNOLOGY_TIMELINE_SNAPSHOTS.length).toBe(9);
+    expect(TECHNOLOGY_TIMELINE_SNAPSHOTS[0]?.metrics.technologyScore).toBe(58);
+    expect(TECHNOLOGY_TIMELINE_SNAPSHOTS.at(-1)?.metrics.technologyScore).toBe(82);
+  });
+
+  it("defines a 10-step guided product tour", () => {
+    expect(PRODUCT_TOUR_STEPS).toHaveLength(10);
+    expect(PRODUCT_TOUR_STEPS[0]?.sectionId).toBe("product-overview-dashboard");
+  });
+
+  it("defines executive widgets and AI preview cards", () => {
+    expect(EXECUTIVE_DECISION_WIDGETS.length).toBe(8);
+    expect(AI_INSIGHTS_PREVIEWS.length).toBe(7);
+    expect(CLIENT_SUCCESS_OUTCOMES.length).toBeGreaterThanOrEqual(7);
   });
 });

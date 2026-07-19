@@ -16,6 +16,13 @@ export const PRODUCT_OVERVIEW_ANALYTICS_EVENTS = {
   CONNECTION_HIGHLIGHTED: "product_overview_connection_highlighted",
   REPORT_PREVIEWED: "product_overview_report_previewed",
   BUDGET_PERIOD_CHANGED: "product_overview_budget_period_changed",
+  TOUR_STARTED: "product_overview_tour_started",
+  TOUR_COMPLETED: "product_overview_tour_completed",
+  TOUR_SKIPPED: "product_overview_tour_skipped",
+  TIMELINE_INTERACTION: "product_overview_timeline_interaction",
+  PLANNING_VIEWED: "product_overview_planning_viewed",
+  EXECUTIVE_DASHBOARD_VIEWED: "product_overview_executive_dashboard_viewed",
+  FINAL_CTA_CLICKED: "product_overview_final_cta_clicked",
 } as const;
 
 export type ProductOverviewAnalyticsEventName =
@@ -34,6 +41,11 @@ const ALLOWED_PROPERTY_KEYS = new Set([
   "trigger",
   "report_id",
   "budget_period",
+  "timeline_id",
+  "planning_tab",
+  "widget_id",
+  "tour_step",
+  "cta_type",
 ]);
 
 function sanitizeProperties(properties?: MarketingAnalyticsProperties) {
@@ -133,5 +145,46 @@ export function trackProductOverviewReportPreviewed(reportId: string) {
 export function trackProductOverviewBudgetPeriodChanged(budgetPeriod: string) {
   trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.BUDGET_PERIOD_CHANGED, {
     budget_period: budgetPeriod,
+  });
+}
+
+export function trackProductOverviewTourStarted(resumeStep?: number) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.TOUR_STARTED, {
+    tour_step: resumeStep ?? 0,
+  });
+}
+
+export function trackProductOverviewTourCompleted() {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.TOUR_COMPLETED);
+}
+
+export function trackProductOverviewTourSkipped(step: number) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.TOUR_SKIPPED, {
+    tour_step: step,
+  });
+}
+
+export function trackProductOverviewTimelineInteraction(timelineId: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.TIMELINE_INTERACTION, {
+    timeline_id: timelineId,
+  });
+}
+
+export function trackProductOverviewPlanningViewed(planningTab: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.PLANNING_VIEWED, {
+    planning_tab: planningTab,
+  });
+}
+
+export function trackProductOverviewExecutiveDashboardViewed(widgetId?: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.EXECUTIVE_DASHBOARD_VIEWED, {
+    widget_id: widgetId ?? "section",
+  });
+}
+
+export function trackProductOverviewFinalCtaClicked(ctaType: string, placement: string) {
+  trackProductOverviewEvent(PRODUCT_OVERVIEW_ANALYTICS_EVENTS.FINAL_CTA_CLICKED, {
+    cta_type: ctaType,
+    placement,
   });
 }

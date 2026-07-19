@@ -1,13 +1,18 @@
 "use client";
 
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { AiInsightsPreviewSection } from "@/components/product-overview/ai-insights-preview-section";
 import { AssessmentSection } from "@/components/product-overview/assessment-section";
 import { BudgetPlanningSection } from "@/components/product-overview/budget-planning-section";
 import { BusinessOutcomesDashboardSection } from "@/components/product-overview/business-outcomes-dashboard-section";
 import { BusinessValueSection } from "@/components/product-overview/business-value-section";
+import { ClientCollaborationSection } from "@/components/product-overview/client-collaboration-section";
+import { ClientSuccessOutcomesSection } from "@/components/product-overview/client-success-outcomes-section";
+import { ContinuousImprovementSection } from "@/components/product-overview/continuous-improvement-section";
 import { CurrentFutureStateSection } from "@/components/product-overview/current-future-state-section";
 import { DemoModeBanner } from "@/components/product-overview/demo-mode-banner";
 import { DemoDashboard } from "@/components/product-overview/demo-dashboard";
+import { ExecutiveDecisionCenterSection } from "@/components/product-overview/executive-decision-center-section";
 import { ExecutiveReportLibrarySection } from "@/components/product-overview/executive-report-library-section";
 import { MetricDetailDrawer } from "@/components/product-overview/metric-detail-drawer";
 import { PlatformOverviewMapSection } from "@/components/product-overview/platform-overview-map-section";
@@ -15,6 +20,7 @@ import {
   ProductOverviewProvider,
   useProductOverview,
 } from "@/components/product-overview/product-overview-context";
+import { ProductGuidedTour, ProductTourLauncher } from "@/components/product-overview/product-guided-tour";
 import { ProductOverviewFinalCta } from "@/components/product-overview/product-overview-final-cta";
 import { ProductOverviewHeader } from "@/components/product-overview/product-overview-header";
 import { ProductOverviewHero } from "@/components/product-overview/product-overview-hero";
@@ -24,7 +30,10 @@ import { ProjectsWorkspaceSection } from "@/components/product-overview/projects
 import { QuarterlyReviewSection } from "@/components/product-overview/quarterly-review-section";
 import { RecommendationsWorkspaceSection } from "@/components/product-overview/recommendations-workspace-section";
 import { RoadmapExperienceSection } from "@/components/product-overview/roadmap-experience-section";
+import { StackscoreEcosystemSection } from "@/components/product-overview/stackscore-ecosystem-section";
+import { StrategicPlanningSection } from "@/components/product-overview/strategic-planning-section";
 import { TechnologyJourneySection } from "@/components/product-overview/technology-journey-section";
+import { TechnologyTimelineSection } from "@/components/product-overview/technology-timeline-section";
 import { WhyClientsLoveSection } from "@/components/product-overview/why-clients-love-section";
 
 function ProductOverviewContent() {
@@ -36,7 +45,7 @@ function ProductOverviewContent() {
       <ProductOverviewHeader />
       <ProductOverviewNav />
       <main>
-        <ProductOverviewHero onOpenDetail={openDetail} />
+        <ProductOverviewHero onOpenDetail={openDetail} tourLauncher={<ProductTourLauncher className="h-11 px-8 text-base" />} />
         <section
           id="product-overview-dashboard"
           className="scroll-mt-36 border-t border-border/70 bg-muted/10 px-4 py-10 sm:px-6 sm:py-12"
@@ -60,6 +69,7 @@ function ProductOverviewContent() {
             </div>
           </div>
         </section>
+        <TechnologyTimelineSection />
         <TechnologyJourneySection />
         <AssessmentSection />
         <CurrentFutureStateSection />
@@ -71,12 +81,20 @@ function ProductOverviewContent() {
         <ExecutiveReportLibrarySection />
         <BudgetPlanningSection />
         <BusinessOutcomesDashboardSection />
+        <ContinuousImprovementSection />
+        <ClientCollaborationSection />
+        <StrategicPlanningSection />
+        <ExecutiveDecisionCenterSection />
+        <AiInsightsPreviewSection />
+        <ClientSuccessOutcomesSection />
         <WhyClientsLoveSection />
+        <StackscoreEcosystemSection />
         <PlatformOverviewMapSection />
         <ProductOverviewFinalCta />
       </main>
       <OfferFooter />
       <MetricDetailDrawer panel={detailPanel} onClose={closeDetail} />
+      <ProductGuidedTour />
     </div>
   );
 }
