@@ -44,8 +44,8 @@ export function getDefaultProfile(): DemoProfileBundle {
   return buildDemoProfile({
     companyName: "Northstar Manufacturing",
     industryId: "manufacturing",
-    employeeCount: 85,
-    locationCount: 2,
+    employeeCount: 55,
+    locationCount: 1,
     businessGoal: "reduce-it-risk",
   });
 }
