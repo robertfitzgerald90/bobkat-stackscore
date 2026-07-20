@@ -297,6 +297,7 @@ function PdfFieldBlock({ label, body }: { label: string; body: string }) {
 function PdfInitiativeBadges({ initiative }: { initiative: TipStrategicInitiative }) {
   return (
     <View style={styles.badgeRow}>
+      <PdfRiskBadge level={initiative.riskLevel} />
       <PdfPriorityBadge level={initiative.priority} />
       <Text
         style={[
@@ -365,6 +366,9 @@ export function PdfCategoryFindingCard({
         <PdfPriorityBadge level={finding.priority} />
       </View>
       <PdfFieldBlock label="Current State" body={finding.currentState} />
+      {finding.priorityRationale ? (
+        <PdfFieldBlock label="Priority Rationale" body={finding.priorityRationale} />
+      ) : null}
     </>
   );
 
@@ -497,6 +501,9 @@ export function PdfStrategicInitiativeCard({
     return (
       <View style={styles.initiativeCard}>
         <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
+        {initiative.priorityRationale ? (
+          <PdfFieldBlock label="Priority Rationale" body={initiative.priorityRationale} />
+        ) : null}
         <PdfInitiativeBenefits benefits={initiative.expectedBenefits} />
       </View>
     );
@@ -519,6 +526,9 @@ export function PdfStrategicInitiativeCard({
         <View wrap={false} style={styles.initiativeCard}>
           {leadBody}
           <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
+          {initiative.priorityRationale ? (
+            <PdfFieldBlock label="Priority Rationale" body={initiative.priorityRationale} />
+          ) : null}
           <PdfInitiativeBenefits benefits={initiative.expectedBenefits} />
         </View>
       </>
@@ -539,6 +549,9 @@ export function PdfStrategicInitiativeCard({
           <PdfFieldBlock label="Business Objective" body={initiative.businessObjective} />
         </View>
         <PdfFieldBlock label="Why It Matters" body={initiative.whyItMatters} />
+        {initiative.priorityRationale ? (
+          <PdfFieldBlock label="Priority Rationale" body={initiative.priorityRationale} />
+        ) : null}
         <PdfInitiativeBenefits benefits={initiative.expectedBenefits} />
       </View>
     </>

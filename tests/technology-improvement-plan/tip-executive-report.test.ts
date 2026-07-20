@@ -8,6 +8,7 @@ import {
   priorityToExecutiveLevel,
   ratingToExecutiveRisk,
 } from "@/lib/reports/tip-executive-report";
+import { areTipTextsIdentical } from "@/lib/reports/tip-text-normalize";
 import type { TipRecommendationView } from "@/lib/technology-improvement-plan/types";
 import type { TechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
 
@@ -96,12 +97,15 @@ describe("tip-executive-report", () => {
   });
 
   it("builds strategic initiatives from business impact only", () => {
-    const initiatives = buildStrategicInitiatives(sampleRoadmap, [sampleRecommendation]);
+    const initiatives = buildStrategicInitiatives(sampleRoadmap, [sampleRecommendation], [
+      { name: "Business Continuity", score: 48 },
+    ]);
 
     expect(initiatives).toHaveLength(1);
     expect(initiatives[0]?.name).toBe("Backup Modernization");
     expect(initiatives[0]?.businessObjective).toContain("Leadership");
-    expect(initiatives[0]?.priority).toBe("High");
+    expect(initiatives[0]?.priority).toBe("Immediate");
+    expect(areTipTextsIdentical(initiatives[0]!.businessObjective, initiatives[0]!.whyItMatters)).toBe(false);
     expect(JSON.stringify(initiatives[0])).not.toContain("Technical detail");
   });
 
@@ -130,6 +134,12 @@ describe("tip-executive-report", () => {
     });
 
     expect(fields.topBusinessRisks.length).toBeGreaterThan(0);
+    expect(fields.topOpportunities.length).toBeGreaterThan(0);
+    for (const risk of fields.topBusinessRisks) {
+      for (const opportunity of fields.topOpportunities) {
+        expect(areTipTextsIdentical(risk, opportunity)).toBe(false);
+      }
+    }
     expect(fields.strategicInitiatives.length).toBe(1);
     expect(fields.phaseInvestmentRows[0]?.estimatedInvestment).toContain("$");
   });

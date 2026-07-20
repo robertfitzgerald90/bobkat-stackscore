@@ -27,6 +27,7 @@ function makeInitiative(overrides: Partial<TipStrategicInitiative> = {}): TipStr
     recommendedPhase: "Phase 1",
     estimatedInvestment: "$3,500",
     priority: "High",
+    riskLevel: "High",
     ...overrides,
   };
 }

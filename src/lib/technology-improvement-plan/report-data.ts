@@ -5,6 +5,8 @@ import {
   buildExecutiveSummaryFallback,
   enrichTipPlanForExecutiveReport,
 } from "@/lib/reports/tip-executive-report";
+import { buildTipInvestmentSummary } from "@/lib/reports/tip-investment-summary";
+import { finalizeTipReportData } from "@/lib/technology-improvement-plan/report-validation";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 
 export function buildTipReportData(
@@ -42,17 +44,23 @@ export function buildTipReportData(
   const roadmap = plan.technologyRoadmap;
   const projectedScore = roadmap.totals.projectedFinalStackScore || plan.projectedScore;
 
+  const investmentSummary = buildTipInvestmentSummary(roadmap, plan.recommendations);
+
   const investmentLineItems = [
     {
       category: "One-Time Implementation Investment",
-      description:
-        "Professional services, equipment, and project delivery across approved roadmap phases",
-      amount: roadmap.totals.totalOneTimeInvestment,
+      description: investmentSummary.oneTimeImplementation.description,
+      amount: investmentSummary.oneTimeImplementation.amount,
     },
     {
-      category: "New Monthly Recurring Investment",
-      description: "Ongoing managed services and operational support introduced by the roadmap",
-      amount: roadmap.totals.totalMonthlyRecurring,
+      category: "Managed Technology Services",
+      description: investmentSummary.managedTechnologyServices.description,
+      amount: investmentSummary.managedTechnologyServices.monthlyAmount,
+    },
+    {
+      category: investmentSummary.strategicItConsulting.label,
+      description: `${investmentSummary.strategicItConsulting.description} ${investmentSummary.strategicItConsulting.optionalNote}`,
+      amount: investmentSummary.strategicItConsulting.monthlyAmount,
     },
   ].filter((item) => item.amount > 0);
 
@@ -76,7 +84,7 @@ export function buildTipReportData(
       plan.profile?.profile.maturityTierLabel ?? null,
     );
 
-  return {
+  return finalizeTipReportData({
     clientName: plan.clientName,
     title: plan.title,
     version: plan.version,
@@ -109,6 +117,7 @@ export function buildTipReportData(
     strategicInitiatives: executiveFields.strategicInitiatives,
     phaseInvestmentRows: executiveFields.phaseInvestmentRows,
     businessValueSnapshot: executiveFields.businessValueSnapshot,
+    investmentSummary,
     investmentBreakdown: includeInternalDetails
       ? {
           labor: investment.labor,
@@ -119,5 +128,5 @@ export function buildTipReportData(
           clientTotal: investment.clientTotal,
         }
       : undefined,
-  };
+  });
 }

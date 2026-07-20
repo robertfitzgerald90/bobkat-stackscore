@@ -340,7 +340,8 @@ export const PRIORITY_BADGE_STYLES: Record<
   ExecutivePriorityLevel,
   { bg: string; text: string; border: string }
 > = {
-  Low: { bg: "#F8FAFC", text: "#475569", border: "#E2E8F0" },
-  Medium: { bg: "#EFF6FF", text: "#1D4ED8", border: "#BFDBFE" },
+  Immediate: { bg: "#FEF2F2", text: "#B91C1C", border: "#FECACA" },
   High: { bg: "#FFF7ED", text: "#C2410C", border: "#FED7AA" },
+  Moderate: { bg: "#EFF6FF", text: "#1D4ED8", border: "#BFDBFE" },
+  Planned: { bg: "#F8FAFC", text: "#475569", border: "#E2E8F0" },
 };

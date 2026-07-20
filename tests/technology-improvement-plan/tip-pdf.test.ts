@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { generateTipReportPdf } from "@/lib/pdf/generate";
 import { buildExecutiveReportFields } from "@/lib/reports/tip-executive-report";
+import { finalizeTipReportData } from "@/lib/technology-improvement-plan/report-validation";
 import type { TipReportData } from "@/lib/pdf/types";
+import { createTestInvestmentSummary } from "./tip-test-helpers";
 
 const minimalTipReport: TipReportData = {
   clientName: "Fixture Client",
@@ -106,10 +108,14 @@ const executiveFields = buildExecutiveReportFields({
   assessmentDate: "June 15, 2026",
 });
 
-const fullTipReport: TipReportData = {
+const fullTipReport: TipReportData = finalizeTipReportData({
   ...minimalTipReport,
   ...executiveFields,
-};
+  investmentSummary: createTestInvestmentSummary(
+    minimalTipReport.technologyRoadmap,
+    minimalTipReport.recommendations,
+  ),
+});
 
 describe("generateTipReportPdf", () => {
   it("renders a non-empty executive PDF buffer", async () => {

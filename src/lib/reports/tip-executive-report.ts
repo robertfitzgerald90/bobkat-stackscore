@@ -2,7 +2,6 @@ import type { Priority, Rating } from "@/generated/prisma/client";
 import { BRAND } from "@/lib/branding";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
-import { sortByRecommendationPriority } from "@/lib/recommendations/display";
 import type { RoadmapPhaseResult, TechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import type { TipPlanDetail, TipRecommendationView } from "@/lib/technology-improvement-plan/types";
@@ -12,10 +11,27 @@ import type {
   TipCategoryFinding,
   TipPhaseInvestmentRow,
   TipStrategicInitiative,
+  ExecutivePriorityLevel,
+  ExecutiveRiskLevel,
 } from "@/lib/pdf/types";
+import {
+  describeCategoryBusinessImpact,
+  describeCategoryCurrentState,
+} from "@/lib/reports/tip-category-content";
+import { resolveInitiativeFields } from "@/lib/reports/tip-initiative-content";
+import {
+  assignExecutivePriorityTiers,
+  buildCategoryScoreMap,
+  categoryScoreForRecommendation,
+  computeCategoryExecutivePriority,
+  computeInitiativeRiskLevel,
+  generatePriorityRationale,
+  scoreInitiativePriority,
+  shouldIncludePriorityRationale,
+} from "@/lib/reports/tip-priority-scoring";
+import { buildTopBusinessRisks, buildTopOpportunities } from "@/lib/reports/tip-risks-opportunities";
 
-export type ExecutiveRiskLevel = "Low" | "Moderate" | "High" | "Critical";
-export type ExecutivePriorityLevel = "Low" | "Medium" | "High";
+export type { ExecutiveRiskLevel, ExecutivePriorityLevel };
 
 export function ratingToExecutiveRisk(rating: Rating): ExecutiveRiskLevel {
   switch (rating) {
@@ -38,9 +54,10 @@ export function scoreToExecutiveRisk(score: number): ExecutiveRiskLevel {
 }
 
 export function priorityToExecutiveLevel(priority: Priority): ExecutivePriorityLevel {
-  if (priority === "critical" || priority === "high") return "High";
-  if (priority === "medium") return "Medium";
-  return "Low";
+  if (priority === "critical") return "Immediate";
+  if (priority === "high") return "High";
+  if (priority === "medium") return "Moderate";
+  return "Planned";
 }
 
 export function computeOverallBusinessRisk(
@@ -52,127 +69,6 @@ export function computeOverallBusinessRisk(
   }
   if ((riskSummary?.high ?? 0) >= 3) return "High";
   return scoreToExecutiveRisk(currentScore);
-}
-
-function highestPriorityInCategory(
-  recommendations: TipRecommendationView[],
-  categoryName: string,
-): ExecutivePriorityLevel {
-  const inCategory = recommendations.filter((rec) => rec.categoryName === categoryName);
-  if (inCategory.length === 0) return "Low";
-  const sorted = sortByRecommendationPriority(inCategory);
-  return priorityToExecutiveLevel(sorted[0]!.priority);
-}
-
-function describeCurrentState(pillar: {
-  name: string;
-  score: number;
-  ratingLabel: string;
-  businessQuestion?: string;
-}): string {
-  if (pillar.score >= 80) {
-    return `${pillar.name} demonstrates strong maturity (${pillar.score}/100, ${pillar.ratingLabel}). Core capabilities appear established, with opportunities to optimize rather than rebuild.`;
-  }
-  if (pillar.score >= 70) {
-    return `${pillar.name} is functional but not yet optimized (${pillar.score}/100, ${pillar.ratingLabel}). The organization has baseline capability with gaps that may limit scalability or resilience.`;
-  }
-  if (pillar.score >= 60) {
-    return `${pillar.name} shows material gaps (${pillar.score}/100, ${pillar.ratingLabel}). Current practices may not consistently support business continuity or growth expectations.`;
-  }
-  return `${pillar.name} requires executive attention (${pillar.score}/100, ${pillar.ratingLabel}). Observed maturity suggests elevated exposure that could affect operations, security, or strategic planning.`;
-}
-
-function describeBusinessImpact(
-  score: number,
-  riskLevel: ExecutiveRiskLevel,
-  hasRecommendations: boolean,
-): string {
-  const impacts: string[] = [];
-
-  if (score < 70 || riskLevel === "Critical" || riskLevel === "High") {
-    impacts.push("Increased business risk and potential disruption to operations");
-  }
-  if (score < 75) {
-    impacts.push("Higher operating costs from reactive support and inefficiency");
-  }
-  if (score < 80 && hasRecommendations) {
-    impacts.push("Reduced productivity when technology creates friction for employees");
-  }
-  if (riskLevel === "Critical" || riskLevel === "High") {
-    impacts.push("Potential compliance or cybersecurity exposure");
-  }
-  if (score < 70) {
-    impacts.push("Limited scalability as the business grows");
-  }
-
-  if (impacts.length === 0) {
-    return "Maintaining this domain at its current level supports operational stability. Targeted improvements can still strengthen resilience and executive visibility.";
-  }
-
-  return impacts.slice(0, 4).join(". ") + ".";
-}
-
-export function buildCategoryFindings(
-  categorySummaries: Array<{
-    name: string;
-    score: number;
-    ratingLabel: string;
-    hasRecommendations: boolean;
-  }>,
-  pillarSnapshots: PillarScoreSnapshot[] | null | undefined,
-  recommendations: TipRecommendationView[],
-): TipCategoryFinding[] {
-  const businessQuestions = new Map(
-    (pillarSnapshots ?? []).map((pillar) => [pillar.pillarName, pillar.businessQuestion]),
-  );
-
-  return categorySummaries.map((category) => {
-    const riskLevel = scoreToExecutiveRisk(category.score);
-    return {
-      categoryName: category.name,
-      currentState: describeCurrentState({
-        name: category.name,
-        score: category.score,
-        ratingLabel: category.ratingLabel,
-        businessQuestion: businessQuestions.get(category.name),
-      }),
-      businessImpact: describeBusinessImpact(
-        category.score,
-        riskLevel,
-        category.hasRecommendations,
-      ),
-      riskLevel,
-      priority: highestPriorityInCategory(recommendations, category.name),
-    };
-  });
-}
-
-function executiveBenefitsForRecommendation(rec: TipRecommendationView): string[] {
-  const benefits = new Set<string>();
-  const impact = rec.businessImpact.toLowerCase();
-
-  if (/downtime|continuity|recover|outage|backup/.test(impact)) {
-    benefits.add("Reduced downtime and improved business continuity");
-  }
-  if (/security|cyber|threat|breach|protect/.test(impact)) {
-    benefits.add("Improved security posture and risk reduction");
-  }
-  if (/visibility|report|executive|insight|dashboard/.test(impact)) {
-    benefits.add("Better operational visibility for leadership");
-  }
-  if (/productiv|efficien|onboard|employee|workflow/.test(impact)) {
-    benefits.add("Improved employee productivity and efficiency");
-  }
-  if (/cost|budget|spend|savings/.test(impact)) {
-    benefits.add("Lower long-term IT operating costs");
-  }
-
-  if (benefits.size === 0) {
-    benefits.add("Strengthened technology foundation aligned to business priorities");
-    benefits.add("Reduced operational friction for employees and leadership");
-  }
-
-  return Array.from(benefits).slice(0, 4);
 }
 
 function formatInitiativeInvestment(
@@ -192,36 +88,131 @@ function formatInitiativeInvestment(
   return parts.length > 0 ? parts.join(" · ") : "Consulting engagement";
 }
 
+export function buildCategoryFindings(
+  categorySummaries: Array<{
+    name: string;
+    score: number;
+    ratingLabel: string;
+    hasRecommendations: boolean;
+  }>,
+  pillarSnapshots: PillarScoreSnapshot[] | null | undefined,
+  recommendations: TipRecommendationView[],
+): TipCategoryFinding[] {
+  const businessQuestions = new Map(
+    (pillarSnapshots ?? []).map((pillar) => [pillar.pillarName, pillar.businessQuestion]),
+  );
+
+  return categorySummaries.map((category) => {
+    const categoryRecs = recommendations.filter((rec) => rec.categoryName === category.name);
+    const riskLevel = scoreToExecutiveRisk(category.score);
+    const priority = computeCategoryExecutivePriority(recommendations, category.name);
+    const context = {
+      categoryName: category.name,
+      score: category.score,
+      ratingLabel: category.ratingLabel,
+      riskLevel,
+      hasRecommendations: category.hasRecommendations,
+      recommendations: categoryRecs,
+      businessQuestion: businessQuestions.get(category.name),
+    };
+
+    const findingRisk = riskLevel;
+    const findingPriority = priority;
+    const priorityRationale = shouldIncludePriorityRationale(findingRisk, findingPriority)
+      ? generatePriorityRationale({
+          riskLevel: findingRisk,
+          priority: findingPriority,
+          recommendedPhase: "this category",
+          title: category.name,
+          hasCompensatingControl: category.score >= 70 && findingRisk === "Critical",
+        })
+      : undefined;
+
+    return {
+      categoryName: category.name,
+      currentState: describeCategoryCurrentState(context),
+      businessImpact: describeCategoryBusinessImpact(context),
+      riskLevel: findingRisk,
+      priority: findingPriority,
+      priorityRationale,
+    };
+  });
+}
+
 export function buildStrategicInitiatives(
   roadmap: TechnologyRoadmap,
   recommendations: TipRecommendationView[],
+  categorySummaries: Array<{ name: string; score: number }>,
 ): TipStrategicInitiative[] {
   const recById = new Map(recommendations.map((rec) => [rec.id, rec]));
+  const categoryScores = buildCategoryScoreMap(categorySummaries);
   const initiatives: TipStrategicInitiative[] = [];
 
   for (const phase of roadmap.phases) {
-    for (const initiative of phase.initiatives) {
+    const phaseInputs = phase.initiatives.map((initiative, initiativeSortOrder) => {
       const rec = recById.get(initiative.recommendationId);
-      const businessObjective =
-        rec?.executiveNote?.trim() ||
-        rec?.businessImpact?.trim() ||
-        `Improve ${initiative.title.toLowerCase()} to support business goals.`;
-      const whyItMatters =
-        rec?.businessImpact?.trim() ||
-        "Addressing this area reduces business risk and supports more reliable operations.";
+      const categoryScore = rec
+        ? categoryScoreForRecommendation(rec, categoryScores)
+        : undefined;
+      const riskLevel = rec
+        ? computeInitiativeRiskLevel(rec, categoryScore)
+        : scoreToExecutiveRisk(60);
+      const score = rec
+        ? scoreInitiativePriority({
+            recommendationId: initiative.recommendationId,
+            rec,
+            categoryScore,
+            phaseSortOrder: phase.sortOrder,
+            initiativeSortOrder,
+            hasBlockingDependency: phase.sortOrder > 0 && rec.priority === "critical",
+            hasCompensatingControl: (categoryScore ?? 100) >= 75 && riskLevel === "Critical",
+          })
+        : 0;
+
+      return {
+        id: initiative.recommendationId,
+        score,
+        riskLevel,
+        sortKey: initiative.recommendationId,
+        initiative,
+        rec,
+      };
+    });
+
+    const priorityById = assignExecutivePriorityTiers(phaseInputs);
+
+    for (const item of phaseInputs) {
+      const rec = item.rec;
+      const fields = rec
+        ? resolveInitiativeFields(rec, item.riskLevel)
+        : {
+            businessObjective: `Improve ${item.initiative.title.toLowerCase()} to support business goals.`,
+            whyItMatters:
+              "Addressing this area reduces business risk and supports more reliable operations.",
+            expectedBenefits: ["Improved operational reliability", "Reduced business risk"],
+          };
+
+      const priority = priorityById.get(item.id) ?? "Moderate";
+      const priorityRationale = generatePriorityRationale({
+        riskLevel: item.riskLevel,
+        priority,
+        recommendedPhase: phase.subtitle,
+        title: item.initiative.title,
+        hasBlockingDependency: phase.sortOrder > 0 && item.riskLevel === "Critical",
+        hasCompensatingControl: item.rec ? (categoryScoreForRecommendation(item.rec, categoryScores) ?? 0) >= 75 && item.riskLevel === "Critical" : false,
+      });
 
       initiatives.push({
-        id: initiative.recommendationId,
-        name: initiative.title,
-        businessObjective,
-        whyItMatters,
-        expectedBenefits: rec ? executiveBenefitsForRecommendation(rec) : [
-          "Improved operational reliability",
-          "Reduced business risk",
-        ],
+        id: item.id,
+        name: item.initiative.title,
+        businessObjective: fields.businessObjective,
+        whyItMatters: fields.whyItMatters,
+        expectedBenefits: fields.expectedBenefits,
         recommendedPhase: phase.subtitle,
-        estimatedInvestment: formatInitiativeInvestment(phase, initiative.costProfile),
-        priority: rec ? priorityToExecutiveLevel(rec.priority) : priorityToExecutiveLevel(initiative.priority),
+        estimatedInvestment: formatInitiativeInvestment(phase, item.initiative.costProfile),
+        priority,
+        riskLevel: item.riskLevel,
+        priorityRationale,
       });
     }
   }
@@ -287,41 +278,7 @@ export function buildBusinessValueSnapshot(
   });
 }
 
-export function buildTopBusinessRisks(recommendations: TipRecommendationView[]): string[] {
-  return sortByRecommendationPriority(recommendations)
-    .slice(0, 5)
-    .map((rec) => rec.businessImpact.trim())
-    .filter(Boolean);
-}
-
-export function buildTopOpportunities(
-  recommendations: TipRecommendationView[],
-  roadmap: TechnologyRoadmap,
-): string[] {
-  const fromOutcomes = roadmap.phases
-    .flatMap((phase) => phase.businessOutcomes)
-    .map((outcome) => (outcome.description || outcome.title).trim())
-    .filter(Boolean);
-
-  const fromRecs = sortByRecommendationPriority(recommendations)
-    .slice(0, 3)
-    .map((rec) => rec.executiveNote.trim() || rec.businessImpact.trim())
-    .filter(Boolean);
-
-  const combined = [...fromOutcomes, ...fromRecs];
-  const seen = new Set<string>();
-  const results: string[] = [];
-
-  for (const item of combined) {
-    const key = item.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    results.push(item);
-    if (results.length >= 5) break;
-  }
-
-  return results;
-}
+export { buildTopBusinessRisks, buildTopOpportunities } from "@/lib/reports/tip-risks-opportunities";
 
 export function buildExecutiveSummaryFallback(
   clientName: string,
@@ -351,7 +308,7 @@ export function buildExecutiveReportFields(input: {
     assessmentDate: input.assessmentDate ?? null,
     overallBusinessRisk: computeOverallBusinessRisk(input.currentScore, input.riskSummary),
     topBusinessRisks: buildTopBusinessRisks(input.recommendations),
-    topOpportunities: buildTopOpportunities(input.recommendations, input.technologyRoadmap),
+    topOpportunities: buildTopOpportunities(input.recommendations, input.technologyRoadmap, input.categorySummaries),
     categoryFindings: buildCategoryFindings(
       input.categorySummaries,
       null,
@@ -360,6 +317,7 @@ export function buildExecutiveReportFields(input: {
     strategicInitiatives: buildStrategicInitiatives(
       input.technologyRoadmap,
       input.recommendations,
+      input.categorySummaries,
     ),
     phaseInvestmentRows: buildPhaseInvestmentRows(input.technologyRoadmap),
     businessValueSnapshot: buildBusinessValueSnapshot(
@@ -409,13 +367,13 @@ export function enrichTipPlanForExecutiveReport(plan: TipPlanDetail) {
       plan.profile?.profile.riskSummary,
     ),
     topBusinessRisks: buildTopBusinessRisks(plan.recommendations),
-    topOpportunities: buildTopOpportunities(plan.recommendations, roadmap),
+    topOpportunities: buildTopOpportunities(plan.recommendations, roadmap, categorySummaries),
     categoryFindings: buildCategoryFindings(
       categorySummaries,
       plan.profile?.profile.pillarSnapshots,
       plan.recommendations,
     ),
-    strategicInitiatives: buildStrategicInitiatives(roadmap, plan.recommendations),
+    strategicInitiatives: buildStrategicInitiatives(roadmap, plan.recommendations, categorySummaries),
     phaseInvestmentRows: buildPhaseInvestmentRows(roadmap),
     businessValueSnapshot: buildBusinessValueSnapshot(
       categorySummaries,

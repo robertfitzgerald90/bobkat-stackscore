@@ -1,8 +1,8 @@
 import React from "react";
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { buildExecutiveSummaryFallback } from "@/lib/reports/tip-executive-report";
+import { formatInvestmentSummaryForPdf } from "@/lib/reports/tip-investment-summary";
 import { registerPdfFonts } from "@/lib/pdf/shared";
 import { COLORS } from "@/lib/pdf/shared/colors";
 import type { TipReportData } from "@/lib/pdf/types";
@@ -24,28 +24,16 @@ import { TIP_PDF_SPACING, TIP_PDF_TYPOGRAPHY } from "@/lib/pdf/tip/tokens";
 registerPdfFonts();
 
 function formatTotalInvestment(data: TipReportData): string {
-  const parts: string[] = [];
-  if (data.oneTimeInvestmentTotal > 0) {
-    parts.push(formatCurrency(data.oneTimeInvestmentTotal));
-  }
-  if (data.monthlyRecurringTotal > 0) {
-    parts.push(`${formatCurrency(data.monthlyRecurringTotal)}/month`);
-  }
-  return parts.length > 0 ? parts.join(" · ") : "Scoped during engagement";
+  return formatInvestmentSummaryForPdf(data.investmentSummary).totalInvestment;
 }
 
 function formatRecurringServices(data: TipReportData): string {
-  if (data.monthlyRecurringTotal <= 0) {
-    return "No new recurring services are identified in this roadmap.";
-  }
-  return `Estimated ${formatCurrency(data.monthlyRecurringTotal)}/month (${formatCurrency(data.annualRecurringTotal)}/year) in ongoing managed services and operational support introduced by approved phases.`;
+  const formatted = formatInvestmentSummaryForPdf(data.investmentSummary);
+  return [formatted.recurringServices, formatted.combinedRecurring].filter(Boolean).join("\n\n");
 }
 
 function formatOneTimeInvestments(data: TipReportData): string {
-  if (data.oneTimeInvestmentTotal <= 0) {
-    return "No one-time project investments are identified in this roadmap.";
-  }
-  return `Estimated ${formatCurrency(data.oneTimeInvestmentTotal)} in one-time professional services, equipment, and project delivery across approved phases.`;
+  return formatInvestmentSummaryForPdf(data.investmentSummary).oneTimeInvestments;
 }
 
 export function TipReportDocument({ data }: { data: TipReportData }) {
