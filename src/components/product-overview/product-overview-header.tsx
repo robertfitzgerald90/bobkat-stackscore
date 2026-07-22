@@ -16,7 +16,7 @@ export function ProductOverviewHeader() {
     <header className={STICKY_SITE_HEADER_CLASS}>
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <BrandLogo size={32} variant="stacked" className="shrink-0" />
+          <BrandLogo size={32} variant="stacked" placement="header" priority className="shrink-0" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-foreground">StackScore Interactive Demo</p>
             <p className="hidden text-xs text-muted-foreground sm:block">

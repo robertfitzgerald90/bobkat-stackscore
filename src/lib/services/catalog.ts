@@ -1,4 +1,5 @@
 import { ClipboardCheck, Compass, Globe, Home, ShieldCheck, type LucideIcon } from "lucide-react";
+import { publicAssetUrl } from "@/lib/branding/assets";
 import type { ServicesCtaKey } from "./cta";
 
 export const SERVICES_JOURNEY_KEYWORDS = ["Operate", "Plan", "Grow"] as const;
@@ -71,7 +72,7 @@ export const FEATURED_PRODUCT: FeaturedProductItem = {
   secondaryCtaLabel: "Learn More",
   secondaryCta: "assessmentLearnMore",
   image: {
-    src: "/services/technology-maturity-assessment.png",
+    src: publicAssetUrl("/services/technology-maturity-assessment.png"),
     alt: "Bobkat IT Technology Maturity Assessment overview",
   },
   icon: ClipboardCheck,
@@ -97,7 +98,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
     secondaryCta: "generalConsultation",
     imagePosition: "right",
     image: {
-      src: "/services/managed-it-services.png",
+      src: publicAssetUrl("/services/managed-it-services.png"),
       alt: "Bobkat IT Managed IT Services service preview",
     },
     icon: ShieldCheck,
@@ -121,7 +122,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
     secondaryCta: "generalConsultation",
     imagePosition: "left",
     image: {
-      src: "/services/strategic-it-consulting.png",
+      src: publicAssetUrl("/services/strategic-it-consulting.png"),
       alt: "Bobkat IT Strategic IT Consulting service preview",
     },
     icon: Compass,
@@ -145,7 +146,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
     secondaryCta: "generalConsultation",
     imagePosition: "right",
     image: {
-      src: "/services/digital-presence.png",
+      src: publicAssetUrl("/services/digital-presence.png"),
       alt: "Bobkat IT Digital Presence — websites, client portals, and executive dashboards",
     },
     icon: Globe,
@@ -168,7 +169,7 @@ export const RESIDENTIAL_SERVICE: ResidentialServiceItem = {
   primaryCtaLabel: "Schedule Residential Support",
   primaryCta: "residentialSupport",
   image: {
-    src: "/services/residential-it-support.png",
+    src: publicAssetUrl("/services/residential-it-support.png"),
     alt: "Bobkat IT Residential IT Support service preview",
   },
   icon: Home,

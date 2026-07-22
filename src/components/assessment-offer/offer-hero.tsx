@@ -14,7 +14,7 @@ export function OfferHero() {
 
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
         <OfferReveal>
-          <BrandLogo size={44} variant="stacked" className="mb-6 sm:mb-8" />
+          <BrandLogo size={44} variant="stacked" placement="auth" className="mb-6 sm:mb-8" />
         </OfferReveal>
 
         <OfferReveal delayMs={60}>

@@ -67,6 +67,7 @@ function SidebarNav({
           href={logoHref}
           size={collapsed ? 36 : 44}
           variant="sidebar"
+          placement="sidebar"
           showText={!collapsed}
           collapsed={collapsed}
         />

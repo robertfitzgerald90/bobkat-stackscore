@@ -23,7 +23,7 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
           href="/assessment-invitation"
           className="min-w-0 shrink transition-opacity hover:opacity-90"
         >
-          <BrandLogo size={32} showText className="gap-2" />
+          <BrandLogo size={32} showText placement="header" priority className="gap-2" />
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Assessment journey">

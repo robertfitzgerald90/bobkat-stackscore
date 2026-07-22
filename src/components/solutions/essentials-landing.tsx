@@ -6,18 +6,19 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 const ESSENTIALS_IMAGES = {
   hero: {
-    src: "/solutions/essentials/Essentials Banner Image.png",
+    src: publicAssetUrl("/solutions/essentials/Essentials Banner Image.png"),
     alt: "Bobkat Essentials secure technology solution for small businesses",
   },
   benefits: {
-    src: "/solutions/essentials/CTA Cards - Essentials.png",
+    src: publicAssetUrl("/solutions/essentials/CTA Cards - Essentials.png"),
     alt: "Four benefits of Bobkat Essentials including reliability, security, proactive support, and scalability",
   },
   process: {
-    src: "/solutions/essentials/The Process - Essentials.png",
+    src: publicAssetUrl("/solutions/essentials/The Process - Essentials.png"),
     alt: "Bobkat IT four-step process from technology assessment through ongoing support",
   },
 } as const;

@@ -56,7 +56,7 @@ export type CommunicationBrandConfig = {
 };
 
 export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
-  primaryLogoUrl: EMAIL_BRAND_ASSETS.bobkatItLogoNavy,
+  primaryLogoUrl: EMAIL_BRAND_ASSETS.bobkatItLogo,
   secondaryLogoUrl: null,
   primaryColor: BRAND.primaryColor,
   secondaryColor: BRAND.secondaryColor,

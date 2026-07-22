@@ -60,7 +60,7 @@ export function DemoHeader() {
           )}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <BrandLogo size={32} variant="stacked" className="shrink-0" />
+            <BrandLogo size={32} variant="stacked" placement="header" priority className="shrink-0" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="truncate text-sm font-semibold text-foreground">

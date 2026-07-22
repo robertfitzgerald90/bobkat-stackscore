@@ -285,7 +285,7 @@ export function TechnologySnapshotWizard() {
   return (
     <div className="w-full max-w-2xl">
       <header className="mb-6 flex flex-col items-center gap-3 text-center">
-        <BrandLogo size={48} />
+        <BrandLogo size={48} variant="stacked" placement="auth" />
         <div className="min-w-0 space-y-1">
           <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
             Technology Snapshot

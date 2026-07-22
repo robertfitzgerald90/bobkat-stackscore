@@ -11,6 +11,7 @@ import type { Priority } from "../src/generated/prisma/client";
 import { generateTipReportPdf } from "../src/lib/pdf/generate";
 import type { TipReportData } from "../src/lib/pdf/types";
 import { buildExecutiveReportFields } from "../src/lib/reports/tip-executive-report";
+import { buildTipInvestmentSummary } from "../src/lib/reports/tip-investment-summary";
 import type {
   RoadmapPhaseResult,
   TechnologyRoadmap,
@@ -155,6 +156,7 @@ function buildFixture(name: string, phases: RoadmapPhaseResult[]): TipReportData
     journeyPhaseLabel: "Improve",
     journeyProgressPercent: 42,
     includeInternalDetails: false,
+    investmentSummary: buildTipInvestmentSummary(roadmap, recommendations),
     ...buildExecutiveReportFields({
       categorySummaries: [
         { name: "Security & Compliance", score: 52, ratingLabel: "At Risk", hasRecommendations: true },

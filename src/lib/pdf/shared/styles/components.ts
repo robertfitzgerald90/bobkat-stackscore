@@ -338,7 +338,7 @@ export const pdfComponentStyles = StyleSheet.create({
     alignItems: "center",
   },
   pageHeaderLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  pageHeaderLogo: { width: 24, height: 24, objectFit: "contain" },
+  pageHeaderLogo: { width: 35, height: 24, objectFit: "contain" },
   pageHeaderBrand: {
     fontSize: 8,
     fontFamily: "Helvetica-Bold",
@@ -437,7 +437,7 @@ export const pdfComponentStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
-  coverBrandLogo: { width: 44, height: 44, objectFit: "contain" },
+  coverBrandLogo: { width: 64, height: 44, objectFit: "contain" },
   coverPreparedBy: {
     fontSize: 10,
     fontFamily: "Helvetica-Bold",

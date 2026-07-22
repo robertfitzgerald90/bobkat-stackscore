@@ -17,18 +17,19 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 const PROFESSIONAL_IMAGES = {
   hero: {
-    src: "/solutions/professional/Professional Banner Image.png",
+    src: publicAssetUrl("/solutions/professional/Professional Banner Image.png"),
     alt: "Bobkat Professional strategic technology solution for growing businesses",
   },
   benefits: {
-    src: "/solutions/professional/CTA Cards Professional.png",
+    src: publicAssetUrl("/solutions/professional/CTA Cards Professional.png"),
     alt: "Four benefits of Bobkat Professional including strategic partnership, advanced security, centralized management, and growth",
   },
   process: {
-    src: "/solutions/professional/Our Process Professional.png",
+    src: publicAssetUrl("/solutions/professional/Our Process Professional.png"),
     alt: "Bobkat IT four-step Professional process from technology assessment through ongoing support",
   },
 } as const;

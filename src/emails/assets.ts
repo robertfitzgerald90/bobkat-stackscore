@@ -1,4 +1,5 @@
 import { getBaseUrl } from "@/lib/url/base-url";
+import { bobkatLogoSrc } from "@/lib/branding/assets";
 
 /** Absolute URL for a public asset used in HTML emails (required by Gmail, Outlook, Apple Mail). */
 export function getEmailAssetUrl(assetPath: string): string {
@@ -13,6 +14,5 @@ export function getEmailAssetUrl(assetPath: string): string {
 }
 
 export const EMAIL_BRAND_ASSETS = {
-  bobkatItLogoNavy: getEmailAssetUrl("/branding/bobkat-it-logo-navy.png"),
-  bobkatItLogo: getEmailAssetUrl("/branding/bobkat-it-logo.png"),
+  bobkatItLogo: getEmailAssetUrl(bobkatLogoSrc()),
 } as const;

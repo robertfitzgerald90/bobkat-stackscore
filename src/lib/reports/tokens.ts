@@ -1,4 +1,5 @@
 import { BRAND } from "@/lib/branding";
+import { bobkatLogoSrc } from "@/lib/branding/assets";
 import { REPORT_PRINT_ROOT_CLASS } from "@/lib/reports/types";
 
 export { REPORT_PRINT_ROOT_CLASS };
@@ -9,7 +10,7 @@ export const REPORT_TOKENS = {
   lightBackground: BRAND.lightBackground,
   coverPadding: "2.5rem",
   sectionGap: "2rem",
-  logoPath: "/branding/bobkat-it-logo-navy.png",
+  logoPath: bobkatLogoSrc(),
 } as const;
 
 export const REPORT_PRIORITY_BADGE_CLASS = {

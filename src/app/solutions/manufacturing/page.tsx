@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ManufacturingLanding } from "@/components/solutions/manufacturing-landing";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 export const metadata: Metadata = {
   title: "Bobkat Manufacturing | Industrial IT & Operational Technology Solutions",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/solutions/manufacturing/Manufacturing Banner Image.png",
+        url: publicAssetUrl("/solutions/manufacturing/Manufacturing Banner Image.png"),
         width: 1280,
         height: 640,
         alt: "Bobkat Manufacturing technology solution for industrial operations",

@@ -1,4 +1,5 @@
 import { ClipboardCheck, Factory, LifeBuoy, MonitorCheck, Network, ShieldCheck, type LucideIcon } from "lucide-react";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 export type SolutionFamily = {
   id: "essentials" | "professional" | "manufacturing";
@@ -21,7 +22,7 @@ export type SolutionMethodStep = {
 };
 
 export const SOLUTIONS_HERO_IMAGE = {
-  src: "/solutions/Offerings HERO Image.png",
+  src: publicAssetUrl("/solutions/Offerings HERO Image.png"),
   alt: "Bobkat IT standardized solution families overview",
 } as const;
 
@@ -35,7 +36,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     ctaLabel: "Explore Essentials",
     href: "/solutions/essentials",
     image: {
-      src: "/solutions/Essentials Image.png",
+      src: publicAssetUrl("/solutions/Essentials Image.png"),
       alt: "Bobkat Essentials solution preview",
     },
     icon: ShieldCheck,
@@ -49,7 +50,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     ctaLabel: "Explore Professional",
     href: "/solutions/professional",
     image: {
-      src: "/solutions/Professional Image.png",
+      src: publicAssetUrl("/solutions/Professional Image.png"),
       alt: "Bobkat Professional solution preview",
     },
     icon: MonitorCheck,
@@ -63,7 +64,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     ctaLabel: "Explore Manufacturing",
     href: "/solutions/manufacturing",
     image: {
-      src: "/solutions/Manufacturing Image.png",
+      src: publicAssetUrl("/solutions/Manufacturing Image.png"),
       alt: "Bobkat Manufacturing solution preview",
     },
     icon: Factory,

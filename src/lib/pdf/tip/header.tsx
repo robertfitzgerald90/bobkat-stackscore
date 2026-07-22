@@ -39,7 +39,7 @@ export function PdfTipReportHeader({
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image src={getPdfLogoPath()} style={{ width: 20, height: 20, objectFit: "contain" }} />
+        <Image src={getPdfLogoPath()} style={{ width: 29, height: 20, objectFit: "contain" }} />
         <View>
           <Text
             style={{

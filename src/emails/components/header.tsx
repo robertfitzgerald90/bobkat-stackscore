@@ -1,6 +1,7 @@
 import React from "react";
 import { Img, Section, Text } from "@react-email/components";
 import { DEFAULT_COMMUNICATION_BRAND, type CommunicationBrandConfig } from "@/lib/communications/brand-types";
+import { bobkatLogoDimensionsForPlacement } from "@/lib/branding/assets";
 import { emailTokens } from "@/emails/tokens";
 
 type HeaderProps = {
@@ -10,6 +11,7 @@ type HeaderProps = {
 export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
   const tagline =
     brand.componentSettings.header?.tagline ?? `Powered by ${brand.companyName}`;
+  const logoDimensions = bobkatLogoDimensionsForPlacement("email");
 
   return (
     <Section
@@ -34,13 +36,13 @@ export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
               <Img
                 src={brand.primaryLogoUrl}
                 alt={`${brand.companyName} logo`}
-                width={48}
-                height={48}
+                width={logoDimensions.width}
+                height={logoDimensions.height}
                 style={{
                   display: "block",
-                  borderRadius: "8px",
                   border: 0,
                   outline: "none",
+                  objectFit: "contain",
                 }}
               />
             </td>

@@ -86,7 +86,7 @@ export function AppHeader({
             )}
           </Button>
         ) : null}
-        <BrandLogo showText={false} size={32} className="shrink-0 lg:hidden" />
+        <BrandLogo showText={false} size={32} placement="header" priority className="shrink-0 lg:hidden" />
         <div className="min-w-0 lg:hidden">
           <h1
             className={

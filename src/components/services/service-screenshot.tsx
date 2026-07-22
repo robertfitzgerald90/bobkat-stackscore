@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { publicAssetUrl } from "@/lib/branding/assets";
 import { cn } from "@/lib/utils";
 
 export const SERVICE_SCREENSHOT_FRAME_CLASS =
@@ -30,7 +31,7 @@ export function ServiceScreenshot({
     <div className={cn(SERVICE_SCREENSHOT_FRAME_CLASS, className)}>
       <div className={SIZE_CLIP_CLASSES[size]}>
         <Image
-          src={src}
+          src={publicAssetUrl(src)}
           alt={alt}
           fill
           sizes={

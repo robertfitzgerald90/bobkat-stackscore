@@ -18,18 +18,19 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 const MANUFACTURING_IMAGES = {
   hero: {
-    src: "/solutions/manufacturing/Manufacturing Banner Image.png",
+    src: publicAssetUrl("/solutions/manufacturing/Manufacturing Banner Image.png"),
     alt: "Bobkat Manufacturing technology solution for industrial operations",
   },
   benefits: {
-    src: "/solutions/manufacturing/CTA Cards Manufacturing.png",
+    src: publicAssetUrl("/solutions/manufacturing/CTA Cards Manufacturing.png"),
     alt: "Four benefits of Bobkat Manufacturing including operational reliability, IT and OT integration, complete visibility, and business continuity",
   },
   process: {
-    src: "/solutions/manufacturing/Our Process Manufacturing.png",
+    src: publicAssetUrl("/solutions/manufacturing/Our Process Manufacturing.png"),
     alt: "Bobkat IT four-step Manufacturing process from technology assessment through ongoing support",
   },
 } as const;

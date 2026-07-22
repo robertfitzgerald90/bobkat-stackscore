@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
+import { bobkatLogoSrc } from "@/lib/branding/assets";
 import { getBaseUrl } from "@/lib/url/base-url";
 import "./globals.css";
 
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
   title: "Bobkat StackScore",
   description: "Technology maturity assessments for small and medium businesses",
   icons: {
-    icon: "/branding/bobkat-it-logo-navy.png",
-    apple: "/branding/bobkat-it-logo-navy.png",
+    icon: bobkatLogoSrc(),
+    apple: bobkatLogoSrc(),
   },
 };
 

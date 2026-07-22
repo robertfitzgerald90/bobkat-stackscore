@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ProfessionalLanding } from "@/components/solutions/professional-landing";
+import { publicAssetUrl } from "@/lib/branding/assets";
 
 export const metadata: Metadata = {
   title: "Bobkat Professional | Strategic IT for Growing Businesses",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/solutions/professional/Professional Banner Image.png",
+        url: publicAssetUrl("/solutions/professional/Professional Banner Image.png"),
         width: 1280,
         height: 640,
         alt: "Bobkat Professional strategic technology solution for growing businesses",

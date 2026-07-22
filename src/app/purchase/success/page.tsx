@@ -23,7 +23,7 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
     <main className="min-h-screen bg-muted/30 px-4 py-8 sm:px-6 sm:py-12">
       <PurchaseSuccessTracker hasCheckoutSession={Boolean(sessionId)} />
       <div className="mx-auto flex min-w-0 max-w-lg flex-col items-center gap-6 text-center">
-        <BrandLogo size={48} />
+        <BrandLogo size={48} variant="stacked" placement="auth" />
         <Card className="w-full min-w-0 shadow-sm">
           <CardHeader className="items-center space-y-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">

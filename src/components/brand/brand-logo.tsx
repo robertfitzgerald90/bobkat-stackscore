@@ -2,9 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { BRAND } from "@/lib/branding";
+import {
+  BOBKAT_IT_LOGO,
+  bobkatLogoDimensionsForHeight,
+  bobkatLogoHeightForPlacement,
+  bobkatLogoSrc,
+  type BobkatLogoPlacement,
+} from "@/lib/branding/assets";
 import { cn } from "@/lib/utils";
 
 type BrandLogoProps = {
@@ -14,28 +19,24 @@ type BrandLogoProps = {
   collapsed?: boolean;
   className?: string;
   href?: string;
+  placement?: BobkatLogoPlacement;
+  priority?: boolean;
 };
 
 export function BrandLogo({
-  size = 40,
+  size,
   showText = true,
   variant = "default",
   collapsed = false,
   className,
   href,
+  placement = "default",
+  priority = false,
 }: BrandLogoProps) {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
   const isSidebar = variant === "sidebar";
   const isStacked = variant === "stacked";
-  const isMidnight =
-    mounted && (resolvedTheme === "midnight" || resolvedTheme === "dark");
-  const logoSrc = isMidnight || isSidebar
-    ? "/branding/bobkat-it-logo.png"
-    : "/branding/bobkat-it-logo-navy.png";
+  const logoHeight = size ?? bobkatLogoHeightForPlacement(placement);
+  const { width: logoWidth, height: displayHeight } = bobkatLogoDimensionsForHeight(logoHeight);
   const displayText = showText && !collapsed;
 
   const content = (
@@ -48,12 +49,13 @@ export function BrandLogo({
       )}
     >
       <Image
-        src={logoSrc}
-        alt={`${BRAND.companyName} logo`}
-        width={size}
-        height={size}
-        className="shrink-0 rounded-md"
-        priority
+        src={bobkatLogoSrc()}
+        alt={BOBKAT_IT_LOGO.alt}
+        width={logoWidth}
+        height={displayHeight}
+        className="h-auto w-auto max-w-full shrink-0 object-contain"
+        style={{ maxHeight: logoHeight }}
+        priority={priority || placement === "header" || placement === "auth"}
       />
       {displayText ? (
         <div className={cn("min-w-0", isStacked && "space-y-0.5")}>
@@ -93,3 +95,6 @@ export function BrandLogo({
 
   return content;
 }
+
+/** Preferred export name for Bobkat IT corporate branding. */
+export const BobkatLogo = BrandLogo;
