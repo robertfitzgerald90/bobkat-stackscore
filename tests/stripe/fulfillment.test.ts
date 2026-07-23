@@ -39,17 +39,22 @@ describe("fulfillment helpers", () => {
 });
 
 describe("checkout metadata contract", () => {
-  it("uses productType in checkout session route", async () => {
+  it("uses productType in assessment checkout metadata builder", async () => {
     const { readFileSync } = await import("node:fs");
     const { resolve } = await import("node:path");
     const checkout = readFileSync(
       resolve(process.cwd(), "src/app/api/checkout/create-session/route.ts"),
       "utf8",
     );
-    expect(checkout).toContain("productType");
+    const metadataBuilder = readFileSync(
+      resolve(process.cwd(), "src/lib/stripe/assessment-checkout.ts"),
+      "utf8",
+    );
+
     expect(checkout).toContain("buildAssessmentCheckoutMetadata");
-    expect(checkout).toContain("service");
-    expect(checkout).toContain("platform");
-    expect(checkout).not.toContain('product: "technology_assessment"');
+    expect(metadataBuilder).toContain("productType");
+    expect(metadataBuilder).toContain("service");
+    expect(metadataBuilder).toContain("platform");
+    expect(metadataBuilder).not.toContain('product: "technology_assessment"');
   });
 });

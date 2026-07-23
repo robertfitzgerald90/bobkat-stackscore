@@ -19,7 +19,8 @@ describe("assessment invitation landing page", () => {
     expect(landing).toContain("InvitationAboutBobkat");
     expect(landing).toContain("InvitationFinalCta");
     expect(hero).toContain("TechnologySnapshotLink");
-    expect(hero).toContain("Been Invited to Assess Your Technology");
+    expect(hero).toContain("Been Invited to Assess Your");
+    expect(hero).toContain("marketing-text-gradient");
     expect(hero).toContain("Start My Free Technology Snapshot");
     expect(hero).not.toContain("AssessmentPurchaseButton");
     expect(hero).toContain("max-w-7xl");

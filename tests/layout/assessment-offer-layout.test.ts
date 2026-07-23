@@ -18,8 +18,11 @@ describe("assessment offer landing page", () => {
     expect(landing).toContain("OfferTimeline");
     expect(landing).toContain("OfferWhy");
     expect(landing).toContain("OfferFinalCta");
-    expect(hero).toContain("Know Exactly Where Your Technology Stands");
-    expect(hero).toContain("Start My Assessment");
+    expect(hero).toContain("Know Exactly Where Your");
+    expect(hero).toContain("Technology");
+    expect(hero).toContain("Stands");
+    expect(hero).toContain("Purchase Technology Maturity Assessment");
+    expect(hero).toContain("buildAssessmentInvitationHref");
     expect(hero).toContain("AssessmentExecutiveOverviewPreview");
     expect(hero).not.toContain("OFFER_HERO_SCREENSHOT");
   });
@@ -104,6 +107,6 @@ describe("assessment offer landing page", () => {
     );
 
     expect(hero).toContain("max-w-7xl");
-    expect(hero).toContain("text-balance");
+    expect(hero).toContain("MARKETING_HERO_TITLE");
   });
 });

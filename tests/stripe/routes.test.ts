@@ -18,8 +18,14 @@ describe("Stripe integration routes", () => {
     );
 
     expect(checkout).toContain("checkout.sessions.create");
-    expect(checkout).toContain("productType");
-    expect(checkout).toContain("TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE");
+    expect(checkout).toContain("buildAssessmentCheckoutMetadata");
+
+    const assessmentCheckout = readFileSync(
+      resolve(process.cwd(), "src/lib/stripe/assessment-checkout.ts"),
+      "utf8",
+    );
+    expect(assessmentCheckout).toContain("productType");
+    expect(assessmentCheckout).toContain("TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE");
 
     const config = readFileSync(
       resolve(process.cwd(), "src/lib/stripe/config.ts"),
