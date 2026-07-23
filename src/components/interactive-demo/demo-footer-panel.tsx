@@ -6,12 +6,14 @@ import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { trackDemoCtaClicked } from "@/lib/analytics/interactive-demo-events";
 import { DEMO_SHORT_DISCLAIMER } from "@/lib/interactive-demo/content";
 import { buildDemoHref } from "@/lib/interactive-demo/routes";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { MARKETING_PANEL, MARKETING_SECTION_COMPACT } from "@/lib/marketing/tokens";
 
 const FOOTER_LINKS = [
-  { href: "/solutions", label: "Solutions" },
-  { href: "/services", label: "Services" },
-  { href: "/assessment-offer", label: "Assessment" },
+  { href: BOBKAT_IT_URLS.solutions, label: "Solutions", external: true as const },
+  { href: BOBKAT_IT_URLS.services, label: "Services", external: true as const },
+  { href: STACKSCORE_PUBLIC_ROUTES.assessmentOffer, label: "Assessment", external: false as const },
   { href: buildDemoHref({ source: "footer" }), label: "Interactive Demo", demo: true as const },
 ] as const;
 
@@ -65,6 +67,14 @@ export function OfferFooterWithDemo() {
                 >
                   {link.label}
                 </Link>
+              ) : "external" in link && link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </a>
               ) : (
                 <Link
                   key={link.label}

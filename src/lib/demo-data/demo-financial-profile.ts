@@ -78,7 +78,7 @@ export const DEFAULT_DEMO_COMPANY_PROFILE: DemoCompanyProfile = {
 };
 
 export const DEFAULT_DEMO_PRICING: DemoPricingAssumptions = {
-  managedEndpointMonthlyPerDeviceCents: 1_500,
+  managedEndpointMonthlyPerDeviceCents: 5_000,
   m365MonthlyPerUserCents: 2_200,
   passwordManagerMonthlyPerUserCents: 300,
   securityTrainingAnnualPerUserCents: 1_500,
@@ -86,7 +86,7 @@ export const DEFAULT_DEMO_PRICING: DemoPricingAssumptions = {
   uptimeKumaHostingAnnualCents: 60_000,
   networkReplacementValueCents: 750_000,
   domainDnsAnnualCents: 30_000,
-  strategicConsultingMonthlyCents: 30_000,
+  strategicConsultingMonthlyCents: 50_000,
   annualProjectReserveCents: 1_635_000,
 };
 

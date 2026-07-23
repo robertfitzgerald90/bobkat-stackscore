@@ -218,7 +218,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
           "Lifecycle Planning",
           "Budget Forecasting",
           "Risk Monitoring",
-          "Strategic IT Consulting starting at $300/month",
+          "Strategic IT Consulting starting at $500/month",
         ],
       },
     ],
@@ -271,7 +271,7 @@ export const DEMO_REPORT_PREVIEWS: Record<string, DemoReportPreview> = {
         bullets: [
           `Phase 1: $7,500 one-time · $${NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly.toLocaleString("en-US")}/month managed endpoint service`,
           "Phase 2: $9,500 one-time · no new monthly recurring",
-          "Phase 3: $2,500 one-time · $300/month Strategic IT Consulting",
+          "Phase 3: $2,500 one-time · $500/month Strategic IT Consulting",
           "Phase 4: $3,500 one-time · no new monthly recurring",
         ],
       },

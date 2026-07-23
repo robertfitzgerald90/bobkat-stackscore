@@ -13,11 +13,14 @@ const PUBLIC_CALLBACK_PREFIXES = [
   "/login",
   "/assessment-offer",
   "/assessment-invitation",
-  "/services",
   "/technology-snapshot",
   "/purchase/success",
   "/forgot-password",
   "/reset-password",
+  "/checkout",
+  "/vcio-offer",
+  "/demo",
+  "/",
 ];
 
 function getSafeCallbackUrl(value: string | null): string {

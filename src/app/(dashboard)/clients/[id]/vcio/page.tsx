@@ -754,7 +754,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <p>$300/month</p>
+            <p>$500/month</p>
             <p className="text-muted-foreground">
               {latestSubscription?.cancelAtPeriodEnd
                 ? "Cancellation is scheduled at the end of the current period."

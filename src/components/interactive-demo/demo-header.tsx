@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 import { Menu } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { DemoEnvironmentBadge } from "@/components/interactive-demo/demo-environment-badge";
@@ -140,13 +140,13 @@ export function DemoHeader() {
                   >
                     Exit Demo
                   </button>
-                  <Link
-                    href="/solutions"
+                  <a
+                    href={BOBKAT_IT_URLS.home}
                     className={cn(buttonVariants({ variant: "ghost" }), "h-10 w-full")}
                     onClick={() => setMobileOpen(false)}
                   >
-                    Bobkat IT homepage
-                  </Link>
+                    Visit Bobkat IT
+                  </a>
                 </div>
               </SheetContent>
             </Sheet>

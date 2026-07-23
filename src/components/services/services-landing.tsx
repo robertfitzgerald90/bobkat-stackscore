@@ -281,7 +281,7 @@ function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
 export function ServicesLanding() {
   return (
     <PublicPageShell>
-      <PublicMarketingNav active="services" />
+      <PublicMarketingNav active="home" />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
           <OfferHeroBackground />

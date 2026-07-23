@@ -1,23 +1,6 @@
-import type { Metadata } from "next";
-import { SolutionsLanding } from "@/components/solutions/solutions-landing";
-import { BRAND } from "@/lib/branding";
+import { permanentRedirect } from "next/navigation";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 
-export const metadata: Metadata = {
-  title: `Bobkat IT Solutions | ${BRAND.companyName}`,
-  description:
-    "Explore Bobkat IT solution families for small businesses, growing organizations, and manufacturing operations.",
-  alternates: {
-    canonical: "/solutions",
-  },
-  openGraph: {
-    title: `Bobkat IT Solutions | ${BRAND.companyName}`,
-    description:
-      "Enterprise thinking, right-sized for your business with standardized Bobkat IT solution families.",
-    url: "/solutions",
-    type: "website",
-  },
-};
-
-export default function SolutionsPage() {
-  return <SolutionsLanding />;
+export default function SolutionsRedirectPage() {
+  permanentRedirect(BOBKAT_IT_URLS.solutions);
 }

@@ -1,5 +1,6 @@
 import { ClipboardCheck, Factory, LifeBuoy, MonitorCheck, Network, ShieldCheck, type LucideIcon } from "lucide-react";
 import { publicAssetUrl } from "@/lib/branding/assets";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 
 export type SolutionFamily = {
   id: "essentials" | "professional" | "manufacturing";
@@ -34,7 +35,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     description:
       "Perfect for organizations with approximately 5-20 employees looking for dependable IT, cybersecurity, Microsoft 365, networking, monitoring, and proactive support.",
     ctaLabel: "Explore Essentials",
-    href: "/solutions/essentials",
+    href: BOBKAT_IT_URLS.solutionsEssentials,
     image: {
       src: publicAssetUrl("/solutions/Essentials Image.png"),
       alt: "Bobkat Essentials solution preview",
@@ -48,7 +49,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     description:
       "Designed for businesses that require advanced security, centralized management, technology planning, and enterprise-inspired IT leadership.",
     ctaLabel: "Explore Professional",
-    href: "/solutions/professional",
+    href: BOBKAT_IT_URLS.solutionsProfessional,
     image: {
       src: publicAssetUrl("/solutions/Professional Image.png"),
       alt: "Bobkat Professional solution preview",
@@ -62,7 +63,7 @@ export const SOLUTION_FAMILIES: SolutionFamily[] = [
     description:
       "Designed for manufacturers, warehouses, and production environments that require secure infrastructure, operational reliability, and business continuity.",
     ctaLabel: "Explore Manufacturing",
-    href: "/solutions/manufacturing",
+    href: BOBKAT_IT_URLS.solutionsManufacturing,
     image: {
       src: publicAssetUrl("/solutions/Manufacturing Image.png"),
       alt: "Bobkat Manufacturing solution preview",

@@ -91,7 +91,7 @@ function MethodStepCard({ step, index }: { step: (typeof SOLUTION_METHOD_STEPS)[
 export function SolutionsLanding() {
   return (
     <PublicPageShell>
-      <PublicMarketingNav active="solutions" />
+      <PublicMarketingNav active="home" />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
           <OfferHeroBackground />

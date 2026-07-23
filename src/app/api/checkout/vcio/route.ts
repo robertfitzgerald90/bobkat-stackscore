@@ -11,14 +11,39 @@ import {
 import { isStaffRole } from "@/lib/api/access";
 import { findBlockingVcioSubscription } from "@/lib/vcio/subscriptions";
 import { getOrCreateStripeCustomerForClient } from "@/lib/vcio/stripe-customers";
-import { VCIO_CHECKOUT_SOURCE } from "@/lib/vcio/constants";
+import {
+  VCIO_CHECKOUT_SOURCE,
+  VCIO_CHECKOUT_SOURCE_BOBKAT,
+} from "@/lib/vcio/constants";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import {
+  STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
+  VCIO_OFFER_SUCCESS_PATH,
+} from "@/lib/marketing/stackscore-routes";
 
-export async function POST() {
+function resolveCheckoutSource(raw: unknown): string {
+  if (typeof raw !== "string") return VCIO_CHECKOUT_SOURCE;
+  const normalized = raw.trim();
+  if (normalized === VCIO_CHECKOUT_SOURCE_BOBKAT) return VCIO_CHECKOUT_SOURCE_BOBKAT;
+  if (normalized === VCIO_CHECKOUT_SOURCE) return VCIO_CHECKOUT_SOURCE;
+  return VCIO_CHECKOUT_SOURCE;
+}
+
+export async function POST(request: Request) {
   try {
     const stripe = getStripe();
     const priceId = requireVcioPriceId();
     const appUrl = getAppUrl();
     const user = await resolveSessionUserFromDb();
+
+    let requestBody: { source?: string } = {};
+    try {
+      requestBody = (await request.json()) as { source?: string };
+    } catch {
+      requestBody = {};
+    }
+
+    const checkoutSource = resolveCheckoutSource(requestBody.source);
 
     let clientId: string | undefined;
     let userId: string | undefined;
@@ -58,14 +83,20 @@ export async function POST() {
     const environment = process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ? "live" : "test";
     const metadata = {
       productType: STACKSCORE_VCIO_PRODUCT_TYPE,
-      service: "vcio",
+      service: "strategic_it_consulting",
       serviceType: STACKSCORE_VCIO_SERVICE_TYPE,
-      source: VCIO_CHECKOUT_SOURCE,
+      platform: "stackscore",
+      source: checkoutSource,
       environment,
       ...(clientId ? { clientId } : {}),
       ...(userId ? { userId } : {}),
       ...(purchaserEmail ? { purchaserEmail } : {}),
     };
+
+    const cancelUrl =
+      checkoutSource === VCIO_CHECKOUT_SOURCE_BOBKAT
+        ? BOBKAT_IT_URLS.strategicItConsulting
+        : `${appUrl}${STRATEGIC_IT_CONSULTING_CHECKOUT_PATH}?checkout=cancelled`;
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -73,8 +104,8 @@ export async function POST() {
       customer_email: stripeCustomerId ? undefined : undefined,
       billing_address_collection: "auto",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/vcio-offer/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/vcio-offer?checkout=cancelled`,
+      success_url: `${appUrl}${VCIO_OFFER_SUCCESS_PATH}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl,
       metadata,
       subscription_data: {
         metadata,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { VcioOfferLanding } from "@/components/vcio/vcio-offer-landing";
-import { VCIO_OFFER_PATH } from "@/lib/marketing/stackscore-routes";
+import { STRATEGIC_IT_CONSULTING_CHECKOUT_PATH } from "@/lib/marketing/stackscore-routes";
 import { buildAppUrl } from "@/lib/url/base-url";
 
 const title = "Strategic IT Consulting by Bobkat IT | StackScore Checkout";
@@ -11,16 +11,16 @@ export const metadata: Metadata = {
   title,
   description,
   robots: { index: false, follow: false },
-  alternates: { canonical: VCIO_OFFER_PATH },
+  alternates: { canonical: STRATEGIC_IT_CONSULTING_CHECKOUT_PATH },
   openGraph: {
     title,
     description,
-    url: VCIO_OFFER_PATH,
+    url: STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
     type: "website",
   },
 };
 
-export default function VcioOfferPage() {
+export default function StrategicItConsultingCheckoutPage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -36,7 +36,7 @@ export default function VcioOfferPage() {
       price: "500",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
-      url: buildAppUrl(VCIO_OFFER_PATH),
+      url: buildAppUrl(STRATEGIC_IT_CONSULTING_CHECKOUT_PATH),
     },
   };
 
@@ -46,7 +46,7 @@ export default function VcioOfferPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <VcioOfferLanding returnPath={VCIO_OFFER_PATH} navActive="checkout" />
+      <VcioOfferLanding returnPath={STRATEGIC_IT_CONSULTING_CHECKOUT_PATH} navActive="checkout" />
     </>
   );
 }

@@ -59,7 +59,7 @@ export async function VcioSubscriptionBillingPanel({ clientId }: { clientId: str
           <div className="rounded-xl border border-border/60 p-4">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Current Plan</p>
             <p className="mt-2 text-xl font-semibold">StackScore vCIO</p>
-            <p className="text-sm text-muted-foreground">$300/month</p>
+            <p className="text-sm text-muted-foreground">$500/month</p>
           </div>
           <div className="rounded-xl border border-border/60 p-4">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Payment Status</p>

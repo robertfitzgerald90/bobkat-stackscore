@@ -17,8 +17,8 @@ const managedEndpointMonthlyDollars =
  * All journey sections derive from this object — do not scatter pricing elsewhere.
  *
  * Pricing notes:
- * - Managed IT: $15/device/month × 60 devices = $900/month (catalog-aligned)
- * - Strategic IT Consulting: VCIO_MONTHLY_AMOUNT_CENTS ($300/month)
+ * - Managed IT: $50/device/month × 60 devices = $3,000/month (catalog-aligned)
+ * - Strategic IT Consulting: VCIO_MONTHLY_AMOUNT_CENTS ($500/month)
  * - One-time amounts are SMB-realistic implementation / project fees
  */
 export const NORTHSTAR_INTERACTIVE_DEMO_SCENARIO: InteractiveDemoScenario = {

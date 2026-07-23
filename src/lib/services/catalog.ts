@@ -107,7 +107,7 @@ export const CORE_SERVICES: ServiceCatalogItem[] = [
     id: "strategic-it-consulting",
     keyword: "Plan",
     title: "Strategic IT Consulting",
-    price: "Starting at $300/month",
+    price: "Starting at $500/month",
     description:
       "Align technology with your business goals through strategic planning, roadmaps, budgeting, and executive technology guidance.",
     highlights: [
@@ -208,7 +208,7 @@ export const SERVICES_PRICING: ServicePricingItem[] = [
   },
   {
     title: "Strategic IT Consulting",
-    price: "Starting at $300/month",
+    price: "Starting at $500/month",
     description:
       "Technology strategy, executive roadmaps, budgeting, vendor planning, and quarterly reviews.",
     ctaLabel: "Explore Strategic Consulting",

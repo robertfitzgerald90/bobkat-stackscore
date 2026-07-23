@@ -16,7 +16,7 @@ type SolutionPlaceholderPageProps = {
 export function SolutionPlaceholderPage({ title, description }: SolutionPlaceholderPageProps) {
   return (
     <div className="min-h-screen bg-background">
-      <PublicMarketingNav active="solutions" />
+      <PublicMarketingNav active="home" />
       <main>
         <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:py-24">
           <OfferHeroBackground />

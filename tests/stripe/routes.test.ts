@@ -39,6 +39,8 @@ describe("Stripe integration routes", () => {
     );
 
     expect(authConfig).toContain('pathname.startsWith("/assessment-offer")');
+    expect(authConfig).toContain('pathname.startsWith("/checkout")');
+    expect(authConfig).toContain('pathname === "/"');
     expect(authConfig).toContain('pathname.startsWith("/vcio-offer")');
     expect(authConfig).toContain('pathname.startsWith("/activate-account")');
     expect(authConfig).toContain('pathname.startsWith("/purchase/success")');

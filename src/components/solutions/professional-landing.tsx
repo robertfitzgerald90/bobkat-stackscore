@@ -128,7 +128,7 @@ function IconCard({
 export function ProfessionalLanding() {
   return (
     <PublicPageShell>
-      <PublicMarketingNav active="solutions" />
+      <PublicMarketingNav active="home" />
       <main>
         <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16 lg:pb-32 lg:pt-20">
           <OfferHeroBackground />

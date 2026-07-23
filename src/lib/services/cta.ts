@@ -1,3 +1,9 @@
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import {
+  STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
+  VCIO_OFFER_PATH,
+} from "@/lib/marketing/stackscore-routes";
+
 export const SERVICES_CTA_DESTINATIONS = {
   snapshot: {
     label: "Start My Free Technology Snapshot",
@@ -12,16 +18,24 @@ export const SERVICES_CTA_DESTINATIONS = {
     href: "/assessment-offer",
   },
   solutionsLanding: {
-    label: "Explore All Solutions",
-    href: "/solutions",
+    label: "Learn about solutions",
+    href: BOBKAT_IT_URLS.solutions,
+  },
+  servicesLanding: {
+    label: "Learn about services",
+    href: BOBKAT_IT_URLS.services,
   },
   assessmentLearnMore: {
     label: "Learn More",
     href: "/assessment-offer",
   },
   vcioOffer: {
-    label: "Explore Technology Advisory",
-    href: "/vcio-offer",
+    label: "Get Strategic IT Consulting",
+    href: STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
+  },
+  strategicItConsultingLearnMore: {
+    label: "Learn about Strategic IT Consulting",
+    href: BOBKAT_IT_URLS.strategicItConsulting,
   },
   digitalPresenceExplore: {
     label: "Explore Digital Presence",
@@ -36,8 +50,8 @@ export const SERVICES_CTA_DESTINATIONS = {
     href: "https://cal.com/bobkat-it/managed-it-consultation",
   },
   strategicConsultingExplore: {
-    label: "Explore Strategic Consulting",
-    href: "https://cal.com/bobkat-it/bobkat-it-free-consult",
+    label: "Learn about Strategic IT Consulting",
+    href: BOBKAT_IT_URLS.strategicItConsulting,
   },
   managedItConsultation: {
     label: "Schedule Consultation",
@@ -58,6 +72,14 @@ export const SERVICES_CTA_DESTINATIONS = {
   residentialSupport: {
     label: "Book Residential Support",
     href: "https://cal.com/bobkat-it/30min",
+  },
+  bobkatHome: {
+    label: "Visit Bobkat IT",
+    href: BOBKAT_IT_URLS.home,
+  },
+  legacyVcioOffer: {
+    label: "Explore Technology Advisory",
+    href: VCIO_OFFER_PATH,
   },
 } as const;
 

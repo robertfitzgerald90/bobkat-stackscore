@@ -2,9 +2,12 @@
  * Canonical Interactive Demo routes and deep-link section mapping.
  */
 
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+
 export const INTERACTIVE_DEMO_PATH = "/demo";
 export const ASSESSMENT_OFFER_PATH = "/assessment-offer";
-export const SOLUTIONS_HOME_PATH = "/solutions";
+/** Demo exit links back to Bobkat IT solutions marketing (StackScore no longer hosts /solutions). */
+export const SOLUTIONS_HOME_PATH = BOBKAT_IT_URLS.solutions;
 
 /** Short path segments → in-page section IDs */
 export const DEMO_DEEP_LINK_SECTIONS = {

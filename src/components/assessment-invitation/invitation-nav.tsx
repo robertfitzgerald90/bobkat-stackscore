@@ -4,6 +4,8 @@ import { TechnologySnapshotLink } from "@/components/assessment-offer/technology
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { buildTechnologySnapshotUrl } from "@/lib/assessment-invitation/snapshot-url";
 import { PUBLIC_MARKETING_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { MARKETING_NAV_LINK } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
@@ -27,20 +29,20 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Assessment journey">
-          <Link
-            href="/solutions"
+          <a
+            href={BOBKAT_IT_URLS.solutions}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Solutions
-          </Link>
-          <Link
-            href="/services"
+          </a>
+          <a
+            href={BOBKAT_IT_URLS.services}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Services
-          </Link>
+          </a>
           <Link
-            href="/assessment-offer"
+            href={STACKSCORE_PUBLIC_ROUTES.assessmentOffer}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Assessment

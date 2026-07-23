@@ -2,6 +2,7 @@ import { CheckCircle2 } from "lucide-react";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { InteractiveDemoButton } from "@/components/interactive-demo/interactive-demo-button";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 import { ASSESSMENT_DEMO_HIGHLIGHTS } from "@/lib/interactive-demo/content";
 
 export function DemoAssessmentServicePanel() {
@@ -32,7 +33,7 @@ export function DemoAssessmentServicePanel() {
             label="Explore Demo"
             placement="services_assessment_panel"
             section="scores"
-            returnTo="/services#technology-maturity-assessment"
+            returnTo={BOBKAT_IT_URLS.services}
             variant="outline"
             className="h-10 px-5 text-sm sm:w-auto"
           />

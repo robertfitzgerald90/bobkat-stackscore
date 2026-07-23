@@ -21,15 +21,15 @@ export const authConfig = {
       const userRole = auth?.user?.role;
       const { pathname } = request.nextUrl;
       const isPublic =
+        pathname === "/" ||
         pathname.startsWith("/login") ||
         pathname.startsWith("/activate-account") ||
         pathname.startsWith("/technology-snapshot") ||
-        pathname.startsWith("/solutions") ||
         pathname.startsWith("/assessment-offer") ||
         pathname.startsWith("/assessment-invitation") ||
         pathname.startsWith("/demo") ||
         pathname.startsWith("/product-overview") ||
-        pathname.startsWith("/services") ||
+        pathname.startsWith("/checkout") ||
         pathname.startsWith("/vcio-offer") ||
         pathname.startsWith("/forgot-password") ||
         pathname.startsWith("/reset-password") ||

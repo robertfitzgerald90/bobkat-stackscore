@@ -5,6 +5,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getStripe } from "@/lib/stripe/client";
 import { isStackScoreVcioProduct } from "@/lib/stripe/products";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import {
+  STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
+} from "@/lib/marketing/stackscore-routes";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { buttonVariants } from "@/components/ui/button";
 import { PublicPageShell } from "@/components/public/public-page-shell";
@@ -54,8 +58,8 @@ export default async function VcioCheckoutSuccessPage({ searchParams }: PageProp
         title="We could not verify this Checkout Session"
         message="The success link is missing a Checkout Session ID. Please contact Bobkat IT if this issue continues."
       >
-        <Link href="/vcio-offer" className={buttonVariants({ variant: "outline" })}>
-          Return to vCIO Offer
+        <Link href={STRATEGIC_IT_CONSULTING_CHECKOUT_PATH} className={buttonVariants({ variant: "outline" })}>
+          Return to Strategic IT Consulting Checkout
         </Link>
       </StatusPanel>
     );
@@ -74,8 +78,8 @@ export default async function VcioCheckoutSuccessPage({ searchParams }: PageProp
         title="We could not verify this Checkout Session"
         message="This Checkout Session could not be retrieved securely. Please contact Bobkat IT if this issue continues."
       >
-        <Link href="/vcio-offer" className={buttonVariants({ variant: "outline" })}>
-          Return to vCIO Offer
+        <Link href={STRATEGIC_IT_CONSULTING_CHECKOUT_PATH} className={buttonVariants({ variant: "outline" })}>
+          Return to Strategic IT Consulting Checkout
         </Link>
       </StatusPanel>
     );
@@ -88,9 +92,9 @@ export default async function VcioCheckoutSuccessPage({ searchParams }: PageProp
         title="Invalid Checkout Session"
         message="This Checkout Session is not associated with StackScore vCIO."
       >
-        <Link href="/services" className={buttonVariants({ variant: "outline" })}>
-          Explore Services
-        </Link>
+        <a href={BOBKAT_IT_URLS.services} className={buttonVariants({ variant: "outline" })}>
+          Learn about Bobkat IT Services
+        </a>
       </StatusPanel>
     );
   }
@@ -120,11 +124,11 @@ export default async function VcioCheckoutSuccessPage({ searchParams }: PageProp
     return (
       <StatusPanel
         icon={<Clock className="h-7 w-7" aria-hidden />}
-        title="Welcome to StackScore vCIO"
-        message="Your subscription has been received. We are preparing your StackScore advisory workspace and will contact you to schedule your initial strategy session."
+        title="Strategic IT Consulting subscription received"
+        message="Your subscription has been received and StackScore access is being prepared. Check your email for account activation or login instructions. If the email does not arrive within a few minutes, check spam or contact Bobkat IT."
       >
         <Link href="/vcio-offer" className={buttonVariants({ variant: "outline" })}>
-          Return to vCIO Offer
+          Return to Offer Page
         </Link>
         <a
           href={SERVICES_CTA_DESTINATIONS.generalConsultation.href}
@@ -143,11 +147,11 @@ export default async function VcioCheckoutSuccessPage({ searchParams }: PageProp
   return (
     <StatusPanel
       icon={<CheckCircle2 className="h-7 w-7" aria-hidden />}
-      title="Welcome to StackScore vCIO"
+      title="Strategic IT Consulting is ready"
       message={
         isActive
-          ? "Your subscription is active. Your StackScore advisory workspace is ready for onboarding and strategy planning."
-          : "Your subscription is being processed. Your advisory workspace will update as soon as Stripe confirms the payment state."
+          ? "Your subscription is active and StackScore access is ready. Check your email for any remaining activation steps, then continue onboarding."
+          : "Your subscription is being processed. Check your email for access instructions while Stripe confirms payment."
       }
     >
       <Link

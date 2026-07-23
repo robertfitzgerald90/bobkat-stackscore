@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -27,7 +26,11 @@ import {
   VCIO_OFFER_PORTAL_IMAGE,
   type VcioOfferImage,
 } from "@/lib/vcio/offer-content";
+import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 import { cn } from "@/lib/utils";
+import {
+  VCIO_OFFER_PATH,
+} from "@/lib/marketing/stackscore-routes";
 
 const receiveItems = [
   "Business Reviews",
@@ -202,10 +205,16 @@ function FeatureGrid() {
   );
 }
 
-export function VcioOfferLanding() {
+export function VcioOfferLanding({
+  returnPath = VCIO_OFFER_PATH,
+  navActive = "checkout",
+}: {
+  returnPath?: string;
+  navActive?: "assessment" | "demo" | "checkout" | "home";
+}) {
   return (
     <PublicPageShell>
-      <PublicMarketingNav active="services" />
+      <PublicMarketingNav active={navActive} />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
           <OfferHeroBackground />
@@ -213,31 +222,37 @@ export function VcioOfferLanding() {
             <div>
               <OfferReveal>
                 <p className="w-fit rounded-full border border-primary/15 bg-primary/[0.06] px-4 py-1.5 text-sm font-medium uppercase tracking-wider text-primary">
-                  Ongoing Technology Advisory
+                  Strategic IT Consulting by Bobkat IT
                 </p>
               </OfferReveal>
               <OfferReveal delayMs={70}>
                 <h1 className="mt-8 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
-                  Turn Your Living Execution Plan Into an Ongoing Strategy
+                  Technology planning with StackScore included
                 </h1>
               </OfferReveal>
               <OfferReveal delayMs={120}>
                 <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  StackScore vCIO gives your business continuous technology planning, executive
-                  reporting, roadmap management, and direct access to a strategic IT advisor.
+                  Strategic IT Consulting by Bobkat IT gives your business continuous technology
+                  planning, executive reporting, roadmap management, and direct access to a
+                  strategic advisor. StackScore is included as your technology planning portal.
                 </p>
               </OfferReveal>
               <OfferReveal delayMs={170}>
                 <div className="mt-8 rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-                  <p className="text-sm font-medium text-muted-foreground">StackScore vCIO</p>
-                  <p className="mt-2 text-4xl font-semibold tracking-tight text-primary">$300/month</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Strategic IT Consulting by Bobkat IT
+                  </p>
+                  <p className="mt-2 text-4xl font-semibold tracking-tight text-primary">Starting at $500/month</p>
                   <p className="mt-1 text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                    <VcioCheckoutButton className="h-11 w-full px-6 text-base sm:w-auto" />
+                    <VcioCheckoutButton
+                      label="Get Strategic IT Consulting"
+                      className="h-11 w-full px-6 text-base sm:w-auto"
+                    />
                     <InteractiveDemoButton
                       label="Explore the Interactive Demo"
                       placement="stackscore_page"
-                      returnTo="/vcio-offer"
+                      returnTo={returnPath}
                       variant="outline"
                       className="h-11 w-full px-6 text-base sm:w-auto"
                     />
@@ -264,7 +279,7 @@ export function VcioOfferLanding() {
 
         <DemoStackscoreExperienceSection
           placement="stackscore_page"
-          returnTo="/vcio-offer"
+          returnTo={returnPath}
         />
 
         <section className="px-4 py-16 sm:px-6 sm:py-20 md:py-24">
@@ -321,7 +336,7 @@ export function VcioOfferLanding() {
               description="Ongoing advisory for organizations that need executive technology guidance without hiring a full-time CIO."
             />
             <div className="mx-auto max-w-3xl rounded-2xl border border-primary/20 bg-card p-6 shadow-sm sm:p-8">
-              <p className="text-4xl font-semibold tracking-tight text-primary">$300/month</p>
+              <p className="text-4xl font-semibold tracking-tight text-primary">Starting at $500/month</p>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                 {pricingIncludes.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm">
@@ -387,7 +402,7 @@ export function VcioOfferLanding() {
           headline="Start Turning Your Roadmap Into Momentum"
           supportingText="Subscribe to StackScore vCIO and begin building a steady rhythm for technology planning, reporting, and executive guidance."
         >
-          <VcioCheckoutButton label="Start StackScore vCIO" className="h-11 w-full px-8 text-base sm:w-auto" />
+          <VcioCheckoutButton label="Get Strategic IT Consulting" className="h-11 w-full px-8 text-base sm:w-auto" />
           <ServicesCtaLink
             cta="generalConsultation"
             label="Schedule a Consultation"
@@ -395,13 +410,13 @@ export function VcioOfferLanding() {
             variant="outline"
             placement="vcio_offer_final"
           />
-          <Link
-            href="/services"
+          <a
+            href={BOBKAT_IT_URLS.services}
             className={cn(buttonVariants({ variant: "link" }), "mt-1 h-auto px-0")}
           >
-            Explore all services
+            Learn about Bobkat IT services
             <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
-          </Link>
+          </a>
         </OfferCtaPanel>
       </main>
       <OfferFooter />

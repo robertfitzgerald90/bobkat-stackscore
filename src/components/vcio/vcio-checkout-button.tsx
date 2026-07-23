@@ -24,7 +24,16 @@ export function VcioCheckoutButton({
   async function startCheckout() {
     setLoading(true);
     try {
-      const response = await fetch("/api/checkout/vcio", { method: "POST" });
+      const source =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("source") ?? undefined
+          : undefined;
+
+      const response = await fetch("/api/checkout/vcio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(source ? { source } : {}),
+      });
       const data = (await response.json()) as VcioCheckoutResponse;
 
       if (!response.ok || !data.url) {
