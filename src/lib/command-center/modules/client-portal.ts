@@ -15,10 +15,10 @@ export function registerClientPortalCommands(): void {
     {
       id: "nav:customer:assessment-dashboard",
       category: "navigation",
-      title: "Assessment Dashboard",
-      subtitle: "Your assessment workspace",
+      title: "Executive Briefing",
+      subtitle: "Your personalized technology intelligence briefing",
       icon: "LayoutDashboard",
-      keywords: ["dashboard", "assessment", "home"],
+      keywords: ["dashboard", "briefing", "executive", "home"],
       permissions: { roles: ["client"], requiresClient: true },
       favoriteKey: "nav:customer:assessment-dashboard",
       resolveHrefFromContext: (context) => {

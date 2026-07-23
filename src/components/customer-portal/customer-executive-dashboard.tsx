@@ -12,20 +12,26 @@ import {
 } from "lucide-react";
 import {
   ClientEmptyState,
-  ClientMetricCard,
   ClientNextActionCard,
-  ClientPageHeader,
   ClientPageShell,
-  ClientScoreHero,
   ClientSectionHeader,
 } from "@/components/client-ui";
+import { ExecutiveBriefingPanel } from "@/components/executive-os/executive-briefing-panel";
+import { ExecutiveKpiCard } from "@/components/executive-os/executive-kpi-card";
 import { BookingButton } from "@/components/support/booking-button";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
-import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
+import { EXECUTIVE_OS_PILLAR_ROW, EXECUTIVE_OS_PRIORITY_ROW } from "@/lib/executive-os/tokens";
+import { buildExecutiveBriefing } from "@/lib/executive-os/briefing";
+import {
+  confidenceFromScore,
+  executiveKpiLabel,
+  executiveRiskLabel,
+} from "@/lib/executive-os/business-language";
 import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
+import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS, getRating } from "@/lib/scoring";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -40,6 +46,26 @@ type CustomerExecutiveDashboardProps = {
   companyName: string;
 };
 
+function pillarIntelligenceDescription(
+  score: number | null,
+  businessQuestion: string,
+  openRecommendationCount: number,
+): string {
+  if (score === null) return businessQuestion;
+  if (openRecommendationCount > 0) {
+    return `${openRecommendationCount} open ${openRecommendationCount === 1 ? "priority" : "priorities"} may affect this area. ${businessQuestion}`;
+  }
+  if (score >= 80) return "Performing well against business expectations.";
+  if (score >= 65) return "Stable, with room to strengthen resilience and consistency.";
+  return "Elevated business exposure — review recommended actions.";
+}
+
+function trendFromDelta(delta: number | null): "up" | "down" | "neutral" {
+  if (delta === null || delta === 0) return "neutral";
+  return delta > 0 ? "up" : "down";
+}
+
+/** Customer home — Executive Briefing (formerly Assessment Dashboard). */
 export function CustomerExecutiveDashboard({
   detail,
   companyName,
@@ -82,20 +108,21 @@ export function CustomerExecutiveDashboard({
 
   const welcomeName = client.primaryContactName?.split(" ")[0] ?? "there";
   const historicalAssessments = scoreTrend.filter((point) => point.assessmentId);
+  const scoreSparkline = scoreTrend
+    .map((point) => point.overallScore)
+    .filter((value): value is number => typeof value === "number");
+
+  const briefing = buildExecutiveBriefing(detail, companyName, welcomeName);
 
   return (
     <ClientPageShell>
-      <ClientPageHeader
-        eyebrow="Assessment Dashboard"
-        title={`Welcome back, ${welcomeName}`}
-        description={`${companyName} — your technology health at a glance, what to review next, and the actions that matter most right now.`}
-      />
+      <ExecutiveBriefingPanel briefing={briefing} />
 
       {!hasCompletedAssessment && !assessmentInProgress ? (
         <ClientEmptyState
           icon={ClipboardList}
-          title="Start your Technology Maturity Assessment"
-          description="Complete the assessment to receive your StackScore, executive report, prioritized recommendations, and a clear view of your technology health."
+          title="Your executive briefing begins with an assessment"
+          description="Complete the Technology Maturity Assessment to receive your StackScore, executive report, and strategic priorities — translated into business language you can act on."
           nextStep="Begin the assessment when you are ready."
           action={
             <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
@@ -122,7 +149,7 @@ export function CustomerExecutiveDashboard({
 
       {hasCompletedAssessment && nextAction ? (
         <ClientNextActionCard
-          eyebrow="Assessment complete"
+          eyebrow="Recommended next step"
           title={nextAction.label}
           description={nextAction.description}
           meta={
@@ -149,87 +176,89 @@ export function CustomerExecutiveDashboard({
       ) : null}
 
       {hasCompletedAssessment ? (
-        <ClientScoreHero
-          score={score}
-          maturityLabel={rating ? RATING_LABELS[rating] : profile.maturityTierLabel}
-          sublabel={
-            profile.lastAssessedAt
-              ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
-              : "Complete your assessment"
-          }
-          scoreClassName={score !== null ? getScoreTextColorClass(score) : undefined}
-        />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <ExecutiveKpiCard
+            label="Technology Health"
+            value={score ?? "—"}
+            sublabel={rating ? RATING_LABELS[rating] : "Complete your assessment"}
+            description="Your overall technology readiness for business operations."
+            trend={trendFromDelta(detail.scoreDeltaSincePrevious)}
+            trendLabel={
+              detail.scoreDeltaSincePrevious !== null && detail.scoreDeltaSincePrevious !== 0
+                ? `${detail.scoreDeltaSincePrevious > 0 ? "+" : ""}${detail.scoreDeltaSincePrevious} pts`
+                : undefined
+            }
+            confidence={confidenceFromScore(score)}
+            riskLevel={executiveRiskLabel(score)}
+            sparkline={scoreSparkline}
+            emphasizeClassName={score !== null ? getScoreTextColorClass(score) : undefined}
+          />
+          <ExecutiveKpiCard
+            label="Projected Improvement"
+            value={journeyScores.projectedScore ?? "—"}
+            sublabel="With recommended actions"
+            description="Expected StackScore after implementing strategic priorities."
+            emphasizeClassName={
+              journeyScores.projectedScore !== null
+                ? getScoreTextColorClass(journeyScores.projectedScore)
+                : undefined
+            }
+          />
+          <ExecutiveKpiCard
+            label="Business Risk"
+            value={executiveRiskLabel(score)}
+            sublabel={
+              profile.criticalExposureCount > 0
+                ? `${profile.criticalExposureCount} critical exposure${profile.criticalExposureCount === 1 ? "" : "s"}`
+                : "Exposure under review"
+            }
+            description="Estimated operational and security exposure based on current maturity."
+          />
+          <ExecutiveKpiCard
+            label="Operational Readiness"
+            value={profile.maturityTierLabel ?? "—"}
+            sublabel={
+              profile.lastAssessedAt
+                ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
+                : undefined
+            }
+            description="How prepared your technology environment is to support daily operations."
+          />
+        </div>
       ) : null}
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <ClientMetricCard
-          label="Overall StackScore"
-          value={score ?? "—"}
-          emphasizeClassName={score !== null ? getScoreTextColorClass(score) : undefined}
-          sublabel={rating ? RATING_LABELS[rating] : "Complete your assessment"}
-        />
-        <ClientMetricCard
-          label="Projected Improvement"
-          value={journeyScores.projectedScore ?? "—"}
-          emphasizeClassName={
-            journeyScores.projectedScore !== null
-              ? getScoreTextColorClass(journeyScores.projectedScore)
-              : undefined
-          }
-          sublabel="With recommended actions"
-        />
-        <ClientMetricCard
-          label="Technology Health"
-          value={profile.maturityTierLabel ?? "—"}
-          sublabel={
-            profile.lastAssessedAt
-              ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
-              : undefined
-          }
-        />
-        <ClientMetricCard
-          label="Assessment Status"
-          value={
-            hasCompletedAssessment
-              ? "Complete"
-              : assessmentInProgress
-                ? "In Progress"
-                : "Not Started"
-          }
-          sublabel={
-            profile.nextRecommendedAssessmentAt
-              ? `Next review ${formatDisplayDate(profile.nextRecommendedAssessmentAt)}`
-              : undefined
-          }
-        />
-      </div>
 
       {topStrengths.length > 0 ? (
         <section className="space-y-4">
           <ClientSectionHeader
-            title="Top Strengths"
-            description="Technology pillars where your organization is performing well."
+            title="Strengths"
+            description="Areas where your organization demonstrates strong business readiness."
           />
           <div className="grid gap-4 sm:grid-cols-3">
             {topStrengths.map((pillar) => (
-              <Card key={pillar.pillarCode} className={CLIENT_SURFACE_CARD}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{pillar.pillarName}</CardTitle>
-                  <CardDescription>{pillar.maturityTier ?? "Strong performance"}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p
-                    className={cn(
-                      "text-2xl font-semibold tabular-nums",
-                      pillar.percentScore !== null
-                        ? getScoreTextColorClass(pillar.percentScore)
-                        : undefined,
-                    )}
-                  >
-                    {pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
-                  </p>
-                </CardContent>
-              </Card>
+              <ExecutiveKpiCard
+                key={pillar.pillarCode}
+                label={executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
+                value={pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
+                sublabel={pillar.maturityTier ?? "Strong performance"}
+                description={pillarIntelligenceDescription(
+                  pillar.percentScore,
+                  pillar.businessQuestion,
+                  pillar.openRecommendationCount,
+                )}
+                trend={trendFromDelta(pillar.trendDelta)}
+                trendLabel={
+                  pillar.trendDelta !== null && pillar.trendDelta !== 0
+                    ? `${pillar.trendDelta > 0 ? "+" : ""}${pillar.trendDelta}%`
+                    : undefined
+                }
+                confidence={confidenceFromScore(pillar.percentScore)}
+                riskLevel={executiveRiskLabel(pillar.percentScore)}
+                emphasizeClassName={
+                  pillar.percentScore !== null
+                    ? getScoreTextColorClass(pillar.percentScore)
+                    : undefined
+                }
+              />
             ))}
           </div>
         </section>
@@ -238,32 +267,31 @@ export function CustomerExecutiveDashboard({
       {topRisks.length > 0 ? (
         <section className="space-y-4">
           <ClientSectionHeader
-            title="Top Risks"
-            description="Areas that may expose your business to operational or security risk."
+            title="Areas Requiring Attention"
+            description="Domains that may expose the business to operational or continuity risk."
           />
           <div className="grid gap-4 sm:grid-cols-3">
             {topRisks.map((pillar) => (
-              <Card
+              <ExecutiveKpiCard
                 key={pillar.pillarCode}
-                className={cn(CLIENT_SURFACE_CARD, "border-destructive/20")}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{pillar.pillarName}</CardTitle>
-                  <CardDescription>{pillar.maturityTier ?? "Needs attention"}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p
-                    className={cn(
-                      "text-2xl font-semibold tabular-nums",
-                      pillar.percentScore !== null
-                        ? getScoreTextColorClass(pillar.percentScore)
-                        : undefined,
-                    )}
-                  >
-                    {pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
-                  </p>
-                </CardContent>
-              </Card>
+                label={executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
+                value={pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
+                sublabel={pillar.maturityTier ?? "Needs attention"}
+                description={pillarIntelligenceDescription(
+                  pillar.percentScore,
+                  pillar.businessQuestion,
+                  pillar.openRecommendationCount,
+                )}
+                trend={trendFromDelta(pillar.trendDelta)}
+                confidence={confidenceFromScore(pillar.percentScore)}
+                riskLevel={executiveRiskLabel(pillar.percentScore)}
+                emphasizeClassName={
+                  pillar.percentScore !== null
+                    ? getScoreTextColorClass(pillar.percentScore)
+                    : undefined
+                }
+                className="border-warning/20"
+              />
             ))}
           </div>
         </section>
@@ -271,8 +299,8 @@ export function CustomerExecutiveDashboard({
 
       <section className="space-y-4">
         <ClientSectionHeader
-          title="Top Priorities"
-          description="The highest-impact opportunities identified in your assessment."
+          title="Strategic Priorities"
+          description="The highest-impact opportunities identified for your business."
           actions={
             hasRecommendations ? (
               <Link
@@ -287,25 +315,22 @@ export function CustomerExecutiveDashboard({
         {!hasCompletedAssessment ? (
           <ClientEmptyState
             icon={TrendingUp}
-            title="Complete your assessment"
-            description="Finish your assessment to see personalized priorities for your organization."
+            title="Strategic priorities appear after your assessment"
+            description="Finish your Technology Maturity Assessment to receive personalized, business-focused recommendations."
             nextStep="Resume or start the Technology Maturity Assessment."
           />
         ) : priorities.length === 0 ? (
           <ClientEmptyState
             icon={TrendingUp}
-            title="No priorities identified"
-            description="Your assessment did not surface active recommendations at this time."
+            title="No open priorities at this time"
+            description="Your current assessment did not surface active recommendations — a sign of stable technology posture."
             positive
           />
         ) : (
           <div className="space-y-3">
             {priorities.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start gap-3 rounded-xl border border-border/70 bg-card p-4 shadow-sm"
-              >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <div key={item.id} className={EXECUTIVE_OS_PRIORITY_ROW}>
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-medium">{conciseFocusTitle(item.title)}</p>
@@ -317,7 +342,7 @@ export function CustomerExecutiveDashboard({
                     {item.businessImpact || item.description}
                   </p>
                   <p className="text-xs font-medium text-foreground">
-                    +{item.estimatedImpactPoints} StackScore points estimated improvement
+                    Estimated business impact: +{item.estimatedImpactPoints} StackScore points
                   </p>
                 </div>
               </div>
@@ -329,14 +354,14 @@ export function CustomerExecutiveDashboard({
       {historicalAssessments.length > 1 ? (
         <section className="space-y-4">
           <ClientSectionHeader
-            title="Assessment History"
-            description="Previous assessments that shaped your current StackScore."
+            title="Maturity History"
+            description="Previous assessments that shaped your current technology health."
           />
           <div className="space-y-3">
             {historicalAssessments.map((entry) => (
               <div
                 key={`${entry.assessmentId}-${entry.date}`}
-                className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-4 py-3 shadow-sm"
+                className={cn(EXECUTIVE_OS_PILLAR_ROW, "px-4 py-3")}
               >
                 <div className="flex items-start gap-3">
                   <History className="mt-0.5 h-4 w-4 text-muted-foreground" />
@@ -361,7 +386,7 @@ export function CustomerExecutiveDashboard({
                       href={reportHref}
                       className="text-xs font-medium text-primary hover:underline"
                     >
-                      View report
+                      View executive report
                     </Link>
                   ) : null}
                 </div>
@@ -376,11 +401,12 @@ export function CustomerExecutiveDashboard({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="h-4 w-4 text-primary" />
-              Projected Improvement
+              Projected Business Outcome
             </CardTitle>
             <CardDescription>
-              Implementing recommended actions could improve your StackScore from {score} to{" "}
-              {journeyScores.projectedScore} points.
+              Implementing recommended actions could improve technology health from {score} to{" "}
+              {journeyScores.projectedScore} — strengthening operational readiness and reducing
+              business risk.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -389,22 +415,27 @@ export function CustomerExecutiveDashboard({
       {pillarInsights.length > 0 ? (
         <section className="space-y-4">
           <ClientSectionHeader
-            title="Technology Pillars"
-            description="How each area of your technology environment contributes to overall health."
+            title="Technology Health by Domain"
+            description="How each area contributes to overall business readiness — with context, not just scores."
           />
           <div className="grid gap-3 sm:grid-cols-2">
             {pillarInsights.map((pillar) => (
-              <div
-                key={pillar.pillarCode}
-                className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-4 py-3 shadow-sm"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium">{pillar.pillarName}</p>
-                  <p className="text-xs text-muted-foreground">{pillar.maturityTier ?? "—"}</p>
+              <div key={pillar.pillarCode} className={EXECUTIVE_OS_PILLAR_ROW}>
+                <div className="min-w-0 pr-4">
+                  <p className="font-medium">
+                    {executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    {pillarIntelligenceDescription(
+                      pillar.percentScore,
+                      pillar.businessQuestion,
+                      pillar.openRecommendationCount,
+                    )}
+                  </p>
                 </div>
                 <p
                   className={cn(
-                    "text-lg font-semibold tabular-nums",
+                    "shrink-0 text-lg font-semibold tabular-nums",
                     pillar.percentScore !== null
                       ? getScoreTextColorClass(pillar.percentScore)
                       : undefined,
@@ -420,3 +451,6 @@ export function CustomerExecutiveDashboard({
     </ClientPageShell>
   );
 }
+
+/** Preferred name for the Executive Technology OS home view. */
+export const ExecutiveBriefingView = CustomerExecutiveDashboard;

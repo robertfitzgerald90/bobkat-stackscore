@@ -5,6 +5,7 @@
 @import "../styles/tip-executive-report.css";
 @import "../styles/qbr-executive-report.css";
 @import "../styles/public-marketing-theme.css";
+@import "../styles/executive-os-theme.css";
 
 @custom-variant dark (&:is(.dark *, .midnight *));
 

@@ -37,6 +37,7 @@ const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
 
 const CLIENT_SUBROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/clients\/[^/]+\/assessments\/history$/, title: "Assessment History" },
+  { pattern: /^\/clients\/[^/]+\/technology-profile$/, title: "Executive Briefing" },
   { pattern: /^\/clients\/[^/]+\/assessments\/compare$/, title: "Compare Assessments" },
   { pattern: /^\/clients\/[^/]+\/improvement-plan\/[^/]+$/, title: "Improvement Plan" },
   { pattern: /^\/clients\/[^/]+\/quarterly-review\/[^/]+$/, title: "Business Review" },

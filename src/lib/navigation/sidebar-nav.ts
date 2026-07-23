@@ -45,7 +45,7 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
   return [
     {
       href: clientId ? customerAssessmentDashboardPath(clientId) : "/dashboard",
-      label: "Assessment Dashboard",
+      label: "Executive Briefing",
       icon: LayoutDashboard,
     },
     {

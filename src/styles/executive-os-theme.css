@@ -1,0 +1,34 @@
+/**
+ * Executive Technology OS — authenticated application styling.
+ * Scoped to `.executive-os` on the dashboard shell.
+ */
+
+.executive-os {
+  --exec-bg-deep: #050914;
+  --exec-panel-border: rgba(70, 120, 255, 0.12);
+  --exec-glow: rgba(35, 135, 255, 0.08);
+}
+
+.executive-os main.page-content {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(35, 135, 255, 0.07), transparent 55%),
+    linear-gradient(180deg, rgba(5, 9, 20, 0.35) 0%, rgba(7, 17, 31, 0.15) 100%);
+}
+
+.midnight .executive-os main.page-content,
+.dark .executive-os main.page-content {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(35, 135, 255, 0.09), transparent 55%),
+    linear-gradient(180deg, #050914 0%, #07111f 48%, #0a1526 100%);
+}
+
+.executive-os [data-slot="card"]:not([data-size="sm"]) {
+  border-color: var(--exec-panel-border);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    0 0 24px var(--exec-glow);
+}
+
+.executive-os aside.bg-sidebar {
+  box-shadow: inset -1px 0 0 rgba(70, 120, 255, 0.08);
+}

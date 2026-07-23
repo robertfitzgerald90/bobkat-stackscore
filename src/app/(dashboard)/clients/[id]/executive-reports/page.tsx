@@ -102,7 +102,7 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
                   href={customerAssessmentDashboardPath(id)}
                   className={buttonClassName({ variant: "outline" })}
                 >
-                  Back to Assessment Dashboard
+                  Back to Executive Briefing
                 </Link>
               )
             }

@@ -166,7 +166,7 @@ export function AssessmentReportPreview({
   const backHref = isCustomerView
     ? `/clients/${clientId}/technology-profile`
     : `/assessments/${assessmentId}/results`;
-  const backLabel = isCustomerView ? "Back to Assessment Dashboard" : "Back to Results";
+  const backLabel = isCustomerView ? "Back to Executive Briefing" : "Back to Results";
   const bookingUrl = getBookingUrl();
   const hasRecommendations = data.summary.recommendations.length > 0;
   const recommendationsHref = clientRecommendationsPath(clientId);

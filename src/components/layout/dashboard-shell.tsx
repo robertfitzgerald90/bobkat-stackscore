@@ -44,7 +44,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         onSidebarToggle: toggleCollapsed,
       }}
     >
-      <div className="flex h-screen min-h-screen overflow-hidden bg-background">
+      <div className="executive-os flex h-screen min-h-screen overflow-hidden bg-background">
         <AppSidebar role={user.role} clientId={user.clientId} collapsed={hydrated && collapsed} />
         <MobileSidebar
           role={user.role}

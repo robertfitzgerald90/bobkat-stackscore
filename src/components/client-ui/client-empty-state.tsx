@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { EXECUTIVE_OS_BRIEFING_PANEL } from "@/lib/executive-os/tokens";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export function ClientEmptyState({
         CLIENT_SURFACE_CARD,
         "border-dashed",
         positive && "border-success/30 bg-success/5",
+        !positive && EXECUTIVE_OS_BRIEFING_PANEL,
         className,
       )}
     >

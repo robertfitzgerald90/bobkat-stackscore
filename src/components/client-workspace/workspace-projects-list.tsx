@@ -46,9 +46,9 @@ export function WorkspaceProjectsList({ clientId, projects }: WorkspaceProjectsL
         {projects.length === 0 ? (
           <ClientEmptyState
             icon={FolderKanban}
-            title="No projects yet"
-            description="Projects turn recommendations into tracked delivery work with owners, milestones, and StackScore impact."
-            nextStep="Convert a recommendation into a project to begin tracking progress."
+            title="Your technology roadmap is waiting"
+            description="Strategic initiatives appear here once recommendations become tracked delivery work with measurable business impact."
+            nextStep="Complete an assessment to receive your first strategic recommendations."
             positive
             className="border-0 shadow-none"
           />

@@ -12,6 +12,11 @@ import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { BRAND } from "@/lib/branding";
+import {
+  EXECUTIVE_OS_SIDEBAR_LINK,
+  EXECUTIVE_OS_SIDEBAR_LINK_ACTIVE,
+  EXECUTIVE_OS_SIDEBAR_LINK_IDLE,
+} from "@/lib/executive-os/tokens";
 import { cn } from "@/lib/utils";
 
 function NavTooltip({
@@ -94,11 +99,9 @@ function SidebarNav({
               aria-label={item.label}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative flex items-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
-                collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2.5",
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-[var(--shadow-glow)]"
-                  : "text-sidebar-foreground/85 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                EXECUTIVE_OS_SIDEBAR_LINK,
+                collapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-3",
+                active ? EXECUTIVE_OS_SIDEBAR_LINK_ACTIVE : EXECUTIVE_OS_SIDEBAR_LINK_IDLE,
               )}
             >
               {active ? (
@@ -107,7 +110,7 @@ function SidebarNav({
                   aria-hidden
                 />
               ) : null}
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-[1.125rem] w-[1.125rem] shrink-0" />
               {!collapsed ? <span className="truncate">{item.label}</span> : null}
             </Link>
           );

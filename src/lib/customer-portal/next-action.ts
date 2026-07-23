@@ -46,7 +46,7 @@ export function deriveCustomerNextAction(
   }
 
   return {
-    label: "Return to Assessment Dashboard",
+    label: "Return to Executive Briefing",
     description: "Review your current technology health summary and next steps.",
     href: dashboardHref,
   };

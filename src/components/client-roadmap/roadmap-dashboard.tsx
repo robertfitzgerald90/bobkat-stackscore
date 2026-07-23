@@ -104,9 +104,9 @@ export function RoadmapEmptyState({ clientId }: { clientId: string }) {
   return (
     <ClientEmptyState
       icon={Map}
-      title="No living roadmap yet"
-      description="Complete a technology assessment to create a draft roadmap, or generate a Technology Improvement Plan to activate the full implementation journey."
-      nextStep="Review your reports or schedule a strategy session with Bobkat IT."
+      title="Your Technology Roadmap is waiting"
+      description="Complete an assessment to receive your first strategic recommendations — then convert them into a phased execution plan with projected business outcomes."
+      nextStep="Review executive reports or schedule a strategy session with Bobkat IT."
       action={
         <div className="flex flex-col gap-2 sm:flex-row">
           <Link
