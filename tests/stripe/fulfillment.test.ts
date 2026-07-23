@@ -47,7 +47,9 @@ describe("checkout metadata contract", () => {
       "utf8",
     );
     expect(checkout).toContain("productType");
-    expect(checkout).toContain("TECHNOLOGY_ASSESSMENT_PRODUCT_TYPE");
+    expect(checkout).toContain("buildAssessmentCheckoutMetadata");
+    expect(checkout).toContain("service");
+    expect(checkout).toContain("platform");
     expect(checkout).not.toContain('product: "technology_assessment"');
   });
 });

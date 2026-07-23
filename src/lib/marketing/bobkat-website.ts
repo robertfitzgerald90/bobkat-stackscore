@@ -12,6 +12,7 @@ export const BOBKAT_IT_URLS = {
   services: `${BOBKAT_IT_WEBSITE_ORIGIN}/services`,
   solutions: `${BOBKAT_IT_WEBSITE_ORIGIN}/solutions`,
   strategicItConsulting: `${BOBKAT_IT_WEBSITE_ORIGIN}/strategic-it-consulting`,
+  technologyMaturityAssessment: `${BOBKAT_IT_WEBSITE_ORIGIN}/services#technology-maturity-assessment`,
   solutionsEssentials: `${BOBKAT_IT_WEBSITE_ORIGIN}/solutions/essentials`,
   solutionsProfessional: `${BOBKAT_IT_WEBSITE_ORIGIN}/solutions/professional`,
   solutionsManufacturing: `${BOBKAT_IT_WEBSITE_ORIGIN}/solutions/manufacturing`,

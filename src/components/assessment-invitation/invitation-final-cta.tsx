@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { buttonVariants } from "@/components/ui/button";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { cn } from "@/lib/utils";
 
 type InvitationFinalCtaProps = {
@@ -23,11 +25,17 @@ export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProp
           prospectId={invitationContext?.prospectId}
           campaignId={invitationContext?.campaignId}
         />
-        <a
-          href={BOBKAT_IT_URLS.services}
+        <Link
+          href={STACKSCORE_PUBLIC_ROUTES.assessmentOffer}
           className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
         >
-          Learn about Bobkat IT Services
+          Purchase the full assessment
+        </Link>
+        <a
+          href={BOBKAT_IT_URLS.technologyMaturityAssessment}
+          className={cn(buttonVariants({ variant: "ghost" }), "h-11 w-full px-8 text-base sm:w-auto")}
+        >
+          Learn more on Bobkat IT
         </a>
       </div>
     </OfferCtaPanel>

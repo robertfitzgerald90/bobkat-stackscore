@@ -1,6 +1,7 @@
 import { DemoCompactPanel } from "@/components/interactive-demo/demo-compact-panel";
 import { DemoStackscoreExperienceSection } from "@/components/interactive-demo/demo-stackscore-experience-section";
 import { PublicPageShell } from "@/components/public/public-page-shell";
+import type { AssessmentOfferAttribution } from "@/lib/assessment-offer/attribution";
 import { AssessmentOfferShowcase } from "./assessment-offer-showcase";
 import { OfferFeatures } from "./offer-features";
 import { OfferFinalCta } from "./offer-final-cta";
@@ -10,18 +11,22 @@ import { OfferNav } from "./offer-nav";
 import { OfferTimeline } from "./offer-timeline";
 import { OfferWhy } from "./offer-why";
 
-export function AssessmentOfferLanding() {
+export function AssessmentOfferLanding({
+  attribution,
+}: {
+  attribution?: AssessmentOfferAttribution;
+}) {
   return (
     <PublicPageShell>
       <OfferNav />
       <main>
-        <OfferHero />
+        <OfferHero attribution={attribution} />
         <DemoStackscoreExperienceSection
           placement="stackscore_page"
           returnTo="/assessment-offer"
         />
         <AssessmentOfferShowcase />
-        <OfferFeatures />
+        <OfferFeatures attribution={attribution} />
         <OfferTimeline />
         <OfferWhy />
         <section className="px-4 pb-6 sm:px-6">
@@ -35,7 +40,7 @@ export function AssessmentOfferLanding() {
             />
           </div>
         </section>
-        <OfferFinalCta />
+        <OfferFinalCta attribution={attribution} />
       </main>
       <OfferFooter />
     </PublicPageShell>

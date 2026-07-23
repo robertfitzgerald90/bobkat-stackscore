@@ -13,6 +13,10 @@ const ogImagePath = "/images/og/assessment-invitation.png";
 export const metadata: Metadata = {
   title,
   description,
+  robots: {
+    index: false,
+    follow: false,
+  },
   alternates: {
     canonical: "/assessment-invitation",
   },

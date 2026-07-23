@@ -2,10 +2,16 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { buttonVariants } from "@/components/ui/button";
-import { OfferCtaPanel } from "./offer-cta-panel";
+import {
+  buildAssessmentInvitationHref,
+  type AssessmentOfferAttribution,
+} from "@/lib/assessment-offer/attribution";
 import { cn } from "@/lib/utils";
+import { OfferCtaPanel } from "./offer-cta-panel";
 
-export function OfferFinalCta() {
+export function OfferFinalCta({ attribution }: { attribution?: AssessmentOfferAttribution }) {
+  const invitationHref = buildAssessmentInvitationHref(attribution);
+
   return (
     <OfferCtaPanel
       eyebrow="Ready to get started?"
@@ -31,10 +37,17 @@ export function OfferFinalCta() {
           label="Purchase Assessment — $1,500"
           className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
           source="offer_final_cta"
+          attribution={attribution}
         />
         <Link
-          href="#assessment-inclusions"
+          href={invitationHref}
           className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
+        >
+          Continue with an invitation
+        </Link>
+        <Link
+          href="#assessment-inclusions"
+          className={cn(buttonVariants({ variant: "ghost" }), "h-11 w-full px-8 text-base sm:w-auto")}
         >
           Learn More About the Assessment
         </Link>

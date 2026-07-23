@@ -45,7 +45,13 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
             href={STACKSCORE_PUBLIC_ROUTES.assessmentOffer}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
-            Assessment
+            Assessment Offer
+          </Link>
+          <Link
+            href={STACKSCORE_PUBLIC_ROUTES.assessmentInvitation}
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
+          >
+            Assessment Invitation
           </Link>
           <Link
             href={snapshotHref}

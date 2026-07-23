@@ -1,5 +1,6 @@
 import { CalendarCheck, CheckCircle2 } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
+import type { AssessmentOfferAttribution } from "@/lib/assessment-offer/attribution";
 import { OFFER_FEATURES } from "@/lib/assessment-offer/content";
 import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
 import { MARKETING_PANEL, MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
@@ -14,7 +15,7 @@ const reviewSessionPoints = [
   "Define practical next steps",
 ] as const;
 
-function ReviewSessionPanel() {
+function ReviewSessionPanel({ attribution }: { attribution?: AssessmentOfferAttribution }) {
   return (
     <OfferReveal delayMs={320}>
       <div className={cn(MARKETING_PANEL, "mt-10 overflow-hidden p-6 text-primary-foreground sm:p-8 md:p-10")}>
@@ -39,6 +40,7 @@ function ReviewSessionPanel() {
                 label="Purchase Assessment — $1,500"
                 className="h-11 w-full px-6 text-base sm:w-auto"
                 source="offer_review_session"
+                attribution={attribution}
               />
               <p className="mt-3 text-sm text-slate-400">
                 Review scheduling becomes available after purchase and assessment completion.
@@ -62,7 +64,7 @@ function ReviewSessionPanel() {
   );
 }
 
-export function OfferFeatures() {
+export function OfferFeatures({ attribution }: { attribution?: AssessmentOfferAttribution }) {
   return (
     <OfferFeatureGrid
       id="assessment-inclusions"
@@ -71,7 +73,7 @@ export function OfferFeatures() {
       features={OFFER_FEATURES}
       columns={3}
       sectionClassName={cn(MARKETING_SECTION_ALT, MARKETING_SCROLL_MT_CLASS)}
-      afterContent={<ReviewSessionPanel />}
+      afterContent={<ReviewSessionPanel attribution={attribution} />}
     />
   );
 }

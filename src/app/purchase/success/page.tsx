@@ -12,6 +12,7 @@ import { MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 export const metadata: Metadata = {
   title: `Payment Successful | ${BRAND.companyName}`,
   description: "Your Technology Assessment purchase was received.",
+  robots: { index: false, follow: false },
 };
 
 type PageProps = {
