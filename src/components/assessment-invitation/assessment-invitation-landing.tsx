@@ -5,6 +5,7 @@ import { InvitationHero } from "./invitation-hero";
 import { InvitationNav } from "./invitation-nav";
 import { InvitationWhySection } from "./invitation-why-section";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { PublicPageShell } from "@/components/public/public-page-shell";
 import { OfferTimeline } from "@/components/assessment-offer/offer-timeline";
 import {
   INVITATION_TIMELINE,
@@ -22,7 +23,7 @@ export function AssessmentInvitationLanding({
   invitationContext,
 }: AssessmentInvitationLandingProps) {
   return (
-    <div className="min-h-screen bg-background">
+    <PublicPageShell>
       <InvitationNav invitationContext={invitationContext} />
       <main>
         <InvitationHero personalization={personalization} invitationContext={invitationContext} />
@@ -42,6 +43,6 @@ export function AssessmentInvitationLanding({
         <InvitationFinalCta invitationContext={invitationContext} />
       </main>
       <OfferFooter />
-    </div>
+    </PublicPageShell>
   );
 }

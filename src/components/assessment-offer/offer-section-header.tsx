@@ -1,3 +1,9 @@
+import {
+  MARKETING_EYEBROW,
+  MARKETING_SECTION_DESCRIPTION,
+  MARKETING_SECTION_TITLE,
+} from "@/lib/marketing/tokens";
+import { cn } from "@/lib/utils";
 import { OfferReveal } from "./offer-reveal";
 
 type OfferSectionHeaderProps = {
@@ -5,6 +11,7 @@ type OfferSectionHeaderProps = {
   title: string;
   description?: string;
   className?: string;
+  align?: "center" | "left";
 };
 
 export function OfferSectionHeader({
@@ -12,13 +19,18 @@ export function OfferSectionHeader({
   title,
   description,
   className,
+  align = "center",
 }: OfferSectionHeaderProps) {
+  const isCenter = align === "center";
+
   return (
-    <OfferReveal className={className ?? "mb-10 text-center md:mb-14"}>
-      <p className="text-sm font-medium uppercase tracking-wider text-primary">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
+    <OfferReveal className={cn(isCenter ? "mb-12 text-center md:mb-16" : "mb-10 md:mb-12", className)}>
+      <p className={MARKETING_EYEBROW}>{eyebrow}</p>
+      <h2 className={cn(MARKETING_SECTION_TITLE, !isCenter && "mx-0 max-w-none text-left")}>
+        {title}
+      </h2>
       {description ? (
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        <p className={cn(MARKETING_SECTION_DESCRIPTION, !isCenter && "mx-0 max-w-3xl text-left")}>
           {description}
         </p>
       ) : null}

@@ -2,6 +2,7 @@ import { CalendarCheck, CheckCircle2 } from "lucide-react";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { OFFER_FEATURES } from "@/lib/assessment-offer/content";
 import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
+import { MARKETING_PANEL, MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 import { OfferFeatureGrid } from "./offer-feature-grid";
 import { OfferReveal } from "./offer-reveal";
@@ -16,7 +17,7 @@ const reviewSessionPoints = [
 function ReviewSessionPanel() {
   return (
     <OfferReveal delayMs={320}>
-      <div className="mt-8 overflow-hidden rounded-2xl border border-primary/15 bg-[#061426] p-6 text-primary-foreground sm:p-8 md:p-10">
+      <div className={cn(MARKETING_PANEL, "mt-10 overflow-hidden p-6 text-primary-foreground sm:p-8 md:p-10")}>
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
             <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
@@ -69,10 +70,7 @@ export function OfferFeatures() {
       title="Everything you need to move from insight to action"
       features={OFFER_FEATURES}
       columns={3}
-      sectionClassName={cn(
-        MARKETING_SCROLL_MT_CLASS,
-        "bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24",
-      )}
+      sectionClassName={cn(MARKETING_SECTION_ALT, MARKETING_SCROLL_MT_CLASS)}
       afterContent={<ReviewSessionPanel />}
     />
   );

@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BRAND } from "@/lib/branding";
+import { MARKETING_PANEL } from "@/lib/marketing/tokens";
 import { trackSnapshotStart } from "@/lib/analytics/marketing-events";
 import {
   COMPANY_SIZE_OPTIONS,
@@ -283,7 +284,7 @@ export function TechnologySnapshotWizard() {
   );
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className={cn("w-full max-w-2xl", MARKETING_PANEL, "p-6 sm:p-8")}>
       <header className="mb-6 flex flex-col items-center gap-3 text-center">
         <BrandLogo size={48} variant="stacked" placement="auth" />
         <div className="min-w-0 space-y-1">
@@ -307,7 +308,7 @@ export function TechnologySnapshotWizard() {
       <div className="min-w-0">
         {phase === "intro" ? (
           <StepSection>
-            <Card className="shadow-sm">
+            <Card>
               <CardHeader className="text-center">
                 <CardTitle>See where your technology stands</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
@@ -338,7 +339,7 @@ export function TechnologySnapshotWizard() {
 
         {phase === "intake" ? (
           <StepSection>
-            <Card className="shadow-sm">
+            <Card>
             <CardHeader>
               <CardTitle>Tell us about your business</CardTitle>
               <CardDescription>
@@ -457,7 +458,7 @@ export function TechnologySnapshotWizard() {
 
         {phase === "qualifier" ? (
           <StepSection>
-            <Card className="shadow-sm">
+            <Card>
             <CardHeader>
               <CardTitle>How is technology managed?</CardTitle>
               <CardDescription>
@@ -492,7 +493,7 @@ export function TechnologySnapshotWizard() {
 
         {phase === "pillar" && activeQuestion ? (
           <StepSection>
-            <Card className="shadow-sm">
+            <Card>
             <CardHeader className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-wide text-primary">
                 {activeQuestion.pillarName}

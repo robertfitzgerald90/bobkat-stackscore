@@ -3,6 +3,7 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { AssessmentExecutiveOverviewPreview } from "@/components/product-previews/assessment-executive-overview-preview";
 import { BRAND } from "@/lib/branding";
+import { MARKETING_HERO_TITLE } from "@/lib/marketing/tokens";
 import { assessmentExecutiveOverviewDemoData } from "@/lib/demo-data/assessment-executive-overview";
 import { OfferHeroBackground } from "./offer-hero-background";
 import { OfferReveal } from "./offer-reveal";
@@ -18,8 +19,8 @@ export function OfferHero() {
         </OfferReveal>
 
         <OfferReveal delayMs={60}>
-          <h1 className="max-w-5xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.05]">
-            Know Exactly Where Your Technology Stands
+          <h1 className={MARKETING_HERO_TITLE}>
+            Know Exactly Where Your <span className="marketing-text-gradient">Technology</span> Stands
           </h1>
         </OfferReveal>
 

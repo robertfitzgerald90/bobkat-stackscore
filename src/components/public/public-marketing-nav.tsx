@@ -17,7 +17,12 @@ import {
 import { trackDemoCtaClicked } from "@/lib/analytics/interactive-demo-events";
 import { buildDemoHref } from "@/lib/interactive-demo/routes";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
-import { STICKY_SITE_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
+import { PUBLIC_MARKETING_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
+import {
+  MARKETING_BTN_GLASS,
+  MARKETING_NAV_LINK,
+  MARKETING_NAV_LINK_ACTIVE,
+} from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
 type PublicMarketingNavProps = {
@@ -36,14 +41,13 @@ const navLinks = [
   },
 ] as const;
 
-const navLinkClassName =
-  "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+const navLinkClassName = MARKETING_NAV_LINK;
 
 export function PublicMarketingNav({ active }: PublicMarketingNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className={STICKY_SITE_HEADER_CLASS}>
+    <header className={PUBLIC_MARKETING_HEADER_CLASS}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/solutions" className="min-w-0 shrink transition-opacity hover:opacity-90">
           <BrandLogo size={32} showText placement="header" priority className="gap-2" />
@@ -60,8 +64,7 @@ export function PublicMarketingNav({ active }: PublicMarketingNavProps) {
                 className={cn(
                   navLinkClassName,
                   "inline-flex items-center gap-1.5",
-                  isActive &&
-                    "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+                  isActive && MARKETING_NAV_LINK_ACTIVE,
                 )}
                 onClick={isDemo ? () => trackDemoCtaClicked("navigation") : undefined}
               >
@@ -85,12 +88,12 @@ export function PublicMarketingNav({ active }: PublicMarketingNavProps) {
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
-              className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-9 w-9 lg:hidden")}
+              className={cn(buttonVariants({ variant: "outline", size: "icon" }), MARKETING_BTN_GLASS, "h-9 w-9 lg:hidden")}
               aria-label="Open navigation menu"
             >
               <Menu className="h-4 w-4" />
             </SheetTrigger>
-            <SheetContent side="right" className="bg-background text-foreground">
+            <SheetContent side="right" className="border-[rgba(70,120,255,0.12)] bg-[rgba(5,9,20,0.98)] text-foreground">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
@@ -105,8 +108,8 @@ export function PublicMarketingNav({ active }: PublicMarketingNavProps) {
                       className={cn(
                         "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                         isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-foreground hover:bg-muted",
+                          ? MARKETING_NAV_LINK_ACTIVE
+                          : "text-foreground hover:bg-[rgba(35,135,255,0.08)]",
                       )}
                       onClick={() => {
                         if (isDemo) trackDemoCtaClicked("navigation");

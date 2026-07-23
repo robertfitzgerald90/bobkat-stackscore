@@ -6,6 +6,8 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 
 export const metadata: Metadata = {
   title: `Payment Successful | ${BRAND.companyName}`,
@@ -20,7 +22,8 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
   const { session_id: sessionId } = await searchParams;
 
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-8 sm:px-6 sm:py-12">
+    <PublicPageShell variant="auth">
+      <main className={MARKETING_AUTH_SHELL}>
       <PurchaseSuccessTracker hasCheckoutSession={Boolean(sessionId)} />
       <div className="mx-auto flex min-w-0 max-w-lg flex-col items-center gap-6 text-center">
         <BrandLogo size={48} variant="stacked" placement="auth" />
@@ -59,6 +62,7 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
           </CardContent>
         </Card>
       </div>
-    </main>
+      </main>
+    </PublicPageShell>
   );
 }

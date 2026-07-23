@@ -3,11 +3,11 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { buildTechnologySnapshotUrl } from "@/lib/assessment-invitation/snapshot-url";
-import { STICKY_SITE_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
+import { PUBLIC_MARKETING_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
+import { MARKETING_NAV_LINK } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
-const navLinkClassName =
-  "text-sm font-medium text-muted-foreground transition-colors hover:text-foreground";
+const navLinkClassName = MARKETING_NAV_LINK;
 
 type InvitationNavProps = {
   invitationContext?: AssessmentInvitationContext;
@@ -17,7 +17,7 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
   const snapshotHref = buildTechnologySnapshotUrl(invitationContext);
 
   return (
-    <header className={STICKY_SITE_HEADER_CLASS}>
+    <header className={PUBLIC_MARKETING_HEADER_CLASS}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/assessment-invitation"
@@ -29,19 +29,19 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Assessment journey">
           <Link
             href="/solutions"
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Solutions
           </Link>
           <Link
             href="/services"
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Services
           </Link>
           <Link
             href="/assessment-offer"
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-muted/60")}
+            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Assessment
           </Link>

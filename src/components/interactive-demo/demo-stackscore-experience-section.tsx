@@ -4,6 +4,7 @@ import { InteractiveDemoButton } from "@/components/interactive-demo/interactive
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { DEMO_EXPLORE_AREAS, DEMO_SHORT_DISCLAIMER } from "@/lib/interactive-demo/content";
 import { cn } from "@/lib/utils";
+import { MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 
 type DemoStackscoreExperienceSectionProps = {
   placement: string;
@@ -19,7 +20,8 @@ export function DemoStackscoreExperienceSection({
   return (
     <section
       className={cn(
-        "border-t border-border/60 bg-background px-4 py-16 sm:px-6 sm:py-20 md:py-24",
+        "border-t border-[rgba(70,120,255,0.1)]",
+        MARKETING_SECTION_ALT,
         className,
       )}
       aria-labelledby="stackscore-demo-experience-heading"
@@ -70,8 +72,8 @@ export function DemoStackscoreExperienceSection({
               <p className="mt-4 text-xs text-muted-foreground">{DEMO_SHORT_DISCLAIMER}</p>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-gradient-to-br from-primary/[0.08] via-card to-muted/30 p-3 shadow-md sm:p-4">
-              <div className="overflow-hidden rounded-xl border border-border/70 bg-card">
+            <div className="marketing-panel p-3 sm:p-4">
+              <div className="overflow-hidden rounded-xl border border-[rgba(70,120,255,0.12)] bg-[rgba(8,15,28,0.72)]">
                 <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-4 py-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-border" aria-hidden />
                   <span className="h-2.5 w-2.5 rounded-full bg-border" aria-hidden />

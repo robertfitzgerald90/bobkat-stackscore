@@ -17,6 +17,8 @@ import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-
 import { DemoStackscoreExperienceSection } from "@/components/interactive-demo/demo-stackscore-experience-section";
 import { InteractiveDemoButton } from "@/components/interactive-demo/interactive-demo-button";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { buttonVariants } from "@/components/ui/button";
 import { VcioCheckoutButton } from "@/components/vcio/vcio-checkout-button";
@@ -202,7 +204,7 @@ function FeatureGrid() {
 
 export function VcioOfferLanding() {
   return (
-    <div className="min-h-screen scroll-smooth bg-background motion-reduce:scroll-auto">
+    <PublicPageShell>
       <PublicMarketingNav active="services" />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
@@ -272,7 +274,7 @@ export function VcioOfferLanding() {
           </div>
         </section>
 
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section className={MARKETING_SECTION_ALT}>
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="How It Works"
@@ -311,7 +313,7 @@ export function VcioOfferLanding() {
           </div>
         </section>
 
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section className={MARKETING_SECTION_ALT}>
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="Pricing Summary"
@@ -363,7 +365,7 @@ export function VcioOfferLanding() {
           </div>
         </section>
 
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section className={MARKETING_SECTION_ALT}>
           <div className="mx-auto max-w-4xl">
             <OfferSectionHeader
               eyebrow="FAQ"
@@ -403,6 +405,6 @@ export function VcioOfferLanding() {
         </OfferCtaPanel>
       </main>
       <OfferFooter />
-    </div>
+    </PublicPageShell>
   );
 }

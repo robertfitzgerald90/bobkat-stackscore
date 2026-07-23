@@ -1,5 +1,6 @@
 import { DemoCompactPanel } from "@/components/interactive-demo/demo-compact-panel";
 import { DemoStackscoreExperienceSection } from "@/components/interactive-demo/demo-stackscore-experience-section";
+import { PublicPageShell } from "@/components/public/public-page-shell";
 import { AssessmentOfferShowcase } from "./assessment-offer-showcase";
 import { OfferFeatures } from "./offer-features";
 import { OfferFinalCta } from "./offer-final-cta";
@@ -11,7 +12,7 @@ import { OfferWhy } from "./offer-why";
 
 export function AssessmentOfferLanding() {
   return (
-    <div className="min-h-screen bg-background">
+    <PublicPageShell>
       <OfferNav />
       <main>
         <OfferHero />
@@ -37,6 +38,6 @@ export function AssessmentOfferLanding() {
         <OfferFinalCta />
       </main>
       <OfferFooter />
-    </div>
+    </PublicPageShell>
   );
 }

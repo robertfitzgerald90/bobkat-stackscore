@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
+import { PublicPageShell } from "@/components/public/public-page-shell";
 import { TechnologySnapshotWizard } from "@/components/technology-snapshot/technology-snapshot-wizard";
 import { BRAND } from "@/lib/branding";
+import { MARKETING_SECTION_COMPACT } from "@/lib/marketing/tokens";
 
 export const metadata: Metadata = {
   title: `Technology Snapshot | ${BRAND.companyName}`,
@@ -12,9 +14,9 @@ export const metadata: Metadata = {
 
 export default function TechnologySnapshotPage() {
   return (
-    <div className="min-h-screen bg-muted/30">
+    <PublicPageShell>
       <PublicMarketingNav active="assessment" />
-      <main className="px-4 py-6 sm:px-6 sm:py-10">
+      <main className={MARKETING_SECTION_COMPACT}>
         <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col justify-center sm:min-h-[calc(100dvh-5rem)]">
           <Suspense
             fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}
@@ -23,6 +25,6 @@ export default function TechnologySnapshotPage() {
           </Suspense>
         </div>
       </main>
-    </div>
+    </PublicPageShell>
   );
 }

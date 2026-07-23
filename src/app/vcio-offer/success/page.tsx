@@ -7,6 +7,8 @@ import { getStripe } from "@/lib/stripe/client";
 import { isStackScoreVcioProduct } from "@/lib/stripe/products";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { buttonVariants } from "@/components/ui/button";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_AUTH_SHELL, MARKETING_PANEL } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
 type PageProps = {
@@ -25,8 +27,9 @@ function StatusPanel({
   children?: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-background px-4 py-16 sm:px-6">
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-card p-8 text-center shadow-sm">
+    <PublicPageShell variant="auth">
+      <main className={MARKETING_AUTH_SHELL}>
+      <div className={cn(MARKETING_PANEL, "mx-auto max-w-2xl p-8 text-center")}>
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
           {icon}
         </div>
@@ -37,7 +40,8 @@ function StatusPanel({
         </p>
         {children ? <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">{children}</div> : null}
       </div>
-    </main>
+      </main>
+    </PublicPageShell>
   );
 }
 

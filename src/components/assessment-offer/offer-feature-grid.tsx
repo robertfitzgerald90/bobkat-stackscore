@@ -1,5 +1,12 @@
 import type { ReactNode } from "react";
 import type { OfferFeature } from "@/lib/assessment-offer/content";
+import {
+  MARKETING_FEATURE_CARD,
+  MARKETING_ICON_WELL_MD,
+  MARKETING_SECTION,
+  MARKETING_SECTION_ALT,
+} from "@/lib/marketing/tokens";
+import { cn } from "@/lib/utils";
 import { OfferReveal } from "./offer-reveal";
 import { OfferSectionHeader } from "./offer-section-header";
 
@@ -12,6 +19,7 @@ type OfferFeatureGridProps = {
   columns?: 2 | 3 | 4;
   sectionClassName?: string;
   afterContent?: ReactNode;
+  alternateSurface?: boolean;
 };
 
 const columnClassName: Record<NonNullable<OfferFeatureGridProps["columns"]>, string> = {
@@ -27,25 +35,32 @@ export function OfferFeatureGrid({
   description,
   features,
   columns = 3,
-  sectionClassName = "bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24",
+  sectionClassName,
   afterContent,
+  alternateSurface = true,
 }: OfferFeatureGridProps) {
   return (
-    <section id={id} className={sectionClassName}>
-      <div className="mx-auto max-w-6xl">
+    <section
+      id={id}
+      className={cn(
+        alternateSurface ? MARKETING_SECTION_ALT : MARKETING_SECTION,
+        sectionClassName,
+      )}
+    >
+      <div className="relative mx-auto max-w-6xl">
         <OfferSectionHeader eyebrow={eyebrow} title={title} description={description} />
 
-        <div className={`grid gap-4 lg:gap-6 ${columnClassName[columns]}`}>
+        <div className={`grid gap-5 lg:gap-6 ${columnClassName[columns]}`}>
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <OfferReveal key={feature.title} delayMs={index * 50}>
-                <div className="group h-full rounded-xl border border-border/60 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                <div className={MARKETING_FEATURE_CARD}>
+                  <div className={cn(MARKETING_ICON_WELL_MD, "mb-5 text-primary")}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  <h3 className="text-base font-semibold text-foreground sm:text-lg">{feature.title}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
                     {feature.description}
                   </p>
                 </div>

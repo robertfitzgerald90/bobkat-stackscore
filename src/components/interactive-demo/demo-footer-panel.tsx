@@ -6,6 +6,7 @@ import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { trackDemoCtaClicked } from "@/lib/analytics/interactive-demo-events";
 import { DEMO_SHORT_DISCLAIMER } from "@/lib/interactive-demo/content";
 import { buildDemoHref } from "@/lib/interactive-demo/routes";
+import { MARKETING_PANEL, MARKETING_SECTION_COMPACT } from "@/lib/marketing/tokens";
 
 const FOOTER_LINKS = [
   { href: "/solutions", label: "Solutions" },
@@ -16,15 +17,16 @@ const FOOTER_LINKS = [
 
 export function OfferFooterWithDemo() {
   return (
-    <footer className="border-t border-border/60 bg-muted/20">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <div className="rounded-2xl border border-border/70 bg-card p-6 shadow-sm sm:p-8">
+    <footer className="relative border-t border-[rgba(70,120,255,0.1)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(70,120,255,0.2)] to-transparent" />
+      <div className={MARKETING_SECTION_COMPACT}>
+        <div className={cnMarketingPanel()}>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                 Experience StackScore for Yourself
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
                 Explore the interactive client portal using sample business data.
               </p>
               <p className="mt-2 text-xs text-muted-foreground">{DEMO_SHORT_DISCLAIMER}</p>
@@ -34,7 +36,7 @@ export function OfferFooterWithDemo() {
                 label="Launch Demo"
                 placement="footer"
                 variant="default"
-                className="h-11 px-6 text-base shadow-md sm:w-auto"
+                className="h-11 px-6 text-base sm:w-auto"
                 captureCurrentPath
               />
               <ServicesCtaLink
@@ -48,10 +50,10 @@ export function OfferFooterWithDemo() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="mx-auto mt-10 flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
           <nav
             aria-label="Footer"
-            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
+            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
           >
             {FOOTER_LINKS.map((link) =>
               "demo" in link && link.demo ? (
@@ -79,4 +81,8 @@ export function OfferFooterWithDemo() {
       </div>
     </footer>
   );
+}
+
+function cnMarketingPanel() {
+  return `${MARKETING_PANEL} mx-auto max-w-6xl p-6 sm:p-8`;
 }

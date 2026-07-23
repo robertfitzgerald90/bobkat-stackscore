@@ -10,6 +10,10 @@
 export const STICKY_SITE_HEADER_CLASS =
   "sticky top-0 z-50 isolate w-full border-b border-border/60 bg-background shadow-[0_1px_0_0_rgba(15,23,42,0.06)]";
 
+/** Executive marketing header — layered navy with blue edge glow. */
+export const PUBLIC_MARKETING_HEADER_CLASS =
+  "sticky top-0 z-50 isolate w-full border-b border-[rgba(70,120,255,0.12)] bg-[rgba(5,9,20,0.92)] shadow-[0_1px_0_0_rgba(50,120,255,0.06),0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-md";
+
 /** Interactive Demo application shell (header + section tabs as one sticky unit). */
 export const STICKY_DEMO_SHELL_CLASS =
   "sticky top-0 z-50 isolate w-full border-b border-border/70 bg-background shadow-sm";

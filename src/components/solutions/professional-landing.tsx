@@ -16,6 +16,8 @@ import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-ba
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
 import { publicAssetUrl } from "@/lib/branding/assets";
 
@@ -125,7 +127,7 @@ function IconCard({
 
 export function ProfessionalLanding() {
   return (
-    <div className="min-h-screen scroll-smooth bg-background motion-reduce:scroll-auto">
+    <PublicPageShell>
       <PublicMarketingNav active="solutions" />
       <main>
         <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16 lg:pb-32 lg:pt-20">
@@ -221,7 +223,7 @@ export function ProfessionalLanding() {
           </div>
         </section>
 
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section className={MARKETING_SECTION_ALT}>
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="Core Benefits"
@@ -275,7 +277,7 @@ export function ProfessionalLanding() {
           </div>
         </section>
 
-        <section className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+        <section className={MARKETING_SECTION_ALT}>
           <div className="mx-auto max-w-6xl">
             <OfferSectionHeader
               eyebrow="Our Process"
@@ -374,6 +376,6 @@ export function ProfessionalLanding() {
         </section>
       </main>
       <OfferFooter />
-    </div>
+    </PublicPageShell>
   );
 }

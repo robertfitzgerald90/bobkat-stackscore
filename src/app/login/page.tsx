@@ -1,19 +1,25 @@
 import { Suspense } from "react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { LoginForm } from "@/components/auth/login-form";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_AUTH_CARD, MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-muted/50 p-6">
-      <div className="mb-8">
-        <BrandLogo size={72} variant="stacked" placement="auth" priority />
-      </div>
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-      <p className="mt-8 text-center text-xs text-muted-foreground">
-        Bobkat IT · Technology maturity assessments
-      </p>
-    </main>
+    <PublicPageShell variant="auth">
+      <main className={MARKETING_AUTH_SHELL}>
+        <div className="mb-8">
+          <BrandLogo size={72} variant="stacked" placement="auth" priority />
+        </div>
+        <div className={MARKETING_AUTH_CARD}>
+          <Suspense>
+            <LoginForm />
+          </Suspense>
+        </div>
+        <p className="mt-8 text-center text-xs text-muted-foreground">
+          Bobkat IT · Technology maturity assessments
+        </p>
+      </main>
+    </PublicPageShell>
   );
 }

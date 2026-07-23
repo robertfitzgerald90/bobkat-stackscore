@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
+import { PublicPageShell } from "@/components/public/public-page-shell";
 import { DemoConversionCta } from "@/components/interactive-demo/demo-conversion-cta";
 import { DemoEntryScreen } from "@/components/interactive-demo/demo-entry-screen";
 import { DemoApplicationShell } from "@/components/interactive-demo/demo-application-shell";
@@ -235,7 +236,7 @@ function ProductOverviewContent({
   const { openDetail, presentationActive } = useProductOverview();
 
   return (
-    <div className="min-w-0 bg-background pb-24 lg:pb-0">
+    <PublicPageShell contentClassName="min-w-0 pb-24 lg:pb-0">
       <Suspense fallback={null}>
         <DemoSessionBootstrap sectionSlug={initialSection} />
       </Suspense>
@@ -305,7 +306,7 @@ function ProductOverviewContent({
         <ProductPresentationMode />
         {!presentationActive ? <DemoConversionCta /> : null}
       </DemoScrollSpyProvider>
-    </div>
+    </PublicPageShell>
   );
 }
 

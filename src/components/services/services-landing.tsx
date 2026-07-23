@@ -24,6 +24,8 @@ import {
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { SolutionViewTracker } from "@/components/analytics/solution-view-tracker";
 import { ServicesCtaLink } from "@/components/services/services-cta-link";
+import { PublicPageShell } from "@/components/public/public-page-shell";
+import { MARKETING_BADGE, MARKETING_HERO_TITLE, MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +76,7 @@ function FeaturedProductSection({ product }: { product: FeaturedProductItem }) {
   return (
     <section
       id={product.id}
-      className="bg-muted/40 px-4 py-16 sm:px-6 sm:py-20 md:py-24"
+      className={MARKETING_SECTION_ALT}
     >
       <div className="mx-auto max-w-6xl">
         <OfferSectionHeader
@@ -223,7 +225,7 @@ function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
   const Icon = service.icon;
 
   return (
-    <section id={service.id} className="border-t border-border/60 bg-muted/20 px-4 py-16 sm:px-6 sm:py-20 md:py-24">
+    <section id={service.id} className={cn("border-t border-[rgba(70,120,255,0.1)]", MARKETING_SECTION_ALT)}>
       <div className="mx-auto max-w-6xl">
         <OfferSectionHeader
           eyebrow="Additional Offering"
@@ -278,7 +280,7 @@ function ResidentialSection({ service }: { service: ResidentialServiceItem }) {
 
 export function ServicesLanding() {
   return (
-    <div className="min-h-screen scroll-smooth bg-background motion-reduce:scroll-auto">
+    <PublicPageShell>
       <PublicMarketingNav active="services" />
       <main>
         <section className="relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 md:pb-24 md:pt-16">
@@ -286,13 +288,13 @@ export function ServicesLanding() {
 
           <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
             <OfferReveal>
-              <p className="rounded-full border border-primary/15 bg-primary/[0.06] px-4 py-1.5 text-sm font-medium uppercase tracking-wider text-primary">
+              <p className={MARKETING_BADGE}>
                 Bobkat IT Services
               </p>
             </OfferReveal>
 
             <OfferReveal delayMs={60}>
-              <h1 className="mt-8 text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+              <h1 className={cn(MARKETING_HERO_TITLE, "mt-8")}>
                 Technology should support your business—not slow it down.
               </h1>
             </OfferReveal>
@@ -392,6 +394,6 @@ export function ServicesLanding() {
         </OfferCtaPanel>
       </main>
       <OfferFooter />
-    </div>
+    </PublicPageShell>
   );
 }

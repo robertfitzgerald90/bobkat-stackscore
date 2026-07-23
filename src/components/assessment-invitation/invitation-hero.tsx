@@ -9,6 +9,7 @@ import type {
   AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
 import { BRAND } from "@/lib/branding";
+import { MARKETING_HERO_TITLE } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
 type InvitationHeroProps = {
@@ -61,8 +62,8 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
         ) : null}
 
         <OfferReveal delayMs={60}>
-          <h1 className="max-w-5xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.05]">
-            You&apos;ve Been Invited to Assess Your Technology
+          <h1 className={cn(MARKETING_HERO_TITLE, "max-w-5xl")}>
+            You&apos;ve Been Invited to Assess Your <span className="marketing-text-gradient">Technology</span>
           </h1>
         </OfferReveal>
 
