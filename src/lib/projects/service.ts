@@ -71,7 +71,11 @@ export async function updateProjectWithWorkflow(
       });
     }
 
-    return serializeProject(project);
+    return {
+      project: serializeProject(project),
+      isCompleting,
+      isReopening,
+    };
   });
 }
 
@@ -83,16 +87,16 @@ export async function completeProjectWithNotifications(
   const result = await updateProjectWithWorkflow(projectId, input);
   if (!result) return null;
 
-  if (input.status === "completed") {
+  if (result.isCompleting) {
     const { triggerProjectCompletedWorkflow } = await import(
       "@/lib/communications/workflows/triggers"
     );
     await triggerProjectCompletedWorkflow({
       projectId,
-      clientId: result.clientId,
+      clientId: result.project.clientId,
       createdByUserId: actorUserId ?? null,
     });
   }
 
-  return result;
+  return result.project;
 }

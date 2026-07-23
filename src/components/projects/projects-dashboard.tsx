@@ -144,6 +144,7 @@ export function ProjectsDashboard({
   async function saveProject() {
     if (!selectedProject) return;
 
+    const previousStatus = selectedProject.status;
     setSaving(true);
     try {
       const response = await fetch(`/api/v1/projects/${selectedProject.id}`, {
@@ -154,6 +155,7 @@ export function ProjectsDashboard({
 
       if (!response.ok) {
         const error = await response.json();
+        setEditStatus(previousStatus);
         toast.error(error.error ?? "Failed to update project");
         return;
       }
@@ -163,13 +165,15 @@ export function ProjectsDashboard({
         current.map((project) => (project.id === updated.id ? updated : project)),
       );
       setSelectedProject(updated);
+      setEditStatus(updated.status);
       toast.success(
-        updated.status === "completed"
+        updated.status === "completed" && previousStatus !== "completed"
           ? "Project completed and recommendation marked complete"
           : "Project updated",
       );
       router.refresh();
     } catch {
+      setEditStatus(previousStatus);
       toast.error("Failed to update project");
     } finally {
       setSaving(false);
@@ -457,12 +461,13 @@ export function ProjectsDashboard({
                     <Select
                       value={editStatus}
                       items={PROJECT_STATUS_LABELS}
+                      disabled={saving}
                       onValueChange={(value) => setEditStatus((value ?? editStatus) as ProjectStatus)}
                     >
                       <SelectTrigger id="project-status" className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[110]">
                         {ALL_PROJECT_STATUSES.map((status) => (
                           <SelectItem key={status} value={status}>
                             {PROJECT_STATUS_LABELS[status]}

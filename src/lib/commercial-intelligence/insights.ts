@@ -1,19 +1,24 @@
 import { prisma } from "@/lib/db";
 import { normalizeToMonthlyCents } from "@/lib/billing/calculations";
-import { computeRoadmapProgressMetrics } from "@/lib/client-roadmap/metrics";
+import { buildClientSuccessMetrics, getProposalPhaseSortOrder } from "./client-success";
 import { buildSalesFunnel } from "./funnel";
 import { computeRevenueForecast } from "./forecast";
+import { logCommercialInsightsFailure } from "./logging";
 import type {
   BusinessIntelligenceKpis,
-  ClientSuccessMetrics,
   CommercialInsightsDashboard,
   ExecutivePortfolioInsight,
 } from "./types";
 
-function decimalToNumber(value: { toNumber?: () => number } | number | null | undefined): number {
+function decimalToNumber(
+  value: { toNumber?: () => number } | number | null | undefined | unknown,
+): number {
   if (value == null) return 0;
   if (typeof value === "number") return value;
-  if (typeof value.toNumber === "function") return value.toNumber();
+  if (typeof value === "object" && value !== null && "toNumber" in value) {
+    const toNumber = (value as { toNumber?: () => number }).toNumber;
+    if (typeof toNumber === "function") return toNumber();
+  }
   return Number(value);
 }
 
@@ -33,19 +38,75 @@ export async function getCommercialInsightsDashboard(): Promise<CommercialInsigh
   const now = new Date();
   const inNinetyDays = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
 
-  const [
-    prospects,
-    purchases,
-    completedAssessments,
-    roadmaps,
-    proposals,
-    phases,
-    recurringServices,
-    subscriptions,
-    clients,
-    scoreHistory,
-    projectInvoices,
-  ] = await Promise.all([
+  let prospects: number;
+  let purchases: Array<{ amountTotal: number | null; clientId: string | null; assessmentId: string | null }>;
+  let completedAssessments: number;
+  let roadmaps: number;
+  let proposals: Array<{
+    status: string;
+    oneTimeInvestment: unknown;
+    clientId: string;
+    phaseId: string;
+    phase: { sortOrder: number; status: string } | null;
+  }>;
+  let phases: Array<{
+    status: string;
+    oneTimeInvestment: unknown;
+    projectStartedAt: Date | null;
+    projectCompletedAt: Date | null;
+  }>;
+  let recurringServices: Array<{
+    clientId: string;
+    unitPriceCents: number;
+    quantity: unknown;
+    billingFrequency: string;
+    customFrequencyDays: number | null;
+    renewalDate: Date | null;
+    serviceName: string;
+  }>;
+  let subscriptions: number;
+  let clients: Array<{
+    id: string;
+    companyName: string;
+    technologyProfile: {
+      overallStackScore: unknown;
+      nextRecommendedAssessmentAt: Date | null;
+      criticalExposureCount: number;
+    } | null;
+    scoreHistory: Array<{
+      overallScore: unknown;
+      securityScore: unknown;
+      infrastructureScore: unknown;
+      documentationScore: unknown;
+    }>;
+    clientRoadmaps: Parameters<typeof buildClientSuccessMetrics>[0]["clientRoadmaps"];
+    clientTechnologies: Array<{
+      displayName: string | null;
+      renewalDate: Date | null;
+      licenseRenewalDate: Date | null;
+      warrantyExpiresAt: Date | null;
+      plannedReplacementDate: Date | null;
+      budgetAmountCents: number | null;
+      technology: { name: string } | null;
+    }>;
+  }>;
+  let scoreHistory: Array<{ clientId: string; overallScore: unknown; recordedDate: Date }>;
+  let projectInvoices: Array<{ totalCents: number; projectId: string | null; clientId: string }>;
+
+  try {
+    [
+      prospects,
+      purchases,
+      completedAssessments,
+      roadmaps,
+      proposals,
+      phases,
+      recurringServices,
+      subscriptions,
+      clients,
+      scoreHistory,
+      projectInvoices,
+    ] = await Promise.all([
     prisma.prospect.count({ where: { status: { not: "archived" } } }),
     prisma.assessmentPurchase.findMany({
       where: { status: "fulfilled" },
@@ -171,7 +232,11 @@ export async function getCommercialInsightsDashboard(): Promise<CommercialInsigh
       select: { totalCents: true, projectId: true, clientId: true },
       take: 500,
     }),
-  ]);
+    ]);
+  } catch (error) {
+    logCommercialInsightsFailure("database_fetch", error);
+    throw error;
+  }
 
   const invoices = projectInvoices;
 
@@ -238,15 +303,17 @@ export async function getCommercialInsightsDashboard(): Promise<CommercialInsigh
 
   const generatedProposals = proposals.filter((proposal) => proposal.status !== "superseded");
   const approvedProposals = proposals.filter((proposal) => proposal.status === "approved");
-  const phase1Proposals = proposals.filter((proposal) => proposal.phase.sortOrder === 0);
+  const phase1Proposals = proposals.filter(
+    (proposal) => getProposalPhaseSortOrder(proposal) === 0,
+  );
   const phase1Approved = phase1Proposals.filter((proposal) => proposal.status === "approved");
   const clientsWithPhase1 = new Set(
     phase1Approved.map((proposal) => proposal.clientId),
   );
-  const expansionApprovals = approvedProposals.filter(
-    (proposal) =>
-      proposal.phase.sortOrder > 0 && clientsWithPhase1.has(proposal.clientId),
-  );
+  const expansionApprovals = approvedProposals.filter((proposal) => {
+    const sortOrder = getProposalPhaseSortOrder(proposal);
+    return sortOrder != null && sortOrder > 0 && clientsWithPhase1.has(proposal.clientId);
+  });
 
   const implementationDurations = phases
     .filter((phase) => phase.projectStartedAt && phase.projectCompletedAt)
@@ -340,73 +407,9 @@ export async function getCommercialInsightsDashboard(): Promise<CommercialInsigh
     strategic_consulting_active: strategicConsultingActive,
   });
 
-  const clientSuccess: ClientSuccessMetrics[] = clients.map((client) => {
-    const history = client.scoreHistory;
-    const latest = roundScore(history[0]?.overallScore);
-    const previous = roundScore(history[1]?.overallScore);
-    const roadmap = client.clientRoadmaps[0];
-    const phasesForClient = roadmap?.phases ?? [];
-    const initiatives = phasesForClient.flatMap((phase) =>
-      phase.initiatives.map((initiative) => ({
-        id: initiative.recommendationId,
-        title: initiative.recommendation.title,
-        description: initiative.recommendation.description,
-        businessImpact: initiative.recommendation.businessImpact,
-        suggestedService: null,
-        priority: initiative.recommendation.priority as "low" | "medium" | "high" | "critical",
-        estimatedImpactPoints: initiative.estimatedImpactPoints,
-        categoryName: initiative.recommendation.category.name,
-        status: initiative.recommendation.status,
-      })),
-    );
-    const metrics = computeRoadmapProgressMetrics(
-      phasesForClient.map((phase, index) => ({
-        status: phase.status,
-        oneTimeInvestment: decimalToNumber(phase.oneTimeInvestment),
-        monthlyRecurringInvestment: decimalToNumber(phase.monthlyRecurringInvestment),
-        name: phase.name,
-        sortOrder: phase.sortOrder ?? index,
-      })),
-      initiatives,
-    );
-    const serviceAdoptionCount = recurringServices.filter(
-      (service) => service.clientId === client.id,
-    ).length;
-    const securityImprovement =
-      (roundScore(history[0]?.securityScore) ?? 0) - (roundScore(history[1]?.securityScore) ?? 0);
-    const infrastructureImprovement =
-      (roundScore(history[0]?.infrastructureScore) ?? 0) -
-      (roundScore(history[1]?.infrastructureScore) ?? 0);
-    const documentationImprovement =
-      (roundScore(history[0]?.documentationScore) ?? 0) -
-      (roundScore(history[1]?.documentationScore) ?? 0);
-    const technologyScoreGrowth =
-      latest !== null && previous !== null ? latest - previous : null;
-
-    return {
-      clientId: client.id,
-      clientName: client.companyName,
-      technologyScoreGrowth,
-      roadmapCompletionPercent: metrics.completionPercent,
-      serviceAdoptionCount,
-      riskReductionPercent: metrics.riskReductionPercent,
-      securityImprovement,
-      infrastructureImprovement,
-      documentationImprovement,
-      overallOutcomeScore: Math.max(
-        0,
-        Math.min(
-          100,
-          Math.round(
-            metrics.completionPercent * 0.4 +
-              (technologyScoreGrowth != null ? Math.max(0, technologyScoreGrowth) * 4 : 10) +
-              serviceAdoptionCount * 5 +
-              metrics.riskReductionPercent * 0.2,
-          ),
-        ),
-      ),
-    };
-  });
+  const clientSuccess = clients.map((client) =>
+    buildClientSuccessMetrics(client, recurringServices),
+  );
 
   const mrrByClient = new Map<string, number>();
   for (const service of recurringServices) {
@@ -500,7 +503,7 @@ export async function getCommercialInsightsDashboard(): Promise<CommercialInsigh
       client.clientTechnologies.slice(0, 2).map((tech) => ({
         clientId: client.id,
         clientName: client.companyName,
-        title: tech.displayName ?? tech.technology.name,
+        title: tech.displayName ?? tech.technology?.name ?? "Technology renewal",
         date: (
           tech.renewalDate ??
           tech.licenseRenewalDate ??

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { InsightsDashboardView } from "@/components/commercial-intelligence/insights-dashboard";
 import { NotificationsPanel } from "@/components/notifications/notifications-panel";
 import { getCommercialInsightsDashboard } from "@/lib/commercial-intelligence";
+import { logCommercialInsightsFailure } from "@/lib/commercial-intelligence/logging";
 import {
   listOperationalNotifications,
   refreshConsultantNotifications,
@@ -15,10 +16,16 @@ export default async function InsightsPage() {
   if (isCustomerMode(session.user.role)) redirect("/dashboard");
 
   await refreshConsultantNotifications(session.user.id, session.user.role);
-  const [dashboard, notifications] = await Promise.all([
-    getCommercialInsightsDashboard(),
-    listOperationalNotifications(session.user.id, { limit: 20 }),
-  ]);
+
+  let dashboard;
+  try {
+    dashboard = await getCommercialInsightsDashboard();
+  } catch (error) {
+    logCommercialInsightsFailure("page_loader", error, { userId: session.user.id });
+    throw error;
+  }
+
+  const notifications = await listOperationalNotifications(session.user.id, { limit: 20 });
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
