@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackBeginAssessmentCheckout } from "@/lib/analytics/ga4-events";
 import { trackAssessmentCheckoutStart } from "@/lib/analytics/marketing-events";
 import type { AssessmentOfferAttribution } from "@/lib/assessment-offer/attribution";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ export function AssessmentPurchaseButton({
       }
 
       trackAssessmentCheckoutStart({ source: attribution?.source ?? source });
+      trackBeginAssessmentCheckout("assessment_offer");
       window.location.href = data.url;
     } catch {
       toast.error("Unable to start checkout");

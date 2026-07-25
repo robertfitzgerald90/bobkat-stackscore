@@ -1,3 +1,4 @@
+import { AssessmentOfferViewTracker } from "@/components/analytics/assessment-offer-view-tracker";
 import { DemoCompactPanel } from "@/components/interactive-demo/demo-compact-panel";
 import { DemoStackscoreExperienceSection } from "@/components/interactive-demo/demo-stackscore-experience-section";
 import { PublicPageShell } from "@/components/public/public-page-shell";
@@ -18,6 +19,7 @@ export function AssessmentOfferLanding({
 }) {
   return (
     <PublicPageShell>
+      <AssessmentOfferViewTracker />
       <OfferNav />
       <main>
         <OfferHero attribution={attribution} />

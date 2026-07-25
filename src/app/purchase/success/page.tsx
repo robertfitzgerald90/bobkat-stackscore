@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRAND } from "@/lib/branding";
 import { PublicPageShell } from "@/components/public/public-page-shell";
+import { verifyAssessmentPurchaseForAnalytics } from "@/lib/analytics/verify-assessment-purchase";
 import { MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 
 export const metadata: Metadata = {
@@ -21,11 +22,12 @@ type PageProps = {
 
 export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
   const { session_id: sessionId } = await searchParams;
+  const verifiedPurchase = await verifyAssessmentPurchaseForAnalytics(sessionId);
 
   return (
     <PublicPageShell variant="auth">
       <main className={MARKETING_AUTH_SHELL}>
-      <PurchaseSuccessTracker hasCheckoutSession={Boolean(sessionId)} />
+      <PurchaseSuccessTracker verifiedPurchase={verifiedPurchase} />
       <div className="mx-auto flex min-w-0 max-w-lg flex-col items-center gap-6 text-center">
         <BrandLogo size={48} variant="stacked" placement="auth" />
         <Card className="w-full min-w-0 shadow-sm">

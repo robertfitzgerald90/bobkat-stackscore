@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
+import { getGaMeasurementId, isGa4Enabled } from "@/lib/analytics/ga4-config";
 import { bobkatLogoSrc } from "@/lib/branding/assets";
 import { getBaseUrl } from "@/lib/url/base-url";
 import "./globals.css";
@@ -28,6 +30,9 @@ export const metadata: Metadata = {
   },
 };
 
+const gaId = getGaMeasurementId();
+const analyticsEnabled = isGa4Enabled() && Boolean(gaId);
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,6 +44,7 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
+        {analyticsEnabled && gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );

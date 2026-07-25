@@ -9,6 +9,7 @@ import {
 } from "@/components/snapshot/snapshot-result-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { trackSnapshotAssessmentCtaClick } from "@/lib/analytics/ga4-events";
 import { BRAND } from "@/lib/branding";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { FULL_ASSESSMENT_BENEFITS, SNAPSHOT_MAX_SCORE } from "@/lib/technology-snapshot/display";
@@ -43,6 +44,7 @@ export function SnapshotResultsView({
 
   async function continueToFullAssessment() {
     setContinuing(true);
+    trackSnapshotAssessmentCtaClick({ destinationPath: "/assessment-offer" });
     try {
       const response = await fetch(
         `/api/v1/public/technology-snapshot/${result.id}/continue-assessment`,
@@ -112,6 +114,9 @@ export function SnapshotResultsView({
                 className={buttonVariants({
                   className: cn("w-full sm:w-auto"),
                 })}
+                onClick={() =>
+                  trackSnapshotAssessmentCtaClick({ destinationPath: "/assessment-offer" })
+                }
               >
                 Purchase Full Technology Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />

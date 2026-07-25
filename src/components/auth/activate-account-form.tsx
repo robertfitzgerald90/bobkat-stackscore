@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { trackSignUp } from "@/lib/analytics/ga4-events";
 
 export function ActivateAccountForm() {
   const router = useRouter();
@@ -78,6 +79,8 @@ export function ActivateAccountForm() {
         setError(payload.error ?? "Unable to activate account.");
         return;
       }
+
+      trackSignUp();
 
       const signInResult = await signIn("credentials", {
         email: payload.email,

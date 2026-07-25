@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -15,9 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  trackCompleteTechnologySnapshot,
+  trackStartTechnologySnapshot,
+  trackViewTechnologySnapshot,
+} from "@/lib/analytics/ga4-events";
+import { trackSnapshotStart } from "@/lib/analytics/marketing-events";
 import { BRAND } from "@/lib/branding";
 import { MARKETING_PANEL } from "@/lib/marketing/tokens";
-import { trackSnapshotStart } from "@/lib/analytics/marketing-events";
 import {
   COMPANY_SIZE_OPTIONS,
   IT_MANAGEMENT_OPTIONS,
@@ -117,6 +122,11 @@ export function TechnologySnapshotWizard() {
   const [answers, setAnswers] = useState<Partial<SnapshotAnswers>>({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SnapshotResultsPayload | null>(null);
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    trackViewTechnologySnapshot("/technology-snapshot");
+  }, []);
 
   const totalSteps = 1 + 1 + SNAPSHOT_QUESTIONS.length;
   const currentStep = useMemo(() => {
@@ -188,11 +198,21 @@ export function TechnologySnapshotWizard() {
 
       setResult(data as SnapshotResultsPayload);
       setPhase("results");
+      trackCompleteTechnologySnapshot("/technology-snapshot");
     } catch {
       toast.error("Unable to submit snapshot");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function markSnapshotStarted(startMethod: "start_button" | "first_response") {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackStartTechnologySnapshot({
+      startMethod,
+      pagePath: "/technology-snapshot",
+    });
   }
 
   function handleNext() {
@@ -201,6 +221,7 @@ export function TechnologySnapshotWizard() {
         trigger: "wizard_begin",
         hasInvitationFlow: invitationFlow,
       });
+      markSnapshotStarted("start_button");
       setPhase("intake");
       return;
     }

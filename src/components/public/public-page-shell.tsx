@@ -1,3 +1,4 @@
+import { BobkatReferralTracker } from "@/components/analytics/bobkat-referral-tracker";
 import { cn } from "@/lib/utils";
 import {
   MARKETING_CONTENT,
@@ -23,6 +24,7 @@ export function PublicPageShell({
 }: PublicPageShellProps) {
   return (
     <div className={cn(MARKETING_PAGE_ROOT, className)}>
+      {variant === "default" ? <BobkatReferralTracker /> : null}
       <div
         className={cn(
           variant === "auth" ? undefined : MARKETING_CONTENT,

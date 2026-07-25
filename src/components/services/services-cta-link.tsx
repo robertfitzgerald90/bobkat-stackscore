@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { trackBookConsultation } from "@/lib/analytics/ga4-events";
 import {
   isCalComHref,
   trackCalBookingClick,
@@ -45,6 +46,7 @@ export function ServicesCtaLink({
 
     if (isCalCom) {
       trackCalBookingClick({ ctaKey: cta, placement });
+      trackBookConsultation({ placement });
     }
   }
 

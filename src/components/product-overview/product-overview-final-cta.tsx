@@ -16,6 +16,7 @@ import {
   trackProductOverviewConsultingCtaClicked,
   trackProductOverviewFinalCtaClicked,
 } from "@/lib/analytics/product-overview-events";
+import { trackBookConsultation } from "@/lib/analytics/ga4-events";
 import {
   trackCalBookingClick,
   trackServiceCtaClick,
@@ -51,6 +52,7 @@ function DiscoveryCallCta({ placement }: { placement: string }) {
           placement,
         });
         trackCalBookingClick({ ctaKey: "generalConsultation", placement });
+        trackBookConsultation({ placement });
         trackProductOverviewFinalCtaClicked("discovery_call", placement);
         trackDemoDiscoveryCallClicked(placement);
       }}

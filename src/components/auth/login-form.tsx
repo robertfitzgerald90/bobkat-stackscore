@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { trackLogin } from "@/lib/analytics/ga4-events";
 
 const PUBLIC_CALLBACK_PREFIXES = [
   "/login",
@@ -65,6 +66,7 @@ export function LoginForm() {
         return;
       }
 
+      trackLogin();
       const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
       router.replace(callbackUrl);
       router.refresh();
