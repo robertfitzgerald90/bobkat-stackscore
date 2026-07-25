@@ -18,6 +18,10 @@ export const GA4_EVENTS = {
   BEGIN_ASSESSMENT_CHECKOUT: "begin_assessment_checkout",
   ASSESSMENT_CONSULTATION_CLICK: "assessment_consultation_click",
   PURCHASE: "purchase",
+  ASSESSMENT_PURCHASED: "assessment_purchased",
+  /** @deprecated Prefer ASSESSMENT_PURCHASED */
+  ASSESSMENT_PURCHASE_CONFIRMED: "assessment_purchase_confirmed",
+  SUBSCRIPTION_ACTIVATED: "subscription_activated",
   BOOK_CONSULTATION: "book_consultation",
   SUBMIT_CONTACT_FORM: "submit_contact_form",
   LOGIN: "login",
@@ -129,7 +133,8 @@ export function trackVerifiedPurchase(input: {
   currency?: string;
 }) {
   const currency = (input.currency || "USD").toUpperCase();
-  const value = Number.isFinite(input.value) && input.value > 0 ? input.value : 1500;
+  const value = Number.isFinite(input.value) && input.value > 0 ? input.value : 0;
+  if (value <= 0) return;
 
   trackGa4Once(`purchase:${input.transactionId}`, () => {
     const params: Ga4EventParams = {
@@ -144,6 +149,63 @@ export function trackVerifiedPurchase(input: {
       ],
     };
     sendGa4Event(GA4_EVENTS.PURCHASE, params);
+  });
+}
+
+/** Assessment confirmation conversion — only after server verification. */
+export function trackAssessmentPurchased(input: {
+  transactionId: string;
+  value: number;
+  currency?: string;
+}) {
+  const currency = (input.currency || "USD").toUpperCase();
+  const value = Number.isFinite(input.value) && input.value > 0 ? input.value : 0;
+  if (value <= 0) return;
+
+  trackGa4Once(`assessment_purchased:${input.transactionId}`, () => {
+    sendGa4Event(GA4_EVENTS.ASSESSMENT_PURCHASED, {
+      currency,
+      value,
+      transaction_id: input.transactionId,
+      purchase_type: "technology_maturity_assessment",
+      payment_provider: "stripe",
+    });
+  });
+}
+
+/** @deprecated Use trackAssessmentPurchased */
+export function trackAssessmentPurchaseConfirmed(input: {
+  transactionId: string;
+  currency?: string;
+  value?: number;
+}) {
+  trackAssessmentPurchased({
+    transactionId: input.transactionId,
+    value: input.value ?? 0,
+    currency: input.currency,
+  });
+}
+
+/** Subscription confirmation conversion — only after server verification. */
+export function trackSubscriptionActivated(input: {
+  transactionId: string;
+  value: number;
+  currency?: string;
+  billingInterval?: "month" | "year" | "other";
+}) {
+  const currency = (input.currency || "USD").toUpperCase();
+  const value = Number.isFinite(input.value) && input.value > 0 ? input.value : 0;
+  if (value <= 0) return;
+
+  trackGa4Once(`subscription_activated:${input.transactionId}`, () => {
+    sendGa4Event(GA4_EVENTS.SUBSCRIPTION_ACTIVATED, {
+      currency,
+      value,
+      transaction_id: input.transactionId,
+      subscription_type: "strategic_it_consulting",
+      payment_provider: "stripe",
+      billing_interval: input.billingInterval ?? "other",
+    });
   });
 }
 

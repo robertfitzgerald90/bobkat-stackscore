@@ -15,6 +15,8 @@ const PUBLIC_CALLBACK_PREFIXES = [
   "/assessment-invitation",
   "/technology-snapshot",
   "/purchase/success",
+  "/assessment-purchased",
+  "/subscription-activated",
   "/forgot-password",
   "/reset-password",
   "/checkout",

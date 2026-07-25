@@ -4,10 +4,15 @@ import { prisma } from "@/lib/db";
 import { logEmailEnvDiagnostics } from "@/lib/email/config";
 import { sendPurchaseFulfillmentEmail } from "@/lib/email/purchase-fulfillment";
 import { purchaseTrace, purchaseTraceError, purchaseTraceStop } from "@/lib/purchase-trace";
+import {
+  isStripeWebhookProcessed,
+  markStripeWebhookProcessed,
+} from "@/lib/billing/stripe-checkout";
 import { handleBillingStripeEvent } from "@/lib/billing/stripe-webhook";
 import { fulfillTechnologyAssessmentPurchase } from "@/lib/stripe/fulfillment";
 import { getStripe } from "@/lib/stripe/client";
 import { requireStripeWebhookSecret } from "@/lib/stripe/config";
+import { isTechnologyAssessmentProduct } from "@/lib/stripe/products";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -194,6 +199,14 @@ export async function POST(request: Request) {
     );
   }
 
+  if (await isStripeWebhookProcessed(event.id)) {
+    purchaseTrace("W05a", "Stripe event already processed — skipping", {
+      eventId: event.id,
+      eventType: event.type,
+    });
+    return NextResponse.json({ received: true });
+  }
+
   const billingResult = await handleBillingStripeEvent(event);
   if (billingResult.handled) {
     purchaseTrace("W05b", "Billing webhook handled", {
@@ -204,7 +217,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  if (event.type !== "checkout.session.completed") {
+  const isAssessmentCheckoutEvent =
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded";
+
+  if (!isAssessmentCheckoutEvent) {
     purchaseTraceStop(
       "W05",
       "route.ts → unhandled event type",
@@ -214,19 +231,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  purchaseTrace("W05", "PASS event.type === checkout.session.completed (assessment path)", {
+  purchaseTrace("W05", "PASS assessment checkout event path", {
     eventId: event.id,
+    eventType: event.type,
   });
 
   const session = event.data.object as Stripe.Checkout.Session;
   if (session.metadata?.productType === "stackscore_invoice") {
+    await markStripeWebhookProcessed(event.id, event.type, { skipped: "stackscore_invoice" });
+    return NextResponse.json({ received: true });
+  }
+
+  const productType = session.metadata?.productType ?? session.metadata?.product;
+  if (!isTechnologyAssessmentProduct(productType)) {
+    purchaseTraceStop(
+      "W05c",
+      "route.ts → non-assessment checkout session",
+      `productType=${productType ?? "missing"} — assessment fulfillment skipped`,
+      { eventId: event.id, sessionId: session.id },
+    );
+    await markStripeWebhookProcessed(event.id, event.type, {
+      skipped: "non_assessment_product",
+    });
     return NextResponse.json({ received: true });
   }
 
   const response = await handleAssessmentCheckoutCompleted(session);
+  // Only mark processed on successful handling so Stripe retries can recover from 5xx.
+  if (response.status < 400) {
+    await markStripeWebhookProcessed(event.id, event.type, {
+      sessionId: session.id,
+      productType,
+    });
+  }
 
-  purchaseTrace("W12", "EXIT POST /api/webhooks/stripe — returning 200", {
+  purchaseTrace("W12", "EXIT POST /api/webhooks/stripe — returning response", {
     sessionId: session.id,
+    status: response.status,
   });
 
   return response;

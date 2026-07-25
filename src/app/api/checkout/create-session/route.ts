@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ASSESSMENT_PURCHASED_PATH } from "@/lib/marketing/stackscore-routes";
 import { getAppUrl } from "@/lib/stripe/app-url";
 import { getStripe } from "@/lib/stripe/client";
 import { getStripeConfig } from "@/lib/stripe/config";
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${appUrl}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}${ASSESSMENT_PURCHASED_PATH}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/assessment-offer`,
       metadata: buildAssessmentCheckoutMetadata(body),
     });

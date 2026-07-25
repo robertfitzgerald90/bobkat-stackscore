@@ -111,7 +111,8 @@ Authenticated client-portal behavior is intentionally **not** sent to marketing 
 
 ## Purchase verification
 
-`purchase` fires only when `/purchase/success` server-verifies the Stripe Checkout Session:
+`purchase` and `assessment_purchased` fire only when `/assessment-purchased` server-verifies the Stripe Checkout Session:
+
 
 - Session id present and retrievable
 - `payment_status === "paid"`

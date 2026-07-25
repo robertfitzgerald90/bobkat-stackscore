@@ -18,7 +18,7 @@ import {
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 import {
   STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
-  VCIO_OFFER_SUCCESS_PATH,
+  SUBSCRIPTION_ACTIVATED_PATH,
 } from "@/lib/marketing/stackscore-routes";
 
 function resolveCheckoutSource(raw: unknown): string {
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
       customer_email: stripeCustomerId ? undefined : undefined,
       billing_address_collection: "auto",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}${VCIO_OFFER_SUCCESS_PATH}?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}${SUBSCRIPTION_ACTIVATED_PATH}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
       metadata,
       subscription_data: {

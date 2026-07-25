@@ -51,5 +51,24 @@ describe("Stripe integration routes", () => {
     expect(authConfig).toContain('pathname.startsWith("/vcio-offer")');
     expect(authConfig).toContain('pathname.startsWith("/activate-account")');
     expect(authConfig).toContain('pathname.startsWith("/purchase/success")');
+    expect(authConfig).toContain('pathname.startsWith("/assessment-purchased")');
+    expect(authConfig).toContain('pathname.startsWith("/subscription-activated")');
+  });
+
+  it("points assessment and subscription checkouts at the new confirmation routes", () => {
+    const assessmentCheckout = readFileSync(
+      resolve(process.cwd(), "src/app/api/checkout/create-session/route.ts"),
+      "utf8",
+    );
+    const vcioCheckout = readFileSync(
+      resolve(process.cwd(), "src/app/api/checkout/vcio/route.ts"),
+      "utf8",
+    );
+
+    expect(assessmentCheckout).toContain("ASSESSMENT_PURCHASED_PATH");
+    expect(assessmentCheckout).toContain("session_id={CHECKOUT_SESSION_ID}");
+    expect(vcioCheckout).toContain("SUBSCRIPTION_ACTIVATED_PATH");
+    expect(vcioCheckout).toContain("session_id={CHECKOUT_SESSION_ID}");
   });
 });
+

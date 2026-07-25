@@ -23,7 +23,8 @@ Use this checklist after deploying schema migration and configuring Stripe + Res
 - [ ] `AssessmentPurchase` row created with `status = fulfilled` and unique `stripeSessionId`
 - [ ] `Client`, `User` (`role=client`, `isActive=false`), `Assessment` (`scoringEngineVersion=v2`, `status=draft`) created
 - [ ] Activation email received (or logged to console in dev)
-- [ ] `/purchase/success` shows email instructions (does **not** create records)
+- [ ] `/assessment-purchased` shows email next-steps (does **not** create records; `/purchase/success` redirects here)
+
 - [ ] Activation link opens `/activate-account`
 - [ ] Password setup activates account and redirects to `/onboarding`
 - [ ] Onboarding saves company info and redirects to `/assessment/start`
