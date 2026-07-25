@@ -8,34 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trackLogin } from "@/lib/analytics/ga4-events";
-
-const PUBLIC_CALLBACK_PREFIXES = [
-  "/login",
-  "/assessment-offer",
-  "/assessment-invitation",
-  "/technology-snapshot",
-  "/purchase/success",
-  "/assessment-purchased",
-  "/subscription-activated",
-  "/forgot-password",
-  "/reset-password",
-  "/checkout",
-  "/vcio-offer",
-  "/demo",
-  "/",
-];
-
-function getSafeCallbackUrl(value: string | null): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return "/dashboard";
-  }
-
-  if (PUBLIC_CALLBACK_PREFIXES.some((prefix) => value.startsWith(prefix))) {
-    return "/dashboard";
-  }
-
-  return value;
-}
+import { getSafeCallbackUrl } from "@/lib/auth/safe-callback-url";
 
 export function LoginForm() {
   const router = useRouter();

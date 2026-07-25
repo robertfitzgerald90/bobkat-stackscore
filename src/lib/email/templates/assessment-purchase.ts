@@ -58,10 +58,12 @@ export async function buildAssessmentReadyEmail(input: {
 
 export function buildActivationUrls(rawToken: string) {
   const appUrl = getAppUrl();
+  const startPath = "/assessment/start";
+  const loginWithStart = `${appUrl}/login?callbackUrl=${encodeURIComponent(startPath)}`;
   return {
     activationUrl: `${appUrl}/activate-account?token=${encodeURIComponent(rawToken)}`,
-    loginUrl: `${appUrl}/login`,
-    startUrl: `${appUrl}/assessment/start`,
+    loginUrl: loginWithStart,
+    startUrl: `${appUrl}${startPath}`,
   };
 }
 

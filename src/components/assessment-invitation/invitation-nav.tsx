@@ -3,9 +3,12 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
 import { buildTechnologySnapshotUrl } from "@/lib/assessment-invitation/snapshot-url";
+import {
+  buildAssessmentInvitationHref,
+  buildAssessmentOfferHref,
+} from "@/lib/assessment-offer/attribution";
 import { PUBLIC_MARKETING_HEADER_CLASS } from "@/lib/ui/sticky-chrome";
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
-import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { MARKETING_NAV_LINK } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +25,7 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
     <header className={PUBLIC_MARKETING_HEADER_CLASS}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
-          href="/assessment-invitation"
+          href={buildAssessmentInvitationHref(invitationContext)}
           className="min-w-0 shrink transition-opacity hover:opacity-90"
         >
           <BrandLogo size={32} showText placement="header" priority className="gap-2" />
@@ -42,13 +45,13 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
             Services
           </a>
           <Link
-            href={STACKSCORE_PUBLIC_ROUTES.assessmentOffer}
+            href={buildAssessmentOfferHref(invitationContext)}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Assessment Offer
           </Link>
           <Link
-            href={STACKSCORE_PUBLIC_ROUTES.assessmentInvitation}
+            href={buildAssessmentInvitationHref(invitationContext)}
             className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
           >
             Assessment Invitation

@@ -3,8 +3,8 @@ import { OfferCtaPanel } from "@/components/assessment-offer/offer-cta-panel";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { buttonVariants } from "@/components/ui/button";
 import type { AssessmentInvitationContext } from "@/lib/assessment-invitation/content";
+import { buildAssessmentOfferHref } from "@/lib/assessment-offer/attribution";
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
-import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { cn } from "@/lib/utils";
 
 type InvitationFinalCtaProps = {
@@ -26,7 +26,7 @@ export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProp
           campaignId={invitationContext?.campaignId}
         />
         <Link
-          href={STACKSCORE_PUBLIC_ROUTES.assessmentOffer}
+          href={buildAssessmentOfferHref(invitationContext)}
           className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
         >
           Purchase the full assessment

@@ -14,7 +14,7 @@ import type Stripe from "stripe";
 export type SubscriptionConfirmationPrimaryCta =
   | { kind: "open_stackscore"; href: string; label: "Open StackScore" }
   | { kind: "continue_setup"; href: string; label: "Continue Setup" }
-  | { kind: "sign_in"; href: "/login"; label: "Sign In to Continue" }
+  | { kind: "sign_in"; href: string; label: "Sign In to Continue" }
   | { kind: "return_home"; href: "/"; label: "Return Home" };
 
 export type SubscriptionConfirmationResult =
@@ -41,7 +41,11 @@ function returnHomeCta(): SubscriptionConfirmationPrimaryCta {
 }
 
 function signInCta(): SubscriptionConfirmationPrimaryCta {
-  return { kind: "sign_in", href: "/login", label: "Sign In to Continue" };
+  return {
+    kind: "sign_in",
+    href: "/login?callbackUrl=%2Fportal%2Fvcio%2Fonboarding",
+    label: "Sign In to Continue",
+  };
 }
 
 function isAcceptableSubscriptionStatus(

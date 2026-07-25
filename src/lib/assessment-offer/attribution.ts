@@ -32,3 +32,15 @@ export function buildAssessmentInvitationHref(
   const query = params.toString();
   return `/assessment-invitation${query ? `?${query}` : ""}`;
 }
+
+/** Assessment offer URL with optional invitation attribution query params. */
+export function buildAssessmentOfferHref(
+  attribution?: AssessmentOfferAttribution,
+): string {
+  const params = new URLSearchParams();
+  if (attribution?.prospectId) params.set("prospectId", attribution.prospectId);
+  if (attribution?.campaignId) params.set("campaignId", attribution.campaignId);
+  if (attribution?.source) params.set("source", attribution.source);
+  const query = params.toString();
+  return `/assessment-offer${query ? `?${query}` : ""}`;
+}

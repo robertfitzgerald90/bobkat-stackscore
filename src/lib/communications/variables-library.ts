@@ -37,7 +37,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "activationUrl",
     description: "Secure one-time account activation link.",
-    example: "https://stackscore.tech/activate?token=…",
+    example: "https://stackscore.tech/activate-account?token=…",
     category: "Authentication",
     required: true,
     source: "Account activation token",
@@ -93,7 +93,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "reviewUrl",
     description: "Scheduling link for quarterly technology review.",
-    example: "https://stackscore.tech/review/schedule",
+    example: "https://stackscore.tech/clients/…/quarterly-review",
     category: "Future",
     required: true,
     source: "Review workflow",
@@ -117,7 +117,7 @@ const BASE_VARIABLES: VariableDefinition[] = [
   {
     name: "invitationUrl",
     description: "Assessment invitation acceptance link.",
-    example: "https://stackscore.tech/assessment/invite/…",
+    example: "https://stackscore.tech/assessment-invitation?prospectId=…",
     category: "Assessment",
     required: true,
     source: "Invitation token",
