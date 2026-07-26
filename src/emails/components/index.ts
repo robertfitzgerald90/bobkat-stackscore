@@ -8,6 +8,7 @@ export { InformationCard } from "./information-card";
 export { NextSteps } from "./next-steps";
 export { SecurityNotice } from "./security-notice";
 export { Footer as EmailFooter } from "./footer";
+export { EmailClosingSignature } from "./email-closing-signature";
 
 /** @deprecated Use EmailHeader */
 export { Header } from "./header";

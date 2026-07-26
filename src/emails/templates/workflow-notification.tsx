@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ContentSection,
+  EmailClosingSignature,
   EmailFooter,
   EmailHeader,
   EmailHero,
@@ -29,6 +30,8 @@ export type WorkflowNotificationEmailData = {
   primaryCta: WorkflowEmailCta;
   secondaryCta?: WorkflowEmailCta;
   closingParagraph?: string;
+  /** Renders the standard Bobkat founder closing signature with reliable line breaks. */
+  founderClosing?: boolean | { message?: string };
   securityNotice?: string | string[];
   firstName?: string;
 };
@@ -48,6 +51,7 @@ export function WorkflowNotificationEmail({
   primaryCta,
   secondaryCta,
   closingParagraph,
+  founderClosing,
   securityNotice,
   brand = DEFAULT_COMMUNICATION_BRAND,
   content,
@@ -57,6 +61,9 @@ export function WorkflowNotificationEmail({
     : securityNotice
       ? [securityNotice]
       : [];
+
+  const founderClosingMessage =
+    typeof founderClosing === "object" ? founderClosing.message : undefined;
 
   return (
     <EmailLayout preview={previewText ?? heroDescription ?? heroTitle}>
@@ -74,7 +81,11 @@ export function WorkflowNotificationEmail({
         <InformationCard title={summaryTitle ?? "Summary"} items={summaryItems} />
       ) : null}
       {securityItems.length > 0 ? <SecurityNotice items={securityItems} /> : null}
-      {closingParagraph ? <ContentSection paragraphs={[closingParagraph]} /> : null}
+      {founderClosing ? (
+        <EmailClosingSignature closingMessage={founderClosingMessage} />
+      ) : closingParagraph ? (
+        <ContentSection paragraphs={[closingParagraph]} />
+      ) : null}
       <EmailFooter brand={brand} />
     </EmailLayout>
   );

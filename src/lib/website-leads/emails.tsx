@@ -1,7 +1,6 @@
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
 import { STACKSCORE_PUBLIC_ROUTES } from "@/lib/marketing/stackscore-routes";
 import { buildAppUrl } from "@/lib/url/base-url";
-import { BRAND } from "@/lib/branding";
 import { getCommunicationBrandSettings } from "@/lib/communications/brand-settings";
 import { getCommunicationWorkflowSettings } from "@/lib/communications/settings/workflow-settings";
 import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
@@ -34,7 +33,6 @@ export async function sendWebsiteLeadConfirmationEmail(input: {
   const snapshotUrl = buildAppUrl(STACKSCORE_PUBLIC_ROUTES.technologySnapshot);
   const servicesUrl = BOBKAT_IT_URLS.services;
   const brand = await getCommunicationBrandSettings();
-  const signaturePhone = BRAND.phone ? `\n${BRAND.phone}` : "";
 
   const subject = "Thanks for reaching out!";
   const { html, text } = await renderEmailTemplate(
@@ -55,7 +53,7 @@ export async function sendWebsiteLeadConfirmationEmail(input: {
         label: "Explore our services",
         href: servicesUrl,
       },
-      closingParagraph: `Take care and be well!\n\nBF\n\nBobby Fitzgerald\nFounder/Owner, ${BRAND.companyName}\n${BRAND.email}${signaturePhone}`,
+      founderClosing: true,
     }),
   );
 
