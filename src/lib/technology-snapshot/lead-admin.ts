@@ -1,4 +1,5 @@
 import type { Prisma, TechnologySnapshotLeadStatus } from "@/generated/prisma/client";
+import { recordAdminAuditEvent, type AdminAuditActor } from "@/lib/admin/audit-log";
 import { prisma } from "@/lib/db";
 import { findDuplicateByEmail } from "@/lib/communications/outreach/duplicate-detection";
 import { createOrUpdateProspectOnly } from "@/lib/communications/outreach/create-prospect";
@@ -10,11 +11,37 @@ import { ensurePrimaryContactFromClient } from "@/lib/communications/contacts/se
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
 import {
   buildContactName,
+  resolveLeadDisplayName,
   resolveLeadFirstName,
   splitContactName,
 } from "@/lib/technology-snapshot/contact-helpers";
+import {
+  getSnapshotLeadDeletionBlockReason,
+  SNAPSHOT_LEAD_CONVERTED_DELETE_BLOCKED_MESSAGE,
+} from "@/lib/technology-snapshot/lead-deletion";
 import { buildSnapshotResult } from "@/lib/technology-snapshot/scoring";
 import type { SnapshotAnswers } from "@/lib/technology-snapshot/types";
+
+export {
+  getSnapshotLeadDeletionBlockReason,
+  SNAPSHOT_LEAD_CONVERTED_DELETE_BLOCKED_MESSAGE,
+} from "@/lib/technology-snapshot/lead-deletion";
+
+export type SnapshotLeadDeletionResult =
+  | {
+      ok: true;
+      deletedLeadId: string;
+      companyName: string;
+      contactName: string;
+      email: string;
+      noteCount: number;
+      hadProspectLink: boolean;
+    }
+  | {
+      ok: false;
+      code: "NOT_FOUND" | "CONVERTED" | "CONFLICT";
+      message: string;
+    };
 
 const STATUS_TIMESTAMP_FIELDS: Partial<
   Record<TechnologySnapshotLeadStatus, "contactedAt" | "assessmentInvitedAt" | "convertedAt" | "archivedAt">
@@ -603,5 +630,99 @@ export function buildSnapshotLeadDetailPayload(lead: NonNullable<Awaited<ReturnT
     ...lead,
     observations: result.observations,
     maxScore: 24,
+  };
+}
+
+/**
+ * Permanently deletes a Technology Snapshot Lead.
+ * Hard delete: dependent notes cascade; Client/Prospect/campaign history are preserved.
+ * Converted or client-linked leads are blocked.
+ */
+export async function deleteTechnologySnapshotLeadPermanently(input: {
+  leadId: string;
+  actor: AdminAuditActor;
+  source?: string;
+}): Promise<SnapshotLeadDeletionResult> {
+  const lead = await prisma.technologySnapshotLead.findUnique({
+    where: { id: input.leadId },
+    include: {
+      prospect: { select: { id: true, clientId: true } },
+      _count: { select: { notes: true } },
+    },
+  });
+
+  if (!lead) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      message: "Snapshot lead not found",
+    };
+  }
+
+  const blockReason = getSnapshotLeadDeletionBlockReason({
+    status: lead.status,
+    clientId: lead.clientId,
+    prospectClientId: lead.prospect?.clientId ?? null,
+  });
+
+  if (blockReason) {
+    return {
+      ok: false,
+      code: "CONVERTED",
+      message: blockReason,
+    };
+  }
+
+  const contactName = resolveLeadDisplayName(lead);
+  const noteCount = lead._count.notes;
+  const hadProspectLink = Boolean(lead.prospectId);
+  const hadLinkedRecords = noteCount > 0 || hadProspectLink;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Notes cascade via FK; explicit delete keeps behavior obvious in code review.
+      await tx.technologySnapshotLeadNote.deleteMany({ where: { leadId: lead.id } });
+      await tx.technologySnapshotLead.delete({ where: { id: lead.id } });
+    });
+  } catch (error) {
+    console.error("[snapshot-leads] Failed to delete lead", {
+      leadId: lead.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      ok: false,
+      code: "CONFLICT",
+      message: "Unable to delete Snapshot Lead. No records were changed.",
+    };
+  }
+
+  await recordAdminAuditEvent({
+    action: "snapshot_lead.deleted",
+    entityType: "TechnologySnapshotLead",
+    entityId: lead.id,
+    actor: input.actor,
+    summary: `Deleted Snapshot Lead for ${lead.companyName}`,
+    source: input.source ?? "admin.snapshot-leads",
+    metadata: {
+      deletedLeadId: lead.id,
+      companyName: lead.companyName,
+      contactName,
+      email: lead.email,
+      submissionDate: lead.createdAt.toISOString(),
+      hadLinkedRecords,
+      noteCount,
+      hadProspectLink,
+      previousStatus: lead.status,
+    },
+  });
+
+  return {
+    ok: true,
+    deletedLeadId: lead.id,
+    companyName: lead.companyName,
+    contactName,
+    email: lead.email,
+    noteCount,
+    hadProspectLink,
   };
 }

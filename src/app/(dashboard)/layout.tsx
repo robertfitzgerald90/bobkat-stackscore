@@ -9,6 +9,7 @@ import {
 import type { ClientPortalState } from "@/lib/command-center/types";
 import { prisma } from "@/lib/db";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { countNewWebsiteLeads } from "@/lib/website-leads";
 
 export default async function DashboardLayout({
   children,
@@ -49,9 +50,21 @@ export default async function DashboardLayout({
     clientPortal,
   };
 
+  let navBadges: Record<string, number> = {};
+  if (session.user.role === "admin") {
+    try {
+      const newWebsiteLeads = await countNewWebsiteLeads();
+      if (newWebsiteLeads > 0) {
+        navBadges = { "/website-leads": newWebsiteLeads };
+      }
+    } catch (error) {
+      console.warn("[website-leads] unable to load new lead badge count", error);
+    }
+  }
+
   return (
     <>
-      <DashboardShell user={user}>{children}</DashboardShell>
+      <DashboardShell user={user} navBadges={navBadges}>{children}</DashboardShell>
       <Toaster />
     </>
   );

@@ -289,6 +289,8 @@ export function SnapshotLeadDetailView({ initialLead }: { initialLead: SnapshotL
             onStatusChange={updateStatus}
             onSendInvitation={sendInvitation}
             onConvert={() => setConvertOpen(true)}
+            redirectOnDelete
+            showDeleteButton
           />
         </div>
       </div>

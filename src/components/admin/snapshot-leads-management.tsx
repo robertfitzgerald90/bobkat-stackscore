@@ -65,7 +65,7 @@ export function SnapshotLeadsManagement({
 }: SnapshotLeadsManagementProps) {
   const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
-  const [stats] = useState(initialStats);
+  const [stats, setStats] = useState(initialStats);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -141,6 +141,31 @@ export function SnapshotLeadsManagement({
 
   function openConvertDialog(leadId: string) {
     router.push(`/snapshot-leads/${leadId}?convert=1`);
+  }
+
+  function handleLeadDeleted(leadId: string) {
+    const removed = leads.find((lead) => lead.id === leadId);
+    setLeads((current) => current.filter((lead) => lead.id !== leadId));
+    if (!removed) return;
+
+    setStats((current) => {
+      const next = { ...current };
+      if (removed.status === "new") next.newLeads = Math.max(0, next.newLeads - 1);
+      if (removed.status === "contacted") next.contacted = Math.max(0, next.contacted - 1);
+      if (removed.status === "follow_up") {
+        next.followUpNeeded = Math.max(0, next.followUpNeeded - 1);
+      }
+      if (
+        removed.status === "assessment_invited" ||
+        removed.assessmentInvitedAt != null
+      ) {
+        next.assessmentInvitationsSent = Math.max(0, next.assessmentInvitationsSent - 1);
+      }
+      if (removed.status === "converted") {
+        next.converted = Math.max(0, next.converted - 1);
+      }
+      return next;
+    });
   }
 
   return (
@@ -321,6 +346,7 @@ export function SnapshotLeadsManagement({
                               onStatusChange={(status) => updateStatus(lead.id, status)}
                               onSendInvitation={() => sendInvitation(lead.id)}
                               onConvert={() => openConvertDialog(lead.id)}
+                              onDeleted={handleLeadDeleted}
                             />
                           </TableCell>
                         </TableRow>
@@ -393,6 +419,7 @@ export function SnapshotLeadsManagement({
                         onStatusChange={(status) => updateStatus(lead.id, status)}
                         onSendInvitation={() => sendInvitation(lead.id)}
                         onConvert={() => openConvertDialog(lead.id)}
+                        onDeleted={handleLeadDeleted}
                       />
                     </div>
                   </MobileDataCard>

@@ -23,10 +23,11 @@ type DashboardShellProps = {
     clientId?: string | null;
     clientPortal?: ClientPortalState | null;
   };
+  navBadges?: Record<string, number>;
   children: React.ReactNode;
 };
 
-export function DashboardShell({ user, children }: DashboardShellProps) {
+export function DashboardShell({ user, navBadges = {}, children }: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { collapsed, toggleCollapsed, hydrated } = useSidebarCollapsed();
@@ -45,12 +46,18 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       }}
     >
       <div className="executive-os flex h-screen min-h-screen overflow-hidden bg-background">
-        <AppSidebar role={user.role} clientId={user.clientId} collapsed={hydrated && collapsed} />
+        <AppSidebar
+          role={user.role}
+          clientId={user.clientId}
+          collapsed={hydrated && collapsed}
+          navBadges={navBadges}
+        />
         <MobileSidebar
           role={user.role}
           clientId={user.clientId}
           open={mobileNavOpen}
           onOpenChange={setMobileNavOpen}
+          navBadges={navBadges}
         />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           {!usesUnifiedClientChrome ? (

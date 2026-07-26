@@ -20,6 +20,7 @@ import {
   Camera,
   Library,
   WalletCards,
+  Globe,
 } from "lucide-react";
 import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
@@ -34,6 +35,7 @@ export type SidebarNavItem = {
   adminOnly?: boolean;
   staffOnly?: boolean;
   portfolioOnly?: boolean;
+  badgeCount?: number;
 };
 
 function customerHref(clientId: string | null, path: string): string {
@@ -103,6 +105,7 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
 export function getConsultantSidebarNav(
   role: string,
   clientId: string | null,
+  navBadges: Record<string, number> = {},
 ): SidebarNavItem[] {
   const clientScoped = (section: string): string =>
     clientId ? `/clients/${clientId}/${section}` : "/clients";
@@ -145,6 +148,13 @@ export function getConsultantSidebarNav(
     },
     { href: "/snapshot-leads", label: "Snapshot Leads", icon: Camera, adminOnly: true },
     {
+      href: "/website-leads",
+      label: "Website Leads",
+      icon: Globe,
+      adminOnly: true,
+      badgeCount: navBadges["/website-leads"],
+    },
+    {
       href: "/admin/communications",
       label: "Communications",
       icon: Mail,
@@ -164,13 +174,14 @@ export function getConsultantSidebarNav(
 export function getSidebarNavForRole(
   role: string,
   clientId: string | null,
+  navBadges: Record<string, number> = {},
 ): SidebarNavItem[] {
   if (isCustomerMode(role)) {
     return getCustomerSidebarNav(clientId).filter(
       (item) => !item.requiresClient || Boolean(clientId),
     );
   }
-  return getConsultantSidebarNav(role, clientId);
+  return getConsultantSidebarNav(role, clientId, navBadges);
 }
 
 /** Extract client id from pathname when viewing a client workspace. */

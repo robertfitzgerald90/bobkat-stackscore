@@ -1,18 +1,18 @@
-# StackScore Technology Improvement Plan — Marketing Demo
+# StackScore Marketing Demo Components
 
-Reusable, client-facing React components that demonstrate the Technology Improvement Plan experience for marketing websites (for example, Bobkat IT).
+Reusable, client-facing React components for marketing websites (for example, Bobkat IT).
 
 ## Isolation guarantees
 
 - No NextAuth / Auth.js session usage
 - No Prisma, databases, server actions, Stripe, or environment variables
 - No production API calls or StackScore route context
-- Fixture-only data (`clientImprovementPlanDemoData`) — Acme Inc. demo content
+- Fixture-only data — Acme Inc. demo content
 - No consultant notes, internal pricing, investment totals, margins, or exclusion controls
 
 ## Exports
 
-Import from `@/components/marketing-demo` (or relative `./components/marketing-demo` after copy):
+Import from `@/components/marketing-demo` or the marketing library barrel `@/components/marketing`:
 
 - `TechnologyImprovementPlanDemo`
 - `MaturityProfileDemo`
@@ -20,7 +20,9 @@ Import from `@/components/marketing-demo` (or relative `./components/marketing-d
 - `SolutionPlaybooksDemo`
 - `TechnologyRoadmapDemo`
 - `ExecutiveReportDemo`
+- `RecommendationsWorkspaceDemo`
 - `clientImprovementPlanDemoData`
+- `clientRecommendationsDemoData`
 - Stage helpers: `TIP_DEMO_STAGES`, `TIP_DEMO_STAGE_LABELS`, `isTipDemoStage`
 
 ## Usage
@@ -73,7 +75,7 @@ Optional host route pattern:
 
 `/demo/technology-improvement-plan?stage=recommendations`
 
-## Stages
+## Stages (Technology Improvement Plan demo)
 
 - `maturity-profile`
 - `recommendations`
@@ -81,6 +83,18 @@ Optional host route pattern:
 - `technology-roadmap`
 - `executive-report`
 
+## Recommendations workspace demo
+
+```tsx
+import { RecommendationsWorkspaceDemo } from "@/components/marketing";
+
+<RecommendationsWorkspaceDemo />
+```
+
+Local filters and buttons are interactive for demos only. Host route:
+
+`/demo/recommendations-workspace`
+
 ## Responsive notes
 
-Layouts use fluid grids and `min-w-0` / `max-w-full` to avoid horizontal overflow from 1440px down to 390px. Stage tabs scroll horizontally on small screens.
+Layouts use fluid grids and `min-w-0` / `max-w-full` to avoid horizontal overflow from 1440px down to 390px. Stage tabs and workspace nav scroll horizontally on small screens.

@@ -27,6 +27,7 @@ const CONSULTANT_NAV = [
     icon: "BookOpen",
   },
   { href: "/snapshot-leads", label: "Snapshot Leads", adminOnly: true, icon: "Camera" },
+  { href: "/website-leads", label: "Website Leads", adminOnly: true, icon: "Globe" },
   { href: "/admin/communications", label: "Communications", staffOnly: true, icon: "Mail" },
 ] as const;
 

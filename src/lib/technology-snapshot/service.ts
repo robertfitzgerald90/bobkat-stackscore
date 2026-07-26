@@ -8,14 +8,21 @@ export {
   addTechnologySnapshotLeadNote,
   buildSnapshotLeadDetailPayload,
   convertSnapshotLeadToClient,
+  deleteTechnologySnapshotLeadPermanently,
+  getSnapshotLeadDeletionBlockReason,
   getSnapshotLeadInvitationState,
   getTechnologySnapshotLeadById,
   getTechnologySnapshotLeadSummaryStats,
   listTechnologySnapshotLeadsForAdmin,
   previewSnapshotLeadConversion,
   sendSnapshotLeadAssessmentInvitation,
+  SNAPSHOT_LEAD_CONVERTED_DELETE_BLOCKED_MESSAGE,
   updateTechnologySnapshotLeadStatus,
 } from "./lead-admin";
+
+export type { SnapshotLeadDeletionResult } from "./lead-admin";
+
+export type { SnapshotLeadDeletionBlockInput } from "./lead-deletion";
 
 export async function createTechnologySnapshotLead(input: CreateSnapshotLeadInput) {
   const answers = input.answers as SnapshotAnswers;

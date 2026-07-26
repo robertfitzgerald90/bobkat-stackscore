@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   badRequest,
+  conflict,
   getSessionUser,
   notFound,
   requireAdmin,
@@ -8,6 +9,7 @@ import {
 } from "@/lib/api/helpers";
 import {
   buildSnapshotLeadDetailPayload,
+  deleteTechnologySnapshotLeadPermanently,
   getTechnologySnapshotLeadById,
   updateTechnologySnapshotLeadStatus,
 } from "@/lib/technology-snapshot/service";
@@ -56,4 +58,49 @@ export async function PATCH(request: Request, context: RouteContext) {
   const updated = await updateTechnologySnapshotLeadStatus(id, parsed.data.status);
 
   return NextResponse.json(updated);
+}
+
+export async function DELETE(request: Request, context: RouteContext) {
+  const user = await getSessionUser();
+  if (!user) return unauthorized();
+
+  const forbidden = requireAdmin(user);
+  if (forbidden) return forbidden;
+
+  const { id } = await context.params;
+  if (!id?.trim()) {
+    return badRequest("Lead ID is required");
+  }
+
+  const sourceHeader = request.headers.get("x-stackscore-admin-source");
+  const source =
+    sourceHeader?.trim() ||
+    new URL(request.url).searchParams.get("source") ||
+    "admin.snapshot-leads";
+
+  const result = await deleteTechnologySnapshotLeadPermanently({
+    leadId: id,
+    actor: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    },
+    source,
+  });
+
+  if (!result.ok) {
+    if (result.code === "NOT_FOUND") {
+      return notFound(result.message);
+    }
+    if (result.code === "CONVERTED") {
+      return conflict(result.message);
+    }
+    return conflict(result.message);
+  }
+
+  return NextResponse.json({
+    success: true,
+    deletedLeadId: result.deletedLeadId,
+    message: "Snapshot Lead deleted.",
+  });
 }

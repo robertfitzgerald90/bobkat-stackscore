@@ -302,6 +302,7 @@ model User {
   vcioOnboardingResets                   VcioOnboarding[]               @relation("VcioOnboardingResetBy")
   snapshotLeadNotesAuthored            TechnologySnapshotLeadNote[]   @relation("SnapshotLeadNoteAuthor")
   operationalNotifications             OperationalNotification[]
+  adminAuditEvents                     AdminAuditEvent[]              @relation("AdminAuditActor")
 }
 
 model Client {
@@ -364,6 +365,7 @@ model Client {
   vcioOnboarding              VcioOnboarding?
   vcioQuarterlyReviews        VcioQuarterlyReview[]
   snapshotLeads               TechnologySnapshotLead[]
+  websiteLeads                WebsiteLead[]
   lifecycleOpportunities      LifecycleOpportunity[]
   operationalNotifications    OperationalNotification[]
 }
@@ -524,6 +526,7 @@ model Assessment {
   communicationMessages   CommunicationMessage[]
   campaignRecipients      CampaignRecipient[]
   communicationQueueItems CommunicationQueueItem[]
+  websiteLeads            WebsiteLead[]
 }
 
 model TechnologyProfile {
@@ -1189,6 +1192,22 @@ enum TechnologySnapshotLeadStatus {
   archived
 }
 
+enum WebsiteLeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONSULTATION_BOOKED
+  CONVERTED
+  CLOSED
+}
+
+enum WebsiteLeadSource {
+  BOBKAT_WEBSITE_CONTACT
+  TECHNOLOGY_SNAPSHOT
+  MANUAL
+  OTHER
+}
+
 enum ProspectStatus {
   new
   invited
@@ -1684,6 +1703,35 @@ model TechnologySnapshotLeadNote {
 
   @@index([leadId])
   @@index([createdAt])
+}
+
+model WebsiteLead {
+  id                 String            @id @default(uuid())
+  name               String
+  company            String?
+  phone              String?
+  email              String
+  message            String            @db.Text
+  source             WebsiteLeadSource
+  status             WebsiteLeadStatus @default(NEW)
+  internalNotes      String?           @db.Text
+  submissionId       String?           @unique
+  websiteUrl         String?
+  submittedAt        DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  lastContactedAt    DateTime?
+  convertedAt        DateTime?
+  linkedClientId     String?
+  linkedAssessmentId String?
+
+  linkedClient     Client?     @relation(fields: [linkedClientId], references: [id], onDelete: SetNull)
+  linkedAssessment Assessment? @relation(fields: [linkedAssessmentId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([source])
+  @@index([submittedAt])
+  @@index([email])
+  @@index([linkedClientId])
 }
 
 model Prospect {
@@ -2585,6 +2633,26 @@ model BillingAuditEvent {
   @@index([clientId])
   @@index([invoiceId])
   @@index([action])
+  @@index([createdAt])
+}
+
+/// Durable admin action audit trail (non-client-scoped).
+model AdminAuditEvent {
+  id           String   @id @default(uuid())
+  action       String
+  entityType   String
+  entityId     String?
+  actorUserId  String?
+  summary      String
+  source       String?
+  metadataJson Json?
+  createdAt    DateTime @default(now())
+
+  actor User? @relation("AdminAuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([actorUserId])
   @@index([createdAt])
 }
 

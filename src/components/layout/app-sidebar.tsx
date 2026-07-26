@@ -44,16 +44,18 @@ function SidebarNav({
   clientId,
   collapsed = false,
   onNavigate,
+  navBadges = {},
 }: {
   role: string;
   clientId: string | null;
   collapsed?: boolean;
   onNavigate?: () => void;
+  navBadges?: Record<string, number>;
 }) {
   const pathname = usePathname();
   const pathClientId = resolveClientIdFromPathname(pathname);
   const effectiveClientId = pathClientId ?? clientId;
-  const navItems = getSidebarNavForRole(role, effectiveClientId);
+  const navItems = getSidebarNavForRole(role, effectiveClientId, navBadges);
   const logoHref = canAccessPortfolio(role)
     ? "/portfolio"
     : isCustomerMode(role) && effectiveClientId
@@ -111,7 +113,16 @@ function SidebarNav({
                 />
               ) : null}
               <Icon className="h-[1.125rem] w-[1.125rem] shrink-0" />
-              {!collapsed ? <span className="truncate">{item.label}</span> : null}
+              {!collapsed ? (
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-2 truncate">
+                  <span className="truncate">{item.label}</span>
+                  {item.badgeCount && item.badgeCount > 0 ? (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                      {item.badgeCount > 99 ? "99+" : item.badgeCount}
+                    </span>
+                  ) : null}
+                </span>
+              ) : null}
             </Link>
           );
 
@@ -143,10 +154,12 @@ export function AppSidebar({
   role,
   clientId,
   collapsed = false,
+  navBadges = {},
 }: {
   role: string;
   clientId?: string | null;
   collapsed?: boolean;
+  navBadges?: Record<string, number>;
 }) {
   return (
     <aside
@@ -155,7 +168,7 @@ export function AppSidebar({
         collapsed ? "w-[72px]" : "w-[260px]",
       )}
     >
-      <SidebarNav role={role} clientId={clientId ?? null} collapsed={collapsed} />
+      <SidebarNav role={role} clientId={clientId ?? null} collapsed={collapsed} navBadges={navBadges} />
     </aside>
   );
 }
@@ -165,11 +178,13 @@ export function MobileSidebar({
   clientId,
   open,
   onOpenChange,
+  navBadges = {},
 }: {
   role: string;
   clientId?: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  navBadges?: Record<string, number>;
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -183,6 +198,7 @@ export function MobileSidebar({
             clientId={clientId ?? null}
             collapsed={false}
             onNavigate={() => onOpenChange(false)}
+            navBadges={navBadges}
           />
         </div>
       </SheetContent>
