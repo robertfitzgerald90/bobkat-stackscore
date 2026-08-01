@@ -1,0 +1,38 @@
+---
+description: StackScore constitutional engineering rules — always apply for all code changes
+alwaysApply: true
+---
+
+# StackScore Core Engineering Rules
+
+StackScore is **documentation-driven software**. When docs and code conflict, treat approved documentation as authoritative until intentionally revised (see `docs/30-Architecture/DOC-129 – AI Development Rules & Engineering Constitution.md`).
+
+## Always
+
+- Read governing docs in `docs/` before inventing business logic, workflows, scoring, pricing, or permissions.
+- Put business logic in `src/lib/**` services; keep `src/app/api/**` route handlers and UI thin.
+- Reuse existing patterns before introducing new abstractions.
+- Use domain language from DOC-120; StackScore is not a CRM — keep Business Profile lightweight.
+- Never commit secrets (`.env`, API keys). Follow DOC-303 for RBAC.
+- Only create git commits when the user explicitly asks.
+- `.cursor/` maintenance updates rules and skills only — not `src/` — unless application changes are separately requested.
+- Do not regress established acquisition, checkout, billing, auth, or email workflows without explicit approval.
+
+## Architecture defaults
+
+- **Next.js 15** App Router, **React 19**, **Node 20.x**
+- **No server actions** — mutations go through `src/app/api/**` route handlers
+- **Prisma 7** + PostgreSQL (Neon in production); client at `@/generated/prisma/client`, singleton at `@/lib/db`
+- **Tenant boundary:** `Client` (no Organization/Workspace models)
+- **Auth:** NextAuth v5 JWT; API auth per-route via `@/lib/api/helpers`
+- **UI:** shadcn `base-nova` + Base UI + Tailwind v4 (CSS-first, no `tailwind.config.*`)
+- **Email:** react-email templates in `src/emails/`; outbound tracking via `@/lib/communications/tracking/record-outbound`
+- **PDF:** `@react-pdf/renderer` via `src/lib/pdf/generate.tsx`
+
+## Validation before finishing
+
+Run targeted checks for touched areas: `npm run lint`, `npm test -- <path>`, `npm run build` when risk is high.
+
+## Load skills for detailed workflows
+
+Use `.cursor/skills/` for task workflows (start with `repository-auditor` + the matching domain skill). Use `cursor-maintenance` to audit or refresh rules and skills.

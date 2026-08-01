@@ -1,0 +1,16 @@
+---
+description: Git branch and safety constraints — stay on main; no destructive or unsolicited git ops
+alwaysApply: true
+---
+
+# Git Safety
+
+- Canonical integration and production branch: `main`.
+- Never create, switch to, or work in another branch unless the user explicitly requests it.
+- Before making edits, verify the current branch with `git branch --show-current`.
+- If the current branch is not `main`, stop and report the mismatch. Do not switch automatically.
+- Never run destructive Git commands without explicit approval.
+- Never reset, force-push, rewrite history, delete branches, discard working-tree changes, or overwrite uncommitted work.
+- Do not commit or push unless explicitly instructed.
+- Before a requested commit or push, show the current branch, concise status, and intended operation.
+- Keep commits limited to changes relevant to the requested task.

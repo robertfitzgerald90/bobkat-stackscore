@@ -183,7 +183,7 @@ export function QbrReviewWorkflow({
         isEditable={review.isEditable && canEdit}
         executiveSummary={executiveSummary}
         onExecutiveSummaryChange={setExecutiveSummary}
-        showActions={review.status === "generated"}
+        showActions
       />
     </div>
   );

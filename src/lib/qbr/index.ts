@@ -3,4 +3,5 @@ export * from "./periods";
 export * from "./report-data";
 export * from "./executive-summary";
 export * from "./presentation";
+export * from "./pdf-filename";
 export * from "./service";

@@ -1,0 +1,14 @@
+---
+description: Prisma schema and migration conventions for StackScore
+globs: prisma/**/*
+alwaysApply: false
+---
+
+# Prisma / Database
+
+- Schema: `prisma/schema.prisma`; client output → `src/generated/prisma`.
+- Use migrations (`npm run db:migrate`) for shared/Neon environments; avoid `db push` for production-bound changes.
+- Import via `@/generated/prisma/client`; use `prisma` from `@/lib/db`.
+- Align new entities with `docs/30-Architecture/DOC-121 – Database Schema Specification.md`.
+
+Load `.cursor/skills/prisma-postgres/SKILL.md` for the full safe-change sequence.

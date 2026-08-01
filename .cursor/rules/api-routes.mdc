@@ -1,0 +1,14 @@
+---
+description: API route handler conventions for StackScore /api/v1 endpoints
+globs: src/app/api/**/*.ts
+alwaysApply: false
+---
+
+# API Routes
+
+- Mutations use Route Handlers only — no `"use server"` in this project.
+- Start with `getSessionUser()` → role/domain guards from `@/lib/api/helpers` and `@/lib/api/access`.
+- Business logic in `src/lib/**`; return `{ error, code }` JSON errors.
+- Integration/webhook/cron routes use `integration-endpoints` skill patterns instead.
+
+Load `.cursor/skills/api-server-actions/SKILL.md` or `integration-endpoints/SKILL.md` for full workflow.

@@ -19,5 +19,6 @@ export {
 export { ReportDataCard, ReportHighlightCard } from "./report-data-card";
 export { ReportPriorityBadge, ReportPriorityChip } from "./report-priority-badge";
 export { ReportPrintActions } from "./report-print-actions";
+export { ReportPdfExportActions } from "./report-pdf-export-actions";
 export { ReportPrintLeadGroup } from "./report-print-lead-group";
 export { ReportPagination } from "./report-pagination";

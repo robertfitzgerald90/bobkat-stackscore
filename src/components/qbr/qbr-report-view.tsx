@@ -5,9 +5,9 @@ import {
   ReportBody,
   ReportDocument,
   ReportFooter,
-  ReportPrintActions,
   ReportShell,
 } from "@/components/reports";
+import { ReportPdfExportActions } from "@/components/reports/report-pdf-export-actions";
 import {
   QbrCompletedWorkPage,
   QbrExecutiveDashboardPage,
@@ -53,7 +53,9 @@ export function QbrReportView({
   return (
     <ReportShell className="qbr-executive-report">
       {showActions ? (
-        <ReportPrintActions
+        <ReportPdfExportActions
+          clientId={clientId}
+          qbrId={data.id}
           clientName={data.clientName}
           title={BUSINESS_REVIEW_LABEL}
           description={data.reviewPeriodLabel}
