@@ -62,6 +62,157 @@ export function getCriticalOpportunityCount(items: QbrRecommendationSummary[]): 
   return items.filter((item) => item.priority === "critical" || item.priority === "high").length;
 }
 
+export type QbrPdfDashboardMetric = {
+  id: string;
+  label: string;
+  value: string;
+  secondary?: string;
+  icon: "roadmap" | "projects" | "resolved" | "risks" | "budget" | "investment";
+  tone?: "default" | "positive" | "warning";
+};
+
+export type QbrExecutiveHealthSummary = {
+  overallHealth: string;
+  biggestWin: string;
+  largestConcern: string;
+  overallRecommendation: string;
+};
+
+/** Six executive metrics for the Business Review PDF dashboard (3×2). */
+export function buildQbrPdfDashboardMetrics(data: QbrReportData): QbrPdfDashboardMetric[] {
+  const roadmapCompletion = getRoadmapCompletionPercent(data.roadmapPhases);
+  const budgetUtilization = getBudgetUtilizationPercent(data.budgetForecast);
+  const remainingCritical = getCriticalOpportunityCount(data.remainingOpportunities);
+  const openRiskCount = data.technologyRisks.length || remainingCritical;
+
+  return [
+    {
+      id: "roadmap",
+      label: "Roadmap Progress",
+      value: roadmapCompletion !== null ? `${roadmapCompletion}%` : "—",
+      secondary:
+        data.roadmapPhases.length > 0
+          ? `${data.roadmapPhases.length} phases tracked`
+          : "No roadmap phases yet",
+      icon: "roadmap",
+      tone: roadmapCompletion !== null && roadmapCompletion >= 50 ? "positive" : "default",
+    },
+    {
+      id: "projects",
+      label: "Projects Completed",
+      value: String(data.projectsCompletedInPeriod),
+      secondary:
+        data.assessmentsCompletedInPeriod > 0
+          ? `${data.assessmentsCompletedInPeriod} assessment${data.assessmentsCompletedInPeriod === 1 ? "" : "s"} this period`
+          : "Delivery completed in period",
+      icon: "projects",
+      tone: data.projectsCompletedInPeriod > 0 ? "positive" : "default",
+    },
+    {
+      id: "resolved",
+      label: "Recommendations Closed",
+      value: String(data.recommendationsResolvedInPeriod),
+      secondary: `${data.remainingOpportunities.length} still open`,
+      icon: "resolved",
+      tone: data.recommendationsResolvedInPeriod > 0 ? "positive" : "default",
+    },
+    {
+      id: "risks",
+      label: "Open Risks",
+      value: String(openRiskCount),
+      secondary:
+        remainingCritical > 0
+          ? `${remainingCritical} critical / high items`
+          : "No elevated exposure flagged",
+      icon: "risks",
+      tone: openRiskCount > 0 ? "warning" : "positive",
+    },
+    {
+      id: "budget",
+      label: "Budget Utilized",
+      value: budgetUtilization !== null ? `${budgetUtilization}%` : "—",
+      secondary: data.budgetForecast
+        ? `${formatQbrCurrency(data.budgetForecast.completedInvestment)} completed`
+        : "Forecast unavailable",
+      icon: "budget",
+    },
+    {
+      id: "investment",
+      label: "Planned Investment",
+      value: data.budgetForecast
+        ? formatQbrCurrency(data.budgetForecast.plannedInvestment)
+        : "—",
+      secondary: data.budgetForecast
+        ? `${formatQbrCurrency(data.budgetForecast.monthlyServices)}/mo services`
+        : "Investment plan pending",
+      icon: "investment",
+    },
+  ];
+}
+
+/** Narrative health panel derived only from existing Business Review data. */
+export function buildQbrExecutiveHealthSummary(data: QbrReportData): QbrExecutiveHealthSummary {
+  const scoreEnd = data.scoreAtPeriodEnd ?? data.currentStackScore;
+  const maturity = data.currentMaturityLabel;
+
+  let overallHealth: string;
+  if (scoreEnd == null && !maturity) {
+    overallHealth = "Technology health is still establishing a measurable baseline.";
+  } else if (data.scoreChange != null && data.scoreChange > 0) {
+    overallHealth = `Technology posture is ${maturity ? maturity.toLowerCase() : "improving"} at StackScore ${scoreEnd}, with measurable gains this period.`;
+  } else if (data.scoreChange != null && data.scoreChange < 0) {
+    overallHealth = `Technology posture is ${maturity ? maturity.toLowerCase() : "under pressure"} at StackScore ${scoreEnd}, with decline versus the prior review.`;
+  } else {
+    overallHealth = `Technology posture is ${maturity ? maturity.toLowerCase() : "stable"}${scoreEnd != null ? ` at StackScore ${scoreEnd}` : ""}.`;
+  }
+
+  const topCategoryWin = [...data.categoryImprovements]
+    .filter((row) => row.change != null && row.change > 0)
+    .sort((a, b) => (b.change ?? 0) - (a.change ?? 0))[0];
+  const topProject = data.completedProjects[0];
+  const topResolved = data.resolvedRecommendations[0];
+
+  let biggestWin: string;
+  if (topCategoryWin) {
+    biggestWin = `${topCategoryWin.categoryName} improved ${formatSignedPoints(topCategoryWin.change)} points.`;
+  } else if (topResolved) {
+    biggestWin = `Closed “${topResolved.title}” in ${topResolved.categoryName}.`;
+  } else if (topProject) {
+    biggestWin = `Completed “${topProject.title}” during this review period.`;
+  } else if (data.recommendationsResolvedInPeriod > 0) {
+    biggestWin = `${data.recommendationsResolvedInPeriod} recommendations were closed this period.`;
+  } else {
+    biggestWin = "No single standout win is recorded for this period yet.";
+  }
+
+  const topRisk = data.technologyRisks[0];
+  const topOpportunity = [...data.remainingOpportunities].sort((a, b) => {
+    const order = { critical: 0, high: 1, medium: 2, low: 3 } as const;
+    return order[a.priority] - order[b.priority];
+  })[0];
+
+  let largestConcern: string;
+  if (topRisk) {
+    largestConcern = topRisk;
+  } else if (topOpportunity) {
+    largestConcern = `${topOpportunity.priority.toUpperCase()} — ${topOpportunity.title}`;
+  } else {
+    largestConcern = "No elevated risks are currently flagged for leadership attention.";
+  }
+
+  const overallRecommendation =
+    data.strategicRecommendations[0] ??
+    data.nextQuarterPriorities[0] ??
+    "Maintain execution cadence and reassess priorities at the next Business Review.";
+
+  return {
+    overallHealth,
+    biggestWin,
+    largestConcern,
+    overallRecommendation,
+  };
+}
+
 export function buildQbrDashboardKpis(data: QbrReportData): QbrDashboardKpi[] {
   const roadmapCompletion = getRoadmapCompletionPercent(data.roadmapPhases);
   const budgetUtilization = getBudgetUtilizationPercent(data.budgetForecast);

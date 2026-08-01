@@ -4,7 +4,6 @@ import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary"
 import { BRAND } from "@/lib/branding";
 import { BUSINESS_REVIEW_LABEL } from "@/lib/customer-deliverable-labels";
 import {
-  buildQbrDashboardKpis,
   formatQbrCurrency,
   formatSignedPoints,
   getBudgetUtilizationPercent,
@@ -19,12 +18,11 @@ import type {
   QbrReportData,
   QbrRoadmapPhaseSummary,
 } from "@/lib/qbr/types";
+import { QbrPdfExecutiveDashboard } from "@/lib/pdf/qbr-executive-dashboard";
 import {
   COLORS,
   PdfCoverPage,
   PdfEmptyState,
-  PdfKpiCard,
-  PdfKpiRow,
   PdfPriorityBadge,
   PdfReportFooter,
   PdfReportHeader,
@@ -54,53 +52,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.slate,
     backgroundColor: COLORS.white,
-  },
-  scoreHero: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
-    alignItems: "stretch",
-  },
-  scoreCard: {
-    flex: 1,
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 8,
-    padding: 12,
-  },
-  scoreLabel: {
-    fontSize: 8,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginBottom: 4,
-  },
-  scoreValue: {
-    fontSize: 22,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
-  },
-  scoreDelta: {
-    width: 110,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.navy,
-    borderRadius: 8,
-    padding: 10,
-  },
-  scoreDeltaValue: {
-    fontSize: 16,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.white,
-  },
-  scoreDeltaLabel: {
-    fontSize: 7,
-    color: "rgba(255,255,255,0.85)",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginTop: 4,
-    textAlign: "center",
   },
   bodyText: {
     fontSize: 10,
@@ -301,7 +252,6 @@ function RoadmapCard({ phase }: { phase: QbrRoadmapPhaseSummary }) {
 }
 
 export function QbrReportDocument({ data }: { data: QbrReportData }) {
-  const kpis = buildQbrDashboardKpis(data).slice(0, 8);
   const opportunityGroups = groupOpportunitiesByPriority(data.remainingOpportunities);
   const budgetUtilization = getBudgetUtilizationPercent(data.budgetForecast);
   const scoreEnd = data.scoreAtPeriodEnd ?? data.currentStackScore;
@@ -343,33 +293,15 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
         />
       </Page>
 
-      {/* Executive dashboard + summary */}
+      {/* Executive dashboard */}
       <Page size="LETTER" style={styles.body} wrap>
         <PageChrome data={data} />
-        <PdfSectionTitle
-          title="Executive Dashboard"
-          subtitle="Thirty-second view of review-period performance and technology health"
-        />
-        <View style={styles.scoreHero} wrap={false}>
-          <View style={styles.scoreCard}>
-            <Text style={styles.scoreLabel}>Previous Review</Text>
-            <Text style={styles.scoreValue}>{data.scoreAtPeriodStart ?? "—"}</Text>
-          </View>
-          <View style={styles.scoreDelta}>
-            <Text style={styles.scoreDeltaValue}>{formatSignedPoints(data.scoreChange)}</Text>
-            <Text style={styles.scoreDeltaLabel}>Since last review</Text>
-          </View>
-          <View style={styles.scoreCard}>
-            <Text style={styles.scoreLabel}>Current Score</Text>
-            <Text style={styles.scoreValue}>{scoreEnd ?? "—"}</Text>
-          </View>
-        </View>
-        <PdfKpiRow>
-          {kpis.map((kpi) => (
-            <PdfKpiCard key={kpi.label} label={kpi.label} value={kpi.value} caption={kpi.hint} />
-          ))}
-        </PdfKpiRow>
+        <QbrPdfExecutiveDashboard data={data} />
+      </Page>
 
+      {/* Executive summary */}
+      <Page size="LETTER" style={styles.body} wrap>
+        <PageChrome data={data} />
         <PdfSectionTitle
           title="Executive Summary"
           subtitle="Strategic narrative for leadership"
