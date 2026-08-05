@@ -180,15 +180,15 @@
     @apply border-transparent text-primary-foreground shadow-md transition-all duration-300 ease-out motion-reduce:transition-none;
     background: linear-gradient(135deg, #1a7fff 0%, #2387ff 52%, #4a9dff 100%);
     box-shadow:
-      0 4px 16px rgba(35, 135, 255, 0.35),
-      0 0 24px rgba(35, 135, 255, 0.12);
+      0 4px 12px rgba(35, 135, 255, 0.28),
+      0 0 14px rgba(35, 135, 255, 0.1);
   }
 
   .marketing-btn-primary:hover {
     transform: translateY(-1px);
     box-shadow:
-      0 8px 24px rgba(35, 135, 255, 0.42),
-      0 0 32px rgba(35, 135, 255, 0.18);
+      0 6px 16px rgba(35, 135, 255, 0.34),
+      0 0 18px rgba(35, 135, 255, 0.14);
   }
 
   .marketing-btn-glass {
@@ -267,8 +267,8 @@
   color: var(--primary-foreground);
   background: linear-gradient(135deg, #1a7fff 0%, #2387ff 52%, #4a9dff 100%);
   box-shadow:
-    0 4px 16px rgba(35, 135, 255, 0.35),
-    0 0 24px rgba(35, 135, 255, 0.12);
+    0 4px 12px rgba(35, 135, 255, 0.28),
+    0 0 14px rgba(35, 135, 255, 0.1);
   transition: all 0.3s ease-out;
 }
 
@@ -276,8 +276,8 @@
 .public-marketing a.bg-primary:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 8px 24px rgba(35, 135, 255, 0.42),
-    0 0 32px rgba(35, 135, 255, 0.18);
+    0 6px 16px rgba(35, 135, 255, 0.34),
+    0 0 18px rgba(35, 135, 255, 0.14);
 }
 
 .public-marketing [data-slot="button"].border-border.bg-background,

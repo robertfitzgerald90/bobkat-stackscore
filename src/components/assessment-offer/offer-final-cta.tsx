@@ -32,22 +32,28 @@ export function OfferFinalCta({ attribution }: { attribution?: AssessmentOfferAt
         </>
       }
     >
-      <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
+      <div className="flex w-full max-w-full min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
         <AssessmentPurchaseButton
           label="Purchase Assessment — $1,500"
-          className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+          className="h-11 w-full max-w-full px-8 text-base sm:w-auto"
           source="offer_final_cta"
           attribution={attribution}
         />
         <Link
           href={invitationHref}
-          className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-11 w-full max-w-full px-8 text-base sm:w-auto",
+          )}
         >
           Continue with an invitation
         </Link>
         <Link
           href="#assessment-inclusions"
-          className={cn(buttonVariants({ variant: "ghost" }), "h-11 w-full px-8 text-base sm:w-auto")}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "h-11 w-full max-w-full px-8 text-base sm:w-auto",
+          )}
         >
           Learn More About the Assessment
         </Link>

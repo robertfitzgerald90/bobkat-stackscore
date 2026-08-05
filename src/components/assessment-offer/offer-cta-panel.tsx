@@ -23,7 +23,12 @@ export function OfferCtaPanel({
     <section className={cn(MARKETING_SECTION, className)}>
       <div className="mx-auto max-w-4xl">
         <OfferReveal>
-          <div className={cn(MARKETING_PANEL, "px-6 py-12 text-center sm:px-12 sm:py-16")}>
+          <div
+            className={cn(
+              MARKETING_PANEL,
+              "overflow-visible px-6 pb-14 pt-12 text-center sm:px-12 sm:pb-20 sm:pt-16",
+            )}
+          >
             {eyebrow ? (
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">{eyebrow}</p>
             ) : null}
@@ -38,7 +43,9 @@ export function OfferCtaPanel({
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
               {supportingText}
             </p>
-            <div className="mt-10 flex flex-col items-center gap-3">{children}</div>
+            <div className="mt-10 flex max-w-full min-w-0 flex-col items-center gap-3 overflow-visible">
+              {children}
+            </div>
             {footnote ? <div className="mt-8">{footnote}</div> : null}
           </div>
         </OfferReveal>

@@ -18,22 +18,28 @@ export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProp
       headline="Ready to See Where Your Technology Stands?"
       supportingText="The Technology Snapshot is free and only takes a few minutes. You'll immediately receive a high-level view of your organization's technology maturity and understand where deeper improvements may exist."
     >
-      <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:justify-center">
+      <div className="flex w-full max-w-full min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
         <TechnologySnapshotLink
           label="Start My Free Technology Snapshot"
-          className="h-11 w-full px-8 text-base shadow-md transition-shadow hover:shadow-lg sm:w-auto"
+          className="h-11 w-full max-w-full px-8 text-base sm:w-auto"
           prospectId={invitationContext?.prospectId}
           campaignId={invitationContext?.campaignId}
         />
         <Link
           href={buildAssessmentOfferHref(invitationContext)}
-          className={cn(buttonVariants({ variant: "outline" }), "h-11 w-full px-8 text-base sm:w-auto")}
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-11 w-full max-w-full px-8 text-base sm:w-auto",
+          )}
         >
           Purchase the full assessment
         </Link>
         <a
           href={BOBKAT_IT_URLS.technologyMaturityAssessment}
-          className={cn(buttonVariants({ variant: "ghost" }), "h-11 w-full px-8 text-base sm:w-auto")}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "h-11 w-full max-w-full px-8 text-base sm:w-auto",
+          )}
         >
           Learn more on Bobkat IT
         </a>
