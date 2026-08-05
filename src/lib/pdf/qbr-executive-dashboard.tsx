@@ -268,8 +268,8 @@ function MetricCard({ metric }: { metric: QbrPdfDashboardMetric }) {
       <Text
         style={[
           styles.metricValue,
-          metric.tone === "positive" ? styles.metricValuePositive : undefined,
-          metric.tone === "warning" ? styles.metricValueWarning : undefined,
+          ...(metric.tone === "positive" ? [styles.metricValuePositive] : []),
+          ...(metric.tone === "warning" ? [styles.metricValueWarning] : []),
         ]}
       >
         {metric.value}
