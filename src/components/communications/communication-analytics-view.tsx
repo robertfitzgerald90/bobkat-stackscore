@@ -96,12 +96,12 @@ export function CommunicationAnalyticsView({
         {metrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-xl border border-[#1e3a5f]/10 bg-card p-4 shadow-sm"
+            className="rounded-xl border border-border bg-card p-4 shadow-sm"
           >
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {metric.label}
             </p>
-            <p className="mt-2 text-2xl font-semibold text-[#082F5B]">{metric.value}</p>
+            <p className="instrument-mono mt-2 text-2xl font-semibold text-primary">{metric.value}</p>
           </div>
         ))}
       </div>
@@ -118,7 +118,7 @@ export function CommunicationAnalyticsView({
                   <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="count" stroke="#082F5B" strokeWidth={2} />
+                  <Line type="monotone" dataKey="count" stroke="var(--primary)" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -136,9 +136,9 @@ export function CommunicationAnalyticsView({
                   <XAxis dataKey="templateKey" tick={{ fontSize: 11 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                   <Tooltip />
-                  <Bar dataKey="sent" fill="#082F5B" name="Sent" />
-                  <Bar dataKey="opens" fill="#7D97AC" name="Opens" />
-                  <Bar dataKey="clicks" fill="#2563EB" name="Clicks" />
+                  <Bar dataKey="sent" fill="var(--chart-1)" name="Sent" />
+                  <Bar dataKey="opens" fill="var(--chart-2)" name="Opens" />
+                  <Bar dataKey="clicks" fill="var(--chart-4)" name="Clicks" />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -173,9 +173,9 @@ export function CommunicationAnalyticsView({
                   <Link
                     key={campaign.id}
                     href={`/admin/communications/campaigns/${campaign.id}`}
-                    className="block rounded-lg border border-[#1e3a5f]/10 p-3 hover:bg-muted/20"
+                    className="block rounded-lg border border-border p-3 hover:bg-muted/20"
                   >
-                    <p className="font-medium text-[#082F5B]">{campaign.name}</p>
+                    <p className="font-medium text-primary">{campaign.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {campaign.metrics.invitationsSent} sent ·{" "}
                       {campaign.metrics.conversionRate === null
@@ -225,7 +225,7 @@ export function CommunicationAnalyticsView({
               <Link
                 key={failure.id}
                 href={`/admin/communications/history/${failure.id}`}
-                className="block rounded-lg border border-[#1e3a5f]/10 p-3 transition-colors hover:bg-muted/20"
+                className="block rounded-lg border border-border p-3 transition-colors hover:bg-muted/20"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-medium">{failure.subject}</p>
@@ -253,7 +253,7 @@ function formatRate(value: number | null) {
 
 function FunnelRow({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[#1e3a5f]/10 px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
       <span>{label}</span>
       <span className="font-semibold tabular-nums">{value}</span>
     </div>

@@ -28,7 +28,7 @@ export function ClientActivityTimelineView({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#082F5B]">Activity Timeline</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-primary">Activity Timeline</h2>
         <p className="mt-1 text-muted-foreground">
           Unified customer activity for {companyName}
           {includeInternal ? " including internal communications diagnostics." : "."}
@@ -43,7 +43,7 @@ export function ClientActivityTimelineView({
             {events.map((event) => (
               <div
                 key={event.id}
-                className="rounded-lg border border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] p-4"
+                className="rounded-lg border border-border bg-primary/5 p-4"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium text-foreground">{event.title}</p>
@@ -66,7 +66,7 @@ export function ClientActivityTimelineView({
 
       <p className="text-sm text-muted-foreground">
         Need delivery details?{" "}
-        <Link href="/admin/communications/history" className="font-medium text-[#082F5B] hover:underline">
+        <Link href="/admin/communications/history" className="font-medium text-primary hover:underline">
           Open Communication History
         </Link>
       </p>

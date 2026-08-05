@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { MiniSparkline } from "@/components/executive-os/mini-sparkline";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { EXECUTIVE_OS_KPI_CARD } from "@/lib/executive-os/tokens";
 import { CLIENT_METRIC_VALUE } from "@/lib/client-ui/tokens";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,10 @@ export function ExecutiveKpiCard({
   emphasizeClassName,
   className,
 }: ExecutiveKpiCardProps) {
+  const isHighRisk = riskLevel ? /high|critical/i.test(riskLevel) : false;
+
   return (
+    <CornerBrackets tone={isHighRisk ? "critical" : "measured"} corners="two">
     <article className={cn(EXECUTIVE_OS_KPI_CARD, className)}>
       <div className="flex items-start justify-between gap-3">
         <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -82,5 +86,6 @@ export function ExecutiveKpiCard({
         </div>
       )}
     </article>
+    </CornerBrackets>
   );
 }

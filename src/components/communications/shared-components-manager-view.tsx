@@ -37,7 +37,7 @@ export function SharedComponentsManagerView({ brand }: SharedComponentsManagerVi
                 {Object.entries(preview).map(([label, value]) => (
                   <div
                     key={label}
-                    className="flex items-start justify-between gap-3 rounded-lg border border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] px-3 py-2"
+                    className="flex items-start justify-between gap-3 rounded-lg border border-border bg-primary/5 px-3 py-2"
                   >
                     <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       {label}

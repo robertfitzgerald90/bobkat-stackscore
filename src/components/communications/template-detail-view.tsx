@@ -142,13 +142,13 @@ export function TemplateDetailView({
         <div className="space-y-3">
           <Link
             href="/admin/communications/templates"
-            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-[#082F5B]"
+            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="size-4" />
             Template Library
           </Link>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-2xl font-bold tracking-tight text-[#082F5B]">{template.name}</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-primary">{template.name}</h2>
             <TemplateStatusBadge status={template.status} />
             {versionState.draft ? <StatusPill tone="warning">Draft pending</StatusPill> : null}
           </div>
@@ -327,7 +327,7 @@ export function TemplateDetailView({
                 {validation.map((issue) => (
                   <li
                     key={`${issue.code}-${issue.message}`}
-                    className="rounded-lg border border-[#1e3a5f]/10 px-3 py-2 text-sm"
+                    className="rounded-lg border border-border px-3 py-2 text-sm"
                   >
                     <StatusPill tone={issue.severity === "error" ? "warning" : "neutral"}>
                       {issue.severity}
@@ -343,7 +343,7 @@ export function TemplateDetailView({
             <CommunicationsPanel title="Recent Changes">
               <div className="space-y-3">
                 {versionState.history.map((entry) => (
-                  <div key={entry.id} className="rounded-lg border border-[#1e3a5f]/10 p-3 text-sm">
+                  <div key={entry.id} className="rounded-lg border border-border p-3 text-sm">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium">v{entry.versionNumber}</span>
                       <StatusPill tone={entry.status === "published" ? "success" : "neutral"}>
@@ -374,7 +374,7 @@ export function TemplateDetailView({
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm font-medium text-[#082F5B]">Subject: {preview.subject}</p>
+              <p className="text-sm font-medium text-primary">Subject: {preview.subject}</p>
               <EmailPreviewPanel html={preview.html} text={preview.text} />
             </div>
           )}
@@ -397,7 +397,7 @@ export function TemplateDetailView({
 
 function Meta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-b border-[#1e3a5f]/10 py-3 last:border-b-0">
+    <div className="border-b border-border py-3 last:border-b-0">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm">{value}</p>
     </div>

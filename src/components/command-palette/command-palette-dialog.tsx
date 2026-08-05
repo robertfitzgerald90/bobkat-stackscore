@@ -374,7 +374,7 @@ export function CommandPaletteDialog({ open, onOpenChange, user }: CommandPalett
                 value={query}
                 onValueChange={setQuery}
                 placeholder="Search commands, pages, clients, assessments..."
-                className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/45 focus:border-white/20 focus:ring-2 focus:ring-[#7D97AC]/40"
+                className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-base text-white outline-none placeholder:text-white/45 focus:border-white/20 focus:ring-2 focus:ring-[#3ECF7A]/40"
               />
             </div>
             <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Command categories">
@@ -616,7 +616,7 @@ function PaletteItem({
       onSelect={onSelect}
       className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm outline-none aria-selected:bg-white/10"
     >
-      <Icon className="size-4 shrink-0 text-[#7D97AC]" />
+      <Icon className="size-4 shrink-0 text-[#3ECF7A]" />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-white">{title}</p>
         {subtitle ? <p className="truncate text-xs text-white/45">{subtitle}</p> : null}

@@ -116,7 +116,7 @@ export function CommunicationHistoryView({
           </Button>
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-lg border border-[#1e3a5f]/10">
+        <div className="mt-5 overflow-hidden rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -173,7 +173,7 @@ export function CommunicationHistoryView({
                     <TableCell>
                       <Link
                         href={`/admin/communications/history/${row.id}`}
-                        className="text-sm font-medium text-[#082F5B] hover:underline"
+                        className="text-sm font-medium text-primary hover:underline"
                       >
                         View
                       </Link>

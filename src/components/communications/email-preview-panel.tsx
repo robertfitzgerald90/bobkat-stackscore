@@ -38,8 +38,8 @@ export function EmailPreviewPanel({ html, text }: EmailPreviewPanelProps) {
             className={cn(
               "rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
               mode === item.id
-                ? "bg-[#082F5B] text-white shadow-sm"
-                : "bg-muted/40 text-muted-foreground hover:bg-[#082F5B]/8 hover:text-[#082F5B]",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted/40 text-muted-foreground hover:bg-primary/10 hover:text-primary",
             )}
           >
             {item.label}
@@ -48,7 +48,7 @@ export function EmailPreviewPanel({ html, text }: EmailPreviewPanelProps) {
       </div>
 
       {mode === "text" ? (
-        <pre className="max-h-[920px] overflow-auto rounded-xl border border-[#1e3a5f]/10 bg-card p-4 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+        <pre className="max-h-[920px] overflow-auto rounded-xl border border-border bg-card p-4 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
           {text}
         </pre>
       ) : (
@@ -63,7 +63,7 @@ export function EmailPreviewPanel({ html, text }: EmailPreviewPanelProps) {
               title="Email preview"
               srcDoc={html}
               className={cn(
-                "w-full rounded-xl border border-[#1e3a5f]/10 bg-white shadow-sm",
+                "w-full rounded-xl border border-border bg-white shadow-sm",
                 frameHeight,
               )}
               sandbox="allow-same-origin"

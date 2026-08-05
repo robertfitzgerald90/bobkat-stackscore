@@ -28,7 +28,7 @@ export const STICKY_IN_SCROLLPORT_CLASS =
 
 /**
  * Unified client workspace sticky shell: global toolbar + client context + section nav.
- * Uses opaque sidebar navy so scrolling page content never shows through.
+ * Uses the opaque sidebar surface token so scrolling page content never shows through.
  */
 export const STICKY_CLIENT_WORKSPACE_SHELL_CLASS =
   "sticky top-0 z-50 isolate w-full border-b border-sidebar-border bg-sidebar text-sidebar-foreground shadow-[0_4px_12px_rgba(0,0,0,0.18)]";

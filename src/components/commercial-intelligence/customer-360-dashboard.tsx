@@ -189,10 +189,9 @@ export function Customer360View({ dashboard }: { dashboard: Customer360Dashboard
               key={report.key}
               href={report.hrefTemplate}
               className={cn(
-                "rounded-lg border border-[rgba(70,120,255,0.12)] bg-background/40 px-4 py-3.5 text-sm",
-                "transition-all duration-200 ease-out motion-reduce:transition-none",
-                "hover:-translate-y-0.5 hover:border-primary/25 hover:bg-muted/20",
-                "hover:shadow-[0_8px_28px_rgba(0,0,0,0.22),0_0_16px_rgba(35,135,255,0.06)]",
+                "rounded-lg border border-border bg-background/40 px-4 py-3.5 text-sm",
+                "transition-colors duration-150 ease-out motion-reduce:transition-none",
+                "hover:border-primary hover:bg-muted/20",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               )}
             >
@@ -275,7 +274,7 @@ function Panel({
         CLIENT_SURFACE_CARD,
       )}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-[rgba(70,120,255,0.1)] pb-4">
+      <div className="flex items-center justify-between gap-3 border-b border-border pb-4">
         <div className="flex min-w-0 items-center gap-2.5">
           {Icon ? (
             <span
@@ -311,7 +310,7 @@ function ScrollableList({ children }: { children: ReactNode }) {
     <ul
       className={cn(
         "max-h-[min(18rem,42vh)] space-y-2.5 overflow-y-auto pr-1",
-        "[scrollbar-width:thin] [scrollbar-color:rgba(70,120,255,0.35)_transparent]",
+        "[scrollbar-width:thin] [scrollbar-color:rgba(139,146,160,0.35)_transparent]",
       )}
     >
       {children}
@@ -323,10 +322,9 @@ function ListRow({ children }: { children: ReactNode }) {
   return (
     <li
       className={cn(
-        "rounded-lg border border-[rgba(70,120,255,0.12)] bg-background/30 px-3.5 py-3",
-        "transition-all duration-200 ease-out motion-reduce:transition-none",
-        "hover:-translate-y-px hover:border-primary/25 hover:bg-muted/25",
-        "hover:shadow-[0_6px_20px_rgba(0,0,0,0.18),0_0_12px_rgba(35,135,255,0.05)]",
+        "rounded-lg border border-border bg-background/30 px-3.5 py-3",
+        "transition-colors duration-150 ease-out motion-reduce:transition-none",
+        "hover:border-primary hover:bg-muted/25",
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background",
       )}
     >

@@ -285,8 +285,8 @@ export function SendTestEmailSheet({
           </div>
 
           {preview ? (
-            <div className="rounded-xl border border-[#1e3a5f]/10 p-3">
-              <p className="mb-3 text-sm font-medium text-[#082F5B]">Subject: {preview.subject}</p>
+            <div className="rounded-xl border border-border p-3">
+              <p className="mb-3 text-sm font-medium text-primary">Subject: {preview.subject}</p>
               <EmailPreviewPanel html={preview.html} text={preview.text} />
             </div>
           ) : null}

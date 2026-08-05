@@ -61,8 +61,8 @@ export function CommunicationDeliveryTimeline({ events }: CommunicationDeliveryT
 function TimelineRow({ event }: { event: TimelineEventItem }) {
   const Icon = EVENT_ICONS[event.eventType] ?? Mail;
   return (
-    <div className="flex gap-4 rounded-xl border border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#082F5B]/10 text-[#082F5B]">
+    <div className="flex gap-4 rounded-xl border border-border bg-primary/5 p-4">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
         <Icon className="size-4" />
       </div>
       <div className="min-w-0 flex-1">
@@ -95,13 +95,13 @@ function CollapsedEventGroup({
   const Icon = EVENT_ICONS[group.events[0].eventType] ?? Mail;
 
   return (
-    <div className="rounded-xl border border-[#1e3a5f]/10">
+    <div className="rounded-xl border border-border">
       <button
         type="button"
         onClick={() => setExpanded((value) => !value)}
         className="flex w-full items-center gap-4 p-4 text-left"
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#082F5B]/10 text-[#082F5B]">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
           <Icon className="size-4" />
         </div>
         <div className="flex-1">
@@ -110,10 +110,10 @@ function CollapsedEventGroup({
             Last {new Date(group.events[group.events.length - 1].occurredAt).toLocaleString()}
           </p>
         </div>
-        <span className="text-sm text-[#082F5B]">{expanded ? "Hide" : "Show all"}</span>
+        <span className="text-sm text-primary">{expanded ? "Hide" : "Show all"}</span>
       </button>
       {expanded ? (
-        <div className="space-y-2 border-t border-[#1e3a5f]/10 p-4">
+        <div className="space-y-2 border-t border-border p-4">
           {group.events.map((event) => (
             <TimelineRow key={event.id} event={event} />
           ))}

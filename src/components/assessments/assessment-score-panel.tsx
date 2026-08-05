@@ -2,6 +2,7 @@ import { AlertTriangle, ArrowUpRight, ShieldAlert, TrendingUp } from "lucide-rea
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS } from "@/lib/scoring";
 import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
@@ -39,9 +40,11 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
   }
 
   const overallRating = preview.overallRating;
+  const bracketTone = overallRating === "critical" || overallRating === "at_risk" ? "critical" : "measured";
 
   return (
-    <Card className="xl:sticky xl:top-6 xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto">
+    <CornerBrackets tone={bracketTone} corners="four" className="xl:sticky xl:top-6">
+    <Card className="xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -66,7 +69,7 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
           </p>
           <p
             className={cn(
-              "text-5xl font-bold tabular-nums",
+              "instrument-mono text-5xl font-bold tabular-nums",
               getScoreTextColorClass(preview.overallScore),
             )}
           >
@@ -228,5 +231,6 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
         ) : null}
       </CardContent>
     </Card>
+    </CornerBrackets>
   );
 }

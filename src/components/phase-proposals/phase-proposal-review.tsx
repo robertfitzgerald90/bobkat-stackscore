@@ -73,7 +73,7 @@ export function PhaseProposalReview({
       <header className="rounded-xl border bg-card p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#082f5b]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
               {proposal.phaseSubtitle} Proposal
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">{proposal.title}</h1>
@@ -262,7 +262,7 @@ export function PhaseProposalReview({
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">{title}</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );

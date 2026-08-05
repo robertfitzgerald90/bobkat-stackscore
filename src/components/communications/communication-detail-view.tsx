@@ -68,13 +68,13 @@ export function CommunicationDetailView({
       <div className="space-y-3">
         <Link
           href="/admin/communications/history"
-          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-[#082F5B]"
+          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary"
         >
           <ArrowLeft className="size-4" />
           Communication History
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-2xl font-bold tracking-tight text-[#082F5B]">{message.subject}</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-primary">{message.subject}</h2>
           <StatusPill tone={message.isTest ? "info" : "neutral"}>
             {message.isTest ? "Test" : "Production"}
           </StatusPill>
@@ -125,7 +125,7 @@ export function CommunicationDetailView({
             <CommunicationsPanel title="Links Clicked">
               <div className="space-y-3">
                 {message.clickedLinks.map((link) => (
-                  <div key={link.url} className="rounded-lg border border-[#1e3a5f]/10 p-3 text-sm">
+                  <div key={link.url} className="rounded-lg border border-border p-3 text-sm">
                     <p className="font-medium">{link.label ?? "Link"}</p>
                     <p className="mt-1 break-all text-muted-foreground">{link.url}</p>
                     <p className="mt-2 text-xs text-muted-foreground">
@@ -160,7 +160,7 @@ export function CommunicationDetailView({
 
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-b border-[#1e3a5f]/10 py-3 last:border-b-0">
+    <div className="border-b border-border py-3 last:border-b-0">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm">{value}</p>
     </div>

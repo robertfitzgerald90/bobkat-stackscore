@@ -15,6 +15,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import {
   Select,
   SelectContent,
@@ -305,6 +306,14 @@ export function AssessmentResults({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <CornerBrackets
+          tone={
+            summary.overallRating === "critical" || summary.overallRating === "at_risk"
+              ? "critical"
+              : "measured"
+          }
+          corners="four"
+        >
         <Card className="stat-card">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -315,7 +324,7 @@ export function AssessmentResults({
           <CardContent>
             <p
               className={cn(
-                "text-4xl font-bold tabular-nums",
+                "instrument-mono text-4xl font-bold tabular-nums",
                 getScoreTextColorClass(summary.overallScore),
               )}
             >
@@ -326,6 +335,7 @@ export function AssessmentResults({
             </Badge>
           </CardContent>
         </Card>
+        </CornerBrackets>
 
         <Card className="stat-card">
           <CardHeader className="pb-2">
@@ -337,7 +347,7 @@ export function AssessmentResults({
           <CardContent>
             <p
               className={cn(
-                "text-4xl font-bold tabular-nums",
+                "instrument-mono text-4xl font-bold tabular-nums",
                 getScoreTextColorClass(summary.projectedScore),
               )}
             >
@@ -356,7 +366,7 @@ export function AssessmentResults({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tabular-nums text-destructive">
+            <p className="instrument-mono text-4xl font-bold tabular-nums text-destructive">
               {summary.criticalFindingsCount}
             </p>
             {summary.hasCriticalExposure ? (
@@ -374,7 +384,7 @@ export function AssessmentResults({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tabular-nums">{summary.openRecommendationsCount}</p>
+            <p className="instrument-mono text-4xl font-bold tabular-nums">{summary.openRecommendationsCount}</p>
             <p className="mt-2 text-sm text-muted-foreground">
               {summary.recommendations.length} total recommendations
             </p>
@@ -507,7 +517,7 @@ export function AssessmentResults({
                   <>
                     <p
                       className={cn(
-                        "text-2xl font-semibold tabular-nums",
+                        "instrument-mono text-2xl font-semibold tabular-nums",
                         getScoreTextColorClass(score),
                       )}
                     >

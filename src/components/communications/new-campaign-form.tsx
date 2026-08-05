@@ -59,7 +59,7 @@ export function NewCampaignForm() {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <Button type="submit" disabled={loading} className="bg-[#082F5B] hover:bg-[#062646]">
+          <Button type="submit" disabled={loading} className="bg-primary text-primary-foreground hover:bg-primary/90">
             Create Campaign
           </Button>
         </form>

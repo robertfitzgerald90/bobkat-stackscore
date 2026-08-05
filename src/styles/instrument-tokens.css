@@ -1,0 +1,243 @@
+/**
+ * StackScore "Instrument" design system — Phase 1 tokens.
+ *
+ * Scoped entirely under `.instrument` so it has zero effect on the rest of
+ * the application. Nothing here is wired into `:root`, `.dark`, or
+ * `.midnight` yet — that is a deliberate, separate rollout step once the
+ * direction is approved.
+ *
+ * Palette:
+ *   --obsidian    background
+ *   --frost-panel card / panel surfaces
+ *   --ash         muted body text + hairline borders
+ *   --bone        headline / high-contrast text
+ *   --phosphor    single accent (StackScore's own — not Bobkat IT's blue)
+ *   --ember       reserved for risk / critical / at-risk states only
+ *
+ * Shape: 0–2px radius, hairline ash-opacity borders, no soft shadows/glow.
+ */
+
+.instrument {
+  /* Raw palette */
+  --obsidian: #08090c;
+  --frost-panel: #12141a;
+  --ash: #8b92a0;
+  --bone: #f1f2f4;
+  --phosphor: #3ecf7a;
+  --ember: #b23a3a;
+
+  /* Derived surfaces + opacity steps (hairline borders, subtle fills) */
+  --ash-opacity-10: rgba(139, 146, 160, 0.1);
+  --ash-opacity-20: rgba(139, 146, 160, 0.2);
+  --ash-opacity-40: rgba(139, 146, 160, 0.4);
+  --phosphor-opacity-12: rgba(62, 207, 122, 0.12);
+  --phosphor-opacity-20: rgba(62, 207, 122, 0.2);
+  --ember-opacity-12: rgba(178, 58, 58, 0.12);
+  --ember-opacity-20: rgba(178, 58, 58, 0.2);
+
+  /* Mid-tier "at risk" score band. Not one of the two named accents —
+     the palette only defines phosphor (good/measured) and ember
+     (critical/at-risk). Kept as a dim amber, well short of a third
+     saturated accent, so it doesn't compete with phosphor or ember.
+     Flag for review in Phase 1 sign-off. */
+  --instrument-caution: #c9a227;
+  --instrument-caution-opacity-12: rgba(201, 162, 39, 0.12);
+
+  /* Semantic tokens consumed by existing shadcn/Tailwind primitives.
+     Because `@theme inline` re-exports these by the same name, every
+     existing bg-card / text-foreground / border-border / rounded-lg
+     utility automatically repaints inside `.instrument` — no component
+     rewrites required. */
+  --background: var(--obsidian);
+  --foreground: var(--bone);
+  --card: var(--frost-panel);
+  --card-foreground: var(--bone);
+  --popover: var(--frost-panel);
+  --popover-foreground: var(--bone);
+  --primary: var(--phosphor);
+  --primary-foreground: var(--obsidian);
+  --secondary: #191b22;
+  --secondary-foreground: var(--bone);
+  --muted: #16181f;
+  --muted-foreground: var(--ash);
+  --accent: var(--ash-opacity-10);
+  --accent-foreground: var(--bone);
+  --destructive: var(--ember);
+  --success: var(--phosphor);
+  --warning: var(--instrument-caution);
+  --border: var(--ash-opacity-20);
+  --input: var(--ash-opacity-20);
+  --ring: var(--phosphor);
+  --link: var(--phosphor);
+  --link-hover: var(--phosphor);
+  --chart-1: var(--phosphor);
+  --chart-2: var(--ash);
+  --chart-3: var(--phosphor);
+  --chart-4: var(--instrument-caution);
+  --chart-5: var(--ember);
+
+  /* Shape — 0–2px site-wide, no multiplier scale */
+  --radius: 2px;
+  --radius-sm: 0px;
+  --radius-md: 1px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+  --radius-4xl: 2px;
+
+  /* No soft shadows/glow — hairline borders carry elevation instead */
+  --shadow-glow: none;
+
+  /* Typography trio (variables populated by next/font loaders) */
+  --font-display: var(--font-instrument-display, "Space Grotesk", sans-serif);
+  --font-body: var(--font-instrument-body, "Source Sans 3", sans-serif);
+  --font-mono-jb: var(--font-instrument-mono, "JetBrains Mono", monospace);
+
+  /* Re-point Tailwind's runtime font hooks (see globals.css @theme inline) */
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-display);
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+/* Headlines use the display face; body copy stays on Source Sans 3 */
+.instrument h1,
+.instrument h2,
+.instrument h3,
+.instrument h4 {
+  font-family: var(--font-display);
+  color: var(--bone);
+  letter-spacing: -0.01em;
+}
+
+/* Utility/mono — scores, labels, timestamps, badges. Apply explicitly;
+   this does not hijack Tailwind's default font-mono utility. Works
+   anywhere in the app (not just inside `.instrument`/`.executive-os`)
+   as long as the instrument font variables are loaded on `<html>`. */
+.instrument-mono {
+  font-family: var(--font-mono-jb, var(--font-instrument-mono, "JetBrains Mono", monospace));
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* Flatten shadcn primitives to hairline borders, no soft shadow/glow */
+.instrument [data-slot="card"] {
+  box-shadow: none;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+.instrument [data-slot="badge"] {
+  border-radius: var(--radius-md);
+}
+
+.instrument .stat-card {
+  box-shadow: none;
+}
+
+/**
+ * Corner brackets — Phase 2.
+ *
+ * Thin L-shaped marks offset outside the container edge (visible gap, not
+ * flush), signalling "this is an active reading." Color is driven by the
+ * `--bracket-color` custom property set inline by the CornerBrackets
+ * component (phosphor by default, ember when the panel is displaying a
+ * critical/at-risk reading).
+ */
+.instrument-bracket {
+  position: relative;
+}
+
+.instrument-bracket-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border: 0 solid var(--bracket-color, var(--phosphor));
+}
+
+.instrument-bracket-corner[data-position="top-left"] {
+  top: -6px;
+  left: -6px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.instrument-bracket-corner[data-position="top-right"] {
+  top: -6px;
+  right: -6px;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.instrument-bracket-corner[data-position="bottom-left"] {
+  bottom: -6px;
+  left: -6px;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.instrument-bracket-corner[data-position="bottom-right"] {
+  bottom: -6px;
+  right: -6px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+/**
+ * Motion pass — Phase 3.
+ *
+ * Restraint rules: no glow/pulse, no bounce/spring easing, no gradient
+ * blobs, no shimmer states. Every hover state here is a single-property
+ * transition (border color, or bracket offset) and is fully disabled
+ * under prefers-reduced-motion.
+ */
+.instrument-hoverable {
+  transition: border-color 150ms ease-out;
+}
+
+.instrument-hoverable:hover {
+  border-color: var(--phosphor);
+}
+
+.instrument-bracket-interactive {
+  cursor: pointer;
+}
+
+.instrument-bracket-interactive .instrument-bracket-corner {
+  transition:
+    top 150ms ease-out,
+    left 150ms ease-out,
+    right 150ms ease-out,
+    bottom 150ms ease-out;
+}
+
+.instrument-bracket-interactive:hover .instrument-bracket-corner[data-position="top-left"] {
+  top: -3px;
+  left: -3px;
+}
+
+.instrument-bracket-interactive:hover .instrument-bracket-corner[data-position="top-right"] {
+  top: -3px;
+  right: -3px;
+}
+
+.instrument-bracket-interactive:hover .instrument-bracket-corner[data-position="bottom-left"] {
+  bottom: -3px;
+  left: -3px;
+}
+
+.instrument-bracket-interactive:hover .instrument-bracket-corner[data-position="bottom-right"] {
+  bottom: -3px;
+  right: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .instrument-hoverable,
+  .instrument-bracket-interactive .instrument-bracket-corner {
+    transition: none !important;
+  }
+}

@@ -72,7 +72,7 @@ export function VariablesLibraryView({ variables }: VariablesLibraryViewProps) {
           </Select>
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-lg border border-[#1e3a5f]/10">
+        <div className="mt-5 overflow-hidden rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -93,7 +93,7 @@ export function VariablesLibraryView({ variables }: VariablesLibraryViewProps) {
                   </TableCell>
                   <TableCell className="text-sm">{variable.example}</TableCell>
                   <TableCell>
-                    <span className="rounded-full bg-[#082F5B]/8 px-2 py-1 text-xs font-medium text-[#082F5B]">
+                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                       {variable.category}
                     </span>
                   </TableCell>

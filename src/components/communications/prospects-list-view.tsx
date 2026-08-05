@@ -130,7 +130,7 @@ export function ProspectsListView({
                 <TableCell>
                   <Link
                     href={`/admin/communications/prospects/${prospect.id}`}
-                    className="font-medium text-[#082F5B] hover:underline"
+                    className="font-medium text-primary hover:underline"
                   >
                     {prospect.firstName} {prospect.lastName}
                   </Link>

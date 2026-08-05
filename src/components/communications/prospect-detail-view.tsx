@@ -101,10 +101,10 @@ export function ProspectDetailView({ prospect }: ProspectDetailViewProps) {
               <p className="text-sm text-muted-foreground">No invitations sent yet.</p>
             ) : (
               prospect.campaignRecipients.map((recipient) => (
-                <div key={recipient.id} className="rounded-lg border border-[#1e3a5f]/10 p-4">
+                <div key={recipient.id} className="rounded-lg border border-border p-4">
                   <Link
                     href={`/admin/communications/campaigns/${recipient.campaign.id}`}
-                    className="font-medium text-[#082F5B] hover:underline"
+                    className="font-medium text-primary hover:underline"
                   >
                     {recipient.campaign.name}
                   </Link>
@@ -114,7 +114,7 @@ export function ProspectDetailView({ prospect }: ProspectDetailViewProps) {
                   {recipient.message ? (
                     <Link
                       href={`/admin/communications/history/${recipient.message.id}`}
-                      className="mt-2 inline-block text-sm text-[#082F5B] hover:underline"
+                      className="mt-2 inline-block text-sm text-primary hover:underline"
                     >
                       View message ({recipient.message.status})
                     </Link>

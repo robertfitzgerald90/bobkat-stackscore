@@ -115,7 +115,7 @@ export function CampaignsListView({ campaigns }: { campaigns: CampaignListItem[]
                 <TableCell>
                   <Link
                     href={`/admin/communications/campaigns/${campaign.id}`}
-                    className="font-medium text-[#082F5B] hover:underline"
+                    className="font-medium text-primary hover:underline"
                   >
                     {campaign.name}
                   </Link>

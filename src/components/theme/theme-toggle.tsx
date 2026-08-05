@@ -31,7 +31,7 @@ const OPTIONS: Array<{
   {
     value: "midnight",
     label: "StackScore Midnight",
-    description: "Deep navy enterprise theme",
+    description: "Obsidian instrument theme",
     icon: MoonStar,
   },
   {

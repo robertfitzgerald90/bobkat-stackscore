@@ -17,7 +17,7 @@ export function InsightsDashboardView({
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#082f5b]">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
           Business Intelligence
         </p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
@@ -242,7 +242,7 @@ function Stat({
 function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">{title}</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );

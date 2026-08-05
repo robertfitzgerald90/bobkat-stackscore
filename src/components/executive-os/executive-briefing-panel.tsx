@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, Minus } from "lucide-react";
 import type { ExecutiveBriefingModel } from "@/lib/executive-os/briefing";
 import { EXECUTIVE_OS_BRIEFING_PANEL, EXECUTIVE_OS_SCORE_RING } from "@/lib/executive-os/tokens";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
@@ -23,8 +24,11 @@ export function ExecutiveBriefingPanel({ briefing }: ExecutiveBriefingPanelProps
     briefing.overallHealthScore !== null
       ? getScoreTextColorClass(briefing.overallHealthScore)
       : undefined;
+  const bracketTone =
+    briefing.overallHealthScore !== null && briefing.overallHealthScore < 80 ? "critical" : "measured";
 
   return (
+    <CornerBrackets tone={bracketTone} corners="four">
     <section className={EXECUTIVE_OS_BRIEFING_PANEL} aria-labelledby="executive-briefing-heading">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start">
         <div className="min-w-0 space-y-5">
@@ -62,7 +66,12 @@ export function ExecutiveBriefingPanel({ briefing }: ExecutiveBriefingPanelProps
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Overall Technology Health
             </p>
-            <p className={cn("mt-3 text-5xl font-semibold tabular-nums tracking-tight", scoreClass)}>
+            <p
+              className={cn(
+                "instrument-mono mt-3 text-5xl font-semibold tabular-nums tracking-tight",
+                scoreClass,
+              )}
+            >
               {briefing.overallHealthScore ?? "—"}
               {briefing.overallHealthScore !== null ? (
                 <span className="text-2xl font-normal text-muted-foreground">
@@ -96,5 +105,6 @@ export function ExecutiveBriefingPanel({ briefing }: ExecutiveBriefingPanelProps
         </div>
       </div>
     </section>
+    </CornerBrackets>
   );
 }

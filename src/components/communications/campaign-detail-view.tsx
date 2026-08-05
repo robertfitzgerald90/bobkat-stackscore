@@ -112,9 +112,9 @@ export function CampaignDetailView({ campaign, timeline }: CampaignDetailViewPro
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {metricCards.map((card) => (
-          <div key={card.label} className="rounded-xl border border-[#1e3a5f]/10 bg-card p-4">
+          <div key={card.label} className="rounded-xl border border-border bg-card p-4">
             <p className="text-sm text-muted-foreground">{card.label}</p>
-            <p className="mt-1 text-2xl font-bold text-[#082F5B]">{card.value}</p>
+            <p className="mt-1 text-2xl font-bold text-primary">{card.value}</p>
           </div>
         ))}
       </div>
@@ -137,7 +137,7 @@ export function CampaignDetailView({ campaign, timeline }: CampaignDetailViewPro
                   <TableCell>
                     <Link
                       href={`/admin/communications/prospects/${recipient.prospect.id}`}
-                      className="font-medium text-[#082F5B] hover:underline"
+                      className="font-medium text-primary hover:underline"
                     >
                       {recipient.prospect.firstName} {recipient.prospect.lastName}
                     </Link>
@@ -159,8 +159,8 @@ export function CampaignDetailView({ campaign, timeline }: CampaignDetailViewPro
               <p className="text-sm text-muted-foreground">No activity yet.</p>
             ) : (
               timeline.map((event) => (
-                <div key={event.id} className="border-l-2 border-[#082F5B]/20 pl-4">
-                  <p className="font-medium text-[#082F5B]">{event.title}</p>
+                <div key={event.id} className="border-l-2 border-primary/20 pl-4">
+                  <p className="font-medium text-primary">{event.title}</p>
                   <p className="text-xs text-muted-foreground">
                     {CAMPAIGN_EVENT_LABELS[event.eventType] ?? event.eventType} ·{" "}
                     {new Date(event.occurredAt).toLocaleString()}

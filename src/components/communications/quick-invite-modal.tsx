@@ -169,9 +169,9 @@ export function QuickInviteModal({ open, onOpenChange, prefill }: QuickInviteMod
         role="dialog"
         aria-modal="true"
         aria-labelledby="quick-invite-title"
-        className="relative z-10 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[#1e3a5f]/20 bg-white shadow-2xl"
+        className="relative z-10 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-2xl"
       >
-        <div className="border-b border-[#1e3a5f]/10 bg-[#082F5B] px-6 py-5 text-white">
+        <div className="border-b border-border bg-primary px-6 py-5 text-primary-foreground">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-white/70">Quick Invite</p>
@@ -290,8 +290,8 @@ export function QuickInviteModal({ open, onOpenChange, prefill }: QuickInviteMod
                 />
               </div>
 
-              <details className="rounded-lg border border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] p-4">
-                <summary className="cursor-pointer text-sm font-medium text-[#082F5B]">
+              <details className="rounded-lg border border-border bg-primary/5 p-4">
+                <summary className="cursor-pointer text-sm font-medium text-primary">
                   Optional details
                 </summary>
                 <div className="mt-4 space-y-4">
@@ -351,7 +351,7 @@ export function QuickInviteModal({ open, onOpenChange, prefill }: QuickInviteMod
               </details>
 
               {previewHtml ? (
-                <div className="overflow-hidden rounded-xl border border-[#1e3a5f]/10">
+                <div className="overflow-hidden rounded-xl border border-border">
                   <div className="border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
                     Invitation Preview (EMAIL-009)
                   </div>
@@ -364,7 +364,7 @@ export function QuickInviteModal({ open, onOpenChange, prefill }: QuickInviteMod
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[#1e3a5f]/10 bg-[#082F5B]/[0.02] px-6 py-4">
+            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border bg-primary/5 px-6 py-4">
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
@@ -384,7 +384,7 @@ export function QuickInviteModal({ open, onOpenChange, prefill }: QuickInviteMod
               <Button
                 type="submit"
                 disabled={loading}
-                className={cn("min-w-[180px] bg-[#082F5B] hover:bg-[#062646]")}
+                className={cn("min-w-[180px] bg-primary text-primary-foreground hover:bg-primary/90")}
               >
                 {loading ? (
                   <Loader2 className="size-4 animate-spin" />

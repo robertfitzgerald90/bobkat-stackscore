@@ -42,8 +42,8 @@ export function NotificationsPanel({
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Bell className="h-4 w-4 text-[#082f5b]" />
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#082f5b]">
+          <Bell className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
             Actionable Notifications
           </h2>
         </div>
