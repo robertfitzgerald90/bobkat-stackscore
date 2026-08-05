@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { portfolioPreviewData } from "../../marketing/portfolio-export/data/preview-data";
+import { portfolioPreviewData } from "../../marketing/portfolio-export-stackscore/data/preview-data";
 
-const EXPORT_ROOT = join(process.cwd(), "marketing", "portfolio-export");
+const EXPORT_ROOT = join(process.cwd(), "marketing", "portfolio-export-stackscore");
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {

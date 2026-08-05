@@ -2,7 +2,7 @@
 
 Portable React preview package for the StackScore application. Built for professional case studies and marketing sites.
 
-This package is self contained under `marketing/portfolio-export/`.
+This package is self contained under `marketing/portfolio-export-stackscore/`.
 
 ## What this is
 
@@ -35,7 +35,7 @@ missionCONTROL and ShiftFlow prioritization from the request do not apply to thi
 Copy the entire folder:
 
 ```text
-marketing/portfolio-export/
+marketing/portfolio-export-stackscore/
 ```
 
 Recommended target path in another project:
@@ -117,9 +117,9 @@ import {
   TechnologyRoadmapPreview,
   ExecutiveReportPreview,
   portfolioPreviewData,
-} from "@/marketing/portfolio-export";
+} from "@/marketing/portfolio-export-stackscore";
 // or relative:
-// from "../marketing/portfolio-export";
+// from "../marketing/portfolio-export-stackscore";
 
 export default function CaseStudyPage() {
   return (
@@ -188,17 +188,9 @@ These components do not:
 
 No remaining StackScore application imports.
 
-## Local StackScore demo host (optional)
-
-This repository also exposes a public safe gallery route for visual verification:
-
-`/demo/portfolio-export`
-
-That host route stays in the main app and is not required when copying the package elsewhere.
-
 ## Portfolio copy checklist
 
-1. Copy `marketing/portfolio-export/`
+1. Copy `marketing/portfolio-export-stackscore/`
 2. Ensure React + Tailwind dark mode
 3. Import the previews into a case study page
 4. Customize `data/preview-data.ts`

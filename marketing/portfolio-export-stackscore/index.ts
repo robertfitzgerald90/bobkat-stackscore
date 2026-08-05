@@ -1,6 +1,6 @@
 /**
  * StackScore portfolio export package.
- * Copy the entire marketing/portfolio-export folder into another Next.js project.
+ * Copy the entire marketing/portfolio-export-stackscore folder into another Next.js project.
  */
 
 export { portfolioPreviewData } from "./data/preview-data";

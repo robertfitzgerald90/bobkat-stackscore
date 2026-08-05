@@ -1,6 +1,6 @@
 # Dependency report
 
-Package root: `marketing/portfolio-export/`
+Package root: `marketing/portfolio-export-stackscore/`
 
 ## External imports by file
 
