@@ -1,0 +1,158 @@
+/**
+ * Assessment funnel pages (assessment-invitation, assessment-offer) and the
+ * Interactive Demo / product-overview experience (/demo) — StackScore
+ * Instrument treatment layered on top of the public marketing shell they're
+ * hosted in. Scoped to `.funnel-instrument` (set directly on the
+ * `PublicPageShell` for these routes) combined with `.public-marketing` for
+ * specificity, so the rest of the marketing site (homepage, pricing,
+ * solutions, services) keeps its existing blue-branded look untouched —
+ * those pages reuse the same `.marketing-*` utility classes, so this
+ * override must stay scoped rather than edit the shared classes directly.
+ */
+
+.public-marketing.funnel-instrument {
+  --marketing-bg-deep: #08090c;
+  --marketing-bg-mid: #0a0b10;
+  --marketing-bg-elevated: #12141a;
+  --marketing-bg-panel: rgba(18, 20, 26, 0.92);
+  --marketing-border: rgba(139, 146, 160, 0.2);
+  --marketing-border-strong: rgba(139, 146, 160, 0.34);
+  --marketing-glow: transparent;
+  --marketing-glow-strong: transparent;
+  --marketing-shadow-deep: none;
+  --marketing-shadow-glow: none;
+  --marketing-radius-lg: 2px;
+  --marketing-radius-xl: 2px;
+  --marketing-radius-2xl: 2px;
+  --marketing-radius-3xl: 2px;
+  --font-sans: var(--font-instrument-body, var(--font-sans));
+  --font-heading: var(--font-instrument-display, var(--font-heading));
+  font-family: var(--font-sans);
+}
+
+/* Flat obsidian backdrop, no blue ambient glow/grid */
+.public-marketing.funnel-instrument::before {
+  background: #08090c;
+}
+
+.public-marketing.funnel-instrument::after {
+  opacity: 0.25;
+  background-image:
+    linear-gradient(rgba(139, 146, 160, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 146, 160, 0.06) 1px, transparent 1px);
+}
+
+/* Panels, feature cards, KPI cards, glass surfaces — now flat frost-panel, hairline border, no glow */
+.public-marketing.funnel-instrument .marketing-panel,
+.public-marketing.funnel-instrument .marketing-panel-soft,
+.public-marketing.funnel-instrument .marketing-glass,
+.public-marketing.funnel-instrument .marketing-feature-card,
+.public-marketing.funnel-instrument .marketing-kpi-card {
+  background: #12141a;
+  box-shadow: none;
+}
+
+.public-marketing.funnel-instrument .marketing-feature-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hero/product screenshot frames (dashboard preview, snapshot preview, etc.) */
+.public-marketing.funnel-instrument .marketing-screenshot,
+.public-marketing.funnel-instrument .marketing-screenshot-hero {
+  box-shadow: none;
+}
+
+.public-marketing.funnel-instrument .marketing-screenshot:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Gradient headline word (e.g. "...Assess Your Technology") */
+.public-marketing.funnel-instrument .marketing-text-gradient {
+  background: linear-gradient(135deg, #56dd8d 0%, #3ecf7a 55%, #2fb868 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Eyebrow badge pills */
+.public-marketing.funnel-instrument .marketing-badge {
+  background: rgba(62, 207, 122, 0.08);
+  box-shadow: none;
+}
+
+/* Icon wells */
+.public-marketing.funnel-instrument .marketing-icon-well {
+  background: rgba(62, 207, 122, 0.12);
+  box-shadow: none;
+}
+
+/* Nav bar chrome (shared header used by both the duplicate InvitationNav and
+   the shared PublicMarketingNav) — flat obsidian, hairline border, no glow */
+.public-marketing.funnel-instrument header {
+  border-bottom-color: rgba(139, 146, 160, 0.16);
+  background: rgba(8, 9, 12, 0.94);
+  box-shadow: none;
+}
+
+.public-marketing.funnel-instrument .marketing-nav-link-active {
+  background: rgba(62, 207, 122, 0.12);
+  box-shadow: none;
+}
+
+/* Primary buttons (Start My Free Technology Snapshot, Purchase Assessment, etc.) */
+.public-marketing.funnel-instrument [data-slot="button"].bg-primary,
+.public-marketing.funnel-instrument a.bg-primary {
+  border-radius: 2px;
+  border-color: transparent;
+  color: var(--obsidian, #08090c);
+  background: var(--phosphor, #3ecf7a);
+  box-shadow: none;
+  transition: background-color 150ms ease-out;
+}
+
+.public-marketing.funnel-instrument [data-slot="button"].bg-primary:hover,
+.public-marketing.funnel-instrument a.bg-primary:hover {
+  transform: none;
+  background: color-mix(in oklch, var(--phosphor, #3ecf7a), white 14%);
+  box-shadow: none;
+}
+
+/* Outline/secondary buttons */
+.public-marketing.funnel-instrument [data-slot="button"].border-border.bg-background,
+.public-marketing.funnel-instrument a.border-border.bg-background {
+  border-radius: 2px;
+  border: 1px solid rgba(139, 146, 160, 0.3);
+  background: transparent;
+  box-shadow: none;
+}
+
+.public-marketing.funnel-instrument [data-slot="button"].border-border.bg-background:hover,
+.public-marketing.funnel-instrument a.border-border.bg-background:hover {
+  border-color: var(--phosphor, #3ecf7a);
+  background: rgba(62, 207, 122, 0.06);
+  box-shadow: none;
+}
+
+/* Inputs / cards, present for completeness if any appear on these pages */
+.public-marketing.funnel-instrument [data-slot="input"],
+.public-marketing.funnel-instrument [data-slot="textarea"] {
+  border-radius: 1px;
+  border: 1px solid rgba(139, 146, 160, 0.3);
+  background: rgba(139, 146, 160, 0.06);
+  box-shadow: none;
+}
+
+.public-marketing.funnel-instrument [data-slot="input"]:focus-visible,
+.public-marketing.funnel-instrument [data-slot="textarea"]:focus-visible {
+  border-color: var(--phosphor, #3ecf7a);
+  box-shadow: 0 0 0 2px rgba(62, 207, 122, 0.22);
+}
+
+.public-marketing.funnel-instrument [data-slot="card"] {
+  border-radius: 2px;
+  border: 1px solid rgba(139, 146, 160, 0.2);
+  background: #12141a;
+  box-shadow: none;
+}

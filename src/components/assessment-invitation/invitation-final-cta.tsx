@@ -17,6 +17,7 @@ export function InvitationFinalCta({ invitationContext }: InvitationFinalCtaProp
       className="px-4 py-20 sm:px-6 sm:py-24 md:py-32"
       headline="Ready to See Where Your Technology Stands?"
       supportingText="The Technology Snapshot is free and only takes a few minutes. You'll immediately receive a high-level view of your organization's technology maturity and understand where deeper improvements may exist."
+      bracketed
     >
       <div className="flex w-full max-w-full min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
         <TechnologySnapshotLink

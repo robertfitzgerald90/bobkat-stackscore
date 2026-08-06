@@ -17,6 +17,7 @@ export function OfferFinalCta({ attribution }: { attribution?: AssessmentOfferAt
       eyebrow="Ready to get started?"
       headline="Start Your Technology Maturity Assessment"
       supportingText="Purchase your comprehensive Technology Maturity Assessment to establish your baseline, identify critical priorities, and receive a practical technology improvement roadmap."
+      bracketed
       footnote={
         <>
           <p className="max-w-sm text-sm text-muted-foreground">

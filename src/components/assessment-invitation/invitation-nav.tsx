@@ -18,6 +18,14 @@ type InvitationNavProps = {
   invitationContext?: AssessmentInvitationContext;
 };
 
+/**
+ * NOTE: This is a hand-rolled duplicate of `PublicMarketingNav`
+ * (`@/components/public/public-marketing-nav`), kept separate only because
+ * this route needs invitation-context-aware links (prospect/campaign
+ * attribution baked into hrefs). Styling here is kept in sync manually with
+ * the shared nav — flag for future consolidation into one component that
+ * accepts an optional invitation-context prop.
+ */
 export function InvitationNav({ invitationContext }: InvitationNavProps) {
   const snapshotHref = buildTechnologySnapshotUrl(invitationContext);
 
@@ -34,25 +42,25 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Assessment journey">
           <a
             href={BOBKAT_IT_URLS.solutions}
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
+            className={cn(navLinkClassName, "rounded-[2px] px-3 py-1.5 hover:bg-primary/8")}
           >
             Solutions
           </a>
           <a
             href={BOBKAT_IT_URLS.services}
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
+            className={cn(navLinkClassName, "rounded-[2px] px-3 py-1.5 hover:bg-primary/8")}
           >
             Services
           </a>
           <Link
             href={buildAssessmentOfferHref(invitationContext)}
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
+            className={cn(navLinkClassName, "rounded-[2px] px-3 py-1.5 hover:bg-primary/8")}
           >
             Assessment Offer
           </Link>
           <Link
             href={buildAssessmentInvitationHref(invitationContext)}
-            className={cn(navLinkClassName, "rounded-md px-3 py-1.5 hover:bg-[rgba(35,135,255,0.08)]")}
+            className={cn(navLinkClassName, "rounded-[2px] px-3 py-1.5 hover:bg-primary/8")}
           >
             Assessment Invitation
           </Link>
@@ -60,7 +68,7 @@ export function InvitationNav({ invitationContext }: InvitationNavProps) {
             href={snapshotHref}
             className={cn(
               navLinkClassName,
-              "rounded-md bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/15 hover:text-primary",
+              "rounded-[2px] bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/15 hover:text-primary",
             )}
           >
             Technology Snapshot

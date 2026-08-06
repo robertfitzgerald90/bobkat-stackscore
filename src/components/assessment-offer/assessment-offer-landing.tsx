@@ -18,7 +18,7 @@ export function AssessmentOfferLanding({
   attribution?: AssessmentOfferAttribution;
 }) {
   return (
-    <PublicPageShell>
+    <PublicPageShell className="funnel-instrument">
       <AssessmentOfferViewTracker />
       <OfferNav />
       <main>

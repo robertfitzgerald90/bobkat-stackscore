@@ -104,7 +104,7 @@ export function ActivateAccountForm() {
 
   if (validating) {
     return (
-      <Card className="w-full max-w-md shadow-md">
+      <Card className="w-full max-w-md">
         <CardContent className="py-8 text-center text-muted-foreground">
           Validating activation link...
         </CardContent>
@@ -113,7 +113,7 @@ export function ActivateAccountForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-md ring-border/60">
+    <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <CardTitle className="text-brand">Activate your account</CardTitle>
         <CardDescription>

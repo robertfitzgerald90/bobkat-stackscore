@@ -5,6 +5,7 @@ import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purch
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { AssessmentExecutiveOverviewPreview } from "@/components/product-previews/assessment-executive-overview-preview";
 import { buttonVariants } from "@/components/ui/button";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import {
   buildAssessmentInvitationHref,
   type AssessmentOfferAttribution,
@@ -22,7 +23,7 @@ export function OfferHero({ attribution }: { attribution?: AssessmentOfferAttrib
 
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 md:pb-24 md:pt-12">
-      <OfferHeroBackground />
+      <OfferHeroBackground tone="phosphor" />
 
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
         <OfferReveal>
@@ -87,7 +88,9 @@ export function OfferHero({ attribution }: { attribution?: AssessmentOfferAttrib
         </OfferReveal>
 
         <OfferReveal delayMs={240} variant="image" className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
-          <AssessmentExecutiveOverviewPreview data={assessmentExecutiveOverviewDemoData} />
+          <CornerBrackets corners="four">
+            <AssessmentExecutiveOverviewPreview data={assessmentExecutiveOverviewDemoData} />
+          </CornerBrackets>
         </OfferReveal>
       </div>
     </section>

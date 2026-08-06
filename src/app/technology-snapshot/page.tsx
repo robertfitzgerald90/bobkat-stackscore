@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function TechnologySnapshotPage() {
   return (
-    <PublicPageShell>
+    <PublicPageShell className="funnel-instrument">
       <PublicMarketingNav active="assessment" />
       <main className={MARKETING_SECTION_COMPACT}>
         <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col justify-center sm:min-h-[calc(100dvh-5rem)]">

@@ -1,6 +1,7 @@
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { SnapshotResultCard } from "@/components/snapshot/snapshot-result-card";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { INVITATION_DISCOVER_FEATURES } from "@/lib/assessment-invitation/content";
 import { INVITATION_SNAPSHOT_PREVIEW_DATA } from "@/lib/assessment-invitation/snapshot-preview-data";
 
@@ -21,15 +22,17 @@ export function InvitationDiscoverSection() {
             const Icon = feature.icon;
             return (
               <OfferReveal key={feature.title} delayMs={index * 50}>
-                <div className="group h-full rounded-xl border border-border/60 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
-                    <Icon className="h-5 w-5" />
+                <CornerBrackets corners="two" className="h-full">
+                  <div className="group h-full rounded-[2px] border border-border/60 bg-card p-6 transition-colors duration-300 hover:border-primary/20">
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </p>
                   </div>
-                  <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
+                </CornerBrackets>
               </OfferReveal>
             );
           })}
@@ -38,7 +41,9 @@ export function InvitationDiscoverSection() {
 
       <div className="mx-auto mt-12 max-w-5xl sm:mt-14 md:mt-16">
         <OfferReveal delayMs={220} variant="image">
-          <SnapshotResultCard data={INVITATION_SNAPSHOT_PREVIEW_DATA} preview />
+          <CornerBrackets corners="four">
+            <SnapshotResultCard data={INVITATION_SNAPSHOT_PREVIEW_DATA} preview />
+          </CornerBrackets>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Example Technology Snapshot result
           </p>

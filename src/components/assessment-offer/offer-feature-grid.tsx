@@ -7,6 +7,7 @@ import {
   MARKETING_SECTION_ALT,
 } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { OfferReveal } from "./offer-reveal";
 import { OfferSectionHeader } from "./offer-section-header";
 
@@ -55,15 +56,17 @@ export function OfferFeatureGrid({
             const Icon = feature.icon;
             return (
               <OfferReveal key={feature.title} delayMs={index * 50}>
-                <div className={MARKETING_FEATURE_CARD}>
-                  <div className={cn(MARKETING_ICON_WELL_MD, "mb-5 text-primary")}>
-                    <Icon className="h-5 w-5" />
+                <CornerBrackets corners="two" className="h-full">
+                  <div className={cn(MARKETING_FEATURE_CARD, "h-full")}>
+                    <div className={cn(MARKETING_ICON_WELL_MD, "mb-5 text-primary")}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-base font-semibold text-foreground sm:text-lg">{feature.title}</h3>
+                    <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
+                      {feature.description}
+                    </p>
                   </div>
-                  <h3 className="text-base font-semibold text-foreground sm:text-lg">{feature.title}</h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
-                    {feature.description}
-                  </p>
-                </div>
+                </CornerBrackets>
               </OfferReveal>
             );
           })}

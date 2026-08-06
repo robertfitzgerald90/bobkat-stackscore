@@ -236,7 +236,7 @@ function ProductOverviewContent({
   const { openDetail, presentationActive } = useProductOverview();
 
   return (
-    <PublicPageShell contentClassName="min-w-0 pb-24 lg:pb-0">
+    <PublicPageShell className="funnel-instrument" contentClassName="min-w-0 pb-24 lg:pb-0">
       <Suspense fallback={null}>
         <DemoSessionBootstrap sectionSlug={initialSection} />
       </Suspense>

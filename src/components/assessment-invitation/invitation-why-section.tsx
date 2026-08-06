@@ -1,5 +1,6 @@
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { INVITATION_BENEFITS } from "@/lib/assessment-invitation/content";
 import { INVITATION_JOURNEY_SCREENSHOT } from "@/lib/assessment-invitation/screenshots";
 import { InvitationProductScreenshot } from "./invitation-product-screenshot";
@@ -19,15 +20,17 @@ export function InvitationWhySection() {
             const Icon = feature.icon;
             return (
               <OfferReveal key={feature.title} delayMs={index * 50}>
-                <div className="group h-full rounded-xl border border-border/60 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
-                    <Icon className="h-5 w-5" />
+                <CornerBrackets corners="two" className="h-full">
+                  <div className="group h-full rounded-[2px] border border-border/60 bg-card p-6 transition-colors duration-300 hover:border-primary/20">
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </p>
                   </div>
-                  <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
+                </CornerBrackets>
               </OfferReveal>
             );
           })}
@@ -35,11 +38,13 @@ export function InvitationWhySection() {
       </div>
 
       <div className="mx-auto mt-12 w-full max-w-7xl sm:mt-14 md:mt-16">
-        <InvitationProductScreenshot
-          image={INVITATION_JOURNEY_SCREENSHOT}
-          caption="Every recommendation becomes a prioritized technology improvement roadmap."
-          delayMs={180}
-        />
+        <CornerBrackets corners="four">
+          <InvitationProductScreenshot
+            image={INVITATION_JOURNEY_SCREENSHOT}
+            caption="Every recommendation becomes a prioritized technology improvement roadmap."
+            delayMs={180}
+          />
+        </CornerBrackets>
       </div>
     </section>
   );

@@ -23,7 +23,7 @@ export function PublicPageShell({
   variant = "default",
 }: PublicPageShellProps) {
   return (
-    <div className={cn(MARKETING_PAGE_ROOT, className)}>
+    <div className={cn(MARKETING_PAGE_ROOT, variant === "auth" && "auth-instrument", className)}>
       {variant === "default" ? <BobkatReferralTracker /> : null}
       <div
         className={cn(

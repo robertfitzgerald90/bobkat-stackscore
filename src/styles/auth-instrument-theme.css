@@ -1,0 +1,74 @@
+/**
+ * Auth pages (sign in, forgot password, reset password, activate account) —
+ * StackScore Instrument treatment layered on top of the public marketing
+ * shell they're hosted in. Scoped to `.auth-instrument` (set by
+ * `PublicPageShell` when `variant="auth"`) combined with `.public-marketing`
+ * for specificity, so the rest of the marketing site (hero, pricing, CTAs)
+ * keeps its existing blue-branded look untouched.
+ */
+
+.public-marketing.auth-instrument {
+  --font-sans: var(--font-instrument-body, var(--font-sans));
+  --font-heading: var(--font-instrument-display, var(--font-heading));
+  font-family: var(--font-sans);
+}
+
+/* Primary submit button (Sign In / Send Reset Link / Update Password / Activate) */
+.public-marketing.auth-instrument [data-slot="button"].bg-primary,
+.public-marketing.auth-instrument a.bg-primary {
+  border-radius: 2px;
+  border-color: transparent;
+  color: var(--obsidian, #08090c);
+  background: var(--phosphor, #3ecf7a);
+  box-shadow: none;
+  transition: background-color 150ms ease-out;
+}
+
+.public-marketing.auth-instrument [data-slot="button"].bg-primary:hover,
+.public-marketing.auth-instrument a.bg-primary:hover {
+  transform: none;
+  background: color-mix(in oklch, var(--phosphor, #3ecf7a), white 14%);
+  box-shadow: none;
+}
+
+/* Secondary/outline buttons, if any appear on auth pages */
+.public-marketing.auth-instrument [data-slot="button"].border-border.bg-background,
+.public-marketing.auth-instrument a.border-border.bg-background {
+  border-radius: 2px;
+  border: 1px solid rgba(139, 146, 160, 0.3);
+  background: transparent;
+  box-shadow: none;
+}
+
+.public-marketing.auth-instrument [data-slot="button"].border-border.bg-background:hover,
+.public-marketing.auth-instrument a.border-border.bg-background:hover {
+  border-color: var(--phosphor, #3ecf7a);
+  background: rgba(62, 207, 122, 0.06);
+  box-shadow: none;
+}
+
+/* Email / password inputs */
+.public-marketing.auth-instrument [data-slot="input"],
+.public-marketing.auth-instrument [data-slot="textarea"] {
+  border-radius: 1px;
+  border: 1px solid rgba(139, 146, 160, 0.3);
+  background: rgba(139, 146, 160, 0.06);
+  box-shadow: none;
+  transition: border-color 150ms ease-out;
+}
+
+.public-marketing.auth-instrument [data-slot="input"]:focus-visible,
+.public-marketing.auth-instrument [data-slot="textarea"]:focus-visible {
+  border-color: var(--phosphor, #3ecf7a);
+  box-shadow: 0 0 0 2px rgba(62, 207, 122, 0.22);
+}
+
+/* Auth card / panel container (and any nested shadcn Card, e.g. Activate Account) */
+.public-marketing.auth-instrument [data-slot="card"],
+.public-marketing.auth-instrument .marketing-panel,
+.public-marketing.auth-instrument .marketing-panel-soft {
+  border-radius: 2px;
+  border: 1px solid rgba(139, 146, 160, 0.2);
+  background: #12141a;
+  box-shadow: none;
+}

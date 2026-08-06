@@ -5,6 +5,7 @@ import { OFFER_FEATURES } from "@/lib/assessment-offer/content";
 import { MARKETING_SCROLL_MT_CLASS } from "@/lib/ui/sticky-chrome";
 import { MARKETING_PANEL, MARKETING_SECTION_ALT } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { OfferFeatureGrid } from "./offer-feature-grid";
 import { OfferReveal } from "./offer-reveal";
 
@@ -18,6 +19,7 @@ const reviewSessionPoints = [
 function ReviewSessionPanel({ attribution }: { attribution?: AssessmentOfferAttribution }) {
   return (
     <OfferReveal delayMs={320}>
+      <CornerBrackets corners="two">
       <div className={cn(MARKETING_PANEL, "mt-10 overflow-hidden p-6 text-primary-foreground sm:p-8 md:p-10")}>
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
@@ -60,6 +62,7 @@ function ReviewSessionPanel({ attribution }: { attribution?: AssessmentOfferAttr
           </div>
         </div>
       </div>
+      </CornerBrackets>
     </OfferReveal>
   );
 }

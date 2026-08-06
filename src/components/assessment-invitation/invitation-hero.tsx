@@ -4,6 +4,7 @@ import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { ClientDashboardPreview } from "@/components/marketing/client-dashboard-preview";
 import { buttonVariants } from "@/components/ui/button";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import type {
   AssessmentInvitationContext,
   AssessmentInvitationPersonalization,
@@ -48,7 +49,7 @@ function InvitationPersonalizationBanner({
 export function InvitationHero({ personalization, invitationContext }: InvitationHeroProps) {
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 md:pb-24 md:pt-12">
-      <OfferHeroBackground />
+      <OfferHeroBackground tone="phosphor" />
 
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
         <OfferReveal>
@@ -98,7 +99,9 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
 
         <div className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
           <OfferReveal delayMs={240} variant="image">
-            <ClientDashboardPreview />
+            <CornerBrackets corners="four">
+              <ClientDashboardPreview />
+            </CornerBrackets>
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Executive dashboard included with every StackScore assessment.
             </p>

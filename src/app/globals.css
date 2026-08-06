@@ -5,6 +5,8 @@
 @import "../styles/tip-executive-report.css";
 @import "../styles/qbr-executive-report.css";
 @import "../styles/public-marketing-theme.css";
+@import "../styles/auth-instrument-theme.css";
+@import "../styles/funnel-instrument-theme.css";
 @import "../styles/executive-os-theme.css";
 @import "../styles/instrument-tokens.css";
 
@@ -123,6 +125,15 @@
  */
 .midnight,
 .dark {
+  /*
+   * Re-establish the inherited text color at the point this theme scope
+   * begins. Public marketing/funnel/auth pages apply `.midnight` on a
+   * wrapper *inside* <body> (not on <html>), so without this, any element
+   * that doesn't set its own explicit text-* class inherits <body>'s
+   * computed color from the light `:root` theme (#0f172a) instead of this
+   * theme's `--foreground` — rendering as near-invisible dark-on-dark text.
+   */
+  color: var(--foreground);
   --surface-app: #08090c;
   --surface-sidebar: #0a0b10;
   --surface-elevated: #12141a;

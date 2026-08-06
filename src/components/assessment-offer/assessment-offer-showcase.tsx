@@ -51,7 +51,7 @@ export function AssessmentOfferShowcase() {
           >
             {background === "glow" ? (
               <div
-                className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[70%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,_rgba(8,47,91,0.08)_0%,_transparent_72%)]"
+                className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-[70%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,_rgba(62,207,122,0.05)_0%,_transparent_72%)]"
                 aria-hidden
               />
             ) : null}

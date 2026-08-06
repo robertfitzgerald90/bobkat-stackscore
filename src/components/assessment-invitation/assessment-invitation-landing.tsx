@@ -23,7 +23,7 @@ export function AssessmentInvitationLanding({
   invitationContext,
 }: AssessmentInvitationLandingProps) {
   return (
-    <PublicPageShell>
+    <PublicPageShell className="funnel-instrument">
       <InvitationNav invitationContext={invitationContext} />
       <main>
         <InvitationHero personalization={personalization} invitationContext={invitationContext} />

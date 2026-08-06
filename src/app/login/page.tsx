@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { LoginForm } from "@/components/auth/login-form";
 import { PublicPageShell } from "@/components/public/public-page-shell";
+import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { BRAND } from "@/lib/branding";
 import { MARKETING_AUTH_CARD, MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 
@@ -25,11 +26,13 @@ export default function LoginPage() {
             Consulting workspace.
           </p>
 
-          <div className={`${MARKETING_AUTH_CARD} mt-10 w-full p-8 sm:mt-12 sm:p-10`}>
-            <Suspense>
-              <LoginForm />
-            </Suspense>
-          </div>
+          <CornerBrackets corners="two" className="mt-10 w-full sm:mt-12">
+            <div className={`${MARKETING_AUTH_CARD} p-8 sm:p-10`}>
+              <Suspense>
+                <LoginForm />
+              </Suspense>
+            </div>
+          </CornerBrackets>
 
           <footer className="mt-12 space-y-1 text-center text-xs leading-relaxed text-muted-foreground/75">
             <p>{BRAND.productName} Client Portal</p>
