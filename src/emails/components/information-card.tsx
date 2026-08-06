@@ -20,7 +20,7 @@ export function InformationCard({ title, items }: InformationCardProps) {
       <Section
         style={{
           backgroundColor: emailTokens.surfaceMuted,
-          border: `1px solid ${emailTokens.border}`,
+          border: `1px solid ${emailTokens.rule}`,
           borderRadius: emailTokens.radius,
           padding: "20px 24px",
         }}
@@ -33,7 +33,7 @@ export function InformationCard({ title, items }: InformationCardProps) {
             fontSize: "16px",
             fontWeight: 700,
             lineHeight: "24px",
-            color: emailTokens.primary,
+            color: emailTokens.ink,
           }}
         >
           {title}
@@ -46,10 +46,10 @@ export function InformationCard({ title, items }: InformationCardProps) {
               paddingLeft: "16px",
               fontSize: "15px",
               lineHeight: "24px",
-              color: emailTokens.text,
+              color: emailTokens.ink,
             }}
           >
-            <span style={{ marginLeft: "-16px", color: emailTokens.secondary }}>• </span>
+            <span style={{ marginLeft: "-16px", color: emailTokens.forest }}>• </span>
             {item}
           </Text>
         ))}

@@ -15,7 +15,7 @@ export function SecondaryButton({
   label,
   brand = DEFAULT_COMMUNICATION_BRAND,
 }: SecondaryButtonProps) {
-  const borderRadius = brand.componentSettings.secondaryButton?.borderRadius ?? "10px";
+  const borderRadius = brand.componentSettings.secondaryButton?.borderRadius ?? emailTokens.radius;
 
   return (
     <Section
@@ -30,10 +30,10 @@ export function SecondaryButton({
       <Button
         href={href}
         style={{
-          backgroundColor: brand.buttonSecondaryBg,
-          border: `1px solid ${emailTokens.border}`,
+          backgroundColor: brand.buttonSecondaryBg || emailTokens.paper,
+          border: `1px solid ${emailTokens.rule}`,
           borderRadius,
-          color: brand.buttonSecondaryText,
+          color: brand.buttonSecondaryText || emailTokens.forest,
           display: "inline-block",
           fontFamily: brand.fontFamilyBody,
           fontSize: "15px",

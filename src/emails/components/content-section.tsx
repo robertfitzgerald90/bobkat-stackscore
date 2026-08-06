@@ -23,7 +23,7 @@ export function ContentSection({ paragraphs }: ContentSectionProps) {
             margin: "0 0 16px",
             fontSize: "16px",
             lineHeight: "26px",
-            color: emailTokens.text,
+            color: emailTokens.ink,
           }}
         >
           {paragraph}

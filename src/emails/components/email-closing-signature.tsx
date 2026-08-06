@@ -13,14 +13,14 @@ const lineStyle = {
   margin: "0 0 4px",
   fontSize: "16px",
   lineHeight: "26px",
-  color: emailTokens.text,
+  color: emailTokens.ink,
 } as const;
 
 const spacerStyle = {
   margin: "0 0 12px",
   fontSize: "1px",
   lineHeight: "12px",
-  color: emailTokens.text,
+  color: emailTokens.ink,
 } as const;
 
 /**

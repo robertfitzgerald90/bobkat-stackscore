@@ -38,7 +38,7 @@ export function SecurityNotice({
             fontSize: "14px",
             fontWeight: 700,
             lineHeight: "20px",
-            color: emailTokens.warningText,
+            color: emailTokens.ink,
           }}
         >
           {title}
@@ -49,7 +49,7 @@ export function SecurityNotice({
               margin: 0,
               fontSize: "14px",
               lineHeight: "22px",
-              color: emailTokens.warningText,
+              color: emailTokens.inkSecondary,
             }}
           >
             {message}
@@ -62,7 +62,7 @@ export function SecurityNotice({
               margin: "0 0 6px",
               fontSize: "14px",
               lineHeight: "22px",
-              color: emailTokens.warningText,
+              color: emailTokens.inkSecondary,
             }}
           >
             • {item}

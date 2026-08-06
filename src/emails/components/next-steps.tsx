@@ -20,7 +20,7 @@ export function NextSteps({ title = "Next Steps", steps }: NextStepsProps) {
       <Section
         style={{
           backgroundColor: emailTokens.surfaceMuted,
-          border: `1px solid ${emailTokens.border}`,
+          border: `1px solid ${emailTokens.rule}`,
           borderRadius: emailTokens.radius,
           padding: "20px 24px",
         }}
@@ -33,7 +33,7 @@ export function NextSteps({ title = "Next Steps", steps }: NextStepsProps) {
             fontSize: "16px",
             fontWeight: 700,
             lineHeight: "24px",
-            color: emailTokens.primary,
+            color: emailTokens.ink,
           }}
         >
           {title}
@@ -45,10 +45,10 @@ export function NextSteps({ title = "Next Steps", steps }: NextStepsProps) {
               margin: "0 0 10px",
               fontSize: "15px",
               lineHeight: "24px",
-              color: emailTokens.text,
+              color: emailTokens.ink,
             }}
           >
-            <span style={{ fontWeight: 600, color: emailTokens.primary }}>{index + 1}. </span>
+            <span style={{ fontWeight: 600, color: emailTokens.forest }}>{index + 1}. </span>
             {step}
           </Text>
         ))}

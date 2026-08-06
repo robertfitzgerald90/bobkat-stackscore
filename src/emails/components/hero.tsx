@@ -26,7 +26,7 @@ export function Hero({ title, description }: HeroProps) {
           fontSize: "26px",
           fontWeight: 700,
           lineHeight: "32px",
-          color: emailTokens.primary,
+          color: emailTokens.ink,
           letterSpacing: "-0.02em",
         }}
       >
@@ -37,7 +37,7 @@ export function Hero({ title, description }: HeroProps) {
           margin: 0,
           fontSize: "16px",
           lineHeight: "26px",
-          color: emailTokens.textMuted,
+          color: emailTokens.inkSecondary,
         }}
       >
         {description}

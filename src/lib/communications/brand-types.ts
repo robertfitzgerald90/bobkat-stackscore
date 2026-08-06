@@ -1,5 +1,6 @@
 import { BRAND } from "@/lib/branding";
 import { EMAIL_BRAND_ASSETS } from "@/emails/assets";
+import { emailTokens } from "@/emails/tokens";
 
 export type SocialLink = {
   platform: string;
@@ -14,6 +15,7 @@ export type SharedComponentSettings = {
   };
   footer?: {
     teamLabel?: string;
+    /** @deprecated Unused in defaults — triad lives in footerTagline only */
     servicesLine?: string;
   };
   primaryButton?: {
@@ -58,15 +60,15 @@ export type CommunicationBrandConfig = {
 export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
   primaryLogoUrl: EMAIL_BRAND_ASSETS.bobkatItLogo,
   secondaryLogoUrl: null,
-  primaryColor: BRAND.primaryColor,
-  secondaryColor: BRAND.secondaryColor,
-  accentColor: "#2563EB",
-  buttonPrimaryBg: BRAND.primaryColor,
-  buttonPrimaryText: "#FFFFFF",
-  buttonSecondaryBg: BRAND.lightBackground,
-  buttonSecondaryText: BRAND.primaryColor,
-  fontFamilyHeading: "Georgia, 'Times New Roman', serif",
-  fontFamilyBody: "Arial, Helvetica, sans-serif",
+  primaryColor: emailTokens.forest,
+  secondaryColor: emailTokens.inkSecondary,
+  accentColor: emailTokens.forest,
+  buttonPrimaryBg: emailTokens.forest,
+  buttonPrimaryText: emailTokens.textInverse,
+  buttonSecondaryBg: emailTokens.paper,
+  buttonSecondaryText: emailTokens.forest,
+  fontFamilyHeading: emailTokens.fontFamilyHeading,
+  fontFamilyBody: emailTokens.fontFamily,
   companyName: BRAND.companyName,
   productName: BRAND.productName,
   websiteUrl: BRAND.website,
@@ -74,11 +76,14 @@ export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
   supportPhone: BRAND.phone,
   address: "",
   copyrightText: `© ${new Date().getFullYear()} ${BRAND.companyName}. All rights reserved.`,
-  footerTagline: "OPERATE · PLAN · GROW",
+  footerTagline: "BUILD · ADVISE · STABILIZE",
   socialLinks: [],
   componentSettings: {
-    footer: {
-      servicesLine: "Managed IT Services · Strategic IT Consulting · Digital Presence",
+    primaryButton: {
+      borderRadius: emailTokens.radius,
+    },
+    secondaryButton: {
+      borderRadius: emailTokens.radius,
     },
   },
 };
@@ -94,6 +99,20 @@ export function normalizeBrandConfig(
     componentSettings: {
       ...DEFAULT_COMMUNICATION_BRAND.componentSettings,
       ...(input.componentSettings ?? {}),
+      footer: {
+        ...DEFAULT_COMMUNICATION_BRAND.componentSettings.footer,
+        ...(input.componentSettings?.footer ?? {}),
+        // Defaults omit servicesLine; do not reintroduce from empty merge
+        servicesLine: input.componentSettings?.footer?.servicesLine,
+      },
+      primaryButton: {
+        ...DEFAULT_COMMUNICATION_BRAND.componentSettings.primaryButton,
+        ...(input.componentSettings?.primaryButton ?? {}),
+      },
+      secondaryButton: {
+        ...DEFAULT_COMMUNICATION_BRAND.componentSettings.secondaryButton,
+        ...(input.componentSettings?.secondaryButton ?? {}),
+      },
     },
   };
 }

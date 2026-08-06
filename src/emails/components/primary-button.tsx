@@ -11,7 +11,7 @@ type PrimaryButtonProps = {
 
 /** Centered bulletproof CTA for Gmail, Outlook, and Apple Mail. */
 export function PrimaryButton({ href, label, brand = DEFAULT_COMMUNICATION_BRAND }: PrimaryButtonProps) {
-  const borderRadius = brand.componentSettings.primaryButton?.borderRadius ?? "10px";
+  const borderRadius = brand.componentSettings.primaryButton?.borderRadius ?? emailTokens.radius;
 
   return (
     <Section
@@ -26,9 +26,9 @@ export function PrimaryButton({ href, label, brand = DEFAULT_COMMUNICATION_BRAND
       <Button
         href={href}
         style={{
-          backgroundColor: brand.buttonPrimaryBg,
+          backgroundColor: brand.buttonPrimaryBg || emailTokens.forest,
           borderRadius,
-          color: brand.buttonPrimaryText,
+          color: brand.buttonPrimaryText || emailTokens.textInverse,
           display: "inline-block",
           fontFamily: brand.fontFamilyBody,
           fontSize: "16px",

@@ -20,7 +20,7 @@ export function OfferFinalCta({ attribution }: { attribution?: AssessmentOfferAt
       bracketed
       footnote={
         <>
-          <p className="max-w-sm text-sm text-muted-foreground">
+          <p className="mx-auto max-w-sm text-sm text-muted-foreground">
             Secure payment powered by Stripe.
           </p>
           <p className="mt-2 text-xs text-muted-foreground">

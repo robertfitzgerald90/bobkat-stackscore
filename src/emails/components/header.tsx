@@ -54,7 +54,7 @@ export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
                   fontSize: "28px",
                   fontWeight: 700,
                   lineHeight: "32px",
-                  color: brand.primaryColor,
+                  color: emailTokens.ink,
                   letterSpacing: "-0.02em",
                 }}
               >
@@ -65,7 +65,7 @@ export function Header({ brand = DEFAULT_COMMUNICATION_BRAND }: HeaderProps) {
                   margin: "4px 0 0",
                   fontSize: "12px",
                   lineHeight: "16px",
-                  color: brand.secondaryColor,
+                  color: emailTokens.inkSecondary,
                   fontWeight: 500,
                 }}
               >

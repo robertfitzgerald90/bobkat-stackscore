@@ -13,8 +13,7 @@ function websiteHref(website: string): string {
 export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: CommunicationBrandConfig }) {
   const siteUrl = websiteHref(brand.websiteUrl);
   const displayWebsite = brand.websiteUrl.replace(/^https?:\/\//, "");
-  const primaryLine = brand.footerTagline;
-  const secondaryLine = brand.componentSettings.footer?.servicesLine;
+  const tagline = brand.footerTagline?.trim();
 
   return (
     <Section
@@ -23,19 +22,18 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
         border: `1px solid ${emailTokens.border}`,
         borderTop: "none",
         borderRadius: `0 0 ${emailTokens.radius} ${emailTokens.radius}`,
-        boxShadow: emailTokens.shadow,
         padding: "24px 24px 28px",
         textAlign: "center",
       }}
     >
-      <Hr style={{ borderColor: emailTokens.border, margin: "0 0 20px" }} />
+      <Hr style={{ borderColor: emailTokens.rule, borderTop: `1px solid ${emailTokens.rule}`, margin: "0 0 20px" }} />
       <Text
         style={{
           margin: "0 0 6px",
           fontSize: "15px",
           fontWeight: 700,
           lineHeight: "22px",
-          color: brand.primaryColor,
+          color: emailTokens.ink,
           letterSpacing: "-0.01em",
         }}
       >
@@ -43,42 +41,32 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
       </Text>
       <Text
         style={{
-          margin: "0 0 14px",
+          margin: "0 0 16px",
           fontSize: "13px",
           lineHeight: "20px",
-          color: emailTokens.textMuted,
+          color: emailTokens.inkSecondary,
         }}
       >
         Powered by {brand.companyName}
       </Text>
-      <Text
-        style={{
-          margin: "0 0 8px",
-          fontSize: "12px",
-          lineHeight: "18px",
-          color: emailTokens.textMuted,
-        }}
-      >
-        {primaryLine}
-      </Text>
-      {secondaryLine ? (
+      {tagline ? (
         <Text
           style={{
-            margin: "0 0 16px",
+            margin: "0 0 20px",
             fontSize: "12px",
+            fontWeight: 600,
             lineHeight: "18px",
-            color: emailTokens.textMuted,
+            letterSpacing: "0.06em",
+            color: emailTokens.inkSecondary,
           }}
         >
-          {secondaryLine}
+          {tagline}
         </Text>
-      ) : (
-        <Text style={{ margin: "0 0 16px", fontSize: "12px", lineHeight: "18px" }} />
-      )}
+      ) : null}
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
           href={siteUrl}
-          style={{ color: brand.primaryColor, textDecoration: "underline" }}
+          style={{ color: emailTokens.forest, textDecoration: "underline" }}
         >
           {displayWebsite}
         </Link>
@@ -86,13 +74,20 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
       <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px" }}>
         <Link
           href={`mailto:${brand.supportEmail}`}
-          style={{ color: brand.primaryColor, textDecoration: "underline" }}
+          style={{ color: emailTokens.forest, textDecoration: "underline" }}
         >
           {brand.supportEmail}
         </Link>
       </Text>
       {brand.supportPhone ? (
-        <Text style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: "20px", color: emailTokens.textMuted }}>
+        <Text
+          style={{
+            margin: "0 0 8px",
+            fontSize: "13px",
+            lineHeight: "20px",
+            color: emailTokens.inkSecondary,
+          }}
+        >
           {brand.supportPhone}
         </Text>
       ) : null}
@@ -101,7 +96,7 @@ export function Footer({ brand = DEFAULT_COMMUNICATION_BRAND }: { brand?: Commun
           margin: "18px 0 0",
           fontSize: "11px",
           lineHeight: "16px",
-          color: emailTokens.textMuted,
+          color: emailTokens.inkSecondary,
         }}
       >
         {brand.copyrightText}
