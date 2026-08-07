@@ -437,6 +437,7 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
       previewText: VCIO_CUSTOMER_EMAIL_COPY.paymentFailed.previewText,
       paragraphs: [...VCIO_CUSTOMER_EMAIL_COPY.paymentFailed.paragraphs],
       primaryCta: { label: VCIO_CUSTOMER_EMAIL_COPY.paymentFailed.primaryCta, href: PREVIEW_PROTECTED_URL },
+      primaryCtaTone: "critical",
     },
   }),
   workflowTemplate({

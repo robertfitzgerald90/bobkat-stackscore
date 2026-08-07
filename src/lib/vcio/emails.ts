@@ -193,6 +193,7 @@ export async function sendVcioPaymentFailedEmail(input: {
     previewText: copy.previewText,
     paragraphs: [...copy.paragraphs],
     primaryCta: { label: copy.primaryCta, href: billingUrl },
+    primaryCtaTone: "critical",
     closingParagraph: `Need help? Contact ${BRAND.email} and we'll assist right away.`,
   });
 

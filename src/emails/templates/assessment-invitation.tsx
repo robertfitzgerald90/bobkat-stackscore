@@ -98,7 +98,7 @@ function FaqSection({
           fontSize: "18px",
           fontWeight: 700,
           lineHeight: "26px",
-          color: emailTokens.primary,
+          color: emailTokens.ink,
         }}
       >
         Frequently Asked Questions
@@ -111,7 +111,7 @@ function FaqSection({
               fontSize: "15px",
               fontWeight: 700,
               lineHeight: "22px",
-              color: emailTokens.primary,
+              color: emailTokens.ink,
             }}
           >
             {item.question}
@@ -121,7 +121,7 @@ function FaqSection({
               margin: 0,
               fontSize: "15px",
               lineHeight: "24px",
-              color: emailTokens.text,
+              color: emailTokens.ink,
             }}
           >
             {item.answer}
@@ -209,21 +209,21 @@ export function AssessmentInvitationEmail({
             fontSize: "18px",
             fontWeight: 700,
             lineHeight: "26px",
-            color: emailTokens.primary,
+            color: emailTokens.ink,
           }}
         >
           Assessment Details
         </Heading>
-        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
+        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.ink }}>
           <strong>Estimated time:</strong> 15–30 minutes
         </Text>
-        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
+        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.ink }}>
           No software installation required.
         </Text>
-        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
+        <Text style={{ margin: "0 0 8px", fontSize: "15px", lineHeight: "24px", color: emailTokens.ink }}>
           Complete from any modern web browser.
         </Text>
-        <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
+        <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.ink }}>
           Progress is saved automatically after activation.
         </Text>
       </Section>
@@ -244,18 +244,18 @@ export function AssessmentInvitationEmail({
             fontSize: "18px",
             fontWeight: 700,
             lineHeight: "26px",
-            color: emailTokens.primary,
+            color: emailTokens.ink,
           }}
         >
           Why It Matters
         </Heading>
-        <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.text }}>
+        <Text style={{ margin: 0, fontSize: "15px", lineHeight: "24px", color: emailTokens.ink }}>
           A Technology Maturity Assessment helps leadership prioritize investments, reduce operational
           risk, and align technology decisions with business goals—before small gaps become costly
           disruptions.
         </Text>
       </Section>
-      <Hr style={{ borderColor: emailTokens.border, margin: "0 24px" }} />
+      <Hr style={{ borderColor: emailTokens.rule, margin: "0 24px" }} />
       <ContentSection
         paragraphs={[
           `Prefer to review the full assessment offer first? You can explore what's included and how ${brand.companyName} supports your team.`,

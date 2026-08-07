@@ -11,6 +11,7 @@ import {
   SecondaryButton,
   SecurityNotice,
 } from "@/emails/components";
+import { emailTokens } from "@/emails/tokens";
 import { DEFAULT_COMMUNICATION_BRAND } from "@/lib/communications/brand-types";
 import type { CommunicationBrandConfig } from "@/lib/communications/brand-types";
 import type { TemplateVersionContent } from "@/lib/communications/template-content";
@@ -29,6 +30,8 @@ export type WorkflowNotificationEmailData = {
   summaryItems?: string[];
   primaryCta: WorkflowEmailCta;
   secondaryCta?: WorkflowEmailCta;
+  /** Use critical for failed-payment / error CTAs only */
+  primaryCtaTone?: "default" | "critical";
   closingParagraph?: string;
   /** Renders the standard Bobkat founder closing signature with reliable line breaks. */
   founderClosing?: boolean | { message?: string };
@@ -50,6 +53,7 @@ export function WorkflowNotificationEmail({
   summaryItems = [],
   primaryCta,
   secondaryCta,
+  primaryCtaTone = "default",
   closingParagraph,
   founderClosing,
   securityNotice,
@@ -65,6 +69,15 @@ export function WorkflowNotificationEmail({
   const founderClosingMessage =
     typeof founderClosing === "object" ? founderClosing.message : undefined;
 
+  const ctaBrand: CommunicationBrandConfig =
+    primaryCtaTone === "critical"
+      ? {
+          ...brand,
+          buttonPrimaryBg: emailTokens.critical,
+          buttonPrimaryText: emailTokens.textInverse,
+        }
+      : brand;
+
   return (
     <EmailLayout preview={previewText ?? heroDescription ?? heroTitle}>
       <EmailHeader brand={brand} />
@@ -73,7 +86,11 @@ export function WorkflowNotificationEmail({
         description={content?.heroDescription ?? heroDescription ?? ""}
       />
       {paragraphs.length > 0 ? <ContentSection paragraphs={paragraphs} /> : null}
-      <PrimaryButton href={primaryCta.href} label={content?.ctaLabel ?? primaryCta.label} brand={brand} />
+      <PrimaryButton
+        href={primaryCta.href}
+        label={content?.ctaLabel ?? primaryCta.label}
+        brand={ctaBrand}
+      />
       {secondaryCta ? (
         <SecondaryButton href={secondaryCta.href} label={secondaryCta.label} brand={brand} />
       ) : null}
