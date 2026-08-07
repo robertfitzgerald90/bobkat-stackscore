@@ -1,7 +1,10 @@
+import React from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { getRating } from "@/lib/scoring";
 import { PDF_RATING_BAR, PDF_SCORE_BAR } from "@/lib/pdf/shared/colors";
+import { PdfCornerBrackets } from "@/lib/pdf/shared/components/corner-brackets";
 import { PDF_TARGET_SCORE } from "@/lib/pdf/shared/constants";
+import { REPORT_COLORS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
 import { pdfComponentStyles as styles } from "@/lib/pdf/shared/styles/components";
 
 type PdfScoreGaugeProps = {
@@ -10,8 +13,10 @@ type PdfScoreGaugeProps = {
   ratingLabel: string;
   variant?: "default" | "accent";
   showTarget?: boolean;
-  /** Use rating-based colors only for risk indicators; default uses current-score blue. */
+  /** Use rating-based colors only for risk indicators; default uses forest current score. */
   barVariant?: "current" | "rating" | "improvement";
+  /** Four corners on the primary overall maturity score; two elsewhere. */
+  bracketCorners?: "two" | "four";
 };
 
 export function PdfScoreGauge({
@@ -21,6 +26,7 @@ export function PdfScoreGauge({
   variant = "default",
   showTarget = true,
   barVariant = "current",
+  bracketCorners = "two",
 }: PdfScoreGaugeProps) {
   const rating = getRating(score);
   const width = `${Math.max(0, Math.min(100, Math.round(score)))}%`;
@@ -31,11 +37,13 @@ export function PdfScoreGauge({
         ? PDF_SCORE_BAR.improvement
         : PDF_SCORE_BAR.current;
 
-  return (
+  const card = (
     <View wrap={false} style={variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard}>
       <Text style={styles.gaugeLabel}>{label}</Text>
-      <Text style={styles.gaugeValue}>{score}</Text>
-      <Text style={styles.gaugeRating}>{ratingLabel}</Text>
+      <View style={styles.gaugeScoreBlock}>
+        <Text style={styles.gaugeValue}>{score}</Text>
+        <Text style={styles.gaugeRating}>{ratingLabel}</Text>
+      </View>
       <View style={styles.gaugeTrack}>
         <View style={[styles.gaugeFill, { width, backgroundColor: fillColor }]} />
         {showTarget ? (
@@ -46,6 +54,16 @@ export function PdfScoreGauge({
         <Text style={styles.targetCaption}>Target: {PDF_TARGET_SCORE}+</Text>
       ) : null}
     </View>
+  );
+
+  return (
+    <PdfCornerBrackets
+      corners={bracketCorners}
+      tone={rating === "critical" || rating === "at_risk" ? "ink" : "forest"}
+      style={{ flex: 1 }}
+    >
+      {card}
+    </PdfCornerBrackets>
   );
 }
 
@@ -73,15 +91,15 @@ export function PdfMiniScoreBar({
         style={{
           height: 8,
           width: "100%",
-          backgroundColor: "#E5E7EB",
-          borderRadius: 4,
+          backgroundColor: REPORT_COLORS.rule,
+          borderRadius: REPORT_RADIUS.sm,
           overflow: "hidden",
         }}
       >
         <View
           style={{
             height: 8,
-            borderRadius: 4,
+            borderRadius: REPORT_RADIUS.sm,
             width: fillWidth,
             backgroundColor: fillColor,
           }}

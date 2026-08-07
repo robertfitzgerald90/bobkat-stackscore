@@ -1,6 +1,6 @@
 import { StyleSheet } from "@react-pdf/renderer";
 import { COLORS } from "@/lib/pdf/shared/colors";
-import { REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
+import { REPORT_COLORS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
 import type { ExecutivePriorityLevel, ExecutiveRiskLevel } from "@/lib/pdf/types";
 import { TIP_PDF_SPACING, TIP_PDF_TYPOGRAPHY } from "@/lib/pdf/tip/tokens";
 
@@ -330,18 +330,50 @@ export const RISK_BADGE_STYLES: Record<
   ExecutiveRiskLevel,
   { bg: string; text: string; border: string }
 > = {
-  Low: { bg: "#ECFDF5", text: "#047857", border: "#A7F3D0" },
-  Moderate: { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A" },
-  High: { bg: "#FFF7ED", text: "#C2410C", border: "#FED7AA" },
-  Critical: { bg: "#FEF2F2", text: "#B91C1C", border: "#FECACA" },
+  Low: {
+    bg: REPORT_COLORS.successBg,
+    text: REPORT_COLORS.forest,
+    border: REPORT_COLORS.successBorder,
+  },
+  Moderate: {
+    bg: REPORT_COLORS.warningBg,
+    text: REPORT_COLORS.warning,
+    border: REPORT_COLORS.warningBorder,
+  },
+  High: {
+    bg: REPORT_COLORS.warningBg,
+    text: REPORT_COLORS.warning,
+    border: REPORT_COLORS.warningBorder,
+  },
+  Critical: {
+    bg: REPORT_COLORS.criticalBg,
+    text: REPORT_COLORS.critical,
+    border: REPORT_COLORS.criticalBorder,
+  },
 };
 
 export const PRIORITY_BADGE_STYLES: Record<
   ExecutivePriorityLevel,
   { bg: string; text: string; border: string }
 > = {
-  Immediate: { bg: "#FEF2F2", text: "#B91C1C", border: "#FECACA" },
-  High: { bg: "#FFF7ED", text: "#C2410C", border: "#FED7AA" },
-  Moderate: { bg: "#EFF6FF", text: "#1D4ED8", border: "#BFDBFE" },
-  Planned: { bg: "#F8FAFC", text: "#475569", border: "#E2E8F0" },
+  Immediate: {
+    bg: REPORT_COLORS.criticalBg,
+    text: REPORT_COLORS.critical,
+    border: REPORT_COLORS.criticalBorder,
+  },
+  High: {
+    bg: REPORT_COLORS.warningBg,
+    text: REPORT_COLORS.warning,
+    border: REPORT_COLORS.warningBorder,
+  },
+  Moderate: {
+    bg: REPORT_COLORS.accentBg,
+    text: REPORT_COLORS.forest,
+    border: REPORT_COLORS.accentBorder,
+  },
+  Planned: {
+    bg: REPORT_COLORS.sectionBackground,
+    text: REPORT_COLORS.inkSecondary,
+    border: REPORT_COLORS.rule,
+  },
 };

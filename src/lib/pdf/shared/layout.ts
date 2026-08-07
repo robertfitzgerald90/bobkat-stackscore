@@ -1,6 +1,6 @@
 import { StyleSheet } from "@react-pdf/renderer";
 import { PDF_COLORS as COLORS } from "@/lib/pdf/shared/colors";
-import { REPORT_SPACING, REPORT_TYPOGRAPHY } from "@/lib/pdf/shared/tokens";
+import { REPORT_FONTS, REPORT_RADIUS, REPORT_SPACING, REPORT_TYPOGRAPHY } from "@/lib/pdf/shared/tokens";
 
 /** Letter page content area — reserve space for fixed footer. */
 export const PDF_LAYOUT = {
@@ -25,28 +25,28 @@ export const pdfPageStyles = StyleSheet.create({
     paddingTop: PDF_LAYOUT.paddingTop,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: REPORT_TYPOGRAPHY.body,
     color: COLORS.slate,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
   },
   bodyWithHeader: {
     paddingTop: PDF_LAYOUT.headerReserve,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: REPORT_TYPOGRAPHY.body,
     color: COLORS.slate,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
   },
   cover: {
     paddingTop: 0,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: 0,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: REPORT_TYPOGRAPHY.body,
     color: COLORS.slate,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
   },
   section: {
     marginBottom: PDF_SPACING.section,
@@ -64,13 +64,13 @@ export const pdfReportBodyStyles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
+    borderRadius: REPORT_RADIUS.md,
     padding: 16,
     marginBottom: REPORT_SPACING.block,
   },
   panelTitle: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 10,
     textTransform: "uppercase",

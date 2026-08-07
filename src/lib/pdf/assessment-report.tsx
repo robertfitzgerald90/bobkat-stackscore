@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Document,
   Page,
@@ -23,6 +24,8 @@ import {
   PDF_LAYOUT,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
+import { PdfCornerBrackets } from "@/lib/pdf/shared/components/corner-brackets";
+import { REPORT_COLORS, REPORT_FONTS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
 import {
   computeRoadmapScores,
   countByPriority,
@@ -45,25 +48,27 @@ const styles = StyleSheet.create({
     paddingTop: PDF_LAYOUT.paddingTop,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: 10,
     color: COLORS.slate,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.paper,
   },
   coverPage: {
     paddingTop: 0,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: 0,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: 10,
     color: COLORS.slate,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.paper,
   },
   coverHero: {
-    backgroundColor: COLORS.navy,
+    backgroundColor: COLORS.paper,
     paddingTop: 52,
     paddingBottom: 40,
     paddingHorizontal: 54,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   coverBody: {
     paddingHorizontal: 54,
@@ -97,20 +102,20 @@ const styles = StyleSheet.create({
   },
   coverProduct: {
     fontSize: 26,
-    fontFamily: "Helvetica-Bold",
-    color: "#FFFFFF",
+    fontFamily: REPORT_FONTS.displayBold,
+    color: COLORS.forest,
     marginBottom: 4,
   },
   coverSubtitle: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.85)",
+    color: REPORT_COLORS.inkSecondary,
     letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   coverClientName: {
     fontSize: 24,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
+    fontFamily: REPORT_FONTS.displayBold,
+    color: COLORS.forest,
     marginBottom: 22,
     lineHeight: 1.3,
   },
@@ -124,13 +129,13 @@ const styles = StyleSheet.create({
   },
   coverMetaValue: {
     fontSize: 12,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.slate,
     lineHeight: 1.4,
   },
   coverPreparedBy: {
     fontSize: 11,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.4,
   },
@@ -159,7 +164,7 @@ const styles = StyleSheet.create({
   sectionTitleWrap: { marginBottom: 14, marginTop: 4 },
   sectionTitle: {
     fontSize: 14,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.navy,
     paddingBottom: 6,
     borderBottomWidth: 2,
@@ -181,13 +186,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
+    borderRadius: REPORT_RADIUS.md,
     padding: 16,
     marginBottom: 14,
   },
   panelTitle: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 10,
     textTransform: "uppercase",
@@ -196,16 +201,16 @@ const styles = StyleSheet.create({
   scoreRow: { flexDirection: "row", gap: 12, marginBottom: 10 },
   gaugeCard: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 6,
+    backgroundColor: COLORS.paper,
+    borderRadius: REPORT_RADIUS.md,
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   gaugeCardAccent: {
     flex: 1,
-    backgroundColor: "#EEF4F8",
-    borderRadius: 6,
+    backgroundColor: REPORT_COLORS.accentBg,
+    borderRadius: REPORT_RADIUS.md,
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.navy,
@@ -215,29 +220,31 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   gaugeValue: {
     fontSize: 28,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.monoBold,
     color: COLORS.navy,
-    lineHeight: 1,
+    lineHeight: 1.25,
     marginBottom: 4,
   },
   gaugeRating: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 10,
+    lineHeight: 1.35,
+    marginBottom: 0,
   },
   gaugeTrack: {
     height: 10,
-    backgroundColor: "#E2E8F0",
-    borderRadius: 5,
+    backgroundColor: REPORT_COLORS.rule,
+    borderRadius: REPORT_RADIUS.sm,
     position: "relative",
     overflow: "hidden",
+    marginTop: 10,
   },
-  gaugeFill: { height: 10, borderRadius: 5 },
+  gaugeFill: { height: 10, borderRadius: REPORT_RADIUS.sm },
   targetLine: {
     position: "absolute",
     top: 0,
@@ -264,12 +271,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
+    borderRadius: REPORT_RADIUS.md,
     padding: 12,
   },
   summaryStatValue: {
     fontSize: 20,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.monoBold,
     color: COLORS.navy,
     marginBottom: 3,
   },
@@ -281,14 +288,14 @@ const styles = StyleSheet.create({
   },
   indexGroupTitle: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginTop: 10,
     marginBottom: 6,
     paddingVertical: 6,
     paddingHorizontal: 8,
     backgroundColor: COLORS.surface,
-    borderRadius: 4,
+    borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -303,7 +310,7 @@ const styles = StyleSheet.create({
   summaryListIndex: {
     width: 16,
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.muted,
   },
   summaryListTitle: {
@@ -314,7 +321,7 @@ const styles = StyleSheet.create({
   },
   summaryListImpact: {
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     minWidth: 28,
     textAlign: "right",
@@ -328,20 +335,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    backgroundColor: "#FFFFFF",
+    borderRadius: REPORT_RADIUS.md,
+    backgroundColor: COLORS.paper,
   },
   roadmapRowHighlight: {
-    backgroundColor: "#EEF4F8",
+    backgroundColor: REPORT_COLORS.accentBg,
     borderColor: COLORS.navy,
   },
-  roadmapLabel: { flex: 1, fontSize: 10, fontFamily: "Helvetica-Bold", color: COLORS.slate },
-  roadmapScore: { fontSize: 18, fontFamily: "Helvetica-Bold", color: COLORS.navy, minWidth: 36 },
+  roadmapLabel: { flex: 1, fontSize: 10, fontFamily: REPORT_FONTS.bodyBold, color: COLORS.slate },
+  roadmapScore: { fontSize: 18, fontFamily: REPORT_FONTS.monoBold, color: COLORS.navy, minWidth: 36 },
   roadmapBarWrap: { width: 120 },
   bulletSection: { marginBottom: 14 },
   bulletHeading: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 6,
   },
@@ -357,8 +364,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    backgroundColor: "#FFFFFF",
+    borderRadius: REPORT_RADIUS.md,
+    backgroundColor: COLORS.paper,
     flexDirection: "column",
   },
   categoryTitleRow: {
@@ -374,7 +381,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.45,
     paddingRight: 4,
@@ -383,7 +390,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     width: 44,
     fontSize: 15,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.2,
     textAlign: "right",
@@ -404,28 +411,28 @@ const styles = StyleSheet.create({
   },
   categoryRatingValue: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.4,
   },
   progressTrack: {
     height: 10,
     width: "100%",
-    backgroundColor: "#E2E8F0",
-    borderRadius: 5,
+    backgroundColor: REPORT_COLORS.rule,
+    borderRadius: REPORT_RADIUS.sm,
     overflow: "hidden",
   },
-  progressFill: { height: 10, borderRadius: 5 },
+  progressFill: { height: 10, borderRadius: REPORT_RADIUS.sm },
   priorityGroup: { marginBottom: 18 },
   priorityGroupTitle: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 10,
     paddingVertical: 8,
     paddingHorizontal: 10,
     backgroundColor: COLORS.surface,
-    borderRadius: 4,
+    borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -434,8 +441,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
-    backgroundColor: "#FFFFFF",
+    borderRadius: REPORT_RADIUS.md,
+    backgroundColor: COLORS.paper,
   },
   recommendationHeader: {
     flexDirection: "row",
@@ -447,17 +454,17 @@ const styles = StyleSheet.create({
   recommendationTitle: {
     flex: 1,
     fontSize: 11,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.45,
   },
   priorityBadge: {
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     letterSpacing: 0.5,
   },
   recommendationField: { marginBottom: 8 },
@@ -471,25 +478,29 @@ const styles = StyleSheet.create({
   recommendationFieldValue: { fontSize: 9, lineHeight: 1.55, color: COLORS.slate },
   recommendationImpact: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     lineHeight: 1.45,
   },
   closingHero: {
-    backgroundColor: COLORS.navy,
-    borderRadius: 8,
+    backgroundColor: COLORS.accentBg,
+    borderWidth: 1,
+    borderColor: COLORS.accentBorder,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.forest,
+    borderRadius: REPORT_RADIUS.lg,
     padding: 20,
     marginBottom: 18,
   },
   closingHeroTitle: {
     fontSize: 18,
-    fontFamily: "Helvetica-Bold",
-    color: "#FFFFFF",
+    fontFamily: REPORT_FONTS.displayBold,
+    color: COLORS.forest,
     marginBottom: 6,
   },
   closingHeroSubtitle: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.85)",
+    color: REPORT_COLORS.inkSecondary,
     lineHeight: 1.5,
   },
   closingStatGrid: {
@@ -503,13 +514,13 @@ const styles = StyleSheet.create({
     minHeight: 54,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 6,
+    borderRadius: REPORT_RADIUS.md,
     padding: 14,
     backgroundColor: COLORS.surface,
   },
   closingStatValue: {
     fontSize: 22,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.monoBold,
     color: COLORS.navy,
     marginBottom: 4,
   },
@@ -521,14 +532,14 @@ const styles = StyleSheet.create({
   },
   ctaBox: {
     padding: 18,
-    backgroundColor: "#EEF4F8",
-    borderRadius: 6,
+    backgroundColor: REPORT_COLORS.accentBg,
+    borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.navy,
   },
   ctaTitle: {
     fontSize: 12,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 8,
   },
@@ -536,17 +547,17 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.criticalBg,
     borderWidth: 1,
     borderColor: COLORS.criticalBorder,
-    borderRadius: 6,
+    borderRadius: REPORT_RADIUS.md,
     padding: 12,
     marginBottom: 12,
   },
   warningTitle: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.critical,
     marginBottom: 4,
   },
-  warningText: { fontSize: 9, color: "#7F1D1D", lineHeight: 1.55 },
+  warningText: { fontSize: 9, color: REPORT_COLORS.critical, lineHeight: 1.55 },
 });
 
 function CategoryScoreCard({
@@ -562,25 +573,27 @@ function CategoryScoreCard({
   const fillWidth = `${Math.max(0, Math.min(100, roundedScore))}%`;
 
   return (
-    <View wrap={false} style={styles.categoryCard}>
-      <View style={styles.categoryTitleRow}>
-        <Text style={styles.categoryName}>{categoryName}</Text>
-        <Text style={styles.categoryPercent}>{roundedScore}%</Text>
-      </View>
+    <PdfCornerBrackets corners="two" tone="ink">
+      <View wrap={false} style={styles.categoryCard}>
+        <View style={styles.categoryTitleRow}>
+          <Text style={styles.categoryName}>{categoryName}</Text>
+          <Text style={styles.categoryPercent}>{roundedScore}%</Text>
+        </View>
 
-      <View style={styles.categoryProgressWrap}>
-        <View style={styles.progressTrack}>
-          <View
-            style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
-          />
+        <View style={styles.categoryProgressWrap}>
+          <View style={styles.progressTrack}>
+            <View
+              style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.categoryRatingRow}>
+          <Text style={styles.categoryRatingLabel}>Rating:</Text>
+          <Text style={styles.categoryRatingValue}>{RATING_LABELS[rating]}</Text>
         </View>
       </View>
-
-      <View style={styles.categoryRatingRow}>
-        <Text style={styles.categoryRatingLabel}>Rating:</Text>
-        <Text style={styles.categoryRatingValue}>{RATING_LABELS[rating]}</Text>
-      </View>
-    </View>
+    </PdfCornerBrackets>
   );
 }
 
@@ -600,30 +613,32 @@ function RecommendationCard({
   categoryName: string;
 }) {
   return (
-    <View wrap={false} style={styles.recommendationCard}>
-      <View style={styles.recommendationHeader}>
-        <Text style={styles.recommendationTitle}>{title}</Text>
-        <PdfPriorityBadge priority={priority} />
-      </View>
-      <View style={styles.recommendationField}>
-        <Text style={styles.recommendationFieldLabel}>Potential Score Impact</Text>
-        <Text style={styles.recommendationImpact}>+{estimatedImpactPoints} points</Text>
-      </View>
-      {suggestedService ? (
-        <View style={styles.recommendationField}>
-          <Text style={styles.recommendationFieldLabel}>Recommended Service</Text>
-          <Text style={styles.recommendationFieldValue}>{suggestedService}</Text>
+    <PdfCornerBrackets corners="two" tone="forest">
+      <View wrap={false} style={styles.recommendationCard}>
+        <View style={styles.recommendationHeader}>
+          <Text style={styles.recommendationTitle}>{title}</Text>
+          <PdfPriorityBadge priority={priority} />
         </View>
-      ) : null}
-      <View style={styles.recommendationField}>
-        <Text style={styles.recommendationFieldLabel}>Business Impact</Text>
-        <Text style={styles.recommendationFieldValue}>{businessImpact}</Text>
+        <View style={styles.recommendationField}>
+          <Text style={styles.recommendationFieldLabel}>Potential Score Impact</Text>
+          <Text style={styles.recommendationImpact}>+{estimatedImpactPoints} points</Text>
+        </View>
+        {suggestedService ? (
+          <View style={styles.recommendationField}>
+            <Text style={styles.recommendationFieldLabel}>Recommended Service</Text>
+            <Text style={styles.recommendationFieldValue}>{suggestedService}</Text>
+          </View>
+        ) : null}
+        <View style={styles.recommendationField}>
+          <Text style={styles.recommendationFieldLabel}>Business Impact</Text>
+          <Text style={styles.recommendationFieldValue}>{businessImpact}</Text>
+        </View>
+        <View style={{ marginBottom: 0 }}>
+          <Text style={styles.recommendationFieldLabel}>Category</Text>
+          <Text style={styles.recommendationFieldValue}>{categoryName}</Text>
+        </View>
       </View>
-      <View style={{ marginBottom: 0 }}>
-        <Text style={styles.recommendationFieldLabel}>Category</Text>
-        <Text style={styles.recommendationFieldValue}>{categoryName}</Text>
-      </View>
-    </View>
+    </PdfCornerBrackets>
   );
 }
 
@@ -853,6 +868,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               score={summary.overallScore}
               label="Current StackScore"
               ratingLabel={summary.overallRatingLabel}
+              bracketCorners="four"
             />
             <PdfScoreGauge
               score={summary.projectedScore}
@@ -860,6 +876,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
               variant="accent"
               barVariant="improvement"
+              bracketCorners="two"
             />
           </View>
 
@@ -957,6 +974,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               score={summary.overallScore}
               label="Current StackScore"
               ratingLabel={summary.overallRatingLabel}
+              bracketCorners="four"
             />
             <PdfScoreGauge
               score={summary.projectedScore}
@@ -964,6 +982,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
               variant="accent"
               barVariant="improvement"
+              bracketCorners="two"
             />
           </View>
 
@@ -1050,12 +1069,14 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               score={summary.overallScore}
               label="Current Score"
               ratingLabel={summary.overallRatingLabel}
+              bracketCorners="four"
             />
             <PdfScoreGauge
               score={summary.projectedScore}
               label="Projected Score"
               ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
               variant="accent"
+              bracketCorners="two"
             />
           </View>
 

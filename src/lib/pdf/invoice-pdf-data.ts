@@ -2,6 +2,7 @@ import type { InvoiceLineKind, InvoiceStatus } from "@/generated/prisma/client";
 import { INVOICE_STATUS_LABELS } from "@/lib/billing/labels";
 import { DEFAULT_BUDGETARY_DISCLAIMER } from "@/lib/billing/invoice-builder";
 import { formatMoney } from "@/lib/billing/money";
+import { REPORT_COLORS } from "@/lib/pdf/shared/tokens";
 
 export type InvoicePdfLineItem = {
   itemName: string | null;
@@ -336,15 +337,51 @@ export const INVOICE_PDF_STATUS_BADGE: Record<
   InvoiceStatus,
   { backgroundColor: string; color: string; borderColor: string }
 > = {
-  draft: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
-  ready_to_send: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
-  sent: { backgroundColor: "#EFF6FF", color: "#0F2744", borderColor: "#BFDBFE" },
-  viewed: { backgroundColor: "#EFF6FF", color: "#0F2744", borderColor: "#BFDBFE" },
-  partially_paid: { backgroundColor: "#FFFBEB", color: "#D97706", borderColor: "#FDE68A" },
-  paid: { backgroundColor: "#F0FDF4", color: "#16A34A", borderColor: "#BBF7D0" },
-  overdue: { backgroundColor: "#FEF2F2", color: "#DC2626", borderColor: "#FECACA" },
-  voided: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
-  refunded: { backgroundColor: "#F8FAFC", color: "#6B7280", borderColor: "#E5E7EB" },
+  draft: {
+    backgroundColor: REPORT_COLORS.sectionBackground,
+    color: REPORT_COLORS.inkSecondary,
+    borderColor: REPORT_COLORS.rule,
+  },
+  ready_to_send: {
+    backgroundColor: REPORT_COLORS.sectionBackground,
+    color: REPORT_COLORS.inkSecondary,
+    borderColor: REPORT_COLORS.rule,
+  },
+  sent: {
+    backgroundColor: REPORT_COLORS.accentBg,
+    color: REPORT_COLORS.forest,
+    borderColor: REPORT_COLORS.accentBorder,
+  },
+  viewed: {
+    backgroundColor: REPORT_COLORS.accentBg,
+    color: REPORT_COLORS.forest,
+    borderColor: REPORT_COLORS.accentBorder,
+  },
+  partially_paid: {
+    backgroundColor: REPORT_COLORS.warningBg,
+    color: REPORT_COLORS.warning,
+    borderColor: REPORT_COLORS.warningBorder,
+  },
+  paid: {
+    backgroundColor: REPORT_COLORS.successBg,
+    color: REPORT_COLORS.forest,
+    borderColor: REPORT_COLORS.successBorder,
+  },
+  overdue: {
+    backgroundColor: REPORT_COLORS.criticalBg,
+    color: REPORT_COLORS.critical,
+    borderColor: REPORT_COLORS.criticalBorder,
+  },
+  voided: {
+    backgroundColor: REPORT_COLORS.sectionBackground,
+    color: REPORT_COLORS.inkSecondary,
+    borderColor: REPORT_COLORS.rule,
+  },
+  refunded: {
+    backgroundColor: REPORT_COLORS.sectionBackground,
+    color: REPORT_COLORS.inkSecondary,
+    borderColor: REPORT_COLORS.rule,
+  },
 };
 
 export function normalizeWebsiteUrl(website: string): string {

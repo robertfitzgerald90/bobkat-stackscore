@@ -7,6 +7,7 @@ export {
 } from "./colors";
 export {
   REPORT_COLORS,
+  REPORT_FONTS,
   REPORT_SPACING,
   REPORT_RADIUS,
   REPORT_TYPOGRAPHY,
@@ -19,12 +20,18 @@ export {
   pdfReportBodyStyles,
 } from "./layout";
 export { PdfFlowSection } from "./components/flow-section";
-export { registerPdfFonts } from "./fonts";
+export {
+  registerPdfFonts,
+  getPdfBodyFont,
+  getPdfDisplayFont,
+  getPdfMonoFont,
+} from "./fonts";
 export { pdfComponentStyles } from "./styles/components";
 export { PdfPageFooter, PdfConfidentialFooter } from "./components/page-footer";
 export { PdfReportFooter } from "./components/report-footer";
 export { PdfSectionTitle } from "./components/section-title";
 export { PdfScoreGauge, PdfMiniScoreBar } from "./components/score-gauge";
+export { PdfCornerBrackets } from "./components/corner-brackets";
 export { PdfPriorityBadge } from "./components/priority-badge";
 export { PdfBulletSection } from "./components/bullet-section";
 export { PdfReportHeader } from "./components/report-header";

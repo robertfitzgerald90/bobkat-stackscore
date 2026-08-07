@@ -1,35 +1,41 @@
 /**
- * StackScore PDF report design tokens — single source of truth for all report PDFs.
+ * StackScore PDF report design tokens — paper-safe print palette.
+ * Not a port of the on-screen Obsidian/phosphor theme.
  */
 
 export const REPORT_COLORS = {
-  navy: "#082F5B",
-  accent: "#082F5B",
-  background: "#FFFFFF",
-  sectionBackground: "#F8FAFC",
-  border: "#E2E8F0",
-  textPrimary: "#1E293B",
-  textSecondary: "#64748B",
-  success: "#059669",
-  warning: "#D97706",
-  critical: "#DC2626",
-  /** Current / baseline score values */
-  scoreCurrent: "#082F5B",
-  /** Positive movement / projected improvement */
-  scoreImprovement: "#059669",
-  /** Negative movement only */
-  scoreDecline: "#DC2626",
-  /** Neutral / inactive timeline elements */
-  neutral: "#94A3B8",
+  paper: "#FAFAF8",
+  ink: "#1A1D22",
+  inkSecondary: "#55595F",
+  rule: "#D8DBDF",
+  forest: "#0B5A46",
+  critical: "#9C2B2B",
+
+  /** @deprecated Prefer `forest` — kept so existing COLORS.navy imports remapped */
+  navy: "#0B5A46",
+  accent: "#0B5A46",
+  background: "#FAFAF8",
+  sectionBackground: "#F3F3F0",
+  border: "#D8DBDF",
+  textPrimary: "#1A1D22",
+  textSecondary: "#55595F",
+  /** Consolidated into forest — no separate success green */
+  success: "#0B5A46",
+  /** Caution for high/attention badges only — not a second brand accent */
+  warning: "#8A6A1C",
+  scoreCurrent: "#0B5A46",
+  scoreImprovement: "#0B5A46",
+  scoreDecline: "#9C2B2B",
+  neutral: "#55595F",
   white: "#FFFFFF",
-  successBg: "#ECFDF5",
-  successBorder: "#A7F3D0",
-  warningBg: "#FFFBEB",
-  warningBorder: "#FDE68A",
-  criticalBg: "#FEF2F2",
-  criticalBorder: "#FECACA",
-  accentBg: "#F1F5F9",
-  accentBorder: "#CBD5E1",
+  successBg: "#E8F2EE",
+  successBorder: "#B7D4C8",
+  warningBg: "#F5F0E8",
+  warningBorder: "#D8DBDF",
+  criticalBg: "#F8EDED",
+  criticalBorder: "#E0B4B4",
+  accentBg: "#E8F2EE",
+  accentBorder: "#B7D4C8",
 } as const;
 
 export const REPORT_SPACING = {
@@ -44,10 +50,11 @@ export const REPORT_SPACING = {
   cardPaddingCompact: 12,
 } as const;
 
+/** Sharp print corners — 0–2px */
 export const REPORT_RADIUS = {
-  sm: 6,
-  md: 10,
-  lg: 12,
+  sm: 0,
+  md: 1,
+  lg: 2,
 } as const;
 
 export const REPORT_TYPOGRAPHY = {
@@ -61,4 +68,14 @@ export const REPORT_TYPOGRAPHY = {
   kpiLabel: 9,
   tableHeader: 9,
   footer: 8,
+} as const;
+
+/** Registered family names — see `fonts.ts` */
+export const REPORT_FONTS = {
+  display: "SpaceGrotesk",
+  displayBold: "SpaceGrotesk-Bold",
+  body: "SourceSans3",
+  bodyBold: "SourceSans3-Bold",
+  mono: "JetBrainsMono",
+  monoBold: "JetBrainsMono-Bold",
 } as const;

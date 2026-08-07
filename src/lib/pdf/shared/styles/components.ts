@@ -1,6 +1,6 @@
 import { StyleSheet } from "@react-pdf/renderer";
 import { PDF_COLORS as COLORS } from "@/lib/pdf/shared/colors";
-import { REPORT_RADIUS, REPORT_SPACING, REPORT_TYPOGRAPHY } from "@/lib/pdf/shared/tokens";
+import { REPORT_FONTS, REPORT_RADIUS, REPORT_SPACING, REPORT_TYPOGRAPHY } from "@/lib/pdf/shared/tokens";
 
 export const pdfComponentStyles = StyleSheet.create({
   footer: {
@@ -59,7 +59,7 @@ export const pdfComponentStyles = StyleSheet.create({
   sectionTitleWrap: { marginBottom: REPORT_SPACING.block, marginTop: 2 },
   sectionTitle: {
     fontSize: REPORT_TYPOGRAPHY.sectionTitle,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.navy,
     paddingBottom: 6,
     borderBottomWidth: 1,
@@ -79,7 +79,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   kpiCard: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
     borderWidth: 1,
@@ -102,7 +102,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   kpiValue: {
     fontSize: REPORT_TYPOGRAPHY.kpiValue,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.monoBold,
     color: COLORS.navy,
     lineHeight: 1,
     marginBottom: 4,
@@ -114,7 +114,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   gaugeCard: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
     borderWidth: 1,
@@ -133,20 +133,25 @@ export const pdfComponentStyles = StyleSheet.create({
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: 6,
+    marginBottom: 8,
+  },
+  gaugeScoreBlock: {
+    marginBottom: 10,
   },
   gaugeValue: {
     fontSize: REPORT_TYPOGRAPHY.kpiValue,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.monoBold,
     color: COLORS.navy,
-    lineHeight: 1,
+    // Custom mono metrics need >1 lineHeight or the next Text overlaps the score.
+    lineHeight: 1.25,
     marginBottom: 4,
   },
   gaugeRating: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.accent,
-    marginBottom: 10,
+    lineHeight: 1.35,
+    marginBottom: 0,
   },
   gaugeTrack: {
     height: 8,
@@ -154,6 +159,7 @@ export const pdfComponentStyles = StyleSheet.create({
     borderRadius: REPORT_RADIUS.sm,
     position: "relative",
     overflow: "hidden",
+    marginTop: 2,
   },
   gaugeFill: { height: 8, borderRadius: REPORT_RADIUS.sm },
   targetLine: {
@@ -167,8 +173,9 @@ export const pdfComponentStyles = StyleSheet.create({
   targetCaption: {
     fontSize: 7,
     color: COLORS.muted,
-    marginTop: 4,
+    marginTop: 6,
     textAlign: "right",
+    lineHeight: 1.3,
   },
   calloutBox: {
     backgroundColor: COLORS.surface,
@@ -182,7 +189,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   calloutTitle: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 6,
   },
@@ -203,7 +210,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   calloutWarningTitle: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.critical,
     marginBottom: 4,
   },
@@ -224,7 +231,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   tableHeaderCell: {
     fontSize: REPORT_TYPOGRAPHY.tableHeader,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -235,7 +242,7 @@ export const pdfComponentStyles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
   },
   tableRowAlt: {
     backgroundColor: COLORS.surface,
@@ -269,7 +276,7 @@ export const pdfComponentStyles = StyleSheet.create({
   timelineContent: { flex: 1 },
   timelineLabel: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 2,
   },
@@ -288,7 +295,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   emptyStateTitle: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 4,
   },
@@ -304,13 +311,13 @@ export const pdfComponentStyles = StyleSheet.create({
     borderRadius: REPORT_RADIUS.sm,
     borderWidth: 1,
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     letterSpacing: 0.5,
   },
   bulletSection: { marginBottom: REPORT_SPACING.block },
   bulletHeading: {
     fontSize: REPORT_TYPOGRAPHY.bodySmall,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 6,
   },
@@ -327,7 +334,7 @@ export const pdfComponentStyles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 56,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
     paddingHorizontal: REPORT_SPACING.pagePaddingX,
@@ -341,7 +348,7 @@ export const pdfComponentStyles = StyleSheet.create({
   pageHeaderLogo: { width: 35, height: 24, objectFit: "contain" },
   pageHeaderBrand: {
     fontSize: 8,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     letterSpacing: 0.3,
   },
@@ -349,13 +356,13 @@ export const pdfComponentStyles = StyleSheet.create({
   pageHeaderRight: { alignItems: "flex-end" },
   pageHeaderClient: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.slate,
     marginBottom: 2,
   },
   pageHeaderScore: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 2,
   },
@@ -364,10 +371,10 @@ export const pdfComponentStyles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: REPORT_SPACING.pagePaddingBottom,
     paddingHorizontal: 0,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: REPORT_TYPOGRAPHY.body,
     color: COLORS.slate,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.paper,
   },
   coverAccentBar: {
     height: 3,
@@ -387,7 +394,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   coverTitle: {
     fontSize: REPORT_TYPOGRAPHY.coverTitle,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.navy,
     lineHeight: 1.2,
     marginBottom: 8,
@@ -401,7 +408,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   coverClientName: {
     fontSize: REPORT_TYPOGRAPHY.coverClient,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.navy,
     marginBottom: 24,
     lineHeight: 1.25,
@@ -424,7 +431,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   coverMetaValue: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.slate,
     lineHeight: 1.4,
   },
@@ -440,7 +447,7 @@ export const pdfComponentStyles = StyleSheet.create({
   coverBrandLogo: { width: 64, height: 44, objectFit: "contain" },
   coverPreparedBy: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 2,
   },
@@ -457,7 +464,7 @@ export const pdfComponentStyles = StyleSheet.create({
   },
   closingHeroTitle: {
     fontSize: 16,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.navy,
     marginBottom: 6,
   },
