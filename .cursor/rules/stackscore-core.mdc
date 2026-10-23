@@ -20,7 +20,7 @@ StackScore is **documentation-driven software**. When docs and code conflict, tr
 
 ## Architecture defaults
 
-- **Next.js 15** App Router, **React 19**, **Node 20.x**
+- **Next.js 15** App Router, **React 19**, **Node 24.x**
 - **No server actions** — mutations go through `src/app/api/**` route handlers
 - **Prisma 7** + PostgreSQL (Neon in production); client at `@/generated/prisma/client`, singleton at `@/lib/db`
 - **Tenant boundary:** `Client` (no Organization/Workspace models)

@@ -45,7 +45,7 @@ Preserve this app’s production architecture: documentation-driven domain logic
 | UI primitives | `src/components/ui/`, `src/components/<domain>/` |
 | DB | `prisma/schema.prisma`, `src/lib/db/` |
 | API helpers | `src/lib/api/helpers.ts`, `access.ts` |
-| Package | `package.json` (Node 20.x, Next 15, React 19, Prisma 7) |
+| Package | `package.json` (Node 24.x, Next 15, React 19, Prisma 7) |
 
 ## Required implementation workflow
 

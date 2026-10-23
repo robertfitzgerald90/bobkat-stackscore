@@ -113,7 +113,7 @@ Even with an empty customer list, three delivery gaps remain:
 | Layer | What the repository uses | Evidence |
 | --- | --- | --- |
 | Application | Next.js 15.5 App Router, React 19, TypeScript | `package.json` |
-| Runtime | Node.js 20.x | `package.json` `engines` |
+| Runtime | Node.js 24.x | `package.json` `engines` |
 | UI | Tailwind CSS 4, shadcn `base-nova`, Base UI, Recharts | `package.json`, `src/components/ui/` |
 | API | Route Handlers under `src/app/api`. Server Actions are not the mutation pattern | `src/app/api/**/route.ts` |
 | Data | Prisma 7, PostgreSQL, driver adapter `pg` | `prisma/schema.prisma`, `package.json` |

@@ -16,7 +16,7 @@ This guide covers deploying StackScore for **field pilot** use: assessments, sco
 
 | Component | Minimum |
 |-----------|---------|
-| Node.js | 20+ |
+| Node.js | 24.x |
 | PostgreSQL | 14+ |
 | RAM | 1 GB for app + DB connection pool |
 | Users | 1–3 (admin + technician) |

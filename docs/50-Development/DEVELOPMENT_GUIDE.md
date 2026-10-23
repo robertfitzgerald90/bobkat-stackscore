@@ -10,7 +10,7 @@ This guide covers local setup, environment configuration, database seeding, auth
 
 | Requirement | Version |
 |-------------|---------|
-| Node.js | 20+ (project tested on 24.x) |
+| Node.js | 24.x (`package.json` `engines`, `.nvmrc`) |
 | npm | 10+ |
 | PostgreSQL | 15+ (accessible from your dev machine) |
 

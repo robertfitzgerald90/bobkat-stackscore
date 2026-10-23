@@ -58,7 +58,7 @@ Confirm migrations, env, build, and smoke checks before/after production deploy 
 
 ## Required architecture (this repo)
 
-- Node 20.x; production DB Neon; local Postgres separate (ENVIRONMENTS.md)
+- Node 24.x; production DB Neon; local Postgres separate (ENVIRONMENTS.md)
 - Route Handlers + Prisma migrate deploy — not `db push` on production
 
 ## Validation commands
