@@ -78,7 +78,8 @@ export const DEFAULT_DEMO_COMPANY_PROFILE: DemoCompanyProfile = {
 };
 
 export const DEFAULT_DEMO_PRICING: DemoPricingAssumptions = {
-  managedEndpointMonthlyPerDeviceCents: 5_000,
+  /** Catalog-aligned managed endpoint rate: $15/device/month. */
+  managedEndpointMonthlyPerDeviceCents: 1_500,
   m365MonthlyPerUserCents: 2_200,
   passwordManagerMonthlyPerUserCents: 300,
   securityTrainingAnnualPerUserCents: 1_500,

@@ -9,8 +9,8 @@ describe("getPageTitle", () => {
     expect(getPageTitle("/snapshot-leads")).toBe("Snapshot Leads");
   });
 
-  it("returns Client Workspace for overview routes", () => {
-    expect(getPageTitle("/clients/client-1/technology-profile")).toBe("Client Workspace");
+  it("returns Executive Briefing for the technology-profile overview", () => {
+    expect(getPageTitle("/clients/client-1/technology-profile")).toBe("Executive Briefing");
     expect(getPageTitle("/clients/client-1")).toBe("Client Workspace");
   });
 

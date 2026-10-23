@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 export const assessmentRecommendationListInclude = {
   category: true,
   project: { select: { id: true } },
+  recommendationTemplate: { select: { code: true } },
 } satisfies Prisma.AssessmentRecommendationInclude;
 
 export const assessmentRecommendationListOrderBy = [

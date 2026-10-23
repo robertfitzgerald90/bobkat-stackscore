@@ -56,8 +56,12 @@ async function loadCompletedAssessment(assessmentId: string, clientId: string) {
 
 function toAssessmentSummary(
   assessment: NonNullable<Awaited<ReturnType<typeof loadCompletedAssessment>>>,
-): ComparisonAssessmentSummary {
-  const overallScore = Math.round(Number(assessment.overallScore ?? 0));
+): ComparisonAssessmentSummary | null {
+  if (assessment.overallScore === null) {
+    return null;
+  }
+
+  const overallScore = Math.round(Number(assessment.overallScore));
   const maturityTier = getMaturityTier(overallScore);
 
   return {
@@ -117,6 +121,9 @@ export async function buildAssessmentComparison(
 
   const previous = toAssessmentSummary(previousAssessment);
   const current = toAssessmentSummary(currentAssessment);
+  if (!previous || !current) {
+    return null;
+  }
 
   const [baselineRecommendations, comparisonRecommendations] = await Promise.all([
     getRecommendationsTriggeredByAssessment(previousAssessmentId),

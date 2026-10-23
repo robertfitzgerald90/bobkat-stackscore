@@ -36,7 +36,17 @@ export type V2ScoringResult = {
   totalPillarCount: number;
 };
 
-/** DOC-119 normalized response score (0–100). N/A returns null (excluded). */
+/** True when answer text is one of the four DOC-119 standard labels. */
+export function isRecognizedV2Answer(answerText: string): answerText is V2StandardAnswer {
+  return (V2_STANDARD_ANSWERS as readonly string[]).includes(answerText.trim());
+}
+
+/**
+ * DOC-119 normalized response score (0–100). N/A returns null (excluded).
+ * Unrecognized labels return null — callers that score for completion must
+ * validate with `isRecognizedV2Answer` first so invalid labels cannot silently
+ * become N/A.
+ */
 export function normalizeAnswerScore(answerText: string): number | null {
   switch (answerText.trim()) {
     case "Yes":

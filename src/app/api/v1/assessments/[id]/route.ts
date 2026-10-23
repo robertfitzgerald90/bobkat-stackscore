@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
+import { presentRecommendationsForRole } from "@/lib/recommendations/visibility";
 import {
   conflict,
   forbidden,
@@ -43,26 +44,43 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   if (!assessment) return notFound("Assessment not found");
 
-  const recommendations =
+  const rawRecommendations =
     assessment.status === "completed"
       ? await getRecommendationsTriggeredByAssessment(id)
       : await prisma.assessmentRecommendation.findMany({
           where: { assessmentId: id },
           orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-          include: { category: true },
+          include: {
+            category: true,
+            recommendationTemplate: { select: { code: true } },
+          },
         });
+  const recommendations = presentRecommendationsForRole(rawRecommendations, user.role);
 
   const totalQuestions = await prisma.assessmentQuestion.count({
     where: { isActive: true },
   });
 
-  return NextResponse.json({
+  const payload = {
     ...assessment,
     recommendations,
     progress: {
       answered: assessment.responses.length,
       total: totalQuestions,
     },
+  };
+
+  if (user.role !== "client") {
+    return NextResponse.json(payload);
+  }
+
+  return NextResponse.json({
+    ...payload,
+    internalNotes: null,
+    client: { ...assessment.client, notes: null },
+    assessor: assessment.assessor
+      ? { id: assessment.assessor.id, name: assessment.assessor.name, email: null }
+      : assessment.assessor,
   });
 }
 

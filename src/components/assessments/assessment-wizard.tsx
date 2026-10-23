@@ -371,7 +371,12 @@ export function AssessmentWizard({
         </div>
         <Button
           onClick={completeAssessment}
-          disabled={completing || answeredCount < totalCount}
+          disabled={
+            completing ||
+            answeredCount < totalCount ||
+            preview?.overallScore === null ||
+            preview?.isCompletionReady === false
+          }
           size="lg"
           className="w-full sm:w-auto"
         >

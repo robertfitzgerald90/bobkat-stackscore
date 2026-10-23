@@ -74,17 +74,19 @@ export async function POST(_request: Request, context: RouteContext) {
       })),
     );
 
-    const projectedScore = calculateProjectedScore(
-      Number(result.overallScore ?? 0),
-      [projectionImpact],
-    );
+    if (result.overallScore === null) {
+      return conflict("Completed assessment is missing a valid overall StackScore");
+    }
+
+    const overallScore = Number(result.overallScore);
+    const projectedScore = calculateProjectedScore(overallScore, [projectionImpact]);
 
     return NextResponse.json({
       id: result.id,
       status: result.status,
       completedAt: result.completedAt,
-      overallScore: Number(result.overallScore),
-      overallRating: getRatingLabel(Number(result.overallScore)),
+      overallScore,
+      overallRating: getRatingLabel(overallScore),
       hasCriticalExposure: result.hasCriticalExposure,
       categoryScores: result.categoryScores,
       recommendationCount: openRecommendations.length,
@@ -93,7 +95,12 @@ export async function POST(_request: Request, context: RouteContext) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Completion failed";
-    if (message.includes("answered")) {
+    if (
+      message.includes("answered") ||
+      message.includes("overall StackScore") ||
+      message.includes("Unrecognized answer") ||
+      message.includes("Only draft")
+    ) {
       return conflict(message);
     }
     return NextResponse.json({ error: message, code: "COMPLETION_FAILED" }, { status: 400 });

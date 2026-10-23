@@ -21,7 +21,7 @@ export async function GET(request: Request, context: RouteContext) {
   if (denied) return denied;
 
   const phaseId = new URL(request.url).searchParams.get("phaseId") ?? undefined;
-  const proposals = await listPhaseProposals(clientId, phaseId);
+  const proposals = await listPhaseProposals(clientId, phaseId, user.role);
   return NextResponse.json({ proposals });
 }
 

@@ -42,8 +42,10 @@ export function countReportPreviewPages(root: ParentNode): number {
 }
 
 export function isEditableTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
+  if (!target || typeof target !== "object") return false;
+  const element = target as { closest?: (selectors: string) => unknown };
+  if (typeof element.closest !== "function") return false;
   return Boolean(
-    target.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]'),
+    element.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]'),
   );
 }

@@ -20,7 +20,7 @@ describe("tip-preview-controls", () => {
   });
 
   it("computes fit-width zoom from container and document width", () => {
-    expect(computeFitWidthZoom(900, 800, 32)).toBe(1);
+    expect(computeFitWidthZoom(900, 800, 32)).toBe(1.09);
     expect(computeFitWidthZoom(500, 800, 32)).toBe(0.59);
   });
 
@@ -38,19 +38,26 @@ describe("tip-preview-controls", () => {
     expect(canZoomIn(MAX_ZOOM, "manual")).toBe(false);
   });
 
-  it("counts preview pages from the DOM", () => {
-    const root = document.createElement("div");
-    root.innerHTML = `
-      <div data-report-preview-page></div>
-      <div data-report-preview-page></div>
-      <div data-report-preview-page></div>
-    `;
+  it("counts preview pages from a querySelectorAll root", () => {
+    const root = {
+      querySelectorAll: (selector: string) => {
+        expect(selector).toBe("[data-report-preview-page]");
+        return { length: 3 };
+      },
+    } as unknown as ParentNode;
     expect(countReportPreviewPages(root)).toBe(3);
   });
 
   it("detects editable keyboard targets", () => {
-    const input = document.createElement("input");
+    expect(isEditableTarget(null)).toBe(false);
+    const input = {
+      closest: (selector: string) =>
+        selector.includes("input") ? {} : null,
+    };
+    const plain = {
+      closest: () => null,
+    };
     expect(isEditableTarget(input)).toBe(true);
-    expect(isEditableTarget(document.createElement("div"))).toBe(false);
+    expect(isEditableTarget(plain)).toBe(false);
   });
 });

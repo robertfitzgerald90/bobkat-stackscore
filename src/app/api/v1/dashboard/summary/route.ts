@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getSessionUser, unauthorized } from "@/lib/api/helpers";
+import { getSessionUser, requireConsultantOrAdmin, unauthorized } from "@/lib/api/helpers";
 
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const [totalClients, activeClients, assessmentsThisMonth, recentAssessments, atRiskClients] =
     await Promise.all([

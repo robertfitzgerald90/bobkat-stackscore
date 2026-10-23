@@ -154,7 +154,7 @@ describe("registered command visibility", () => {
     expect(results.some((command) => command.title.includes("Campaign"))).toBe(false);
   });
 
-  it("shows only one assessment dashboard entry for clients", () => {
+  it("shows a single resume-assessment entry when a draft exists", () => {
     const context = buildPageContext({
       pathname: "/dashboard",
       role: "client",
@@ -170,10 +170,8 @@ describe("registered command visibility", () => {
     });
 
     const commands = getAvailableCommands(context);
-    const dashboardEntries = commands.filter((command) =>
-      command.title.includes("Assessment Dashboard"),
-    );
-    expect(dashboardEntries).toHaveLength(1);
+    const resumeEntries = commands.filter((command) => command.title === "Resume Assessment");
+    expect(resumeEntries).toHaveLength(1);
   });
 
   it("suggests client-safe commands only", () => {

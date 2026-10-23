@@ -1,37 +1,27 @@
 import { prisma } from "@/lib/db";
 import { buildAssessmentExecutiveSummary } from "@/lib/assessments/executive-summary";
-import { MATURITY_TIER_LABELS } from "@/lib/scoring/maturity";
+import { getMaturityTier } from "@/lib/scoring/maturity";
 import {
   collectV2TriggeredResponses,
   evaluateV2Triggers,
 } from "@/lib/recommendations/v2-engine";
 import { syncClientRecommendations } from "@/lib/recommendations/sync";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
+import { buildRiskSummaryFromPriorities } from "@/lib/recommendations/risk-summary";
+import { ACTIVE_RECOMMENDATION_STATUSES } from "@/lib/recommendations/dedupe";
 import { calculateProjectedScore, getRating } from "@/lib/scoring";
 import { calculateProjectionImpacts } from "@/lib/recommendations";
-import {
-  calculateV2Scores,
-  toPillarScoreSnapshots,
-} from "@/lib/scoring/v2";
+import { toPillarScoreSnapshots, type PillarScoreSnapshot } from "@/lib/scoring/v2";
+import { evaluateV2CompletionGuards } from "@/lib/assessments/completion-guards";
 import type { Prisma, Rating } from "@/generated/prisma/client";
 import { RATING_LABELS } from "@/lib/scoring";
-
-/** Maps StackScore to profile maturity tier bands (DOC-113). Distinct from per-pillar DOC-119 maturity levels. */
-function mapV2MaturityToProfileTier(
-  score: number | null,
-): import("@/generated/prisma/client").MaturityTier | null {
-  if (score === null) return null;
-  if (score >= 95) return "optimized";
-  if (score >= 70) return "mature";
-  if (score >= 55) return "developing";
-  if (score >= 40) return "foundational";
-  return "nascent";
-}
 
 /**
  * Completes a draft v2 assessment: scores pillars (DOC-119), evaluates triggers (DOC-152),
  * syncs client-level recommendations, records score history, and updates the Technology Profile.
  * Preserves prior completed assessments as immutable snapshots.
+ *
+ * Completion requires every active question answered and a non-null overall StackScore (SS-OPT-002).
  */
 export async function completeAssessmentV2(assessmentId: string, userId: string) {
   const assessment = await prisma.assessment.findUnique({
@@ -51,14 +41,16 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
 
   if (!assessment) throw new Error("Assessment not found");
   if (assessment.status !== "draft") throw new Error("Only draft assessments can be completed");
-  if (assessment.responses.length === 0) {
-    throw new Error("At least one question must be answered before completion");
-  }
 
   const activeQuestions = await prisma.assessmentQuestion.findMany({
     where: { isActive: true },
     include: { category: true },
   });
+
+  const answeredQuestionIds = new Set(assessment.responses.map((response) => response.questionId));
+  const unansweredCount = activeQuestions.filter(
+    (question) => !answeredQuestionIds.has(question.id),
+  ).length;
 
   const v2Questions = activeQuestions.map((question) => ({
     id: question.code,
@@ -71,11 +63,22 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
     answerText: response.selectedAnswerOption.answerText,
   }));
 
-  const scoring = calculateV2Scores({
+  const guard = evaluateV2CompletionGuards({
+    unansweredCount,
+    responses: assessment.responses.map((response) => ({
+      questionCode: response.question.code,
+      answerText: response.selectedAnswerOption.answerText,
+    })),
     questions: v2Questions,
-    responses: v2Responses,
+    scoringResponses: v2Responses,
   });
 
+  if (!guard.ok) {
+    throw new Error(guard.message);
+  }
+
+  const scoring = guard.scoring;
+  const overallScore = guard.overallStackScore;
   const pillarSnapshots = toPillarScoreSnapshots(scoring.pillarScores);
   const hasCriticalExposure = assessment.responses.some(
     (response) => response.selectedAnswerOption.triggersCriticalFlag,
@@ -84,12 +87,11 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
   const triggeredResponses = collectV2TriggeredResponses(assessment.responses);
   const generatedRecommendations = evaluateV2Triggers(triggeredResponses);
   const projectionImpact = calculateProjectionImpacts(generatedRecommendations);
-  const projectedScore =
-    scoring.overallStackScore !== null
-      ? calculateProjectedScore(scoring.overallStackScore, [projectionImpact])
-      : scoring.overallStackScore;
+  const projectedScore = calculateProjectedScore(overallScore, [projectionImpact]);
 
-  const completePillars = scoring.pillarScores.filter((p) => p.status === "complete");
+  const completePillars = scoring.pillarScores.filter(
+    (pillar) => pillar.status === "complete" && pillar.percentScore !== null,
+  );
   const strengths = [...completePillars]
     .sort((a, b) => (b.percentScore ?? 0) - (a.percentScore ?? 0))
     .slice(0, 3)
@@ -106,17 +108,13 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
       return meta?.pillarName ?? pillar.pillarCode;
     });
 
-  const overallRating = scoring.overallStackScore !== null ? getRating(scoring.overallStackScore) : "critical";
-  const overallScore = scoring.overallStackScore ?? 0;
-  const profileMaturityTier = mapV2MaturityToProfileTier(overallScore);
+  const overallRating = getRating(overallScore);
 
   const executiveSummary = buildAssessmentExecutiveSummary({
     clientName: assessment.client.companyName,
     overallScore,
     overallRatingLabel: RATING_LABELS[overallRating],
-    maturityTierLabel: profileMaturityTier
-      ? MATURITY_TIER_LABELS[profileMaturityTier]
-      : undefined,
+    maturityTierLabel: scoring.overallMaturityLevel?.label,
     hasCriticalExposure,
     strengths,
     risks,
@@ -124,7 +122,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
       title: rec.title,
       priority: rec.priority,
     })),
-    projectedScore: projectedScore ?? 0,
+    projectedScore,
   });
 
   const categoryByCode = new Map(
@@ -165,7 +163,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
         status: "completed",
         completedAt: new Date(),
         scoringEngineVersion: "v2",
-        overallScore: scoring.overallStackScore,
+        overallScore,
         hasCriticalExposure,
         executiveSummary,
         securityScore: null,
@@ -183,7 +181,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
         clientId: assessment.clientId,
         assessmentId,
         recordedDate: new Date(),
-        overallScore: scoring.overallStackScore ?? 0,
+        overallScore,
         pillarScores: pillarSnapshots as unknown as Prisma.InputJsonValue,
       },
     });
@@ -214,57 +212,51 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
   return { ...completed, recommendations };
 }
 
-/** Refreshes Technology Profile KPIs, trend, and snapshot after assessment completion. */
+/**
+ * Refreshes Technology Profile from persisted assessment / score-history snapshots.
+ * Does not recalculate scores against the live question library (SS-OPT-002 DEF-008).
+ */
 export async function syncProfileFromAssessmentV2(assessmentId: string) {
   const assessment = await prisma.assessment.findUnique({
     where: { id: assessmentId },
     include: {
       categoryScores: { include: { category: true } },
-      recommendations: { where: { status: { in: ["open", "accepted", "in_progress"] } } },
-      responses: { include: { selectedAnswerOption: true, question: true } },
     },
   });
 
   if (!assessment || assessment.status !== "completed") return null;
 
-  const activeQuestions = await prisma.assessmentQuestion.findMany({
-    where: { isActive: true },
-    include: { category: true },
+  if (assessment.overallScore === null) {
+    throw new Error(
+      "Cannot sync Technology Profile: completed assessment has no overall StackScore.",
+    );
+  }
+
+  const overallScore = Number(assessment.overallScore);
+  const maturityTier = getMaturityTier(overallScore);
+
+  const historyRow = await prisma.clientScoreHistory.findFirst({
+    where: { assessmentId },
+    orderBy: { recordedDate: "desc" },
   });
 
-  const scoring = calculateV2Scores({
-    questions: activeQuestions.map((question) => ({
-      id: question.code,
-      pillarCode: question.category.code as import("@/lib/technology-maturity/pillars").TechnologyPillarCode,
-      weight: question.weight,
-    })),
-    responses: assessment.responses.map((response) => ({
-      questionId: response.question.code,
-      answerText: response.selectedAnswerOption.answerText,
-    })),
-  });
-
-  const pillarSnapshots = toPillarScoreSnapshots(scoring.pillarScores);
-  const overallScore = scoring.overallStackScore;
-  const maturityTier = mapV2MaturityToProfileTier(overallScore);
+  const pillarSnapshots = (historyRow?.pillarScores ?? null) as PillarScoreSnapshot[] | null;
 
   const { ensureTechnologyProfile } = await import("@/lib/technology-profile");
   await ensureTechnologyProfile(assessment.clientId);
 
-  const riskSummary = {
-    critical: assessment.responses.filter((r) => r.selectedAnswerOption.triggersCriticalFlag).length,
-    high: 0,
-    medium: 0,
-    low: 0,
-    criticalExposure: assessment.hasCriticalExposure,
-  };
-
-  const openRecommendationCount = await prisma.assessmentRecommendation.count({
+  const openRecommendations = await prisma.assessmentRecommendation.findMany({
     where: {
       clientId: assessment.clientId,
-      status: { in: ["open", "accepted", "in_progress"] },
+      status: { in: [...ACTIVE_RECOMMENDATION_STATUSES] },
     },
+    select: { priority: true },
   });
+
+  const riskSummary = buildRiskSummaryFromPriorities(
+    openRecommendations,
+    assessment.hasCriticalExposure,
+  );
 
   const history = await prisma.clientScoreHistory.findMany({
     where: { clientId: assessment.clientId },
@@ -273,7 +265,7 @@ export async function syncProfileFromAssessmentV2(assessmentId: string) {
   });
 
   let trendDirection: import("@/generated/prisma/client").TrendDirection = "stable";
-  if (history.length >= 2 && overallScore !== null) {
+  if (history.length >= 2) {
     const delta = overallScore - Number(history[1].overallScore);
     if (delta >= 3) trendDirection = "improving";
     else if (delta <= -3) trendDirection = "declining";
@@ -283,18 +275,23 @@ export async function syncProfileFromAssessmentV2(assessmentId: string) {
     ? new Date(new Date(assessment.completedAt).setMonth(assessment.completedAt.getMonth() + 12))
     : null;
 
+  const categoryScoresPayload = {
+    pillarScores: pillarSnapshots ?? [],
+    scoringEngineVersion: "v2" as const,
+  };
+
   const profile = await prisma.technologyProfile.update({
     where: { clientId: assessment.clientId },
     data: {
       overallStackScore: overallScore,
       maturityTier,
-      categoryScores: { pillarScores: pillarSnapshots, scoringEngineVersion: "v2" },
+      categoryScores: categoryScoresPayload,
       riskSummary,
       currentAssessmentId: assessment.id,
       lastAssessedAt: assessment.completedAt,
       nextRecommendedAssessmentAt: nextRecommended,
       trendDirection,
-      openRecommendationCount,
+      openRecommendationCount: openRecommendations.length,
       criticalExposureCount: riskSummary.critical,
     },
   });
@@ -306,14 +303,15 @@ export async function syncProfileFromAssessmentV2(assessmentId: string) {
       triggerType: "assessment_completed",
       triggerAssessmentId: assessment.id,
       snapshotAt: new Date(),
-      overallStackScore: overallScore ?? 0,
-      maturityTier: maturityTier ?? "nascent",
-      categoryScores: { pillarScores: pillarSnapshots, scoringEngineVersion: "v2" },
+      overallStackScore: overallScore,
+      maturityTier,
+      categoryScores: categoryScoresPayload,
       riskSummary,
       metadata: {
         assessmentName: assessment.assessmentName,
         scoringEngineVersion: "v2",
-        completePillarCount: scoring.completePillarCount,
+        completePillarCount: assessment.categoryScores.length,
+        source: "persisted_assessment_snapshot",
       },
     },
   });

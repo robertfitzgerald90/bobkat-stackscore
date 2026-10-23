@@ -15,6 +15,13 @@ export function isValidPhaseProposalStatus(value: string): value is PhaseProposa
   return value in PHASE_PROPOSAL_STATUS_LABELS;
 }
 
+/** Drafts and internal review stay on the consulting side of the workspace. */
+export const CLIENT_HIDDEN_PHASE_PROPOSAL_STATUSES = ["draft", "internal_review"] as const;
+
+export function isClientVisiblePhaseProposalStatus(status: PhaseProposalStatus): boolean {
+  return !(CLIENT_HIDDEN_PHASE_PROPOSAL_STATUSES as readonly string[]).includes(status);
+}
+
 export const ROADMAP_JOURNEY_MILESTONE_LABELS = {
   proposal_generated: "Proposal Generated",
   proposal_sent: "Proposal Sent",

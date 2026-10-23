@@ -8,6 +8,10 @@ export type CategoryPreview = {
   totalCount: number;
   percentScore: number | null;
   rating: Rating | null;
+  /** DOC-119 pillar completion status. */
+  status: "complete" | "incomplete";
+  /** DOC-119 maturity label, or "Assessment Incomplete" when unfinished. */
+  maturityLabel: string | null;
 };
 
 export type RecommendationPreview = {
@@ -35,4 +39,10 @@ export type AssessmentPreview = {
   categoryScores: CategoryPreview[];
   recommendations: RecommendationPreview[];
   topRisks: RiskPreview[];
+  /** Always true while the assessment status is draft. */
+  isDraft: boolean;
+  /** True when every active question is answered and overall score is numeric. */
+  isCompletionReady: boolean;
+  completePillarCount: number;
+  totalPillarCount: number;
 };

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import {
   badRequest,
   getSessionUser,
@@ -18,10 +19,13 @@ export const runtime = "nodejs";
 type RouteContext = { params: Promise<{ id: string; qbrId: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id: clientId, qbrId } = await context.params;
+  const denied = await requireClientWorkspaceAccess(user, clientId);
+  if (denied) return denied;
+
   const review = await getQuarterlyBusinessReview(clientId, qbrId, user.role);
   if (!review) return notFound("Business Review not found");
   return NextResponse.json({ review });

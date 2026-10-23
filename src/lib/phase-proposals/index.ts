@@ -6,8 +6,10 @@ export type {
 } from "./types";
 
 export {
+  CLIENT_HIDDEN_PHASE_PROPOSAL_STATUSES,
   PHASE_PROPOSAL_STATUS_LABELS,
   ROADMAP_JOURNEY_MILESTONE_LABELS,
+  isClientVisiblePhaseProposalStatus,
   isValidPhaseProposalStatus,
 } from "./types";
 

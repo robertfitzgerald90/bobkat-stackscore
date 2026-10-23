@@ -67,6 +67,11 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Overall StackScore
           </p>
+          {preview.isDraft ? (
+            <Badge variant="outline" className="mb-2 text-xs">
+              Draft preview
+            </Badge>
+          ) : null}
           <p
             className={cn(
               "instrument-mono text-5xl font-bold tabular-nums",
@@ -80,8 +85,18 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
               {RATING_LABELS[overallRating]}
             </Badge>
           ) : (
-            <p className="mt-2 text-sm text-muted-foreground">Answer questions to preview score</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {preview.answeredCount === 0
+                ? "Answer questions to preview score"
+                : "Insufficient data for an overall score"}
+            </p>
           )}
+          {preview.isDraft && !preview.isCompletionReady ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {preview.completePillarCount} of {preview.totalPillarCount} pillars complete — not a
+              finalized assessment
+            </p>
+          ) : null}
         </div>
 
         {preview.projectedScore !== null && preview.openRecommendationsCount > 0 ? (
@@ -137,9 +152,13 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
               <div className="flex items-center justify-between gap-2 text-sm">
                 <span className="min-w-0 truncate">{category.categoryName}</span>
                 <div className="flex shrink-0 items-center gap-2">
-                  {category.rating ? (
+                  {category.status === "incomplete" ? (
+                    <Badge variant="outline" className="text-[10px]">
+                      {category.maturityLabel ?? "Assessment Incomplete"}
+                    </Badge>
+                  ) : category.rating ? (
                     <Badge variant={RATING_VARIANT[category.rating]} className="text-[10px]">
-                      {RATING_LABELS[category.rating]}
+                      {category.maturityLabel ?? RATING_LABELS[category.rating]}
                     </Badge>
                   ) : null}
                   <span className="font-medium tabular-nums">
@@ -153,11 +172,17 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
                     "h-full rounded-full transition-all duration-300",
                     getScoreBarColorClass(category.percentScore),
                   )}
-                  style={{ width: `${category.percentScore ?? 0}%` }}
+                  style={{
+                    width:
+                      category.status === "complete" && category.percentScore !== null
+                        ? `${category.percentScore}%`
+                        : "0%",
+                  }}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
                 {category.answeredCount}/{category.totalCount} answered
+                {category.status === "incomplete" ? " · Assessment Incomplete" : ""}
               </p>
             </div>
           ))}

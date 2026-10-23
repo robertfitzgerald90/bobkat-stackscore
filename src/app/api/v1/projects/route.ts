@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getSessionUser, unauthorized } from "@/lib/api/helpers";
+import { getSessionUserWithClient } from "@/lib/api/access";
+import { unauthorized } from "@/lib/api/helpers";
 import { ACTIVE_PROJECT_STATUSES, OPEN_PROJECT_STATUSES } from "@/lib/projects";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import type { ProjectStatus } from "@/generated/prisma/client";
 
 export async function GET(request: NextRequest) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { searchParams } = new URL(request.url);
-  const clientId = searchParams.get("clientId") ?? undefined;
+  const requestedClientId = searchParams.get("clientId") ?? undefined;
+  const clientId = user.role === "client" ? user.clientId ?? undefined : requestedClientId;
+
+  if (user.role === "client" && !clientId) {
+    return NextResponse.json({
+      projects: [],
+      summary: { total: 0, open: 0, completed: 0, byStatus: {}, byClient: [] },
+    });
+  }
   const status = searchParams.get("status") ?? undefined;
   const view = searchParams.get("view") ?? undefined;
 

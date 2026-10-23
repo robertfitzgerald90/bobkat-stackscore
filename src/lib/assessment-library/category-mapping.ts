@@ -126,11 +126,13 @@ export function calculateV2OverallScore(v2Scores: V2CategoryScore[]): number {
 }
 
 function getMaturityLabel(score: number): string {
-  if (score >= 81) return "Optimized";
-  if (score >= 61) return "Mature";
-  if (score >= 41) return "Developing";
-  if (score >= 21) return "Foundational";
-  return "Nascent";
+  // DOC-119 authoritative bands (SS-OPT-002)
+  if (score >= 95) return "Optimized";
+  if (score >= 85) return "Mature";
+  if (score >= 70) return "Managed";
+  if (score >= 55) return "Developing";
+  if (score >= 40) return "Basic";
+  return "Initial";
 }
 
 export const V2_CATEGORY_DISPLAY_ORDER = [

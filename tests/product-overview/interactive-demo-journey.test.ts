@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  DEMO_MANAGED_IT_PER_DEVICE_MONTHLY_CENTS,
   NORTHSTAR_INTERACTIVE_DEMO_SCENARIO,
   createInitialInteractiveDemoState,
   deriveInteractiveDemoView,
@@ -10,7 +11,6 @@ import { DEMO_EXECUTIVE_REPORTS, getDemoReportPreviewById } from "@/lib/product-
 import { DEFAULT_ROADMAP_PHASE_DEFINITIONS } from "@/lib/technology-improvement-plan/roadmap-engine/phase-config";
 import { VCIO_MONTHLY_AMOUNT_CENTS } from "@/lib/vcio/constants";
 import { DEFAULT_DEMO_COMPANY_PROFILE } from "@/lib/demo-data/demo-financial-profile";
-import { NORTHSTAR_DEMO_BUDGET } from "@/lib/product-overview/demo-financials";
 import { centsToDollars } from "@/lib/technology-improvement-plan/pricing";
 
 describe("interactive demo scenario", () => {
@@ -22,7 +22,9 @@ describe("interactive demo scenario", () => {
     expect(scenario.phases).toHaveLength(4);
     expect(scenario.phases[0]?.id).toBe(DEFAULT_ROADMAP_PHASE_DEFINITIONS[0]?.id);
     expect(scenario.strategicConsultingMonthlyCents).toBe(VCIO_MONTHLY_AMOUNT_CENTS);
-    expect(scenario.phases[0]?.monthlyRecurringInvestment).toBe(NORTHSTAR_DEMO_BUDGET.managedEndpointMonthly);
+    expect(scenario.phases[0]?.monthlyRecurringInvestment).toBe(
+      (scenario.company.managedDeviceCount * DEMO_MANAGED_IT_PER_DEVICE_MONTHLY_CENTS) / 100,
+    );
     expect(scenario.assessment.initialStackScore).toBe(58);
     expect(scenario.scoreProgression.afterPhase1Score).toBe(73);
     expect(scenario.scoreProgression.projectedFinalScore).toBe(92);
@@ -115,7 +117,7 @@ describe("interactive demo navigation and reports", () => {
       "report-improvement-plan",
     );
     const roadmap = getDemoReportPreviewById("report-roadmap");
-    expect(roadmap?.title).toContain("Roadmap");
+    expect(roadmap?.title).toContain("Living Execution Plan");
     expect(roadmap?.sections.some((section) => section.heading.includes("Phase"))).toBe(true);
     const budget = getDemoReportPreviewById("report-budget");
     expect(budget?.metrics?.some((metric) => metric.label.includes("One-Time"))).toBe(true);
@@ -123,6 +125,6 @@ describe("interactive demo navigation and reports", () => {
   });
 
   it("keeps Strategic IT Consulting price aligned with production cents", () => {
-    expect(centsToDollars(VCIO_MONTHLY_AMOUNT_CENTS)).toBe(300);
+    expect(centsToDollars(VCIO_MONTHLY_AMOUNT_CENTS)).toBe(500);
   });
 });

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
-import { unauthorized } from "@/lib/api/helpers";
+import { getSessionUser, requireConsultantOrAdmin, unauthorized } from "@/lib/api/helpers";
 import { getCustomer360Dashboard } from "@/lib/commercial-intelligence";
 
 export const runtime = "nodejs";
@@ -8,12 +7,12 @@ export const runtime = "nodejs";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const user = await getSessionUserWithClient();
+  const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const { id: clientId } = await context.params;
-  const denied = await requireClientWorkspaceAccess(user, clientId);
-  if (denied) return denied;
 
   const dashboard = await getCustomer360Dashboard(clientId);
   if (!dashboard) {

@@ -1,9 +1,8 @@
 import type { Priority } from "@/generated/prisma/client";
 import {
-  MATURITY_TIER_DESCRIPTIONS,
-  MATURITY_TIER_LABELS,
-  getMaturityTier,
-} from "@/lib/scoring/maturity";
+  getTechnologyMaturityLevel,
+  TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS,
+} from "@/lib/scoring/v2/maturity-level";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
 
 export type ExecutiveSummaryRecommendation = {
@@ -20,7 +19,7 @@ export type BuildAssessmentExecutiveSummaryInput = {
   risks: string[];
   topRecommendations: ExecutiveSummaryRecommendation[];
   projectedScore?: number;
-  /** When omitted, derived from overallScore via DOC-113 maturity tiers. */
+  /** When omitted, derived from overallScore via DOC-119 maturity levels. */
   maturityTierLabel?: string;
 };
 
@@ -44,9 +43,9 @@ function recommendationTopic(title: string): string {
 }
 
 function buildOpeningParagraph(input: BuildAssessmentExecutiveSummaryInput): string {
-  const tier = getMaturityTier(input.overallScore);
-  const maturityLabel = input.maturityTierLabel ?? MATURITY_TIER_LABELS[tier];
-  const maturityDescription = MATURITY_TIER_DESCRIPTIONS[tier].toLowerCase();
+  const level = getTechnologyMaturityLevel(input.overallScore);
+  const maturityLabel = input.maturityTierLabel ?? level.label;
+  const maturityDescription = TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS[level.code].toLowerCase();
   const subject = subjectPhrase(input.clientName);
 
   return `${subject} currently reflects a ${maturityLabel.toLowerCase()} level of technology health. ${maturityDescription.charAt(0).toUpperCase()}${maturityDescription.slice(1)} The overall StackScore of ${input.overallScore} places the environment in the ${input.overallRatingLabel.toLowerCase()} range, establishing a clear baseline for improvement planning.`;

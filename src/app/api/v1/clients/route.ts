@@ -1,22 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getSessionUserWithClient } from "@/lib/api/access";
 import {
   getSessionUser,
   paginatedResponse,
   parsePagination,
+  requireConsultantOrAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
 
 export async function GET(request: NextRequest) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { searchParams } = new URL(request.url);
   const { page, limit, skip } = parsePagination(searchParams);
+
+  const ownedClientId = user.role === "client" ? user.clientId : null;
+  if (user.role === "client" && !ownedClientId) {
+    return paginatedResponse([], 0, page, limit);
+  }
+
   const status = searchParams.get("status") ?? undefined;
   const search = searchParams.get("search") ?? undefined;
 
   const where = {
+    ...(ownedClientId ? { id: ownedClientId } : {}),
     ...(status ? { status: status as "prospect" | "active" | "inactive" | "archived" } : {}),
     ...(search
       ? { companyName: { contains: search, mode: "insensitive" as const } }
@@ -61,6 +70,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const body = await request.json();
 

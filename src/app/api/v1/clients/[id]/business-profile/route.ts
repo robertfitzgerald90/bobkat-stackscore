@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import {
   badRequest,
   forbidden,
@@ -16,10 +17,12 @@ import {
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
+  const denied = await requireClientWorkspaceAccess(user, id);
+  if (denied) return denied;
   const profile = await getBusinessProfile(id, user.role);
   if (!profile) return notFound("Client not found");
 

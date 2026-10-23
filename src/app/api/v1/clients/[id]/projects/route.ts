@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import {
   badRequest,
   conflict,
@@ -7,6 +8,7 @@ import {
   notFound,
   paginatedResponse,
   parsePagination,
+  requireConsultantOrAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
 import { createProjectSchema } from "@/lib/projects/schemas";
@@ -15,10 +17,12 @@ import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id: clientId } = await context.params;
+  const denied = await requireClientWorkspaceAccess(user, clientId);
+  if (denied) return denied;
   const { searchParams } = new URL(request.url);
   const { page, limit, skip } = parsePagination(searchParams);
   const status = searchParams.get("status") ?? undefined;
@@ -54,6 +58,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 export async function POST(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const { id: clientId } = await context.params;
   const body = await request.json();

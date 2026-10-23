@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import {
   badRequest,
   conflict,
   getSessionUser,
   notFound,
   requireAdmin,
+  requireConsultantOrAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
 import { deleteProjectPermanently } from "@/lib/records";
@@ -17,7 +19,7 @@ import { updateProjectSchema } from "@/lib/projects/schemas";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
@@ -29,12 +31,21 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   if (!project) return notFound("Project not found");
 
+  if (user.role === "client" && user.clientId !== project.clientId) {
+    return notFound("Project not found");
+  }
+
+  const denied = await requireClientWorkspaceAccess(user, project.clientId);
+  if (denied) return denied;
+
   return NextResponse.json(serializeProject(project));
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const { id } = await context.params;
   const body = await request.json();

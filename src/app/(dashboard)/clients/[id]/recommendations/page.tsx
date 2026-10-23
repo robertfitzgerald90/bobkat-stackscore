@@ -54,7 +54,11 @@ export default async function ClientRecommendationsPage({ params, searchParams }
 
   if (!client) notFound();
 
-  const recommendations = await getClientRecommendations(clientId, filters);
+  const recommendations = await getClientRecommendations(
+    clientId,
+    filters,
+    session.user.role,
+  );
 
   if (isCustomerMode(session.user.role)) {
     return <CustomerRecommendationsView recommendations={recommendations} />;

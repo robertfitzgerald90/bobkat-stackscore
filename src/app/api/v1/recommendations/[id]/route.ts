@@ -6,6 +6,7 @@ import {
   getSessionUser,
   notFound,
   requireAdmin,
+  requireConsultantOrAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
 import { deleteRecommendationPermanently } from "@/lib/records";
@@ -27,6 +28,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const user = await getSessionUser();
   if (!user) return unauthorized();
+  const denied = requireConsultantOrAdmin(user);
+  if (denied) return denied;
 
   const { id } = await context.params;
   const body = await request.json();

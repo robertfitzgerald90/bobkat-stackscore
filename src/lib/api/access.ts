@@ -41,7 +41,8 @@ export async function requireAssessmentAccess(
     return { assessment };
   }
 
-  return { response: forbidden() };
+  // Same status for missing and foreign assessments so portal users cannot probe ids.
+  return { response: notFound("Assessment not found") };
 }
 
 export async function requireClientWorkspaceAccess(

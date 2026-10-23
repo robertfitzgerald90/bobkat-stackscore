@@ -1,5 +1,5 @@
 import React, { type ReactNode } from "react";
-import { StyleSheet, View } from "@react-pdf/renderer";
+import { StyleSheet, View, type ViewProps } from "@react-pdf/renderer";
 import { REPORT_COLORS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
 
 type CornerBracketTone = "forest" | "ink";
@@ -9,7 +9,7 @@ type PdfCornerBracketsProps = {
   children: ReactNode;
   tone?: CornerBracketTone;
   corners?: CornerBracketCoverage;
-  style?: object | object[];
+  style?: ViewProps["style"];
 };
 
 const ARM = 10;
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 function cornerStyle(
   position: "tl" | "tr" | "bl" | "br",
   color: string,
-): object {
+): ViewProps["style"] {
   const base = {
     ...styles.corner,
     borderColor: color,
@@ -88,9 +88,10 @@ export function PdfCornerBrackets({
   const color = tone === "ink" ? REPORT_COLORS.ink : REPORT_COLORS.forest;
   const positions =
     corners === "four" ? (["tl", "tr", "bl", "br"] as const) : (["tl", "br"] as const);
+  const extraStyles = style == null ? [] : Array.isArray(style) ? style : [style];
 
   return (
-    <View style={[styles.wrap, style]} wrap={false}>
+    <View style={[styles.wrap, ...extraStyles]} wrap={false}>
       {children}
       {positions.map((position) => (
         <View key={position} style={cornerStyle(position, color)} />

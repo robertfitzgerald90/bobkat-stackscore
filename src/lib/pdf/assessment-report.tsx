@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.45,
   },
   closingHero: {
-    backgroundColor: COLORS.accentBg,
+    backgroundColor: REPORT_COLORS.accentBg,
     borderWidth: 1,
     borderColor: COLORS.accentBorder,
     borderLeftWidth: 3,

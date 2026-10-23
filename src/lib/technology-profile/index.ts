@@ -5,7 +5,11 @@ import {
   type V2CategoryScore,
 } from "@/lib/assessment-library/category-mapping";
 import type { CategoryScoreResult, ScoringResult } from "@/lib/scoring";
-import { getMaturityTier, MATURITY_TIER_LABELS } from "@/lib/scoring/maturity";
+import {
+  getMaturityTier,
+  getMaturityTierLabel,
+  MATURITY_TIER_LABELS,
+} from "@/lib/scoring/maturity";
 import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
 import { parseStoredProfileCategoryScores } from "@/lib/technology-profile/category-scores";
 import type {
@@ -120,23 +124,34 @@ export async function syncProfileFromAssessment(assessmentId: string) {
   }));
 
   const v2Scores = aggregateV2CategoryScores(v1CategoryScores);
-  const overallScore = Number(assessment.overallScore ?? 0);
+  if (assessment.overallScore === null) {
+    return null;
+  }
+
+  const overallScore = Number(assessment.overallScore);
   const maturityTier = getMaturityTier(overallScore);
-  const riskSummary = buildRiskSummary(assessment.responses, assessment.hasCriticalExposure);
+
+  const openRecommendations = await prisma.assessmentRecommendation.findMany({
+    where: {
+      clientId: assessment.clientId,
+      status: { in: ["open", "accepted", "in_progress"] },
+    },
+    select: { priority: true },
+  });
+  const { buildRiskSummaryFromPriorities } = await import(
+    "@/lib/recommendations/risk-summary"
+  );
+  const riskSummary = buildRiskSummaryFromPriorities(
+    openRecommendations,
+    assessment.hasCriticalExposure,
+  );
   const trendDirection = await calculateTrendDirection(
     assessment.clientId,
     overallScore,
   );
 
-  const openRecommendationCount = await prisma.assessmentRecommendation.count({
-    where: {
-      clientId: assessment.clientId,
-      status: { in: ["open", "accepted", "in_progress"] },
-    },
-  });
-  const criticalExposureCount = assessment.responses.filter(
-    (r) => r.selectedAnswerOption.triggersCriticalFlag,
-  ).length;
+  const openRecommendationCount = openRecommendations.length;
+  const criticalExposureCount = riskSummary.critical;
 
   const nextRecommended = assessment.completedAt
     ? addMonths(assessment.completedAt, REASSESSMENT_INTERVAL_MONTHS)
@@ -299,13 +314,17 @@ export async function getTechnologyProfile(
   return {
     id: profile.id,
     clientId: profile.clientId,
-    overallStackScore: profile.overallStackScore
-      ? Number(profile.overallStackScore)
-      : null,
+    overallStackScore:
+      profile.overallStackScore !== null && profile.overallStackScore !== undefined
+        ? Number(profile.overallStackScore)
+        : null,
     maturityTier: profile.maturityTier,
-    maturityTierLabel: profile.maturityTier
-      ? MATURITY_TIER_LABELS[profile.maturityTier]
-      : null,
+    maturityTierLabel:
+      profile.overallStackScore !== null && profile.overallStackScore !== undefined
+        ? getMaturityTierLabel(Number(profile.overallStackScore))
+        : profile.maturityTier
+          ? MATURITY_TIER_LABELS[profile.maturityTier]
+          : null,
     categoryScores: parsedCategoryScores.categoryScores,
     pillarSnapshots: parsedCategoryScores.pillarSnapshots,
     scoringEngineVersion: parsedCategoryScores.scoringEngineVersion,

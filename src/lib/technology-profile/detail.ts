@@ -189,7 +189,7 @@ export async function getTechnologyProfileDetail(
       orderBy: { recordedDate: "asc" },
       include: { assessment: { select: { assessmentName: true } } },
     }),
-    getClientRecommendations(clientId),
+    getClientRecommendations(clientId, {}, role),
     prisma.project.findMany({
       where: { clientId, status: { in: OPEN_PROJECT_STATUSES } },
       orderBy: { updatedAt: "desc" },

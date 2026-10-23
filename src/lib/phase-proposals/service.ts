@@ -3,7 +3,9 @@ import { prisma } from "@/lib/db";
 import { isConsultantRole } from "@/lib/client-roadmap/permissions";
 import { buildPhaseProposalSnapshot } from "./snapshot";
 import {
+  CLIENT_HIDDEN_PHASE_PROPOSAL_STATUSES,
   PHASE_PROPOSAL_STATUS_LABELS,
+  isClientVisiblePhaseProposalStatus,
   type PhaseProposalDetail,
   type PhaseProposalSnapshot,
   type PhaseProposalSummary,
@@ -220,11 +222,19 @@ export async function generatePhaseProposal(input: {
   });
 }
 
-export async function listPhaseProposals(clientId: string, phaseId?: string) {
+export async function listPhaseProposals(
+  clientId: string,
+  phaseId?: string,
+  role?: UserRole,
+) {
+  const hideInternal = role != null && !isConsultantRole(role);
   const proposals = await prisma.phaseProposal.findMany({
     where: {
       clientId,
       ...(phaseId ? { phaseId } : {}),
+      ...(hideInternal
+        ? { status: { notIn: [...CLIENT_HIDDEN_PHASE_PROPOSAL_STATUSES] } }
+        : {}),
     },
     include: { document: { select: { fileUrl: true } } },
     orderBy: [{ createdAt: "desc" }],
@@ -246,6 +256,9 @@ export async function getPhaseProposalDetail(
     },
   });
   if (!proposal) return null;
+  if (!isClientVisiblePhaseProposalStatus(proposal.status) && !isConsultantRole(role)) {
+    return null;
+  }
 
   const isConsultant = isConsultantRole(role);
   const snapshot = proposal.snapshotJson as unknown as PhaseProposalSnapshot;

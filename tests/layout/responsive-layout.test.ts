@@ -9,7 +9,7 @@ const globalsCss = readFileSync(
 
 describe("responsive layout utilities", () => {
   it("clips horizontal overflow at the document root", () => {
-    expect(globalsCss).toContain("overflow-x: clip");
+    expect(globalsCss).toContain("overflow-x-clip");
   });
 
   it("constrains page shells and content to the viewport width", () => {

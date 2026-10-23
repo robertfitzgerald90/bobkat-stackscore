@@ -311,10 +311,16 @@ export async function getAssessmentPreview(
       assessment.responses.map((response) => [response.questionId, response]),
     );
 
+    const { ASSESSMENT_INCOMPLETE_LABEL, getTechnologyMaturityLevel } = await import(
+      "@/lib/scoring/v2"
+    );
+
     const categoryScores: CategoryPreview[] = categories.map((category) => {
       const questions = activeQuestions.filter((q) => q.categoryId === category.id);
       const answeredInCategory = questions.filter((q) => responsesByQuestion.has(q.id));
       const pillar = scoring.pillarScores.find((row) => row.pillarCode === category.code);
+      const isComplete = pillar?.status === "complete";
+      const percentScore = pillar?.percentScore ?? null;
 
       return {
         categoryId: category.id,
@@ -322,8 +328,14 @@ export async function getAssessmentPreview(
         categoryName: category.name,
         answeredCount: answeredInCategory.length,
         totalCount: questions.length,
-        percentScore: pillar?.percentScore ?? null,
-        rating: pillar?.percentScore != null ? getRating(pillar.percentScore) : null,
+        percentScore,
+        rating: percentScore != null ? getRating(percentScore) : null,
+        status: isComplete ? "complete" : "incomplete",
+        maturityLabel: !isComplete
+          ? ASSESSMENT_INCOMPLETE_LABEL
+          : percentScore != null
+            ? getTechnologyMaturityLevel(percentScore).label
+            : ASSESSMENT_INCOMPLETE_LABEL,
       };
     });
 
@@ -336,6 +348,12 @@ export async function getAssessmentPreview(
         percentScore: category.percentScore!,
         rating: category.rating!,
       }));
+
+    const isDraft = assessment.status === "draft";
+    const isCompletionReady =
+      answeredCount === totalCount &&
+      totalCount > 0 &&
+      scoring.overallStackScore !== null;
 
     return {
       overallScore: scoring.overallStackScore,
@@ -354,6 +372,10 @@ export async function getAssessmentPreview(
         categoryName: recommendation.categoryName,
       })),
       topRisks,
+      isDraft,
+      isCompletionReady,
+      completePillarCount: scoring.completePillarCount,
+      totalPillarCount: scoring.totalPillarCount,
     };
   }
 
@@ -402,10 +424,17 @@ export async function getAssessmentPreview(
     scoring?.categoryScores.map((category) => [category.categoryId, category]) ?? [],
   );
 
+  const { ASSESSMENT_INCOMPLETE_LABEL, getTechnologyMaturityLevel } = await import(
+    "@/lib/scoring/v2"
+  );
+
   const categoryScores: CategoryPreview[] = categories.map((category) => {
     const questions = activeQuestions.filter((q) => q.categoryId === category.id);
     const answeredInCategory = questions.filter((q) => responsesByQuestion.has(q.id));
     const scored = scoreByCategoryId.get(category.id);
+    const isComplete =
+      questions.length > 0 && answeredInCategory.length === questions.length;
+    const percentScore = scored ? scored.percentScore : null;
 
     return {
       categoryId: category.id,
@@ -413,8 +442,14 @@ export async function getAssessmentPreview(
       categoryName: category.name,
       answeredCount: answeredInCategory.length,
       totalCount: questions.length,
-      percentScore: scored ? scored.percentScore : null,
+      percentScore,
       rating: scored ? scored.rating : null,
+      status: isComplete ? "complete" : "incomplete",
+      maturityLabel: !isComplete
+        ? ASSESSMENT_INCOMPLETE_LABEL
+        : percentScore != null
+          ? getTechnologyMaturityLevel(percentScore).label
+          : ASSESSMENT_INCOMPLETE_LABEL,
     };
   });
 
@@ -443,6 +478,10 @@ export async function getAssessmentPreview(
       rating: category.rating!,
     }));
 
+  const isDraft = assessment.status === "draft";
+  const isCompletionReady =
+    answeredCount === totalCount && totalCount > 0 && scoring !== null;
+
   return {
     overallScore: scoring?.overallScore ?? null,
     overallRating: scoring?.overallRating ?? null,
@@ -455,6 +494,11 @@ export async function getAssessmentPreview(
     categoryScores,
     recommendations,
     topRisks,
+    isDraft,
+    isCompletionReady,
+    completePillarCount: categoryScores.filter((category) => category.status === "complete")
+      .length,
+    totalPillarCount: categoryScores.length,
   };
 }
 

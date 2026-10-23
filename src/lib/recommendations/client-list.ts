@@ -2,9 +2,11 @@ import type {
   Priority,
   ProjectStatus,
   RecommendationStatus,
+  UserRole,
 } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { ACTIVE_RECOMMENDATION_STATUSES } from "@/lib/recommendations/dedupe";
+import { presentRecommendationsForRole } from "@/lib/recommendations/visibility";
 
 export type ClientRecommendationFilters = {
   pillarCode?: string;
@@ -25,11 +27,13 @@ export type ClientRecommendationRow = {
   categoryId: string;
   categoryName: string;
   categoryCode: string;
-  templateCode: string | null;
+  /** Staff only — omitted for portal audience. */
+  templateCode?: string | null;
   assessmentId: string;
   latestAssessmentId: string;
   latestAssessmentName: string | null;
-  latestTriggerReason: string | null;
+  /** Staff only — omitted for portal audience. */
+  latestTriggerReason?: string | null;
   triggeredInLatestAssessment: boolean;
   isRecurrence: boolean;
   recurrenceCount: number;
@@ -88,6 +92,7 @@ function serializeRecommendation(
 export async function getClientRecommendations(
   clientId: string,
   filters: ClientRecommendationFilters = {},
+  role: UserRole = "admin",
 ): Promise<ClientRecommendationRow[]> {
   const statusFilter = filters.status
     ? [filters.status]
@@ -106,7 +111,10 @@ export async function getClientRecommendations(
     include: recommendationInclude,
   });
 
-  return recommendations.map(serializeRecommendation);
+  return presentRecommendationsForRole(
+    recommendations.map((row) => serializeRecommendation(row)),
+    role,
+  );
 }
 
 export function mapToProfileRecommendationSummary(
@@ -126,13 +134,13 @@ export function mapToProfileRecommendationSummary(
     assessmentId: row.assessmentId,
     latestAssessmentId: row.latestAssessmentId,
     latestAssessmentName: row.latestAssessmentName,
-    latestTriggerReason: row.latestTriggerReason,
+    latestTriggerReason: row.latestTriggerReason ?? null,
     triggeredInLatestAssessment: row.triggeredInLatestAssessment,
     isRecurrence: row.isRecurrence,
     recurrenceCount: row.recurrenceCount,
     createdAt: row.createdAt,
     lastTriggeredAt: row.lastTriggeredAt,
-    templateCode: row.templateCode,
+    templateCode: row.templateCode ?? null,
     suggestedService: row.suggestedService,
     project: row.project,
   };

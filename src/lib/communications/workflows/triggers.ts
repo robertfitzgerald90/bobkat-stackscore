@@ -15,17 +15,24 @@ export async function triggerAssessmentCompleteWorkflow(input: {
       recommendations: {
         where: { status: { in: ["open", "accepted", "in_progress"] } },
         orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
-        take: 6,
+        take: 20,
+        include: { recommendationTemplate: { select: { code: true } } },
       },
     },
   });
   if (!assessment?.completedAt) return null;
 
-  const strengths = assessment.recommendations
+  const { isStubRecommendationTemplate } = await import("@/lib/recommendations/stubs");
+  // Stub catalog copy stays internal until SS-OPT-003; email already requires manual review.
+  const clientSafeRecommendations = assessment.recommendations.filter(
+    (rec) => !isStubRecommendationTemplate(rec.recommendationTemplate?.code),
+  );
+
+  const strengths = clientSafeRecommendations
     .filter((rec) => rec.priority === "low" || rec.priority === "medium")
     .slice(0, 3)
     .map((rec) => rec.title);
-  const priorities = assessment.recommendations
+  const priorities = clientSafeRecommendations
     .filter((rec) => rec.priority === "critical" || rec.priority === "high")
     .slice(0, 3)
     .map((rec) => rec.title);
@@ -35,7 +42,10 @@ export async function triggerAssessmentCompleteWorkflow(input: {
     assessmentName: assessment.assessmentName,
     organizationName: assessment.client.companyName,
     completedAt: assessment.completedAt.toLocaleDateString(),
-    overallScore: assessment.overallScore ? Math.round(Number(assessment.overallScore)) : null,
+    overallScore:
+      assessment.overallScore !== null && assessment.overallScore !== undefined
+        ? Math.round(Number(assessment.overallScore))
+        : null,
     strengths,
     priorities,
     executiveSummary: assessment.executiveSummary,

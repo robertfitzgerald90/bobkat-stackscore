@@ -5,17 +5,20 @@ import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { generateAssessmentReportPdf } from "@/lib/pdf/generate";
 import { sanitizeFilename } from "@/lib/pdf/types";
-import { getSessionUser, notFound, unauthorized } from "@/lib/api/helpers";
+import { getSessionUserWithClient, requireAssessmentAccess } from "@/lib/api/access";
+import { notFound, unauthorized } from "@/lib/api/helpers";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const user = await getSessionUser();
+  const user = await getSessionUserWithClient();
   if (!user) return unauthorized();
 
   const { id } = await context.params;
+  const access = await requireAssessmentAccess(user, id);
+  if ("response" in access) return access.response;
 
   const assessment = await prisma.assessment.findUnique({
     where: { id },
@@ -32,6 +35,12 @@ export async function GET(_request: Request, context: RouteContext) {
     return notFound("Completed assessment not found");
   }
 
+  if (assessment.overallScore === null) {
+    return notFound("Completed assessment is missing a valid overall StackScore");
+  }
+
+  const overallScore = Number(assessment.overallScore);
+
   const recommendations = await getRecommendationsTriggeredByAssessment(id);
 
   const criticalFindingsCount = await prisma.assessmentResponse.count({
@@ -42,7 +51,7 @@ export async function GET(_request: Request, context: RouteContext) {
   });
 
   const summary = buildAssessmentResultsSummary(
-    Number(assessment.overallScore),
+    overallScore,
     assessment.hasCriticalExposure,
     criticalFindingsCount,
     assessment.categoryScores,

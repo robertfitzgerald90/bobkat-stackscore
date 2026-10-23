@@ -176,8 +176,11 @@ export async function buildImprovementSummary(
   }
 
   const previous = current.sourceAssessment;
-  const previousOverallScore = Math.round(Number(previous.overallScore ?? 0));
-  const currentOverallScore = Math.round(Number(current.overallScore ?? 0));
+  if (previous.overallScore === null || current.overallScore === null) {
+    return null;
+  }
+  const previousOverallScore = Math.round(Number(previous.overallScore));
+  const currentOverallScore = Math.round(Number(current.overallScore));
 
   const previousCategoryMap = new Map(
     previous.categoryScores.map((score) => [score.categoryId, Number(score.percentScore)]),

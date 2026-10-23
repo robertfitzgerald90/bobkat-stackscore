@@ -3,6 +3,7 @@ export * from "./display";
 export * from "./generate";
 export * from "./dedupe";
 export * from "./sync";
+export * from "./visibility";
 export {
   buildAssessmentExecutiveSummary,
   buildExecutiveSummary,

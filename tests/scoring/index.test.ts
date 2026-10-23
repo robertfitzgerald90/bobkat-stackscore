@@ -94,13 +94,15 @@ describe("scoring", () => {
   });
 });
 
-describe("maturity tiers (DOC-113)", () => {
-  it("maps scores to maturity tiers", () => {
-    expect(getMaturityTier(15)).toBe("nascent");
-    expect(getMaturityTier(30)).toBe("foundational");
-    expect(getMaturityTier(50)).toBe("developing");
-    expect(getMaturityTier(70)).toBe("mature");
-    expect(getMaturityTier(90)).toBe("optimized");
+describe("maturity tiers (DOC-119 → profile enum bridge)", () => {
+  it("maps DOC-119 bands onto Prisma MaturityTier storage values", () => {
+    expect(getMaturityTier(15)).toBe("nascent"); // Initial
+    expect(getMaturityTier(30)).toBe("nascent"); // Initial
+    expect(getMaturityTier(45)).toBe("foundational"); // Basic
+    expect(getMaturityTier(60)).toBe("developing"); // Developing
+    expect(getMaturityTier(75)).toBe("mature"); // Managed → mature bridge
+    expect(getMaturityTier(90)).toBe("mature"); // Mature
+    expect(getMaturityTier(96)).toBe("optimized"); // Optimized
   });
 
   it("has labels for every tier", () => {
@@ -138,7 +140,7 @@ describe("v2 category mapping (DOC-118)", () => {
     const bcp = v2.find((c) => c.categoryCode === "business_continuity");
     expect(bcp).toBeDefined();
     expect(bcp?.percentScore).toBe(50);
-    expect(bcp?.maturityTier).toBe("Developing");
+    expect(bcp?.maturityTier).toBe("Basic");
   });
 
   it("calculates v2 weighted overall", () => {

@@ -32,7 +32,7 @@ describe("buildAssessmentExecutiveSummary", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 
     expect(summary).toContain("Acme Corp's organization");
-    expect(summary).toContain("developing level of technology health");
+    expect(summary).toContain("basic level of technology health");
     expect(summary).toContain("StackScore of 42");
     expect(summary).toContain("critical range");
   });

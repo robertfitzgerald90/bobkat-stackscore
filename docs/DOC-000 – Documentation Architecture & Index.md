@@ -742,6 +742,9 @@ Located in [`50-Development/`](50-Development/).
 | [`50-Development/MVP_PRD.md`](50-Development/MVP_PRD.md) | MVP scope and user stories |
 | [`50-Development/PROJECT_STATUS.md`](50-Development/PROJECT_STATUS.md) | Implementation status snapshot |
 | [`50-Development/DEVELOPMENT_GUIDE.md`](50-Development/DEVELOPMENT_GUIDE.md) | Local developer setup |
+| [`SECURITY_REMEDIATION_REPORT.md`](SECURITY_REMEDIATION_REPORT.md) | Phase 1 API authorization and client-isolation remediation |
+| [`SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md`](SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md) | Assessment engine read-only audit (scoring, completion, recommendations, history) |
+| [`SS-OPT-002-REMEDIATION-REPORT.md`](SS-OPT-002-REMEDIATION-REPORT.md) | Assessment engine remediation (completion gates, null scores, DOC-119 maturity, stub delivery) |
 
 ## Legacy redirect stubs
 

@@ -21,12 +21,13 @@ describe("assessment pre-purchase funnel", () => {
     expect(authConfig).not.toContain('pathname.startsWith("/solutions")');
   });
 
-  it("does not redirect assessment routes in next.config", () => {
+  it("keeps current assessment routes as destinations, not redirected sources", () => {
     const nextConfig = readFileSync(resolve(process.cwd(), "next.config.ts"), "utf8");
     expect(nextConfig).toContain('source: "/services"');
     expect(nextConfig).toContain('source: "/solutions"');
-    expect(nextConfig).not.toContain("/assessment-offer");
-    expect(nextConfig).not.toContain("/assessment-invitation");
+    expect(nextConfig).not.toContain('source: "/assessment-offer"');
+    expect(nextConfig).not.toContain('source: "/assessment-invitation"');
+    expect(nextConfig).toContain('destination: "/assessment-invitation"');
   });
 
   it("preserves invitation query parameters on assessment-offer attribution", () => {
