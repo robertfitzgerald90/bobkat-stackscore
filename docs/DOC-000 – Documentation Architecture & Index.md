@@ -745,6 +745,7 @@ Located in [`50-Development/`](50-Development/).
 | [`SECURITY_REMEDIATION_REPORT.md`](SECURITY_REMEDIATION_REPORT.md) | Phase 1 API authorization and client-isolation remediation |
 | [`SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md`](SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md) | Assessment engine read-only audit (scoring, completion, recommendations, history) |
 | [`SS-OPT-002-REMEDIATION-REPORT.md`](SS-OPT-002-REMEDIATION-REPORT.md) | Assessment engine remediation (completion gates, null scores, DOC-119 maturity, stub delivery) |
+| [`SS-OPT-003A-RECOMMENDATION-AUDIT.md`](SS-OPT-003A-RECOMMENDATION-AUDIT.md) | Recommendation catalog audit and Bobkat content standards (read-only; gates SS-OPT-003) |
 
 ## Legacy redirect stubs
 
