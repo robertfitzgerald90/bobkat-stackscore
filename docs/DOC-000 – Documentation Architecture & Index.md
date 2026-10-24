@@ -753,6 +753,11 @@ Located in [`50-Development/`](50-Development/).
 | [`SS-OPT-003B-B1-REMEDIATION-REPORT.md`](SS-OPT-003B-B1-REMEDIATION-REPORT.md) | Batch B1 DEF-001–004 remediation; readiness updated to READY WITH CONDITIONS |
 | [`SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md`](SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md) | Batch B1 final client-experience validation; vCIO/projects visibility closed |
 | [`SS-ENV-001-STAGING-IMPLEMENTATION-PLAN.md`](SS-ENV-001-STAGING-IMPLEMENTATION-PLAN.md) | Three-environment (local/staging/production) discovery and staging implementation plan |
+| [`SS-ENV-003-STAGING-MIGRATION-RECOVERY.md`](SS-ENV-003-STAGING-MIGRATION-RECOVERY.md) | Staging P3018/UserRole migration failure investigation and recovery plan |
+| [`security/SS-SEC-001-AUDIT.md`](security/SS-SEC-001-AUDIT.md) | AuthN/AuthZ/tenant isolation security audit (findings + prioritization) |
+| [`security/SS-SEC-001-API-INVENTORY.md`](security/SS-SEC-001-API-INVENTORY.md) | Full API route inventory with auth expectations (112 routes) |
+| [`security/SS-SEC-001-TEST-MATRIX.md`](security/SS-SEC-001-TEST-MATRIX.md) | Proposed security regression test matrix for SEC-001 boundaries |
+| [`security/SS-SEC-002-REMEDIATION.md`](security/SS-SEC-002-REMEDIATION.md) | Critical continue-assessment activation token remediation (C01 / M08) |
 
 ## Legacy redirect stubs
 

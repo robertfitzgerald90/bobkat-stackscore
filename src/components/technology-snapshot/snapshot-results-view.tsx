@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, Mail } from "lucide-react";
 import {
   SnapshotResultCard,
   snapshotResultsPayloadToCardData,
@@ -11,6 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackSnapshotAssessmentCtaClick } from "@/lib/analytics/ga4-events";
 import { BRAND } from "@/lib/branding";
+import { CONTINUE_SNAPSHOT_PUBLIC_MESSAGE } from "@/lib/communications/outreach/continue-snapshot-messages";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { FULL_ASSESSMENT_BENEFITS, SNAPSHOT_MAX_SCORE } from "@/lib/technology-snapshot/display";
 import type { SnapshotClassification } from "@/lib/technology-snapshot/types";
@@ -41,6 +42,7 @@ export function SnapshotResultsView({
   invitationFlow = false,
 }: SnapshotResultsViewProps) {
   const [continuing, setContinuing] = useState(false);
+  const [continuationMessage, setContinuationMessage] = useState<string | null>(null);
 
   async function continueToFullAssessment() {
     setContinuing(true);
@@ -50,16 +52,34 @@ export function SnapshotResultsView({
         `/api/v1/public/technology-snapshot/${result.id}/continue-assessment`,
         { method: "POST" },
       );
-      const payload = await response.json();
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        message?: string;
+        error?: string;
+        activationUrl?: string;
+        loginUrl?: string;
+        assessmentId?: string;
+        clientId?: string;
+        mode?: string;
+      };
       if (!response.ok) {
         throw new Error(payload.error ?? "Unable to continue to assessment");
       }
-      window.location.href =
-        payload.mode === "existing_account" ? payload.loginUrl : payload.activationUrl;
+
+      // Never follow legacy activation/login URLs if a stale client or proxy injects them.
+      if (payload.activationUrl || payload.loginUrl || payload.assessmentId || payload.clientId) {
+        console.warn(
+          "[snapshot] Ignoring sensitive fields in continue-assessment response (SEC-001-C01)",
+        );
+      }
+
+      setContinuationMessage(payload.message ?? CONTINUE_SNAPSHOT_PUBLIC_MESSAGE);
     } catch (error) {
       setContinuing(false);
       window.alert(error instanceof Error ? error.message : "Unable to continue to assessment");
+      return;
     }
+    setContinuing(false);
   }
 
   return (
@@ -86,52 +106,83 @@ export function SnapshotResultsView({
             ))}
           </ul>
 
-          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-            {invitationFlow ? (
-              <Button
-                type="button"
-                className="w-full sm:w-auto"
-                disabled={continuing}
-                onClick={() => void continueToFullAssessment()}
-              >
-                {continuing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Preparing your assessment...
-                  </>
-                ) : (
-                  <>
-                    Continue to Full Assessment
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            ) : (
-              <a
-                href={PURCHASE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonVariants({
-                  className: cn("w-full sm:w-auto"),
-                })}
-                onClick={() =>
-                  trackSnapshotAssessmentCtaClick({ destinationPath: "/assessment-offer" })
-                }
-              >
-                Purchase Full Technology Assessment
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            )}
-            {onRestart ? (
-              <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onRestart}>
-                Start another snapshot
-              </Button>
-            ) : null}
-          </div>
+          {continuationMessage ? (
+            <div
+              className="flex gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm"
+              role="status"
+            >
+              <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+              <div className="min-w-0 space-y-1">
+                <p className="font-medium text-foreground">{continuationMessage}</p>
+                <p className="text-muted-foreground">
+                  Use the link in that message to activate your account or sign in. If you do not
+                  see it within a few minutes, check your spam folder or contact{" "}
+                  <Link
+                    href={`mailto:${BRAND.email}`}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {BRAND.email}
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+              {invitationFlow ? (
+                <Button
+                  type="button"
+                  className="w-full sm:w-auto"
+                  disabled={continuing}
+                  onClick={() => void continueToFullAssessment()}
+                >
+                  {continuing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Preparing your assessment...
+                    </>
+                  ) : (
+                    <>
+                      Continue to Full Assessment
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <a
+                  href={PURCHASE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({
+                    className: cn("w-full sm:w-auto"),
+                  })}
+                  onClick={() =>
+                    trackSnapshotAssessmentCtaClick({ destinationPath: "/assessment-offer" })
+                  }
+                >
+                  Purchase Full Technology Assessment
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              )}
+              {onRestart ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={onRestart}
+                >
+                  Start another snapshot
+                </Button>
+              ) : null}
+            </div>
+          )}
 
           <p className="text-xs text-muted-foreground">
             Questions? Contact {BRAND.companyName} at{" "}
-            <Link href={`mailto:${BRAND.email}`} className="text-primary underline-offset-4 hover:underline">
+            <Link
+              href={`mailto:${BRAND.email}`}
+              className="text-primary underline-offset-4 hover:underline"
+            >
               {BRAND.email}
             </Link>
             .
