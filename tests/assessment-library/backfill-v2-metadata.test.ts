@@ -17,7 +17,7 @@ describe("getV2QuestionDoc114Metadata", () => {
     expect(metadata.helpText).toBe(catalogEntry.whyItMatters);
     expect(metadata.capability).toBe("IA-001");
     expect(metadata.evidenceRequired).toContain("Interview");
-    expect(metadata.relatedService).toBe("Technology Improvement Services");
+    expect(metadata.relatedService).toBe("Identity & Access Improvement");
     expect(metadata.relatedPlaybook).toBe("Cybersecurity");
     expect(metadata.adminNotes).toContain("Security");
   });

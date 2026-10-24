@@ -746,6 +746,7 @@ Located in [`50-Development/`](50-Development/).
 | [`SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md`](SS-OPT-002-ASSESSMENT-ENGINE-AUDIT.md) | Assessment engine read-only audit (scoring, completion, recommendations, history) |
 | [`SS-OPT-002-REMEDIATION-REPORT.md`](SS-OPT-002-REMEDIATION-REPORT.md) | Assessment engine remediation (completion gates, null scores, DOC-119 maturity, stub delivery) |
 | [`SS-OPT-003A-RECOMMENDATION-AUDIT.md`](SS-OPT-003A-RECOMMENDATION-AUDIT.md) | Recommendation catalog audit and Bobkat content standards (read-only; gates SS-OPT-003) |
+| [`SS-OPT-003B-BATCH-B1-REVIEW.md`](SS-OPT-003B-BATCH-B1-REVIEW.md) | Batch B1 IA+SO recommendation draft content review (stubs retained until approval) |
 
 ## Legacy redirect stubs
 
