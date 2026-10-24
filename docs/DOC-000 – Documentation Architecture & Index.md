@@ -752,6 +752,7 @@ Located in [`50-Development/`](50-Development/).
 | [`SS-OPT-003B-B1-PRODUCTION-READINESS-AUDIT.md`](SS-OPT-003B-B1-PRODUCTION-READINESS-AUDIT.md) | Batch B1 production readiness audit (validation-only; gates deploy/DB sync/B2) |
 | [`SS-OPT-003B-B1-REMEDIATION-REPORT.md`](SS-OPT-003B-B1-REMEDIATION-REPORT.md) | Batch B1 DEF-001–004 remediation; readiness updated to READY WITH CONDITIONS |
 | [`SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md`](SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md) | Batch B1 final client-experience validation; vCIO/projects visibility closed |
+| [`SS-ENV-001-STAGING-IMPLEMENTATION-PLAN.md`](SS-ENV-001-STAGING-IMPLEMENTATION-PLAN.md) | Three-environment (local/staging/production) discovery and staging implementation plan |
 
 ## Legacy redirect stubs
 
