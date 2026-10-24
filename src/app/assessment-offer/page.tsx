@@ -4,8 +4,8 @@ import { readAssessmentOfferAttribution } from "@/lib/assessment-offer/attributi
 import { BRAND } from "@/lib/branding";
 
 export const metadata: Metadata = {
-  title: `Technology Maturity Assessment | ${BRAND.companyName}`,
-  description: `Purchase the full ${BRAND.reportTitle}. Know exactly where your technology stands with executive-ready deliverables from ${BRAND.productName}.`,
+  title: `Learn About StackScore | Technology Maturity Assessment | ${BRAND.companyName}`,
+  description: `Understand your technology. Know what to improve. Learn how ${BRAND.productName} assesses technology maturity, prioritizes recommendations, and delivers executive-ready results from ${BRAND.companyName}.`,
   alternates: {
     canonical: "/assessment-offer",
   },
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: `Technology Maturity Assessment | ${BRAND.companyName}`,
-    description: `Purchase the full ${BRAND.reportTitle}. Know exactly where your technology stands with executive-ready deliverables from ${BRAND.productName}.`,
+    title: `Learn About StackScore | Technology Maturity Assessment | ${BRAND.companyName}`,
+    description: `Understand your technology. Know what to improve. Learn how ${BRAND.productName} assesses technology maturity, prioritizes recommendations, and delivers executive-ready results from ${BRAND.companyName}.`,
     url: "/assessment-offer",
     type: "website",
   },

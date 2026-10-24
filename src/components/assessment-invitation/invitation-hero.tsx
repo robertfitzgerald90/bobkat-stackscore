@@ -87,7 +87,7 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
             campaignId={invitationContext?.campaignId}
           />
           <a
-            href="#why-stackscore"
+            href="/assessment-offer"
             className={cn(
               buttonVariants({ variant: "outline" }),
               "h-11 w-full px-8 text-base sm:w-auto",

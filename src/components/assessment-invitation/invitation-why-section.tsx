@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { OfferSectionHeader } from "@/components/assessment-offer/offer-section-header";
 import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
+import { buttonVariants } from "@/components/ui/button";
 import { INVITATION_BENEFITS } from "@/lib/assessment-invitation/content";
-import { INVITATION_JOURNEY_SCREENSHOT } from "@/lib/assessment-invitation/screenshots";
-import { InvitationProductScreenshot } from "./invitation-product-screenshot";
+import { cn } from "@/lib/utils";
 
 export function InvitationWhySection() {
   return (
@@ -35,16 +36,15 @@ export function InvitationWhySection() {
             );
           })}
         </div>
-      </div>
 
-      <div className="mx-auto mt-12 w-full max-w-7xl sm:mt-14 md:mt-16">
-        <CornerBrackets corners="four">
-          <InvitationProductScreenshot
-            image={INVITATION_JOURNEY_SCREENSHOT}
-            caption="Every recommendation becomes a prioritized technology improvement roadmap."
-            delayMs={180}
-          />
-        </CornerBrackets>
+        <OfferReveal delayMs={180} className="mt-10 flex justify-center sm:mt-12">
+          <Link
+            href="/assessment-offer"
+            className={cn(buttonVariants({ variant: "outline" }), "h-11 px-6 text-base")}
+          >
+            Learn About StackScore
+          </Link>
+        </OfferReveal>
       </div>
     </section>
   );
