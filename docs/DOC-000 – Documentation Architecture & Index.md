@@ -750,6 +750,8 @@ Located in [`50-Development/`](50-Development/).
 | [`SS-OPT-003B-B1-CONTENT-APPROVAL.md`](SS-OPT-003B-B1-CONTENT-APPROVAL.md) | Batch B1 full narrative content for technical/executive approval (read-only) |
 | [`SS-OPT-003B-B1-FINALIZATION-REPORT.md`](SS-OPT-003B-B1-FINALIZATION-REPORT.md) | Batch B1 finalization: editorial/priority, publication, DB sync, client delivery safeguards |
 | [`SS-OPT-003B-B1-PRODUCTION-READINESS-AUDIT.md`](SS-OPT-003B-B1-PRODUCTION-READINESS-AUDIT.md) | Batch B1 production readiness audit (validation-only; gates deploy/DB sync/B2) |
+| [`SS-OPT-003B-B1-REMEDIATION-REPORT.md`](SS-OPT-003B-B1-REMEDIATION-REPORT.md) | Batch B1 DEF-001–004 remediation; readiness updated to READY WITH CONDITIONS |
+| [`SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md`](SS-OPT-003B-B1-CLIENT-EXPERIENCE-VALIDATION.md) | Batch B1 final client-experience validation; vCIO/projects visibility closed |
 
 ## Legacy redirect stubs
 

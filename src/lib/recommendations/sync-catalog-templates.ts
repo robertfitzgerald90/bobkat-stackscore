@@ -2,6 +2,7 @@ import type { Priority, PrismaClient } from "@/generated/prisma/client";
 import recommendationCatalog from "../../../data/RecommendationCatalogV2.json";
 
 export type SyncCatalogTemplatesResult = {
+  ok: true;
   upserted: number;
   skippedMissingCategory: string[];
   approvedCodes: string[];
@@ -14,6 +15,9 @@ export type SyncCatalogTemplatesResult = {
  * Safe for repeated runs (idempotent by template `code`).
  * Does **not** modify `AssessmentRecommendation` client rows — those may contain
  * consultant edits that cannot be distinguished from generated copy (SS-OPT-003B).
+ *
+ * All upserts run in a single transaction so a mid-run failure rolls back
+ * partially applied template updates.
  *
  * Intended for local/seed/ops invocation only — do not run as an automatic
  * production-wide backfill from application request paths.
@@ -29,7 +33,6 @@ export async function syncRecommendationTemplatesFromCatalog(
   const skippedMissingCategory: string[] = [];
   const approvedCodes: string[] = [];
   const stubCodes: string[] = [];
-  let upserted = 0;
 
   for (const template of recommendationCatalog.templates) {
     if (template.isStub) {
@@ -38,44 +41,72 @@ export async function syncRecommendationTemplatesFromCatalog(
       approvedCodes.push(template.id);
     }
 
-    const categoryId = categoryIdByCode.get(template.pillarCode);
-    if (!categoryId) {
+    if (!categoryIdByCode.has(template.pillarCode)) {
       skippedMissingCategory.push(template.id);
-      continue;
     }
-
-    await prisma.recommendationTemplate.upsert({
-      where: { code: template.id },
-      update: {
-        title: template.title,
-        description: template.description,
-        businessImpact: template.businessImpact,
-        suggestedService: template.suggestedService,
-        priority: template.priority as Priority,
-        estimatedImpactPoints: template.estimatedImpactPoints,
-        consolidationGroupId: template.consolidationGroupId,
-        isActive: true,
-        categoryId,
-      },
-      create: {
-        code: template.id,
-        title: template.title,
-        description: template.description,
-        businessImpact: template.businessImpact,
-        suggestedService: template.suggestedService,
-        priority: template.priority as Priority,
-        estimatedImpactPoints: template.estimatedImpactPoints,
-        consolidationGroupId: template.consolidationGroupId,
-        categoryId,
-      },
-    });
-    upserted += 1;
   }
 
-  return { upserted, skippedMissingCategory, approvedCodes, stubCodes };
+  const toUpsert = recommendationCatalog.templates.filter((template) =>
+    categoryIdByCode.has(template.pillarCode),
+  );
+
+  try {
+    const upserted = await prisma.$transaction(async (tx) => {
+      let count = 0;
+      for (const template of toUpsert) {
+        const categoryId = categoryIdByCode.get(template.pillarCode);
+        if (!categoryId) {
+          // Defensive — should be unreachable after pre-filter.
+          throw new Error(`Missing category for template ${template.id}`);
+        }
+
+        await tx.recommendationTemplate.upsert({
+          where: { code: template.id },
+          update: {
+            title: template.title,
+            description: template.description,
+            businessImpact: template.businessImpact,
+            suggestedService: template.suggestedService,
+            priority: template.priority as Priority,
+            estimatedImpactPoints: template.estimatedImpactPoints,
+            consolidationGroupId: template.consolidationGroupId,
+            isActive: true,
+            categoryId,
+          },
+          create: {
+            code: template.id,
+            title: template.title,
+            description: template.description,
+            businessImpact: template.businessImpact,
+            suggestedService: template.suggestedService,
+            priority: template.priority as Priority,
+            estimatedImpactPoints: template.estimatedImpactPoints,
+            consolidationGroupId: template.consolidationGroupId,
+            categoryId,
+          },
+        });
+        count += 1;
+      }
+      return count;
+    });
+
+    return {
+      ok: true,
+      upserted,
+      skippedMissingCategory,
+      approvedCodes,
+      stubCodes,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown catalog sync failure";
+    throw new Error(`Catalog template sync failed and was rolled back: ${message}`, {
+      cause: error,
+    });
+  }
 }
 
 export type RefreshUneditedStubRecommendationsResult = {
+  ok: true;
   updated: number;
   skippedNonStubTitle: number;
   skippedMissingTemplate: number;
@@ -88,6 +119,9 @@ export type RefreshUneditedStubRecommendationsResult = {
  *
  * Skips any row whose title no longer matches the stub pattern — treated as
  * consultant-edited or already refreshed. Does not run automatically.
+ *
+ * Updates run in a single transaction so a mid-run failure rolls back all
+ * content refreshes from this invocation.
  */
 export async function refreshUneditedStubRecommendationsFromCatalog(
   prisma: PrismaClient,
@@ -105,10 +139,21 @@ export async function refreshUneditedStubRecommendationsFromCatalog(
     select: { id: true, code: true },
   });
 
-  let updated = 0;
+  type RefreshPlanItem = {
+    rowId: string;
+    data: {
+      title: string;
+      description: string;
+      businessImpact: string;
+      suggestedService: string;
+      priority: Priority;
+      estimatedImpactPoints: number;
+    };
+  };
+
+  const plan: RefreshPlanItem[] = [];
   let skippedNonStubTitle = 0;
   let skippedMissingTemplate = 0;
-  const updatedIds: string[] = [];
 
   for (const templateRecord of templateRecords) {
     const catalogTemplate = templatesByCode.get(templateRecord.code);
@@ -128,8 +173,8 @@ export async function refreshUneditedStubRecommendationsFromCatalog(
         continue;
       }
 
-      await prisma.assessmentRecommendation.update({
-        where: { id: row.id },
+      plan.push({
+        rowId: row.id,
         data: {
           title: catalogTemplate.title,
           description: catalogTemplate.description,
@@ -139,10 +184,34 @@ export async function refreshUneditedStubRecommendationsFromCatalog(
           estimatedImpactPoints: catalogTemplate.estimatedImpactPoints,
         },
       });
-      updated += 1;
-      updatedIds.push(row.id);
     }
   }
 
-  return { updated, skippedNonStubTitle, skippedMissingTemplate, updatedIds };
+  try {
+    const updatedIds = await prisma.$transaction(async (tx) => {
+      const ids: string[] = [];
+      for (const item of plan) {
+        await tx.assessmentRecommendation.update({
+          where: { id: item.rowId },
+          data: item.data,
+        });
+        ids.push(item.rowId);
+      }
+      return ids;
+    });
+
+    return {
+      ok: true,
+      updated: updatedIds.length,
+      skippedNonStubTitle,
+      skippedMissingTemplate,
+      updatedIds,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown refresh failure";
+    throw new Error(
+      `Unedited stub recommendation refresh failed and was rolled back: ${message}`,
+      { cause: error },
+    );
+  }
 }

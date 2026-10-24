@@ -55,6 +55,6 @@ describe("SS-OPT-003B PDF and client delivery safeguards", () => {
       join(process.cwd(), "src/lib/communications/workflows/triggers.ts"),
       "utf8",
     );
-    expect(source).toContain("isStubRecommendationTemplate");
+    expect(source).toContain("filterClientDeliverableRecommendations");
   });
 });

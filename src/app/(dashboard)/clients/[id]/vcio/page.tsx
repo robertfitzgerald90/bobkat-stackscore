@@ -19,6 +19,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { prisma } from "@/lib/db";
+import { filterClientDeliverableRecommendations } from "@/lib/recommendations/visibility";
 import {
   canUseOngoingVcioFeatures,
   formatVcioAccessState,
@@ -103,7 +104,14 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
           where: { status: { in: ["open", "accepted", "in_progress"] } },
           orderBy: [{ priority: "desc" }, { updatedAt: "desc" }],
           take: 10,
-          select: { id: true, title: true, priority: true, status: true, updatedAt: true },
+          select: {
+            id: true,
+            title: true,
+            priority: true,
+            status: true,
+            updatedAt: true,
+            recommendationTemplate: { select: { code: true } },
+          },
         },
         projects: {
           where: { status: { in: ["approved", "scheduled", "in_progress"] } },
@@ -205,7 +213,13 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
       where: { clientId, status: "completed" },
       orderBy: { completedAt: "desc" },
       take: 5,
-      select: { id: true, title: true, completedAt: true, updatedAt: true },
+      select: {
+        id: true,
+        title: true,
+        completedAt: true,
+        updatedAt: true,
+        recommendationTemplate: { select: { code: true } },
+      },
     }),
     prisma.project.findMany({
       where: { clientId },
@@ -216,6 +230,16 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
   ]);
 
   if (!client) notFound();
+
+  // Fail-closed: clients must not see unpublished / Improve-title recommendation copy.
+  const visibleOpenRecommendations = filterClientDeliverableRecommendations(
+    client.recommendations as Array<Record<string, unknown>>,
+    user.role,
+  ) as typeof client.recommendations;
+  const visibleCompletedRecommendations = filterClientDeliverableRecommendations(
+    completedRecommendations as Array<Record<string, unknown>>,
+    user.role,
+  ) as typeof completedRecommendations;
 
   const score = client.technologyProfile?.overallStackScore;
   const latestReview = client.quarterlyBusinessReviews[0] ?? null;
@@ -296,10 +320,10 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
     ["approved", "scheduled", "in_progress"].includes(project.status),
   );
   const roadmapProgress =
-    client.recommendations.length + completedRecommendations.length > 0
+    visibleOpenRecommendations.length + visibleCompletedRecommendations.length > 0
       ? Math.round(
-          (completedRecommendations.length /
-            (client.recommendations.length + completedRecommendations.length)) *
+          (visibleCompletedRecommendations.length /
+            (visibleOpenRecommendations.length + visibleCompletedRecommendations.length)) *
             100,
         )
       : null;
@@ -442,7 +466,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ClientMetricCard
           label="Open Recommendations"
-          value={client.recommendations.length}
+          value={visibleOpenRecommendations.length}
           sublabel="Open, accepted, or in progress"
         />
         <ClientMetricCard
@@ -574,13 +598,13 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
               </div>
               <div>
                 <p className="text-sm font-medium">Completed Recommendations</p>
-                {completedRecommendations.length === 0 ? (
+                {visibleCompletedRecommendations.length === 0 ? (
                   <p className="mt-2 text-sm text-muted-foreground">
                     Completed recommendations will appear as priorities are resolved.
                   </p>
                 ) : (
                   <ul className="mt-2 space-y-2 text-sm">
-                    {completedRecommendations.slice(0, 3).map((recommendation) => (
+                    {visibleCompletedRecommendations.slice(0, 3).map((recommendation) => (
                       <li key={recommendation.id}>
                         <p className="font-medium">{recommendation.title}</p>
                         <p className="text-xs text-muted-foreground">
@@ -651,7 +675,7 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <CurrentQuarterPriorities
-          priorities={client.recommendations.map((recommendation) => ({
+          priorities={visibleOpenRecommendations.map((recommendation) => ({
             id: recommendation.id,
             title: recommendation.title,
             severity: recommendation.priority,

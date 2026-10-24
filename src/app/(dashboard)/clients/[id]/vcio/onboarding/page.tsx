@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { VcioOnboardingForm } from "@/components/vcio/vcio-onboarding-form";
 import { getSessionUserWithClient, requireClientWorkspaceAccess } from "@/lib/api/access";
 import { prisma } from "@/lib/db";
+import { filterClientDeliverableRecommendations } from "@/lib/recommendations/visibility";
 import { getClientVcioEntitlement } from "@/lib/vcio/entitlements";
 import { buttonVariants } from "@/components/ui/button";
 import { detectVcioCustomerType } from "@/lib/vcio/onboarding";
@@ -51,7 +52,10 @@ export default async function VcioOnboardingPage({ params, searchParams }: PageP
         where: { status: { in: ["open", "accepted", "in_progress"] } },
         orderBy: { updatedAt: "desc" },
         take: 5,
-        select: { title: true },
+        select: {
+          title: true,
+          recommendationTemplate: { select: { code: true } },
+        },
       },
       projects: {
         where: { status: { in: ["approved", "scheduled", "in_progress"] } },
@@ -153,7 +157,10 @@ export default async function VcioOnboardingPage({ params, searchParams }: PageP
           technologyScore: client.technologyProfile?.overallStackScore?.toString() ?? null,
           openRecommendationCount: client.technologyProfile?.openRecommendationCount ?? 0,
           criticalExposureCount: client.technologyProfile?.criticalExposureCount ?? 0,
-          recommendations: client.recommendations.map((item) => item.title),
+          recommendations: filterClientDeliverableRecommendations(
+            client.recommendations as Array<Record<string, unknown>>,
+            user.role,
+          ).map((item) => String((item as { title: string }).title)),
           projects: client.projects.map((item) => item.title),
           improvementPlan: client.improvementPlans[0]
             ? `${client.improvementPlans[0].title} (${client.improvementPlans[0].status})`

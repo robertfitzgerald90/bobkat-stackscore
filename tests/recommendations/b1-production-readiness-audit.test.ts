@@ -240,7 +240,7 @@ describe("SS-OPT-003B Phase 3 — database synchronization contracts", () => {
       "@/lib/recommendations/sync-catalog-templates"
     );
 
-    const update = vi.fn();
+    const update = vi.fn().mockResolvedValue({});
     const prisma = {
       recommendationTemplate: {
         findMany: vi.fn().mockResolvedValue([{ id: "tpl-1", code: "REC-IA-001" }]),
@@ -252,12 +252,16 @@ describe("SS-OPT-003B Phase 3 — database synchronization contracts", () => {
         ]),
         update,
       },
+      $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) =>
+        fn({ assessmentRecommendation: { update } }),
+      ),
     };
 
     const result = await refreshUneditedStubRecommendationsFromCatalog(prisma as never, [
       "REC-IA-001",
     ]);
 
+    expect(result.ok).toBe(true);
     expect(result.updated).toBe(1);
     expect(result.skippedNonStubTitle).toBe(1);
     expect(result.updatedIds).toEqual(["row-stub"]);
@@ -270,27 +274,32 @@ describe("SS-OPT-003B Phase 3 — database synchronization contracts", () => {
       "@/lib/recommendations/sync-catalog-templates"
     );
 
-    const upsert = vi.fn();
+    const upsert = vi.fn().mockResolvedValue({});
     const prisma = {
       assessmentCategory: {
         findMany: vi.fn().mockResolvedValue([{ id: "cat-ia", code: "identity_access" }]),
       },
       recommendationTemplate: { upsert },
+      $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) =>
+        fn({ recommendationTemplate: { upsert } }),
+      ),
     };
 
     const result = await syncRecommendationTemplatesFromCatalog(prisma as never);
+    expect(result.ok).toBe(true);
     expect(result.skippedMissingCategory.length).toBeGreaterThan(0);
     expect(result.skippedMissingCategory).toContain("REC-SO-001");
     expect(result.approvedCodes).toHaveLength(20);
     expect(upsert.mock.calls.every((call) => call[0].where.code.startsWith("REC-IA-"))).toBe(true);
   });
 
-  it("notes sync loops are not wrapped in a single transaction (audit observation)", () => {
+  it("wraps catalog sync and refresh in transactions (DEF-004)", () => {
     const source = readFileSync(
       join(process.cwd(), "src/lib/recommendations/sync-catalog-templates.ts"),
       "utf8",
     );
-    expect(source).not.toMatch(/\$transaction/);
+    expect(source).toMatch(/\$transaction/);
+    expect(source).toContain("rolled back");
   });
 });
 
@@ -342,29 +351,22 @@ describe("SS-OPT-003B Phase 4 — client delivery safeguards", () => {
     );
     expect(roadmap).toContain("hasUnpublishedStubTitle");
     expect(roadmap).toContain("isStubRecommendationTemplate");
-    expect(email).toContain("hasUnpublishedStubTitle");
-    expect(email).toContain("isStubRecommendationTemplate");
+    expect(email).toContain("filterClientDeliverableRecommendations");
   });
 
-  it("documents gap: TIP proposal assembly loads recommendations without stub filter", () => {
+  it("TIP proposal assembly and email use centralized client deliverable filtering", () => {
     const tipService = readFileSync(
       join(process.cwd(), "src/lib/technology-improvement-plan/service.ts"),
       "utf8",
     );
-    expect(tipService).toContain("loadAssessmentRecommendations");
-    expect(tipService).not.toContain("isStubRecommendationTemplate");
-    expect(tipService).not.toContain("filterClientDeliverableRecommendations");
-    expect(tipService).not.toContain("hasUnpublishedStubTitle");
-  });
-
-  it("documents gap: email filter does not fail-closed on missing template codes", () => {
     const email = readFileSync(
       join(process.cwd(), "src/lib/communications/workflows/triggers.ts"),
       "utf8",
     );
-    // Current behavior: only stub check + Improve title; missing codes still pass.
-    expect(email).toContain("!isStubRecommendationTemplate(rec.recommendationTemplate?.code)");
-    expect(email).not.toContain("if (!rec.recommendationTemplate?.code)");
+    expect(tipService).toContain("filterClientDeliverableRecommendations");
+    expect(tipService).toContain("toRecommendationSeeds(recommendations, role)");
+    expect(email).toContain("filterClientDeliverableRecommendations");
+    expect(email).toContain('"client"');
   });
 });
 

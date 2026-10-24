@@ -5,6 +5,7 @@ import { WorkspaceProjectsList } from "@/components/client-workspace/workspace-p
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { prisma } from "@/lib/db";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { isClientDeliverableRecommendation } from "@/lib/recommendations/visibility";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -38,24 +39,38 @@ export default async function ClientWorkspaceProjectsPage({ params }: PageProps)
           actualImpactPoints: true,
           estimatedCost: true,
           completedAt: true,
-          recommendation: { select: { title: true } },
+          recommendation: {
+            select: {
+              title: true,
+              recommendationTemplate: { select: { code: true } },
+            },
+          },
         },
       },
     },
   });
   if (!client) notFound();
 
-  const projects: ProfileProjectSummary[] = client.projects.map((project) => ({
-    id: project.id,
-    title: project.title,
-    status: project.status,
-    priority: project.priority,
-    estimatedImpactPoints: project.estimatedImpactPoints,
-    actualImpactPoints: project.actualImpactPoints,
-    estimatedCost: project.estimatedCost !== null ? Number(project.estimatedCost) : null,
-    completedAt: project.completedAt?.toISOString() ?? null,
-    recommendationTitle: project.recommendation?.title ?? null,
-  }));
+  const projects: ProfileProjectSummary[] = client.projects.map((project) => {
+    const recommendation = project.recommendation;
+    const recommendationTitle =
+      recommendation &&
+      isClientDeliverableRecommendation(recommendation as Record<string, unknown>, session.user.role)
+        ? recommendation.title
+        : null;
+
+    return {
+      id: project.id,
+      title: project.title,
+      status: project.status,
+      priority: project.priority,
+      estimatedImpactPoints: project.estimatedImpactPoints,
+      actualImpactPoints: project.actualImpactPoints,
+      estimatedCost: project.estimatedCost !== null ? Number(project.estimatedCost) : null,
+      completedAt: project.completedAt?.toISOString() ?? null,
+      recommendationTitle,
+    };
+  });
 
   if (isCustomerMode(session.user.role)) {
     return (

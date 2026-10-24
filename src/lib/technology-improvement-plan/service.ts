@@ -1,6 +1,7 @@
 import type { Prisma } from "@/generated/prisma/client";
 import type { UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { filterClientDeliverableRecommendations } from "@/lib/recommendations/visibility";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile/detail";
 import { mergeWizardState, createDefaultWizardState } from "@/lib/technology-improvement-plan/defaults";
 import { computeInvestmentView } from "@/lib/technology-improvement-plan/pricing";
@@ -48,15 +49,26 @@ async function loadAssessmentRecommendations(clientId: string, assessmentId: str
       ...(assessmentId ? { assessmentId } : {}),
       status: { in: ["open", "accepted", "in_progress"] },
     },
-    include: { category: { select: { name: true } } },
+    include: {
+      category: { select: { name: true } },
+      recommendationTemplate: { select: { code: true } },
+    },
     orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
   });
 }
 
 function toRecommendationSeeds(
   recommendations: Awaited<ReturnType<typeof loadAssessmentRecommendations>>,
+  role: UserRole = "admin",
 ): RecommendationSeed[] {
-  return recommendations.map((rec) => ({
+  // Fail-closed for client audiences (published proposals / TIP detail): stubs,
+  // Improve-title leftovers, and missing template codes must not appear.
+  const deliverable = filterClientDeliverableRecommendations(
+    recommendations as Array<Record<string, unknown>>,
+    role,
+  ) as typeof recommendations;
+
+  return deliverable.map((rec) => ({
     id: rec.id,
     title: rec.title,
     description: rec.description,
@@ -97,7 +109,7 @@ export async function assembleTipPlanDetail(
     loadAssessmentRecommendations(record.clientId, record.assessmentId),
   ]);
 
-  const seeds = toRecommendationSeeds(recommendations);
+  const seeds = toRecommendationSeeds(recommendations, role);
   const syncedState = syncWizardStateAfterSelectionChange(seeds, wizardState);
   const currentScore =
     profile?.profile.overallStackScore ??
