@@ -23,10 +23,12 @@ export async function triggerAssessmentCompleteWorkflow(input: {
   if (!assessment?.completedAt) return null;
 
   const { isStubRecommendationTemplate } = await import("@/lib/recommendations/stubs");
+  const { hasUnpublishedStubTitle } = await import("@/lib/recommendations/visibility");
   // Stub catalog copy stays internal until SS-OPT-003; email already requires manual review.
-  const clientSafeRecommendations = assessment.recommendations.filter(
-    (rec) => !isStubRecommendationTemplate(rec.recommendationTemplate?.code),
-  );
+  const clientSafeRecommendations = assessment.recommendations.filter((rec) => {
+    if (hasUnpublishedStubTitle(rec.title)) return false;
+    return !isStubRecommendationTemplate(rec.recommendationTemplate?.code);
+  });
 
   const strengths = clientSafeRecommendations
     .filter((rec) => rec.priority === "low" || rec.priority === "medium")

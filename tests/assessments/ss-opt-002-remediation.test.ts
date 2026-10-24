@@ -232,7 +232,9 @@ describe("SS-OPT-002 technology profile risk summary", () => {
 
 describe("SS-OPT-002 recommendation stubs and dedupe", () => {
   it("identifies stub catalog templates", () => {
-    expect(isStubRecommendationTemplate("REC-IA-001")).toBe(true);
+    // REC-IA-001 is published (Batch B1); remaining non-B1 templates stay stubs.
+    expect(isStubRecommendationTemplate("REC-IA-001")).toBe(false);
+    expect(isStubRecommendationTemplate("REC-EP-001")).toBe(true);
     expect(isStubRecommendationTemplate("NOT-A-REAL-CODE")).toBe(false);
   });
 
@@ -241,13 +243,13 @@ describe("SS-OPT-002 recommendation stubs and dedupe", () => {
       {
         id: "1",
         title: "Stub rec",
-        templateCode: "REC-IA-001",
+        templateCode: "REC-EP-001",
         latestTriggerReason: "hidden",
       },
       {
         id: "2",
         title: "Approved-looking",
-        templateCode: "NOT-A-REAL-CODE",
+        templateCode: "REC-IA-001",
         latestTriggerReason: "staff-only",
       },
     ];

@@ -3,6 +3,10 @@ import { prisma } from "@/lib/db";
 import { buildAssessmentReportData } from "@/lib/assessments/report-data";
 import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
+import {
+  filterClientDeliverableRecommendations,
+  isClientFacingRecommendationAudience,
+} from "@/lib/recommendations/visibility";
 import { generateAssessmentReportPdf } from "@/lib/pdf/generate";
 import { sanitizeFilename } from "@/lib/pdf/types";
 import { getSessionUserWithClient, requireAssessmentAccess } from "@/lib/api/access";
@@ -41,7 +45,13 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const overallScore = Number(assessment.overallScore);
 
-  const recommendations = await getRecommendationsTriggeredByAssessment(id);
+  const rawRecommendations = await getRecommendationsTriggeredByAssessment(id);
+  // Fail-closed: clients never receive stub/unapproved recommendation copy in PDFs.
+  // Staff exports may still include stubs for internal consulting review.
+  const recommendations = filterClientDeliverableRecommendations(
+    rawRecommendations as Array<Record<string, unknown>>,
+    user.role,
+  ) as typeof rawRecommendations;
 
   const criticalFindingsCount = await prisma.assessmentResponse.count({
     where: {
@@ -70,7 +80,10 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const buffer = await generateAssessmentReportPdf(reportData);
 
-  const filename = `${sanitizeFilename(assessment.client.companyName)}-stackscore-report.pdf`;
+  const audienceSuffix = isClientFacingRecommendationAudience(user.role)
+    ? ""
+    : "-internal";
+  const filename = `${sanitizeFilename(assessment.client.companyName)}-stackscore-report${audienceSuffix}.pdf`;
 
   return new NextResponse(new Uint8Array(buffer), {
     headers: {

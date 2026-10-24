@@ -3,7 +3,10 @@ import catalog from "../../data/RecommendationCatalogV2.json";
 import { evaluateV2Triggers, type V2TriggeredResponse } from "@/lib/recommendations/v2-engine";
 import { buildDedupeKey } from "@/lib/recommendations/dedupe";
 import { isStubRecommendationTemplate } from "@/lib/recommendations/stubs";
-import { presentRecommendationsForRole } from "@/lib/recommendations/visibility";
+import {
+  filterClientDeliverableRecommendations,
+  presentRecommendationsForRole,
+} from "@/lib/recommendations/visibility";
 
 const B1_IDS = [
   ...Array.from({ length: 10 }, (_, index) => `REC-IA-${String(index + 1).padStart(3, "0")}`),
@@ -17,24 +20,42 @@ const REQUIRED_DESCRIPTION_MARKERS = [
   "Implementation considerations:",
 ];
 
-describe("SS-OPT-003B batch B1 catalog drafts", () => {
+describe("SS-OPT-003B batch B1 catalog finalization", () => {
   const b1 = catalog.templates.filter((template) => B1_IDS.includes(template.id));
   const others = catalog.templates.filter((template) => !B1_IDS.includes(template.id));
 
-  it("updates exactly the 20 B1 templates", () => {
+  it("publishes exactly the 20 B1 templates", () => {
     expect(catalog.templates).toHaveLength(80);
     expect(b1).toHaveLength(20);
     expect(new Set(b1.map((template) => template.id)).size).toBe(20);
+    expect(b1.every((template) => template.isStub === false)).toBe(true);
+    expect(catalog.templates.filter((template) => template.isStub)).toHaveLength(60);
   });
 
-  it("preserves IDs, questions, pillars, triggers, points, and stub gate", () => {
+  it("applies approved editorial and priority adjustments", () => {
+    const ia001 = b1.find((template) => template.id === "REC-IA-001");
+    const ia003 = b1.find((template) => template.id === "REC-IA-003");
+    const ia008 = b1.find((template) => template.id === "REC-IA-008");
+    const so002 = b1.find((template) => template.id === "REC-SO-002");
+    const so009 = b1.find((template) => template.id === "REC-SO-009");
+
+    expect(ia001?.title).toBe("Centralize workforce identity and authentication");
+    expect(ia003?.title).toBe("Replace shared employee credentials with individual accounts");
+    expect(ia003?.priority).toBe("high");
+    expect(ia008?.priority).toBe("high");
+    expect(so009?.priority).toBe("medium");
+    expect(so002?.businessImpact.startsWith(
+      "Unpatched or misconfigured systems can expose organizations to preventable security incidents and operational disruptions.",
+    )).toBe(true);
+  });
+
+  it("preserves IDs, questions, pillars, triggers, and content structure", () => {
     for (const template of b1) {
       expect(template.questionId).toMatch(/^(IA|SO)-\d{3}$/);
       expect(["identity_access", "security_operations"]).toContain(template.pillarCode);
       expect(template.triggerAnswers).toEqual(["No", "Partially"]);
       expect(template.alsoTriggerOnPartial).toBe(true);
-      expect(template.isStub).toBe(true);
-      expect(isStubRecommendationTemplate(template.id)).toBe(true);
+      expect(isStubRecommendationTemplate(template.id)).toBe(false);
       expect(template.title.startsWith("Improve ")).toBe(false);
       expect(template.businessImpact.length).toBeGreaterThan(80);
       for (const marker of REQUIRED_DESCRIPTION_MARKERS) {
@@ -66,14 +87,27 @@ describe("SS-OPT-003B batch B1 catalog drafts", () => {
     expect(buildDedupeKey({ templateCode: "REC-IA-002" })).toBe("template:REC-IA-002");
   });
 
-  it("keeps stub recommendations hidden from client presentation", () => {
-    const rows = b1.map((template) => ({
+  it("exposes approved B1 recommendations to clients while hiding remaining stubs", () => {
+    const approvedRows = b1.map((template) => ({
       id: template.id,
       title: template.title,
       templateCode: template.id,
       latestTriggerReason: "test",
     }));
-    expect(presentRecommendationsForRole(rows, "client")).toHaveLength(0);
-    expect(presentRecommendationsForRole(rows, "admin")).toHaveLength(20);
+    const stubRows = others.slice(0, 3).map((template) => ({
+      id: template.id,
+      title: template.title,
+      templateCode: template.id,
+      latestTriggerReason: "test",
+    }));
+
+    expect(presentRecommendationsForRole(approvedRows, "client")).toHaveLength(20);
+    expect(presentRecommendationsForRole(stubRows, "client")).toHaveLength(0);
+    expect(
+      filterClientDeliverableRecommendations([...approvedRows, ...stubRows], "client"),
+    ).toHaveLength(20);
+    expect(
+      filterClientDeliverableRecommendations([...approvedRows, ...stubRows], "admin"),
+    ).toHaveLength(23);
   });
 });

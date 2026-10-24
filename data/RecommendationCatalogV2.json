@@ -8,7 +8,7 @@
       "questionId": "IA-001",
       "pillarCode": "identity_access",
       "pillarName": "Identity & Access",
-      "title": "Establish centralized workforce identity and authentication",
+      "title": "Centralize workforce identity and authentication",
       "description": "Finding: Assessment responses indicate user authentication is not fully managed through a centralized identity platform. This finding reflects self-reported assessment information, not an independent technical audit of every system.\n\nRecommended action: Inventory business applications that authenticate users separately. Select or strengthen a primary identity provider for workforce sign-in. Federate or consolidate high-value applications where practical, and define an ownership model for identity administration. Ensure leavers and role changes are processed from the same source of truth.\n\nExpected outcome: Identity administration becomes more consistent, access changes are easier to execute correctly, and security controls such as MFA and password policy can be applied more uniformly.\n\nImplementation considerations: Plan application-by-application cutover to avoid locking users out of line-of-business systems. Confirm licensing, directory sync, and break-glass admin accounts before enforcing centralized sign-in. Coordinate with any existing MSP or internal IT so current support processes remain workable.",
       "businessImpact": "Without a central identity platform, account provisioning, access removal, and password policy become inconsistent across systems. That increases the chance of leftover access after role changes or departures, raises help-desk overhead, and makes it harder to contain unauthorized access if credentials are misused.",
       "suggestedService": "Identity & Access Improvement",
@@ -20,7 +20,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-002",
@@ -39,18 +39,18 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-003",
       "questionId": "IA-003",
       "pillarCode": "identity_access",
       "pillarName": "Identity & Access",
-      "title": "Eliminate shared credentials in favor of individual user accounts",
+      "title": "Replace shared employee credentials with individual accounts",
       "description": "Finding: Assessment responses indicate employees may still rely on shared credentials rather than individual accounts for some systems. This reflects reported practices, not a completed credential audit of every application.\n\nRecommended action: Inventory systems that use shared usernames or passwords. Create individual accounts with appropriate roles, migrate users, retire shared credentials, and store any unavoidable service accounts in a controlled secret store with limited ownership. Update onboarding and offboarding checklists accordingly.\n\nExpected outcome: Access activity can be attributed to a person, offboarding becomes more reliable, and the organization reduces the risk that one shared password unlocks broad business access.\n\nImplementation considerations: Some legacy applications only support a single login—document those exceptions, compensate with monitoring or network controls where needed, and schedule replacement or upgrade when practical. Coordinate password changes carefully to avoid downtime.",
       "businessImpact": "Shared logins remove personal accountability, complicate offboarding, and make it difficult to investigate misuse. When several people share one password, a single disclosure can expose multiple business functions and extend unauthorized access after someone leaves.",
       "suggestedService": "Identity & Access Improvement",
-      "priority": "medium",
+      "priority": "high",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
         "No",
@@ -58,7 +58,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-004",
@@ -77,7 +77,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-005",
@@ -96,7 +96,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-006",
@@ -115,7 +115,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-007",
@@ -134,7 +134,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-008",
@@ -145,7 +145,7 @@
       "description": "Finding: Assessment responses indicate remote access may not be consistently secured with strong authentication and encryption. This is assessment-reported and should be validated against current VPN, RDP, and cloud remote-access configurations during remediation.\n\nRecommended action: Inventory remote access methods (VPN, RDP gateways, cloud admin portals, vendor connections). Require MFA, disable unused exposure, enforce encrypted transport, restrict source networks where practical, and replace legacy direct RDP-to-Internet patterns with hardened gateways or modern remote-access controls.\n\nExpected outcome: Remote work and vendor support continue with a lower likelihood that Internet-facing access alone yields easy account or session takeover.\n\nImplementation considerations: Schedule changes during maintenance windows. Maintain out-of-band recovery access for administrators. Coordinate with any third-party support providers who rely on remote entry so their access is intentional and logged.",
       "businessImpact": "Exposed or weakly protected remote access is a frequent entry point for ransomware and unauthorized data access. For distributed or hybrid teams, insecure remote paths can interrupt operations and create significant recovery costs.",
       "suggestedService": "Identity & Access Improvement",
-      "priority": "medium",
+      "priority": "high",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
         "No",
@@ -153,7 +153,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-009",
@@ -172,7 +172,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-IA-010",
@@ -191,7 +191,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-001",
@@ -970,7 +970,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-002",
@@ -979,7 +979,7 @@
       "pillarName": "Security Operations",
       "title": "Assess and remediate vulnerabilities on a regular schedule",
       "description": "Finding: Assessment responses indicate vulnerabilities are not assessed regularly. This is an assessment maturity finding and does not by itself prove a specific exploitable flaw is present.\n\nRecommended action: Establish recurring external and/or internal vulnerability scanning for in-scope systems, prioritize remediations by severity and business criticality, and track closure. Include cloud and remote-access assets. Schedule authenticated scans where credentials improve accuracy.\n\nExpected outcome: Known weaknesses are identified and reduced systematically, lowering the likelihood that publicly known exploits disrupt operations.\n\nImplementation considerations: Coordinate scan windows to avoid performance impact on line-of-business systems. Maintain an exception process for risk-accepted findings with owners and review dates. Align remediation with change management.",
-      "businessImpact": "Unpatched or misconfigured systems are a leading cause of preventable breaches and outages. Without recurring vulnerability assessment, known weaknesses can accumulate across servers, endpoints, and Internet-facing services.",
+      "businessImpact": "Unpatched or misconfigured systems can expose organizations to preventable security incidents and operational disruptions. Without recurring vulnerability assessment, known weaknesses can accumulate across servers, endpoints, and Internet-facing services.",
       "suggestedService": "Security Operations Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
@@ -989,7 +989,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-003",
@@ -1008,7 +1008,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-004",
@@ -1027,7 +1027,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-005",
@@ -1046,7 +1046,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-006",
@@ -1065,7 +1065,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-007",
@@ -1084,7 +1084,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-008",
@@ -1103,7 +1103,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-009",
@@ -1114,7 +1114,7 @@
       "description": "Finding: Assessment responses indicate security ownership may not be clearly assigned. This is an organizational finding from the assessment.\n\nRecommended action: Designate a business-side owner for security outcomes and document which tasks are performed internally versus by an IT provider. Clarify who approves exceptions, who is contacted during incidents, and how recommendations are prioritized. Review the RACI when providers change.\n\nExpected outcome: Accountability is explicit, reducing dropped tasks and speeding decisions when security issues arise.\n\nImplementation considerations: Ownership does not require a full-time CISO for most SMBs; a named manager plus provider support is often enough if responsibilities are written down.",
       "businessImpact": "Unclear security ownership leads to missed alerts, delayed patching decisions, and confusion during incidents. Leadership may assume \"IT handles it\" while providers assume the customer owns risk acceptance—leaving gaps that only appear under pressure.",
       "suggestedService": "Security Operations Improvement",
-      "priority": "low",
+      "priority": "medium",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
         "No",
@@ -1122,7 +1122,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-010",
@@ -1141,7 +1141,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-001",

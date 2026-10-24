@@ -52,11 +52,24 @@ describe("recommendation visibility", () => {
     const stubRow = {
       ...staffRow,
       id: "stub-1",
-      templateCode: "REC-IA-001",
-      title: "Stub Identity Recommendation",
+      templateCode: "REC-EP-001",
+      title: "Stub Endpoint Recommendation",
     };
     expect(presentRecommendationsForRole([stubRow, staffRow], "client")).toHaveLength(1);
     expect(presentRecommendationsForRole([stubRow, staffRow], "client")[0]?.id).toBe("rec-1");
     expect(presentRecommendationsForRole([stubRow], "admin")).toHaveLength(1);
+  });
+
+  it("allows published Batch B1 recommendations through client delivery filters", () => {
+    const approvedRow = {
+      ...staffRow,
+      id: "b1-1",
+      templateCode: "REC-IA-001",
+      title: "Centralize workforce identity and authentication",
+    };
+    expect(presentRecommendationsForRole([approvedRow], "client")).toHaveLength(1);
+    expect(presentRecommendationsForRole([approvedRow], "client")[0]?.title).toBe(
+      "Centralize workforce identity and authentication",
+    );
   });
 });

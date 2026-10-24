@@ -73,8 +73,13 @@ async function upsertAssessmentTrigger(
 
 /**
  * Upsert client-level recommendations on assessment completion (DOC-152).
- * One active row per (clientId, dedupeKey). On retrigger: updates content, preserves workflow
- * status when appropriate, reopens completed rows as recurrences, and records assessment triggers.
+ * One active row per (clientId, dedupeKey).
+ *
+ * SS-OPT-003B: On retrigger / reopen of an existing row, update trigger metadata and
+ * workflow status only. Do **not** overwrite title, description, businessImpact,
+ * suggestedService, priority, or estimatedImpactPoints — consultant edits and
+ * client-specific priority overrides cannot be distinguished from generated copy.
+ * New rows still receive catalog content at create time.
  */
 export async function syncClientRecommendations(
   tx: SyncTransaction,
@@ -122,13 +127,18 @@ export async function syncClientRecommendations(
       await tx.assessmentRecommendation.update({
         where: { id: active.id },
         data: {
-          ...content,
           dedupeKey,
           latestAssessmentId: assessmentId,
           lastTriggeredAt: now,
           latestTriggerReason: triggerReason,
           triggeredInLatestAssessment: true,
           status: resolveStatusOnRetrigger(active.status),
+          // Preserve existing content + priority (consultant overrides / prior copy).
+          recommendationTemplateId:
+            active.recommendationTemplateId ?? content.recommendationTemplateId,
+          categoryId: active.categoryId || content.categoryId,
+          consolidationGroupId:
+            active.consolidationGroupId ?? content.consolidationGroupId,
         },
       });
       await upsertAssessmentTrigger(tx, active.id, assessmentId, now, triggerReason);
@@ -148,13 +158,17 @@ export async function syncClientRecommendations(
       await tx.assessmentRecommendation.update({
         where: { id: declined.id },
         data: {
-          ...content,
           dedupeKey,
           latestAssessmentId: assessmentId,
           lastTriggeredAt: now,
           latestTriggerReason: triggerReason,
           triggeredInLatestAssessment: true,
           status: "open",
+          recommendationTemplateId:
+            declined.recommendationTemplateId ?? content.recommendationTemplateId,
+          categoryId: declined.categoryId || content.categoryId,
+          consolidationGroupId:
+            declined.consolidationGroupId ?? content.consolidationGroupId,
         },
       });
       await upsertAssessmentTrigger(tx, declined.id, assessmentId, now, triggerReason);
@@ -170,7 +184,6 @@ export async function syncClientRecommendations(
       await tx.assessmentRecommendation.update({
         where: { id: completed.id },
         data: {
-          ...content,
           dedupeKey,
           latestAssessmentId: assessmentId,
           lastTriggeredAt: now,
@@ -180,6 +193,11 @@ export async function syncClientRecommendations(
           isRecurrence: true,
           recurrenceCount: completed.recurrenceCount + 1,
           completedAt: null,
+          recommendationTemplateId:
+            completed.recommendationTemplateId ?? content.recommendationTemplateId,
+          categoryId: completed.categoryId || content.categoryId,
+          consolidationGroupId:
+            completed.consolidationGroupId ?? content.consolidationGroupId,
         },
       });
       await upsertAssessmentTrigger(tx, completed.id, assessmentId, now, triggerReason);

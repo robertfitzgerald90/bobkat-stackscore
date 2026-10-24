@@ -1,6 +1,8 @@
 import type { PhaseProposalStatus, UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { PHASE_PROPOSAL_STATUS_LABELS } from "@/lib/phase-proposals/types";
+import { isStubRecommendationTemplate } from "@/lib/recommendations/stubs";
+import { hasUnpublishedStubTitle } from "@/lib/recommendations/visibility";
 import { computeEffectiveScoreJourney } from "./effective-score";
 import { computeRoadmapProgressMetrics } from "./metrics";
 import { isConsultantRole } from "./permissions";
@@ -32,7 +34,10 @@ const roadmapInclude = {
         orderBy: { sortOrder: "asc" as const },
         include: {
           recommendation: {
-            include: { category: { select: { name: true } } },
+            include: {
+              category: { select: { name: true } },
+              recommendationTemplate: { select: { code: true } },
+            },
           },
         },
       },
@@ -64,6 +69,7 @@ function toInitiativeView(
       completedAt: Date | null;
       suggestedService: string | null;
       category: { name: string };
+      recommendationTemplate?: { code: string } | null;
     };
   },
 ): RoadmapInitiativeView {
@@ -179,7 +185,17 @@ function toPhaseView(
   },
   isConsultant: boolean,
 ): RoadmapPhaseView {
-  const initiatives = phase.initiatives.map(toInitiativeView);
+  const visibleInitiatives = isConsultant
+    ? phase.initiatives
+    : phase.initiatives.filter((initiative) => {
+        const recommendation = initiative.recommendation;
+        // Fail-closed: hide stub/unapproved catalog copy from client roadmap views.
+        if (hasUnpublishedStubTitle(recommendation.title)) return false;
+        const code = recommendation.recommendationTemplate?.code;
+        if (!code) return false;
+        return !isStubRecommendationTemplate(code);
+      });
+  const initiatives = visibleInitiatives.map(toInitiativeView);
   const businessOutcomes = initiatives
     .filter((item) => item.businessOutcomeTitle || item.businessOutcomeDescription)
     .map((item) => ({
@@ -329,7 +345,10 @@ export async function getClientRoadmapPhaseDetail(
         orderBy: { sortOrder: "asc" },
         include: {
           recommendation: {
-            include: { category: { select: { name: true } } },
+            include: {
+              category: { select: { name: true } },
+              recommendationTemplate: { select: { code: true } },
+            },
           },
         },
       },

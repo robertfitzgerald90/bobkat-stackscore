@@ -38,6 +38,14 @@ function resolveTemplateCode(recommendation: Record<string, unknown>): string | 
 }
 
 /**
+ * Mechanical pre-OPT-003 stub titles. Rows still carrying this pattern are not
+ * approved customer copy even if the catalog template has been published.
+ */
+export function hasUnpublishedStubTitle(title: unknown): boolean {
+  return typeof title === "string" && title.startsWith("Improve ");
+}
+
+/**
  * Stub catalog rows stay visible to consultants; they are withheld from client
  * portal delivery until SS-OPT-003 approves copy.
  */
@@ -47,6 +55,10 @@ export function isClientDeliverableRecommendation(
 ): boolean {
   if (!isClientFacingRecommendationAudience(role)) {
     return true;
+  }
+  // Fail closed: leftover generator stub titles must not ship as client copy.
+  if (hasUnpublishedStubTitle(recommendation.title)) {
+    return false;
   }
   const templateCode = resolveTemplateCode(recommendation);
   // Fail closed: without a resolvable template code, do not publish to clients.
@@ -81,11 +93,20 @@ export function presentRecommendationsForRole<T extends Record<string, unknown>>
   recommendations: T[],
   role: UserRole,
 ): T[] {
-  const deliverable = recommendations.filter((row) =>
-    isClientDeliverableRecommendation(row, role),
-  );
+  const deliverable = filterClientDeliverableRecommendations(recommendations, role);
   if (!isClientFacingRecommendationAudience(role)) {
     return deliverable;
   }
   return deliverable.map((row) => presentRecommendationForRole(row, role));
+}
+
+/**
+ * Fail-closed filter for client-facing exports (PDF, APIs, email payloads).
+ * Staff/consultant audiences retain stub rows for internal review.
+ */
+export function filterClientDeliverableRecommendations<T extends Record<string, unknown>>(
+  recommendations: T[],
+  role: UserRole,
+): T[] {
+  return recommendations.filter((row) => isClientDeliverableRecommendation(row, role));
 }
