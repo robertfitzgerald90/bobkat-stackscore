@@ -188,10 +188,10 @@ function toPhaseView(
   const visibleInitiatives = isConsultant
     ? phase.initiatives
     : phase.initiatives.filter((initiative) => {
-        const recommendation = initiative.recommendation;
         // Fail-closed: hide stub/unapproved catalog copy from client roadmap views.
-        if (hasUnpublishedStubTitle(recommendation.title)) return false;
-        const code = recommendation.recommendationTemplate?.code;
+        // Initiative title is the copied recommendation headline used in roadmap views.
+        if (hasUnpublishedStubTitle(initiative.title)) return false;
+        const code = initiative.recommendation.recommendationTemplate?.code;
         if (!code) return false;
         return !isStubRecommendationTemplate(code);
       });
