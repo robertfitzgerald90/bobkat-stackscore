@@ -6,6 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MIN_LENGTH_MESSAGE,
+} from "@/lib/users/password-policy";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -15,6 +19,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      toast.error(PASSWORD_MIN_LENGTH_MESSAGE);
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -47,21 +55,24 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <Input
           id="password"
           type="password"
+          autoComplete="new-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
         />
+        <p className="text-xs text-muted-foreground">{PASSWORD_MIN_LENGTH_MESSAGE}.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm password</Label>
         <Input
           id="confirmPassword"
           type="password"
+          autoComplete="new-password"
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
           required
-          minLength={8}
+          minLength={PASSWORD_MIN_LENGTH}
         />
       </div>
       <Button type="submit" className="w-full" disabled={loading || !token}>

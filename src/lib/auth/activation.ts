@@ -1,12 +1,13 @@
 import { createHash } from "node:crypto";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { hashPassword } from "@/lib/users/password";
+import { passwordSchema } from "@/lib/users/password-policy";
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
 
 const activateSchema = z.object({
   token: z.string().min(1),
-  password: z.string().min(10, "Password must be at least 10 characters"),
+  password: passwordSchema,
   name: z.string().trim().min(1).max(120).optional(),
 });
 
@@ -49,7 +50,7 @@ export async function activateAccount(input: z.infer<typeof activateSchema>) {
     return { ok: false as const, error: "This activation link is not valid for client access" };
   }
 
-  const passwordHash = await bcrypt.hash(parsed.password, 12);
+  const passwordHash = await hashPassword(parsed.password);
 
   await prisma.$transaction([
     prisma.user.update({

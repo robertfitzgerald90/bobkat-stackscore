@@ -8,6 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trackSignUp } from "@/lib/analytics/ga4-events";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MIN_LENGTH_MESSAGE,
+} from "@/lib/users/password-policy";
 
 export function ActivateAccountForm() {
   const router = useRouter();
@@ -55,8 +59,8 @@ export function ActivateAccountForm() {
     event.preventDefault();
     setError("");
 
-    if (password.length < 10) {
-      setError("Password must be at least 10 characters.");
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      setError(PASSWORD_MIN_LENGTH_MESSAGE);
       return;
     }
 
@@ -135,7 +139,9 @@ export function ActivateAccountForm() {
               value={password}
               onValueChange={setPassword}
               required
+              minLength={PASSWORD_MIN_LENGTH}
             />
+            <p className="text-xs text-muted-foreground">{PASSWORD_MIN_LENGTH_MESSAGE}</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm password</Label>
@@ -146,6 +152,7 @@ export function ActivateAccountForm() {
               value={confirmPassword}
               onValueChange={setConfirmPassword}
               required
+              minLength={PASSWORD_MIN_LENGTH}
             />
           </div>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}

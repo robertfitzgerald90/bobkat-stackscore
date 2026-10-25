@@ -11,11 +11,18 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const body = (await request.json()) as { token?: string; password?: string };
-  if (!body.token || !body.password) return badRequest("Token and password are required");
+  if (!body.token?.trim()) return badRequest("Token and password are required");
+  // Allow empty string through to shared policy so clients get a clear length/required error.
+  if (body.password === undefined || body.password === null) {
+    return badRequest("Token and password are required");
+  }
   try {
     await confirmPasswordReset({ token: body.token, password: body.password });
     return NextResponse.json({ success: true });
   } catch (error) {
-    return badRequest(error instanceof Error ? error.message : "Unable to reset password");
+    const message =
+      error instanceof Error ? error.message : "Unable to reset password";
+    // Never echo submitted password material — messages are policy/token status only.
+    return badRequest(message);
   }
 }

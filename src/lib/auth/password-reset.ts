@@ -4,6 +4,7 @@ import { buildPasswordResetEmailData } from "@/lib/communications/workflows/emai
 import { buildPublicAppUrl } from "@/lib/communications/links/build-protected-url";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
 import { prisma } from "@/lib/db";
+import { assertPasswordMeetsPolicy } from "@/lib/users/password-policy";
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
@@ -63,6 +64,10 @@ export async function requestPasswordReset(email: string) {
 }
 
 export async function confirmPasswordReset(input: { token: string; password: string }) {
+  // Enforce policy before any token lookup or DB mutation (SEC-001-H02 / SS-SEC-003).
+  // Invalid passwords must not consume a valid reset token.
+  const password = assertPasswordMeetsPolicy(input.password);
+
   const tokenHash = hashToken(input.token);
   const record = await prisma.passwordResetToken.findFirst({
     where: {
@@ -78,7 +83,7 @@ export async function confirmPasswordReset(input: { token: string; password: str
   }
 
   const { hashPassword } = await import("@/lib/users/password");
-  const passwordHash = await hashPassword(input.password);
+  const passwordHash = await hashPassword(password);
 
   await prisma.$transaction([
     prisma.user.update({

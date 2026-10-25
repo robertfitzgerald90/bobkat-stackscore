@@ -230,7 +230,7 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **HIGH** |
-| Status | **Confirmed** |
+| Status | **Remediated in SS-SEC-003** (was Confirmed) |
 | Component | `PUT /api/v1/public/password-reset` → `confirmPasswordReset` |
 | Description | Activation and user-create schemas enforce `min(10)`. Reset confirm hashes whatever password string is provided after a token check. Route only requires `token` and `password` truthiness. |
 | Evidence | `src/app/api/v1/public/password-reset/route.ts` lines 12–17; `src/lib/auth/password-reset.ts` `confirmPasswordReset` (no length Zod); contrast `src/lib/auth/activation.ts` line 9 and `src/lib/users/schemas.ts`. |
