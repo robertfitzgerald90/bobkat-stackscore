@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { badRequest } from "@/lib/api/helpers";
+import {
+  enforceSnapshotContinueLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 import { continueSnapshotToFullAssessment } from "@/lib/communications/outreach/convert-snapshot-to-assessment";
 
 type RouteContext = { params: Promise<{ leadId: string }> };
@@ -8,8 +13,16 @@ type RouteContext = { params: Promise<{ leadId: string }> };
  * Public continuation endpoint.
  * Always returns a generic success message — never activation tokens or resource IDs (SEC-001-C01 / M08).
  */
-export async function POST(_request: Request, context: RouteContext) {
+export async function POST(request: Request, context: RouteContext) {
   const { leadId } = await context.params;
+
+  const rate = await enforceSnapshotContinueLimits({ request, leadId });
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
+  }
 
   try {
     const result = await continueSnapshotToFullAssessment(leadId);

@@ -1930,6 +1930,20 @@ model PasswordResetToken {
   @@index([tokenHash])
 }
 
+/// Durable auth abuse counters (SS-SEC-004). Keys are HMAC hashes — never raw emails/tokens.
+model AuthRateLimitBucket {
+  id           String   @id @default(uuid())
+  bucketKey    String   @unique
+  scope        String
+  count        Int      @default(0)
+  windowEndsAt DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([windowEndsAt])
+  @@index([scope])
+}
+
 model QuarterlyReviewReminder {
   id                        String                        @id @default(uuid())
   clientId                  String

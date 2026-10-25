@@ -31,12 +31,18 @@ export function LoginForm() {
       });
 
       if (!result?.ok || result?.error) {
+        const code =
+          typeof result === "object" && result && "code" in result
+            ? String((result as { code?: string }).code ?? "")
+            : "";
         const message =
           result?.error === "Configuration"
             ? "Authentication is not configured. Contact your administrator."
-            : result?.error === "CredentialsSignin"
-              ? "Invalid email or password"
-              : "Unable to sign in. Please try again.";
+            : code === "rate_limited" || result?.error === "rate_limited"
+              ? "Too many sign-in attempts. Please wait a few minutes and try again."
+              : result?.error === "CredentialsSignin"
+                ? "Invalid email or password"
+                : "Unable to sign in. Please try again.";
         setError(message);
         return;
       }

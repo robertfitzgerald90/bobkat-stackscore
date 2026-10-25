@@ -1,14 +1,23 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { authConfig } from "./auth.config";
+import {
+  clearLoginEmailFailures,
+  enforceLoginRateLimits,
+} from "@/lib/auth/rate-limit";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+
+/** Surfaced to the client as CredentialsSignin with code=rate_limited (no account hints). */
+export class RateLimitedSignin extends CredentialsSignin {
+  code = "rate_limited";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -20,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         try {
           const normalized = {
             email:
@@ -34,14 +43,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const parsed = credentialsSchema.safeParse(normalized);
           if (!parsed.success) return null;
 
+          const rate = await enforceLoginRateLimits({
+            request,
+            email: parsed.data.email,
+          });
+          if (!rate.allowed) {
+            console.warn("[auth] login rate limited", {
+              backendError: Boolean(rate.backendError),
+            });
+            throw new RateLimitedSignin();
+          }
+
           const user = await prisma.user.findUnique({
             where: { email: parsed.data.email },
           });
 
-          if (!user || !user.isActive) return null;
+          // Email admission already consumed in enforceLoginRateLimits.
+          // Failures keep the slot; success clears so mistypes do not lock out.
+          if (!user || !user.isActive) {
+            return null;
+          }
 
           const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
-          if (!valid) return null;
+          if (!valid) {
+            return null;
+          }
+
+          await clearLoginEmailFailures(parsed.data.email);
 
           return {
             id: user.id,
@@ -50,6 +78,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: user.role,
           };
         } catch (error) {
+          if (error instanceof RateLimitedSignin) throw error;
           console.error("[auth] authorize failed:", error);
           return null;
         }

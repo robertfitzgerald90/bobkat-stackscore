@@ -759,6 +759,7 @@ Located in [`50-Development/`](50-Development/).
 | [`security/SS-SEC-001-TEST-MATRIX.md`](security/SS-SEC-001-TEST-MATRIX.md) | Proposed security regression test matrix for SEC-001 boundaries |
 | [`security/SS-SEC-002-REMEDIATION.md`](security/SS-SEC-002-REMEDIATION.md) | Critical continue-assessment activation token remediation (C01 / M08) |
 | [`security/SS-SEC-003-PASSWORD-POLICY.md`](security/SS-SEC-003-PASSWORD-POLICY.md) | Shared password policy enforcement (SEC-001-H02) |
+| [`security/SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](security/SS-SEC-004-AUTH-ABUSE-PROTECTION.md) | Durable PostgreSQL auth abuse rate limiting (SEC-001-H01 / H04) |
 | [`marketing/SS-MKT-001-LEARN-PAGE-REDESIGN.md`](marketing/SS-MKT-001-LEARN-PAGE-REDESIGN.md) | Learn About StackScore / assessment-offer page redesign |
 
 ## Legacy redirect stubs

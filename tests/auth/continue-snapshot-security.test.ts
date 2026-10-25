@@ -54,6 +54,23 @@ vi.mock("@/lib/communications/contacts/service", () => contactsMock);
 vi.mock("@/lib/communications/outreach/campaign-sync", () => campaignMock);
 vi.mock("@/lib/communications/tracking/record-outbound", () => outboundMock);
 vi.mock("@/lib/email/templates/assessment-purchase", () => emailTemplatesMock);
+vi.mock("@/lib/auth/rate-limit", () => ({
+  enforceSnapshotContinueLimits: vi.fn(async () => ({
+    allowed: true as const,
+    count: 1,
+    remaining: 4,
+  })),
+  temporarilyUnavailableResponse: (retryAfterSeconds = 60) =>
+    Response.json(
+      { error: "temporarily unavailable", code: "TEMPORARILY_UNAVAILABLE" },
+      { status: 503, headers: { "Retry-After": String(retryAfterSeconds) } },
+    ),
+  tooManyRequestsResponse: (retryAfterSeconds: number) =>
+    Response.json(
+      { error: "too many", code: "RATE_LIMITED" },
+      { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } },
+    ),
+}));
 
 import {
   continueSnapshotToFullAssessment,

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { badRequest } from "@/lib/api/helpers";
+import {
+  enforceSnapshotCreateLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 import { createTechnologySnapshotLead } from "@/lib/technology-snapshot/service";
 import { createSnapshotLeadSchema } from "@/lib/technology-snapshot/schemas";
 import {
@@ -8,6 +13,14 @@ import {
 } from "@/lib/technology-snapshot/scoring";
 
 export async function POST(request: Request) {
+  const rate = await enforceSnapshotCreateLimits(request);
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
+  }
+
   let body: unknown;
   try {
     body = await request.json();

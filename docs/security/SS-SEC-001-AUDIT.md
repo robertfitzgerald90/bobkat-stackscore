@@ -18,9 +18,10 @@
 | --- | --- |
 | API `route.ts` files reviewed | **112** |
 | Server Actions found | **0** (mutations are Route Handlers only) |
-| Confirmed security weaknesses | **4** (1 Critical, 3 High) |
+| Confirmed security weaknesses (at audit time) | **4** (1 Critical, 3 High) — C01, H01, H02, H04 since remediated on staging (SEC-002–004) |
 | Potential risks requiring tests / design decisions | **9** (Medium) |
 | Low hardening opportunities | **5** |
+| Open High (post SEC-002–004) | **H03** (API middleware defense-in-depth) |
 | Prior Phase 1 / SS-OPT-001 client-isolation issues | **Treated as remediated** — not re-opened as open CRITICAL findings |
 | Existing automated security tests | Primarily `tests/auth/api-client-isolation.test.ts`, `tests/recommendations/visibility.test.ts` |
 
@@ -28,15 +29,15 @@
 
 Phase 1 and SS-OPT-001 substantially closed cross-tenant IDOR gaps on client/assessment/project/recommendation/dashboard surfaces. Core session resolution (`resolveSessionUserFromDb`), workspace helpers (`requireClientWorkspaceAccess`, `requireAssessmentAccess`), webhook signatures, and cron secrets are sound.
 
-**One confirmed Critical issue remains:** an unauthenticated public endpoint returns a live account-activation URL (raw token) after provisioning a workspace keyed to a Technology Snapshot lead email. That enables account takeover of newly provisioned (or re-provisioned) client accounts when an attacker controls or obtains a `leadId`.
+**Critical C01** (continue-assessment activation token leak) was remediated in **SS-SEC-002**. **H02** (password-reset policy) was remediated in **SS-SEC-003**. **H01 / H04** (auth abuse rate limits) were remediated in **SS-SEC-004** (PostgreSQL durable limiter on `staging`; not production-deployed).
 
-Highest remediation priority after that is auth abuse controls (login / password-reset / public acquisition rate limits) and closing the password-reset policy gap.
+Remaining audit priorities are defense-in-depth for `/api` (H03), medium public-abuse surfaces, and expanding the automated matrix.
 
 ### Recommended remediation order
 
-1. **P0 — SEC-001-C01** Stop returning raw `activationUrl` / tokens from unauthenticated `continue-assessment`; require email proof or staff-mediated delivery.
-2. **P1 — SEC-001-H01 / H04** Rate-limit credentials login, password-reset request/confirm, activate-account, and public snapshot continue flows.
-3. **P1 — SEC-001-H02** Enforce minimum password length (and DOC-303 policy) on password-reset confirm.
+1. ~~**P0 — SEC-001-C01**~~ **Done (SS-SEC-002)** — stop returning raw `activationUrl` / tokens from unauthenticated `continue-assessment`.
+2. ~~**P1 — SEC-001-H01 / H04**~~ **Done (SS-SEC-004)** — durable login / password-reset / activate / snapshot rate limits (staging).
+3. ~~**P1 — SEC-001-H02**~~ **Done (SS-SEC-003)** — shared password policy on reset confirm.
 4. **P2 — SEC-001-H03 / Medium public abuse** Defense-in-depth for `/api` (shared auth wrapper or middleware allowlist), health/PDF/checkout rate limits.
 5. **P3** Expand automated matrix in `SS-SEC-001-TEST-MATRIX.md`; document technician firm-wide access as accepted risk until assignment lands.
 
@@ -69,10 +70,10 @@ Highest remediation priority after that is auth abuse controls (login / password
 
 ### 1.3 Weaknesses (see findings)
 
-- No login throttling (SEC-001-H01).
-- Password-reset confirm accepts any non-empty password length at the route layer (SEC-001-H02).
-- Public continue-assessment returns activation URL (SEC-001-C01).
-- Public auth-adjacent endpoints lack rate limits (SEC-001-H04).
+- ~~No login throttling (SEC-001-H01)~~ — remediated SS-SEC-004.
+- ~~Password-reset confirm accepts any non-empty password length at the route layer (SEC-001-H02)~~ — remediated SS-SEC-003.
+- ~~Public continue-assessment returns activation URL (SEC-001-C01)~~ — remediated SS-SEC-002.
+- ~~Public auth-adjacent endpoints lack rate limits (SEC-001-H04)~~ — remediated SS-SEC-004.
 - Middleware does not enforce API authentication (SEC-001-H03).
 
 ---
@@ -216,14 +217,15 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **HIGH** |
-| Status | **Confirmed** |
+| Status | **Remediated in SS-SEC-004** (was Confirmed; staging implementation — not production-deployed) |
 | Component | Credentials `authorize` in `src/lib/auth/config.ts`; login UI → Auth.js |
 | Description | No application-level attempt counters, lockout, or IP/email rate limit on credential authentication. bcrypt cost 12 slows guessing but does not stop distributed attacks. |
 | Evidence | `src/lib/auth/config.ts` `authorize` — validate and compare only; no throttle helper. Contrast: `src/lib/website-leads/rate-limit.ts` exists for integrations only. |
 | Exploitation | Online password spraying against known staff/client emails. |
 | Business impact | Account compromise → firm-wide data access for staff accounts. |
 | Remediation | Per-email and per-IP rate limits; progressive delay or temporary lockout; optional CAPTCHA after N failures; monitor Auth failures. Prefer edge/WAF + app-level counters durable across instances. |
-| Regression tests | TM-H01-* |
+| Implementation | PostgreSQL `AuthRateLimitBucket` via `src/lib/auth/rate-limit` — IP attempts (20/15m) + email failures (5/15m); fail-open on limiter backend errors. See [`SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](SS-SEC-004-AUTH-ABUSE-PROTECTION.md). |
+| Regression tests | TM-H01-* (`tests/auth/rate-limit.test.ts`) |
 
 ### SEC-001-H02 — Password-reset confirm bypasses minimum password length
 
@@ -258,14 +260,15 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **HIGH** |
-| Status | **Confirmed** |
+| Status | **Remediated in SS-SEC-004** (was Confirmed; staging implementation — not production-deployed) |
 | Component | password-reset POST/PUT; activate-account; technology-snapshot POST; continue-assessment |
 | Description | These endpoints are unauthenticated and unbounded. Enables reset-email bombing, token spraying, snapshot spam, and amplifies C01. |
 | Evidence | Public routes under `src/app/api/v1/public/**` and `technology-snapshot/route.ts` have no rate-limit calls. |
 | Exploitation | Abuse inbox; amplify C01; fill DB with leads. |
 | Business impact | Operational cost, email reputation, support burden, attack amplification. |
 | Remediation | Shared durable rate limiter (not only in-memory Map); tighter limits on token redeem endpoints. |
-| Regression tests | TM-H04-* |
+| Implementation | Same PostgreSQL limiter as H01 — IP + identifier scopes; reset-request and snapshot create/continue fail-closed; confirm/activation fail-open. Limits run before token redemption. See [`SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](SS-SEC-004-AUTH-ABUSE-PROTECTION.md). |
+| Regression tests | TM-H04-* (`tests/auth/rate-limit.test.ts`) |
 
 ### SEC-001-M01 — Public health endpoint exposes configuration posture
 
@@ -444,6 +447,7 @@ Do **not** re-open Phase 1 items as new Critical findings unless regression test
 - [x] Portal recommendation field filtering
 - [x] No Server Actions attack surface
 - [x] Billing routes use billing auth helpers
+- [x] Durable auth abuse rate limits (login / reset / activation / snapshot) — SS-SEC-004 on staging
 
 ---
 
