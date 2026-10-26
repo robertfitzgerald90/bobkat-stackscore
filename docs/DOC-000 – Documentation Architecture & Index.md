@@ -761,6 +761,7 @@ Located in [`50-Development/`](50-Development/).
 | [`security/SS-SEC-003-PASSWORD-POLICY.md`](security/SS-SEC-003-PASSWORD-POLICY.md) | Shared password policy enforcement (SEC-001-H02) |
 | [`security/SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](security/SS-SEC-004-AUTH-ABUSE-PROTECTION.md) | Durable PostgreSQL auth abuse rate limiting (SEC-001-H01 / H04) |
 | [`security/SS-SEC-005-SECURITY-CLOSURE.md`](security/SS-SEC-005-SECURITY-CLOSURE.md) | Security closure reconciliation and commercial release readiness |
+| [`security/SS-SEC-006-DEPENDENCY-REMEDIATION.md`](security/SS-SEC-006-DEPENDENCY-REMEDIATION.md) | Production dependency CVE remediation (Auth.js / Next / Prisma / Zod) |
 | [`marketing/SS-MKT-001-LEARN-PAGE-REDESIGN.md`](marketing/SS-MKT-001-LEARN-PAGE-REDESIGN.md) | Learn About StackScore / assessment-offer page redesign |
 
 ## Legacy redirect stubs
