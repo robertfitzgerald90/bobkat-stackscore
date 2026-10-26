@@ -9,7 +9,12 @@ export type RateLimitScope =
   | "activation_token"
   | "snapshot_create_ip"
   | "snapshot_continue_ip"
-  | "snapshot_continue_lead";
+  | "snapshot_continue_lead"
+  | "health_ip"
+  | "product_overview_pdf_ip"
+  | "checkout_create_ip"
+  | "checkout_vcio_ip"
+  | "website_leads_ip";
 
 export type RateLimitPolicy = {
   scope: RateLimitScope;
@@ -99,6 +104,38 @@ export const AUTH_RATE_LIMIT_POLICIES: Record<RateLimitScope, RateLimitPolicy> =
     windowMs: 1 * HOURS,
     counts: "attempts",
   },
+  /** Generous probe budget — health returns minimal status only (SS-SEC-007 / M01). */
+  health_ip: {
+    scope: "health_ip",
+    limit: 60,
+    windowMs: 1 * MINUTES,
+    counts: "attempts",
+  },
+  product_overview_pdf_ip: {
+    scope: "product_overview_pdf_ip",
+    limit: 10,
+    windowMs: 15 * MINUTES,
+    counts: "attempts",
+  },
+  checkout_create_ip: {
+    scope: "checkout_create_ip",
+    limit: 10,
+    windowMs: 15 * MINUTES,
+    counts: "attempts",
+  },
+  checkout_vcio_ip: {
+    scope: "checkout_vcio_ip",
+    limit: 10,
+    windowMs: 15 * MINUTES,
+    counts: "attempts",
+  },
+  /** Replaces process-local website-leads Map (SS-SEC-007 / M07). */
+  website_leads_ip: {
+    scope: "website_leads_ip",
+    limit: 30,
+    windowMs: 1 * MINUTES,
+    counts: "attempts",
+  },
 };
 
 export type RateLimitFailMode = "open" | "closed";
@@ -109,7 +146,12 @@ export const AUTH_RATE_LIMIT_FAIL_MODE: Record<
   | "password_reset_confirm"
   | "activation"
   | "snapshot_continue"
-  | "snapshot_create",
+  | "snapshot_create"
+  | "health"
+  | "product_overview_pdf"
+  | "checkout_create"
+  | "checkout_vcio"
+  | "website_leads",
   RateLimitFailMode
 > = {
   login: "open",
@@ -118,4 +160,9 @@ export const AUTH_RATE_LIMIT_FAIL_MODE: Record<
   activation: "open",
   snapshot_continue: "closed",
   snapshot_create: "closed",
+  health: "open",
+  product_overview_pdf: "closed",
+  checkout_create: "closed",
+  checkout_vcio: "closed",
+  website_leads: "closed",
 };

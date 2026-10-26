@@ -20,6 +20,11 @@ import {
   STRATEGIC_IT_CONSULTING_CHECKOUT_PATH,
   SUBSCRIPTION_ACTIVATED_PATH,
 } from "@/lib/marketing/stackscore-routes";
+import {
+  enforceCheckoutVcioLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 
 function resolveCheckoutSource(raw: unknown): string {
   if (typeof raw !== "string") return VCIO_CHECKOUT_SOURCE;
@@ -30,6 +35,14 @@ function resolveCheckoutSource(raw: unknown): string {
 }
 
 export async function POST(request: Request) {
+  const rate = await enforceCheckoutVcioLimits(request);
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
+  }
+
   try {
     const stripe = getStripe();
     const priceId = requireVcioPriceId();

@@ -6,7 +6,8 @@
 | Date | 2026-10-25 |
 | Branch reviewed | `staging` |
 | Scope | Reconcile SS-SEC-001 → SS-SEC-004 against live code; baseline review; release recommendation |
-| Related | [`SS-SEC-001-AUDIT.md`](SS-SEC-001-AUDIT.md), [`SS-SEC-002-REMEDIATION.md`](SS-SEC-002-REMEDIATION.md), [`SS-SEC-003-PASSWORD-POLICY.md`](SS-SEC-003-PASSWORD-POLICY.md), [`SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](SS-SEC-004-AUTH-ABUSE-PROTECTION.md), DOC-303, SS-ENV-001 |
+| Related | [`SS-SEC-001-AUDIT.md`](SS-SEC-001-AUDIT.md), [`SS-SEC-002-REMEDIATION.md`](SS-SEC-002-REMEDIATION.md), [`SS-SEC-003-PASSWORD-POLICY.md`](SS-SEC-003-PASSWORD-POLICY.md), [`SS-SEC-004-AUTH-ABUSE-PROTECTION.md`](SS-SEC-004-AUTH-ABUSE-PROTECTION.md), [`SS-SEC-006-DEPENDENCY-REMEDIATION.md`](SS-SEC-006-DEPENDENCY-REMEDIATION.md), [`SS-SEC-007-API-GUARDRAILS.md`](SS-SEC-007-API-GUARDRAILS.md), DOC-303, SS-ENV-001 |
+| Post-closure updates | Finding statuses for H03/M01–M03/M06/M07 refreshed after **SS-SEC-007** (2026-10-25); DEP items after **SS-SEC-006** |
 | Independent code verification | Explore agent + direct source inspection (docs not trusted alone) |
 
 ---
@@ -15,18 +16,18 @@
 
 StackScore’s **account-takeover Critical (C01)** and **password-policy High (H02)** are **remediated and verified in code**. Durable **auth abuse rate limiting (H01/H04)** is **implemented in code** with migration and automated tests, but **staging DB apply and manual validation are not evidenced** in this closure — status remains **Implemented but awaiting validation**.
 
-The platform has a **credible commercial security baseline** for AuthN/AuthZ/tenant isolation, provided release checklist items are completed. Remaining open items are primarily **defense-in-depth**, **public abuse/cost**, **session invalidation on password change**, **website-leads in-memory limits**, and **dependency CVEs** — none reintroduce the original C01 takeover path.
+The platform has a **credible commercial security baseline** for AuthN/AuthZ/tenant isolation, provided release checklist items are completed. After SS-SEC-006/007, remaining open SEC-001 items are primarily **session invalidation on password change (M09)**, **cookie/host hardening (L01)**, and **error-message disclosure (L04)** — none reintroduce the original C01 takeover path.
 
-### Totals (SS-SEC-001 register + closure additions)
+### Totals (SS-SEC-001 register + closure additions; post SS-SEC-006/007)
 
 | Category | Count |
 | --- | --- |
 | Original SEC-001 findings (C/H/M/L) | **18** (1 Critical, 4 High, 9 Medium, 4 Low*) |
 | Phase 1 / SS-OPT-001 isolation items (treated as prior remediated) | **7** (verified via regression tests; not re-opened) |
-| Remediated and verified (SEC-001 C/H/M) | **3** (C01, H02, M08) |
+| Remediated and verified (SEC-001 C/H/M) | **8** (C01, H02, H03, M01, M02, M03, M07, M08) |
 | Implemented but awaiting validation | **2** (H01, H04 — includes SEC-004 migrate/manual) |
-| Partially remediated | **2** (M04, L05) |
-| Open | **9** (H03, M01, M02, M03, M06, M07, M09, L01, L04) |
+| Partially remediated | **3** (M04, M06, L05) |
+| Open | **3** (M09, L01, L04) |
 | Accepted risk (requires formal approval) | **3** (M05, L02, L03) |
 | **Production release readiness** | **CONDITIONALLY READY** |
 
@@ -49,22 +50,22 @@ Statuses used: **Remediated and verified** | **Implemented but awaiting validati
 | **SEC-001-C01** | Critical | `POST …/continue-assessment` | Returned raw `activationUrl` / token to unauthenticated caller | Generic `{ ok, message }` only; token emailed | Route + `convert-snapshot-to-assessment.ts` `publicSuccess()`; `tests/auth/continue-snapshot-security.test.ts` | Email pipeline compromise; `leadId` still public | **Remediated and verified** |
 | **SEC-001-H01** | High | Credentials `authorize` | No login rate limit | PostgreSQL `AuthRateLimitBucket`; IP 20/15m + email atomic admit 5/15m; clear on success; fail-open | `src/lib/auth/rate-limit/*`, `config.ts`; `tests/auth/rate-limit.test.ts`; migration file present | Staging/prod table apply unproven; fail-open if DB down | **Implemented but awaiting validation** |
 | **SEC-001-H02** | High | Password-reset confirm | No min length | Shared `passwordSchema` / `assertPasswordMeetsPolicy` before token use; `hashPassword` gate | `password-reset.ts` L66–69; `password-policy.ts`; `tests/auth/password-policy.test.ts` | Complexity/HIBP still deferred (L03) | **Remediated and verified** |
-| **SEC-001-H03** | High | `middleware.ts` | `/api` excluded from NextAuth middleware | Unchanged — per-route guards only | `middleware.ts` matcher `(?!api\|…)` | New unguarded route = internet-reachable | **Open** |
+| **SEC-001-H03** | High | `middleware.ts` | `/api` excluded from NextAuth middleware | Registry + CI completeness (`route-registry.ts`); runtime still per-route helpers | `SS-SEC-007-API-GUARDRAILS.md`; `tests/api/route-registry.test.ts` | Wrong classification still possible; middleware exclusion intentional | **Remediated and verified** |
 | **SEC-001-H04** | High | Reset / activate / snapshot public APIs | Unbounded abuse | Durable limiter wired; fail-closed on reset-request + snapshot; fail-open confirm/activation | Public routes + rate-limit module + tests | Same migrate/validation caveat as H01 | **Implemented but awaiting validation** |
-| **SEC-001-M01** | Medium | `GET /api/v1/health` | Exposes config posture | Still returns `checks` + `environment` unauthenticated | `health/route.ts` L6–47 | Recon of misconfig | **Open** |
-| **SEC-001-M02** | Medium | `GET /api/product-overview/pdf` | Unauth PDF DoS/cost | Still unauthenticated, no rate limit | `product-overview/pdf/route.ts` | CPU/cost abuse | **Open** |
-| **SEC-001-M03** | Medium | `POST /api/checkout/create-session` | Unauth Checkout spam | Still public create; no app rate limit | `checkout/create-session/route.ts` | Stripe quota / session spam | **Open** |
+| **SEC-001-M01** | Medium | `GET /api/v1/health` | Exposes config posture | Minimal `{ status }` only + `health_ip` (fail-open) | `health/route.ts`; public-endpoint guardrail tests | Ops lose public check detail | **Remediated and verified** |
+| **SEC-001-M02** | Medium | `GET /api/product-overview/pdf` | Unauth PDF DoS/cost | `product_overview_pdf_ip` + short cache | `product-overview/pdf/route.ts` | Cost still possible under limit | **Remediated and verified** |
+| **SEC-001-M03** | Medium | `POST /api/checkout/create-session` | Unauth Checkout spam | `checkout_create_ip` (fail-closed); commerce still public | `checkout/create-session/route.ts` | Stripe quota under limit | **Remediated and verified** |
 | **SEC-001-M04** | Medium | Snapshot create | Unbounded lead create | IP durable limit (10/15m); still returns `id` | `technology-snapshot/route.ts` + policies | Bounded spam; `id` feeds continue | **Partially remediated** |
 | **SEC-001-M05** | Medium | Technician RBAC | Firm-wide staff access | By design `requireConsultantOrAdmin` | `helpers.ts` | Technician compromise = firm blast radius | **Accepted risk** |
-| **SEC-001-M06** | Medium | `POST /api/checkout/vcio` | Anon subscription Checkout | Still allows unauthenticated session create | `checkout/vcio/route.ts` | Abuse / unattached checkouts | **Open** |
-| **SEC-001-M07** | Medium | Website-leads limiter | Process-local `Map` | Unchanged in-memory Map | `website-leads/rate-limit.ts` | Ineffective across Vercel instances | **Open** |
+| **SEC-001-M06** | Medium | `POST /api/checkout/vcio` | Anon subscription Checkout | `checkout_vcio_ip`; anon create still allowed by product | `checkout/vcio/route.ts` | Unattached checkouts under limit | **Partially remediated** |
+| **SEC-001-M07** | Medium | Website-leads limiter | Process-local `Map` | Durable `website_leads_ip` via AuthRateLimitBucket | integration route + rate-limit module | Same Neon limiter ops caveat | **Remediated and verified** |
 | **SEC-001-M08** | Medium | Continue existing-account path | Leaked `assessmentId` / `loginUrl` | Generic public message only | Same as C01 tests TM-C01-c | — | **Remediated and verified** |
 | **SEC-001-M09** | Medium | JWT after password change | No session versioning | JWT callback checks `isActive` only; reset updates hash only | `config.ts` jwt; `password-reset.ts` | Stolen JWT valid ≤24h after reset | **Open** |
 | **SEC-001-L01** | Low | `trustHost: true` | Cookie/host hardening | Still `trustHost: true`; Auth.js defaults | `auth.config.ts` | Needs staging header review | **Open** |
 | **SEC-001-L02** | Low | MFA | No MFA | Not implemented | Codebase search | Staff MFA deferred (DOC-303) | **Accepted risk** |
 | **SEC-001-L03** | Low | Password complexity | Length-only | Explicit DOC-303 MVP policy | `password-policy.ts` | Weak-but-long passwords | **Accepted risk** |
 | **SEC-001-L04** | Low | Error disclosure | Raw `Error.message` on some routes | Still present on public reset/activate/continue | Route handlers | Info leak / unstable clients | **Open** |
-| **SEC-001-L05** | Low–Med | Missing durable limits elsewhere | Overlap with H04 | Auth-critical covered; health/PDF/checkout/leads not | Cross-cutting | See M01–M03, M07 | **Partially remediated** |
+| **SEC-001-L05** | Low–Med | Missing durable limits elsewhere | Overlap with H04 | Auth-critical + health/PDF/checkout/leads covered (SS-SEC-007); residual other public surfaces | Cross-cutting | Tune thresholds; CAPTCHA later | **Partially remediated** |
 
 ### 2.2 Phase 1 / SS-OPT-001 prior items (from SEC-001 §7)
 
@@ -100,7 +101,7 @@ Statuses used: **Remediated and verified** | **Implemented but awaiting validati
 | Activation/reset tokens hashed at rest; reset anti-enumeration | Yes |
 | Stripe `constructEvent` + Resend Svix verification | Yes |
 | Cron `Authorization: Bearer ${CRON_SECRET}` | Yes |
-| Website-leads shared secret | Yes (rate limit still in-memory) |
+| Website-leads shared secret | Yes + durable `website_leads_ip` (SS-SEC-007) |
 | Client workspace / assessment object-level auth helpers | Yes |
 | Recommendation field filtering for portal | Yes |
 | No Server Actions mutation surface | Yes |
@@ -144,7 +145,7 @@ Statuses used: **Remediated and verified** | **Implemented but awaiting validati
 | Area | Assessment |
 | --- | --- |
 | Input validation | Zod on many writes; public routes mixed |
-| API protections | Per-route; middleware excludes `/api` (H03) |
+| API protections | Per-route + `API_ROUTE_REGISTRY` CI (H03 / SS-SEC-007); middleware still excludes `/api` |
 | File/export | On-demand PDFs with access checks for tenant exports; public product-overview PDF open |
 | Security headers | No custom CSP/frame headers found in app config (rely on platform defaults) |
 | Dependencies | `npm audit --omit=dev`: **29** issues (4 critical, 18 high, 7 moderate) — see §7 |
@@ -174,18 +175,13 @@ Statuses used: **Remediated and verified** | **Implemented but awaiting validati
 | --- | --- | --- | --- | --- | --- |
 | **SEC-005-OPS-01** / **H01/H04 validation** | Unchecked SEC-004 manual checklist; no evidence migration applied | Without table: login fail-open (no throttle); snapshot fail-closed (503) | Staging `migrate deploy` + checklist; then production migrate under change control | Low–Medium | **Yes** for claiming H01/H04 closed in production |
 | **SEC-005-INFRA-01** | SS-ENV-001 risks R1–R3 | Wrong `DATABASE_URL` → migrate/seed production | Confirm Vercel Staging ≠ Production Neon; distinct `AUTH_SECRET` | Low (ops) | **Yes** until confirmed |
-| **SEC-001-H03** | `middleware.ts` excludes api | Future unguarded route | `withApiAuth` / PUBLIC marker lint / middleware allowlist | Medium | **No** (current inventory largely guarded) |
-| **SEC-005-DEP-02** (Next.js) | audit critical/high on next | Several SA-centric; app has 0 Server Actions | Patch Next within 15.5.x when compatible; retest | Medium | **Conditional** — triage before prod promote |
+| **SEC-005-DEP-02** (Next.js) | audit critical/high on next | Several SA-centric; app has 0 Server Actions | Patched in SS-SEC-006 (`next@15.5.28`); re-audit on promote | Medium | **Conditional** — confirm staging install |
 
 ### Medium
 
 | ID | Evidence | Impact | Remediation | Complexity | Blocks release? |
 | --- | --- | --- | --- | --- | --- |
-| M01 Health disclosure | `health/route.ts` | Recon | Minimal public ok / auth | Low | No (accept or fix pre-GA) |
-| M02 PDF DoS | product-overview pdf | Cost/CPU | Rate limit / cache / bot | Low–Med | No |
-| M03 Checkout spam | create-session | Stripe quota | Rate limit / bot | Low–Med | No |
-| M06 VCIO anon checkout | vcio route | Abuse | Require auth or rate limit | Low–Med | No |
-| M07 Website-leads memory RL | `rate-limit.ts` Map | Weak multi-instance | Durable limiter (reuse SEC-004 pattern) | Medium | No |
+| M06 residual | Anon vCIO Checkout still allowed | Unattached sessions under `checkout_vcio_ip` | Product: require auth for subscription attach | Low–Med | No |
 | M09 JWT after password change | jwt callback | Session theft window | `passwordChangedAt` / session version | Medium | No (accept short window or fix) |
 | M04 residual | Snapshot still returns id | Continue amplification bounded by RL | CAPTCHA / signed lead capability | Med | No |
 
@@ -203,8 +199,8 @@ Statuses used: **Remediated and verified** | **Implemented but awaiting validati
 | SEC-004 staging migration/validation | **Awaiting validation** — migration exists; checklist unchecked; DB apply not proven |
 | Client IP trust | **Verified in code** for direct Vercel (`x-vercel-forwarded-for` first); residual if external proxy without Verified Proxy |
 | Concurrent login failures | **Verified fixed in code** (atomic admit + clear-on-success + concurrent tests) |
-| Website-leads in-memory RL | **Still Open (M07)** |
-| Other SEC-001 opens | H03, M01–M03, M06, M09, L01, L04 confirmed still open |
+| Website-leads in-memory RL | **Remediated (M07 / SS-SEC-007)** — durable `website_leads_ip` |
+| Other SEC-001 opens | M09, L01, L04 remain open; M06 partially remediated; H03/M01–M03/M07 closed in SS-SEC-007 |
 
 ---
 
@@ -216,7 +212,7 @@ Document these for explicit product/security owner sign-off before production:
 2. **L02 — No MFA** — DOC-303 Phase 2 deferral; prioritize staff MFA later.
 3. **L03 — Length-only password policy** — matches DOC-303 MVP.
 4. **Login/confirm/activation fail-open** during limiter outages — approved in SS-SEC-004 architecture.
-5. **Optional:** Accept M01–M03/M06/M07/M09 for GA with WAF/monitoring and a 30-day remediation window (if not fixed before release).
+5. **Optional:** Accept residual M06/M09 (and L01/L04) for GA with WAF/monitoring and a 30-day remediation window.
 
 ---
 
@@ -239,10 +235,10 @@ Document these for explicit product/security owner sign-off before production:
 ## 8. Recommended remediation sequence
 
 1. **Ops** — Confirm staging Neon ≠ production; apply `20260425010000_auth_rate_limit_bucket` on staging; complete SEC-004 manual checklist.
-2. **Deps** — Controlled upgrade path for `next-auth` / `@auth/core` (critical); triage `next` patch; avoid `npm audit fix --force` without regression plan.
+2. **Deps** — SS-SEC-006 applied in lockfile (`next-auth` beta.32 / `next` 15.5.28); confirm staging install + smoke.
 3. **Release** — Production migrate AuthRateLimitBucket under change control when promoting staging → main.
-4. **H03** — Add API auth wrapper or CI PUBLIC_ROUTE lint (defense-in-depth).
-5. **Abuse** — Rate-limit or harden health, product-overview PDF, checkout create/vcio; durable website-leads limiter.
+4. **H03 / public abuse** — Done in SS-SEC-007 (registry CI + durable limits); deploy/validate on staging.
+5. **M06 residual** — Product decision: require auth for vCIO subscription attach (optional).
 6. **M09** — Session version / `passwordChangedAt` invalidation.
 7. **L04 / L01** — Stable public errors; cookie/header staging review.
 8. **MFA (L02)** — Staff MFA when DOC-303 Phase 2 starts.
@@ -260,7 +256,7 @@ Document these for explicit product/security owner sign-off before production:
 - [ ] `next-auth` critical CVE remediated **or** formally accepted with owner signature
 - [ ] Next.js advisory triage recorded (Server Actions N/A noted)
 - [ ] Accepted risks M05/L02/L03 signed
-- [ ] Residual mediums (M01–M03/M06/M07/M09) accepted with due dates **or** fixed
+- [ ] Residual mediums (M06/M09) accepted with due dates **or** fixed
 - [ ] Smoke: login, reset, activate, snapshot continue, webhook health on staging
 - [ ] Rollback: previous deployment + migrate resolve plan understood
 - [ ] Monitoring: auth rate-limit warnings, 429/503 rates, Stripe/Resend errors
@@ -271,9 +267,9 @@ Document these for explicit product/security owner sign-off before production:
 
 ### **CONDITIONALLY READY**
 
-**Why not READY:** SEC-004 runtime validation and env isolation are not evidenced; Auth.js critical dependency advisory is open; several medium public-abuse surfaces remain.
+**Why not READY:** SEC-004 runtime validation and env isolation may still need operator evidence; residual M06/M09/L01/L04; staging deploy of SS-SEC-006/007 not automatic.
 
-**Why not NOT READY:** Critical account-takeover (C01) and password-policy gap (H02) are verified closed; tenant isolation regressions are covered by automated tests; durable abuse controls exist in code; webhooks/cron/secrets patterns are sound; full test suite and production webpack build pass.
+**Why not NOT READY:** Critical account-takeover (C01) and password-policy gap (H02) are verified closed; H03/M01–M03/M07 closed in SS-SEC-007; Auth.js/Next patches in SS-SEC-006; tenant isolation regressions covered by automated tests; durable abuse controls exist in code.
 
 **Commercial use stance:** Suitable to proceed toward production **after** completing §9 blockers (especially SEC-004 migrate/validate, env isolation, Auth.js triage/acceptance). Do not treat H01/H04 as “done in production” until the bucket table exists on the production Neon database and staging checklist is green.
 
@@ -284,10 +280,10 @@ Document these for explicit product/security owner sign-off before production:
 | Metric | Value |
 | --- | --- |
 | Total original SEC-001 findings | **18** |
-| Verified remediated (C01, H02, M08) | **3** (+ Phase 1 isolation set separately verified) |
+| Verified remediated (C01, H02, H03, M01–M03, M07, M08) | **8** SEC-001 (+ Phase 1 isolation set) |
 | Awaiting validation (H01, H04 / SEC-004 ops) | **2** |
-| Partially remediated (M04, L05) | **2** |
-| Still open (H03, M01–M03, M06, M07, M09, L01, L04) | **9** |
+| Partially remediated (M04, M06, L05) | **3** |
+| Still open (M09, L01, L04) | **3** |
 | Requiring risk acceptance (M05, L02, L03) | **3** |
 | Production readiness | **CONDITIONALLY READY** |
 
@@ -295,4 +291,4 @@ Document these for explicit product/security owner sign-off before production:
 
 1. Owner: execute staging SEC-004 migrate + manual checklist; record evidence in SEC-004 doc.
 2. Owner: confirm Vercel/Neon env isolation; sign accepted risks.
-3. Engineering (next milestone): Auth.js upgrade + public abuse rate limits + H03 wrapper — **not started in SS-SEC-005**.
+3. Owner: deploy/validate SS-SEC-006 + SS-SEC-007 on staging (see SEC-006/007 docs); then residual M06/M09 plan.

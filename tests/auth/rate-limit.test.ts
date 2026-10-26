@@ -40,6 +40,11 @@ import {
   enforceActivationLimits,
   enforceSnapshotCreateLimits,
   enforceSnapshotContinueLimits,
+  enforceHealthIpLimits,
+  enforceProductOverviewPdfLimits,
+  enforceCheckoutCreateLimits,
+  enforceCheckoutVcioLimits,
+  enforceWebsiteLeadsIpLimits,
 } from "@/lib/auth/rate-limit";
 import { POST as passwordResetPost, PUT as passwordResetPut } from "@/app/api/v1/public/password-reset/route";
 import { POST as activateAccountPost } from "@/app/api/v1/public/activate-account/route";
@@ -416,6 +421,27 @@ describe("SS-SEC-004 auth rate limiting", () => {
       expect(cont.allowed).toBe(false);
     });
 
+    it("SS-SEC-007 public surfaces: health fail-open; PDF/checkout/leads fail-closed", async () => {
+      prismaMock.$queryRaw.mockRejectedValue(new Error("db down"));
+      const req = new Request("http://localhost", {
+        headers: { "x-forwarded-for": "203.0.113.50" },
+      });
+
+      const health = await enforceHealthIpLimits(req);
+      expect(health.allowed).toBe(true);
+      expect(health.backendError).toBe(true);
+
+      for (const result of await Promise.all([
+        enforceProductOverviewPdfLimits(req),
+        enforceCheckoutCreateLimits(req),
+        enforceCheckoutVcioLimits(req),
+        enforceWebsiteLeadsIpLimits(req),
+      ])) {
+        expect(result.allowed).toBe(false);
+        expect(result.backendError).toBe(true);
+      }
+    });
+
     it("missing AUTH_SECRET fails according to failMode", async () => {
       delete process.env.AUTH_SECRET;
       const open = await consumeRateLimit({
@@ -606,6 +632,45 @@ describe("SS-SEC-004 auth rate limiting", () => {
       expect(AUTH_RATE_LIMIT_POLICIES.login_email_failures.counts).toBe("failures");
       expect(AUTH_RATE_LIMIT_POLICIES.password_reset_request_email.counts).toBe("attempts");
       expect(AUTH_RATE_LIMIT_POLICIES.snapshot_continue_lead.counts).toBe("attempts");
+    });
+
+    it("includes SS-SEC-007 public abuse scopes", () => {
+      expect(AUTH_RATE_LIMIT_POLICIES.health_ip.counts).toBe("attempts");
+      expect(AUTH_RATE_LIMIT_POLICIES.product_overview_pdf_ip.counts).toBe("attempts");
+      expect(AUTH_RATE_LIMIT_POLICIES.checkout_create_ip.counts).toBe("attempts");
+      expect(AUTH_RATE_LIMIT_POLICIES.checkout_vcio_ip.counts).toBe("attempts");
+      expect(AUTH_RATE_LIMIT_POLICIES.website_leads_ip.counts).toBe("attempts");
+    });
+  });
+
+  describe("SS-SEC-007 enforce helpers", () => {
+    it("enforces checkout_create_ip until limited", async () => {
+      const limit = AUTH_RATE_LIMIT_POLICIES.checkout_create_ip.limit;
+      const headers = { "x-forwarded-for": "198.51.100.77" };
+      for (let i = 0; i < limit; i += 1) {
+        const ok = await enforceCheckoutCreateLimits(
+          new Request("http://localhost", { headers }),
+        );
+        expect(ok.allowed).toBe(true);
+      }
+      const blocked = await enforceCheckoutCreateLimits(
+        new Request("http://localhost", { headers }),
+      );
+      expect(blocked.allowed).toBe(false);
+      expect(Boolean(blocked.backendError)).toBe(false);
+    });
+
+    it("enforces website_leads_ip until limited", async () => {
+      const limit = AUTH_RATE_LIMIT_POLICIES.website_leads_ip.limit;
+      const headers = { "x-forwarded-for": "198.51.100.88" };
+      for (let i = 0; i < limit; i += 1) {
+        expect(
+          (await enforceWebsiteLeadsIpLimits(new Request("http://localhost", { headers }))).allowed,
+        ).toBe(true);
+      }
+      expect(
+        (await enforceWebsiteLeadsIpLimits(new Request("http://localhost", { headers }))).allowed,
+      ).toBe(false);
     });
   });
 });

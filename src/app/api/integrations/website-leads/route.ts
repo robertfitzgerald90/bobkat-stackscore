@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import {
-  checkWebsiteLeadRateLimit,
   createWebsiteLeadFromIntegration,
   createWebsiteLeadIntegrationSchema,
   requireWebsiteLeadsApiSecret,
-  resolveRateLimitKey,
 } from "@/lib/website-leads";
 import { badRequest, conflict } from "@/lib/api/helpers";
+import {
+  enforceWebsiteLeadsIpLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,16 +18,6 @@ function unauthorizedIntegration() {
   return NextResponse.json(
     { error: "Invalid integration credentials", code: "UNAUTHORIZED" },
     { status: 401 },
-  );
-}
-
-function tooManyRequests(retryAfterSeconds: number) {
-  return NextResponse.json(
-    { error: "Too many requests", code: "RATE_LIMITED" },
-    {
-      status: 429,
-      headers: { "Retry-After": String(retryAfterSeconds) },
-    },
   );
 }
 
@@ -41,10 +34,12 @@ export async function POST(request: Request) {
     return unauthorizedIntegration();
   }
 
-  const rateLimitKey = resolveRateLimitKey(request);
-  const rateLimit = checkWebsiteLeadRateLimit(rateLimitKey);
-  if (!rateLimit.allowed) {
-    return tooManyRequests(rateLimit.retryAfterSeconds ?? 60);
+  const rate = await enforceWebsiteLeadsIpLimits(request);
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
   }
 
   let body: unknown;

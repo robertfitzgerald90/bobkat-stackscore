@@ -246,14 +246,14 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **HIGH** (defense-in-depth / residual) |
-| Status | **Confirmed** (architectural); individual protected routes largely enforce auth after Phase 1 |
-| Component | `src/middleware.ts` matcher `(?!api\|...)`; `auth.config.ts` public API allowlist unused for actual `/api` traffic |
+| Status | **Remediated in SS-SEC-007** (architectural middleware exclusion retained by design; regression guardrails added) |
+| Component | `src/middleware.ts` matcher `(?!api\|...)`; `src/lib/api/route-registry.ts`; `tests/api/route-registry.test.ts` |
 | Description | NextAuth middleware never runs for `/api/*`. Every handler must independently call session helpers. A newly added route that forgets auth is immediately internet-reachable. |
 | Evidence | `src/middleware.ts` lines 15–17; SECURITY_REMEDIATION_REPORT notes the same. |
 | Exploitation | Future regression: new sensitive route without `getSessionUser` → unauthenticated access. |
 | Business impact | High if a sensitive route ships without guards; current inventory shows intentional public exceptions only (plus C01). |
-| Remediation | Central `withApiAuth` wrapper; CI lint forbidding `route.ts` without auth helper or explicit `PUBLIC_ROUTE` marker; optional middleware allowlist for `/api/v1/**`. |
-| Regression tests | TM-H03-* (inventory lint / unauthenticated sweep) |
+| Remediation | Explicit `API_ROUTE_REGISTRY` classification for every `route.ts`; CI fails on filesystem/registry drift and locks the intentional public allowlist. Runtime auth remains existing per-route helpers (no second auth system). See [`SS-SEC-007-API-GUARDRAILS.md`](SS-SEC-007-API-GUARDRAILS.md). |
+| Regression tests | TM-H03-* (`tests/api/route-registry.test.ts`) |
 
 ### SEC-001-H04 — Auth recovery and public acquisition flows lack rate limits
 
@@ -275,25 +275,25 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **MEDIUM** |
-| Status | **Confirmed** |
+| Status | **Remediated in SS-SEC-007** |
 | Component | `GET /api/v1/health` |
-| Description | Unauthenticated JSON reports `authSecret` ok/error, `authUrl` warn/error, database ok/error, `environment`. |
-| Evidence | `src/app/api/v1/health/route.ts` lines 6–47 |
+| Description | Unauthenticated JSON reported `authSecret` ok/error, `authUrl` warn/error, database ok/error, `environment`. |
+| Evidence | Historical: `src/app/api/v1/health/route.ts` (pre-SEC-007). |
 | Exploitation | Recon for misconfiguration (missing secret, localhost AUTH_URL in production). |
-| Remediation | Authenticate or restrict to internal networks; return minimal public `ok` without check detail. |
-| Regression tests | TM-M01-* |
+| Remediation | Return minimal `{ status }` only; durable `health_ip` rate limit (fail-open). See [`SS-SEC-007-API-GUARDRAILS.md`](SS-SEC-007-API-GUARDRAILS.md). |
+| Regression tests | TM-M01-* (`tests/api/public-endpoint-guardrails.test.ts`) |
 
 ### SEC-001-M02 — Unauthenticated product-overview PDF generation (DoS / cost)
 
 | Field | Detail |
 | --- | --- |
 | Severity | **MEDIUM** |
-| Status | **Confirmed** |
+| Status | **Remediated in SS-SEC-007** |
 | Component | `GET /api/product-overview/pdf` |
-| Description | Generates PDF via `@react-pdf/renderer` with query params; no auth or rate limit. |
+| Description | Generates PDF via `@react-pdf/renderer` with query params; was unauthenticated with no rate limit. |
 | Evidence | `src/app/api/product-overview/pdf/route.ts` |
 | Exploitation | CPU/memory exhaustion via repeated PDF requests. |
-| Remediation | Rate limit; cache; CDN; or require session/bot protection. |
+| Remediation | Durable `product_overview_pdf_ip` (fail-closed) + short `Cache-Control` (SS-SEC-004 reuse). |
 | Regression tests | TM-M02-* |
 
 ### SEC-001-M03 — Unauthenticated assessment Checkout session creation
@@ -301,12 +301,12 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **MEDIUM** |
-| Status | **Confirmed** (abuse / cost; commerce intentional) |
+| Status | **Remediated in SS-SEC-007** (commerce remains public; abuse bounded) |
 | Component | `POST /api/checkout/create-session` |
 | Description | Anyone can create Stripe Checkout sessions with optional metadata. |
 | Evidence | `src/app/api/checkout/create-session/route.ts` |
 | Exploitation | Session spam; Stripe API quota; metadata pollution. |
-| Remediation | Rate limit; bot protection; validate metadata allowlist. |
+| Remediation | Durable `checkout_create_ip` (fail-closed); legitimate checkout preserved under limit. |
 | Regression tests | TM-M03-* |
 
 ### SEC-001-M04 — Public Technology Snapshot submission unbounded
@@ -338,11 +338,11 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **MEDIUM** |
-| Status | **Potential** (product-dependent) |
+| Status | **Partially remediated in SS-SEC-007** (product still allows anonymous Checkout; abuse bounded) |
 | Component | `POST /api/checkout/vcio` |
 | Description | Resolves session if present; still creates Checkout when unauthenticated (no client attachment). |
-| Evidence | `src/app/api/checkout/vcio/route.ts` lines 37–114 |
-| Remediation | Require auth for subscription attach; rate limit anonymous starts. |
+| Evidence | `src/app/api/checkout/vcio/route.ts` |
+| Remediation | Durable `checkout_vcio_ip` (fail-closed). Requiring auth for all subscription starts remains a product decision. |
 | Regression tests | TM-M06-* |
 
 ### SEC-001-M07 — Website-leads rate limit is process-local memory
@@ -350,11 +350,11 @@ Status legend: **Confirmed** = code evidence of exploitable weakness. **Potentia
 | Field | Detail |
 | --- | --- |
 | Severity | **MEDIUM** |
-| Status | **Confirmed** (limited effectiveness on serverless) |
-| Component | `src/lib/website-leads/rate-limit.ts` |
-| Description | `Map` buckets reset per instance; ineffective under multi-instance Vercel. |
-| Remediation | Redis/Upstash or edge rate limit. |
-| Regression tests | Document; integration test in single-process only |
+| Status | **Remediated in SS-SEC-007** |
+| Component | `src/app/api/integrations/website-leads/route.ts` + `AuthRateLimitBucket` |
+| Description | Process-local `Map` buckets reset per instance; ineffective under multi-instance Vercel. |
+| Remediation | Replaced with durable `website_leads_ip` via SS-SEC-004 PostgreSQL limiter (no Redis). |
+| Regression tests | TM-M07-* (`tests/website-leads/integration.test.ts`, rate-limit tests) |
 
 ### SEC-001-M08 — continue-assessment leaks assessmentId for existing accounts
 
@@ -426,7 +426,7 @@ From [`SECURITY_REMEDIATION_REPORT.md`](../SECURITY_REMEDIATION_REPORT.md):
 | Recommendation PATCH by any user | **Remediated** (staff-only) |
 | Portal exposure of consulting fields | **Remediated** (visibility filter) |
 | Assessment/project enumeration 403 vs 404 | **Remediated** (404) |
-| Middleware excludes `/api` | **Still true** — tracked as SEC-001-H03 |
+| Middleware excludes `/api` | **Still true by design** — H03 remediated via registry + CI (SS-SEC-007) |
 | Technician firm-wide | **Still true** — SEC-001-M05 |
 
 Do **not** re-open Phase 1 items as new Critical findings unless regression tests fail.

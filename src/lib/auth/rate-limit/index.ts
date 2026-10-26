@@ -150,3 +150,52 @@ export async function enforceSnapshotContinueLimits(input: {
     failMode: AUTH_RATE_LIMIT_FAIL_MODE.snapshot_continue,
   });
 }
+
+/** SS-SEC-007 public / integration IP limits (reuse AuthRateLimitBucket). */
+export async function enforceHealthIpLimits(request: Request): Promise<ConsumeRateLimitResult> {
+  return consumeRateLimit({
+    scope: "health_ip",
+    identifier: resolveClientIp(request),
+    failMode: AUTH_RATE_LIMIT_FAIL_MODE.health,
+  });
+}
+
+export async function enforceProductOverviewPdfLimits(
+  request: Request,
+): Promise<ConsumeRateLimitResult> {
+  return consumeRateLimit({
+    scope: "product_overview_pdf_ip",
+    identifier: resolveClientIp(request),
+    failMode: AUTH_RATE_LIMIT_FAIL_MODE.product_overview_pdf,
+  });
+}
+
+export async function enforceCheckoutCreateLimits(
+  request: Request,
+): Promise<ConsumeRateLimitResult> {
+  return consumeRateLimit({
+    scope: "checkout_create_ip",
+    identifier: resolveClientIp(request),
+    failMode: AUTH_RATE_LIMIT_FAIL_MODE.checkout_create,
+  });
+}
+
+export async function enforceCheckoutVcioLimits(
+  request: Request,
+): Promise<ConsumeRateLimitResult> {
+  return consumeRateLimit({
+    scope: "checkout_vcio_ip",
+    identifier: resolveClientIp(request),
+    failMode: AUTH_RATE_LIMIT_FAIL_MODE.checkout_vcio,
+  });
+}
+
+export async function enforceWebsiteLeadsIpLimits(
+  request: Request,
+): Promise<ConsumeRateLimitResult> {
+  return consumeRateLimit({
+    scope: "website_leads_ip",
+    identifier: resolveClientIp(request),
+    failMode: AUTH_RATE_LIMIT_FAIL_MODE.website_leads,
+  });
+}

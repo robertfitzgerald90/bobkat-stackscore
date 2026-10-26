@@ -1,48 +1,51 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {
+  enforceHealthIpLimits,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 
-type CheckStatus = "ok" | "error" | "warn";
-
-export async function GET() {
-  const checks: Record<string, CheckStatus> = {
-    database: "error",
-    authSecret: process.env.AUTH_SECRET ? "ok" : "error",
-    authUrl: "ok",
-  };
-
-  if (!process.env.AUTH_URL) {
-    checks.authUrl = "warn";
-  } else if (
-    process.env.NODE_ENV === "production" &&
-    /localhost|127\.0\.0\.1/i.test(process.env.AUTH_URL)
-  ) {
-    checks.authUrl = "error";
+/**
+ * Public liveness probe (SS-SEC-007 / SEC-001-M01).
+ * Returns only aggregate status — never per-check configuration posture.
+ */
+export async function GET(request: Request) {
+  const rate = await enforceHealthIpLimits(request);
+  if (!rate.allowed && !rate.backendError) {
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
   }
 
+  let databaseOk = false;
   try {
     await prisma.$queryRaw`SELECT 1`;
-    checks.database = "ok";
+    databaseOk = true;
   } catch {
-    checks.database = "error";
+    databaseOk = false;
   }
 
+  let authSecretOk = Boolean(process.env.AUTH_SECRET?.trim());
   if (
     process.env.NODE_ENV === "production" &&
     process.env.AUTH_SECRET &&
     process.env.AUTH_SECRET.length < 32
   ) {
-    checks.authSecret = "error";
+    authSecretOk = false;
   }
 
-  const hasError = Object.values(checks).includes("error");
+  let authUrlOk = true;
+  if (!process.env.AUTH_URL) {
+    authUrlOk = process.env.NODE_ENV !== "production";
+  } else if (
+    process.env.NODE_ENV === "production" &&
+    /localhost|127\.0\.0\.1/i.test(process.env.AUTH_URL)
+  ) {
+    authUrlOk = false;
+  }
+
+  const healthy = databaseOk && authSecretOk && authUrlOk;
 
   return NextResponse.json(
-    {
-      status: hasError ? "unhealthy" : "ok",
-      checks,
-      version: "1.0.0",
-      environment: process.env.NODE_ENV ?? "development",
-    },
-    { status: hasError ? 503 : 200 },
+    { status: healthy ? "ok" : "unhealthy" },
+    { status: healthy ? 200 : 503 },
   );
 }

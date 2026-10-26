@@ -3,6 +3,11 @@ import { generateProductOverviewPdf } from "@/lib/pdf/generate";
 import { buildDemoProfile, getIndustryOption } from "@/lib/product-overview/demo-profiles";
 import type { DemoIndustryId } from "@/lib/product-overview/demo-profiles/types";
 import { sanitizeFilename } from "@/lib/pdf/types";
+import {
+  enforceProductOverviewPdfLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -18,6 +23,14 @@ const VALID_INDUSTRIES = new Set<DemoIndustryId>([
 ]);
 
 export async function GET(request: Request) {
+  const rate = await enforceProductOverviewPdfLimits(request);
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
+  }
+
   const { searchParams } = new URL(request.url);
   const companyName = (searchParams.get("company") ?? "Northstar Manufacturing").slice(0, 120);
   const industryParam = searchParams.get("industry") ?? "manufacturing";
@@ -54,7 +67,8 @@ export async function GET(request: Request) {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${filename}"`,
-      "Cache-Control": "no-store",
+      // Short public cache reduces repeat CPU cost for identical demo params (SS-SEC-007 / M02).
+      "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
     },
   });
 }

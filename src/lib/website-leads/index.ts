@@ -26,4 +26,4 @@ export {
   updateWebsiteLead,
 } from "./service";
 export { requireWebsiteLeadsApiSecret, WEBSITE_LEADS_SECRET_HEADER } from "./auth";
-export { checkWebsiteLeadRateLimit, resolveRateLimitKey } from "./rate-limit";
+export { resolveRateLimitKey } from "./rate-limit";

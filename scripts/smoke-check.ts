@@ -25,14 +25,17 @@ async function main() {
 
   const health = (await healthResponse.json()) as {
     status: string;
-    checks: Record<string, string>;
   };
 
   if (health.status !== "ok") {
-    throw new Error(`Health status unhealthy: ${JSON.stringify(health.checks)}`);
+    throw new Error(`Health status unhealthy: ${JSON.stringify(health)}`);
   }
 
-  console.log("✓ Health endpoint OK", health.checks);
+  if ("checks" in health || "environment" in health) {
+    throw new Error("Health endpoint must not expose configuration posture (SS-SEC-007)");
+  }
+
+  console.log("✓ Health endpoint OK", health.status);
 
   const csrfResponse = await fetch(`${baseUrl}/api/auth/csrf`, {
     signal: AbortSignal.timeout(15_000),

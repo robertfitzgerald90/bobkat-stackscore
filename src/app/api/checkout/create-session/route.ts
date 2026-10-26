@@ -4,6 +4,11 @@ import { getAppUrl } from "@/lib/stripe/app-url";
 import { getStripe } from "@/lib/stripe/client";
 import { getStripeConfig } from "@/lib/stripe/config";
 import { buildAssessmentCheckoutMetadata } from "@/lib/stripe/assessment-checkout";
+import {
+  enforceCheckoutCreateLimits,
+  temporarilyUnavailableResponse,
+  tooManyRequestsResponse,
+} from "@/lib/auth/rate-limit";
 
 type CheckoutRequestBody = {
   source?: string;
@@ -15,6 +20,14 @@ type CheckoutRequestBody = {
 };
 
 export async function POST(request: Request) {
+  const rate = await enforceCheckoutCreateLimits(request);
+  if (!rate.allowed) {
+    if (rate.backendError) {
+      return temporarilyUnavailableResponse(rate.retryAfterSeconds);
+    }
+    return tooManyRequestsResponse(rate.retryAfterSeconds);
+  }
+
   try {
     const stripe = getStripe();
     const { assessmentPriceId } = getStripeConfig();

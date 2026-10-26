@@ -111,8 +111,13 @@ Apply on **staging only** (`prisma migrate deploy` against the staging database)
 | `GET`/`POST` activate-account | IP + token attempts | **fail-open** |
 | `POST` technology-snapshot (create) | IP attempts | **fail-closed** |
 | `POST` …/continue-assessment | IP + leadId attempts | **fail-closed** |
+| `GET` health *(SS-SEC-007)* | IP attempts | **fail-open** |
+| `GET` product-overview PDF *(SS-SEC-007)* | IP attempts | **fail-closed** |
+| `POST` checkout create-session *(SS-SEC-007)* | IP attempts | **fail-closed** |
+| `POST` checkout vcio *(SS-SEC-007)* | IP attempts | **fail-closed** |
+| `POST` integrations/website-leads *(SS-SEC-007)* | IP attempts | **fail-closed** |
 
-Rate checks run **before** token redemption / password hashing side effects so exhausted budgets do not consume valid reset or activation tokens.
+Rate checks run **before** token redemption / password hashing side effects so exhausted budgets do not consume valid reset or activation tokens. Public abuse scopes added in [`SS-SEC-007-API-GUARDRAILS.md`](SS-SEC-007-API-GUARDRAILS.md) reuse this same `AuthRateLimitBucket` infrastructure.
 
 ---
 
@@ -133,6 +138,11 @@ Limits are **inclusive** (`count > limit` → deny).
 | `snapshot_create_ip` | 10 | 15 min | **attempts** | H04 lead spam / cost control (create was not in the discovery bullet list; starting IP cap for the public POST) |
 | `snapshot_continue_ip` | 5 | 15 min | **attempts** | Amplification of continue abuse |
 | `snapshot_continue_lead` | 3 | 1 hour | **attempts** | Per-lead continue spam |
+| `health_ip` | 60 | 1 min | **attempts** | SS-SEC-007 / M01 probe budget |
+| `product_overview_pdf_ip` | 10 | 15 min | **attempts** | SS-SEC-007 / M02 PDF CPU |
+| `checkout_create_ip` | 10 | 15 min | **attempts** | SS-SEC-007 / M03 Checkout spam |
+| `checkout_vcio_ip` | 10 | 15 min | **attempts** | SS-SEC-007 / M06 vCIO Checkout |
+| `website_leads_ip` | 30 | 1 min | **attempts** | SS-SEC-007 / M07 (replaces in-memory Map) |
 
 Temporary throttles only — **no permanent account lockouts**.
 

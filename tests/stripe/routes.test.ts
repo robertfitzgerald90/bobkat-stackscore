@@ -19,6 +19,7 @@ describe("Stripe integration routes", () => {
 
     expect(checkout).toContain("checkout.sessions.create");
     expect(checkout).toContain("buildAssessmentCheckoutMetadata");
+    expect(checkout).toContain("enforceCheckoutCreateLimits");
 
     const assessmentCheckout = readFileSync(
       resolve(process.cwd(), "src/lib/stripe/assessment-checkout.ts"),

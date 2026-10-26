@@ -2,10 +2,11 @@
 
 | Field | Value |
 | --- | --- |
-| Companion | [`SS-SEC-001-AUDIT.md`](SS-SEC-001-AUDIT.md) |
+| Companion | [`SS-SEC-001-AUDIT.md`](SS-SEC-001-AUDIT.md), [`SS-SEC-007-API-GUARDRAILS.md`](SS-SEC-007-API-GUARDRAILS.md) |
 | Routes inventoried | **112** `route.ts` files under `src/app/api` |
 | Server Actions | **0** |
 | Auth enforcement model | Per-route (middleware matcher excludes `api`) |
+| Classification registry | `src/lib/api/route-registry.ts` (CI-enforced; authoritative vs this table) |
 
 ### Auth legend
 
@@ -33,7 +34,7 @@ Routes tied to open findings are annotated (`C01`, `H01`, …).
 | `/api/webhooks/stripe` | POST | Secret (Stripe signature) | `constructEvent` |
 | `/api/webhooks/resend` | POST | Secret (Svix) | |
 | `/api/cron/communications` | GET | Secret (`CRON_SECRET` Bearer) | Queue + QBR reminders |
-| `/api/integrations/website-leads` | POST | Secret + in-memory rate limit | **M07** |
+| `/api/integrations/website-leads` | POST | Secret + durable `website_leads_ip` | **M07 remediated (SS-SEC-007)** |
 
 ---
 
@@ -41,14 +42,14 @@ Routes tied to open findings are annotated (`C01`, `H01`, …).
 
 | Route | Methods | Auth | Notes |
 | --- | --- | --- | --- |
-| `/api/v1/health` | GET | Public | Config posture — **M01** |
+| `/api/v1/health` | GET | Public | Minimal `{ status }` only; `health_ip` — **M01 remediated (SS-SEC-007)** |
 | `/api/v1/public/technology-snapshot` | POST | Public | Returns `lead.id` — **M04**, enables **C01** |
 | `/api/v1/public/technology-snapshot/[leadId]/continue-assessment` | POST | Public | Generic `{ ok, message }` only; activation via email — **C01/M08 remediated in SS-SEC-002**; rate limit still **H04** |
 | `/api/v1/public/activate-account` | POST | Public (token) | Min password 10; **H04** |
 | `/api/v1/public/password-reset` | POST, PUT | Public | Request anti-enum OK; PUT policy — **H02**, **H04** |
-| `/api/checkout/create-session` | POST | Public | Assessment Checkout — **M03** |
-| `/api/checkout/vcio` | POST | Mixed (optional session) | Subscription Checkout — **M06** |
-| `/api/product-overview/pdf` | GET | Public | PDF gen — **M02** |
+| `/api/checkout/create-session` | POST | Public | Assessment Checkout + `checkout_create_ip` — **M03 remediated (SS-SEC-007)** |
+| `/api/checkout/vcio` | POST | Mixed (optional session) | Subscription Checkout + `checkout_vcio_ip` — **M06 partially remediated** |
+| `/api/product-overview/pdf` | GET | Public | PDF gen + `product_overview_pdf_ip` + cache — **M02 remediated (SS-SEC-007)** |
 
 ---
 

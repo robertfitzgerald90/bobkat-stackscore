@@ -6,7 +6,10 @@ import {
 } from "@/lib/website-leads/schemas";
 import { sanitizePlainText, parseFirstName, escapeHtml } from "@/lib/website-leads/sanitize";
 import { requireWebsiteLeadsApiSecret } from "@/lib/website-leads/auth";
-import { checkWebsiteLeadRateLimit } from "@/lib/website-leads/rate-limit";
+import { resolveRateLimitKey } from "@/lib/website-leads/rate-limit";
+import { AUTH_RATE_LIMIT_POLICIES } from "@/lib/auth/rate-limit/config";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 describe("website lead schemas", () => {
   it("accepts a valid integration submission", () => {
@@ -100,9 +103,23 @@ describe("website lead integration auth", () => {
 });
 
 describe("website lead rate limiting", () => {
-  it("allows requests under the limit", () => {
-    const result = checkWebsiteLeadRateLimit("test-ip-1");
-    expect(result.allowed).toBe(true);
+  it("uses durable AuthRateLimitBucket website_leads_ip policy (SS-SEC-007 / M07)", () => {
+    expect(AUTH_RATE_LIMIT_POLICIES.website_leads_ip.limit).toBe(30);
+    expect(AUTH_RATE_LIMIT_POLICIES.website_leads_ip.windowMs).toBe(60_000);
+
+    const routeSource = readFileSync(
+      resolve(process.cwd(), "src/app/api/integrations/website-leads/route.ts"),
+      "utf8",
+    );
+    expect(routeSource).toContain("enforceWebsiteLeadsIpLimits");
+    expect(routeSource).not.toContain("checkWebsiteLeadRateLimit");
+  });
+
+  it("resolves client IP from X-Forwarded-For", () => {
+    const request = new Request("http://localhost", {
+      headers: { "x-forwarded-for": "203.0.113.9, 10.0.0.1" },
+    });
+    expect(resolveRateLimitKey(request)).toBe("203.0.113.9");
   });
 });
 
