@@ -49,7 +49,7 @@ export function recommendationTopic(title: string): string | null {
   if (!trimmed) return null;
   if (hasUnpublishedStubTitle(trimmed)) return null;
 
-  let topic = trimmed
+  const topic = trimmed
     .replace(/^Improve\s+[^:]+:\s*/i, "")
     .replace(/\?+$/, "")
     .trim();

@@ -28,7 +28,8 @@ export function stripInternalInvoiceFields<T extends Record<string, unknown>>(
   isStaff: boolean,
 ): T {
   if (isStaff) return invoice;
-  const { internalNotes: _n, ...rest } = invoice;
+  const { internalNotes, ...rest } = invoice;
+  void internalNotes;
   return rest as T;
 }
 
@@ -37,5 +38,9 @@ export function stripInternalLineItems<T extends { internalCostCents?: number | 
   isStaff: boolean,
 ): T[] {
   if (isStaff) return items;
-  return items.map(({ internalCostCents: _c, ...rest }) => rest as T);
+  return items.map((item) => {
+    const { internalCostCents, ...rest } = item;
+    void internalCostCents;
+    return rest as T;
+  });
 }

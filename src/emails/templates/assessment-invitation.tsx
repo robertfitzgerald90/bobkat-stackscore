@@ -136,7 +136,6 @@ export function AssessmentInvitationEmail({
   invitationUrl,
   firstName,
   organizationName,
-  assessmentName: _assessmentName,
   supportEmail,
   assessmentBookingUrl,
   brand = DEFAULT_COMMUNICATION_BRAND,

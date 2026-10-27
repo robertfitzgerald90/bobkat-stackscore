@@ -11,10 +11,7 @@ import type { QbrSummary } from "@/lib/qbr/types";
 import { clientWorkspaceExecutiveReportsPath } from "@/lib/clients/paths";
 import { BACK_TO_EXECUTIVE_REPORTS } from "@/lib/technology-maturity/labels";
 import { formatDisplayDate } from "@/lib/display";
-import {
-  BUSINESS_REVIEW_LABEL,
-  BUSINESS_REVIEWS_LABEL,
-} from "@/lib/customer-deliverable-labels";
+import { BUSINESS_REVIEWS_LABEL } from "@/lib/customer-deliverable-labels";
 import { toast } from "sonner";
 
 type QbrReviewListProps = {

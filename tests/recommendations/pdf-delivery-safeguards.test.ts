@@ -40,14 +40,21 @@ describe("SS-OPT-003B PDF and client delivery safeguards", () => {
   });
 
   it("wires assessment PDF export through the deliverable filter with internal filename suffix", () => {
-    const source = readFileSync(
+    const routeSource = readFileSync(
       join(process.cwd(), "src/app/api/v1/assessments/[id]/export/pdf/route.ts"),
       "utf8",
     );
-    expect(source).toContain("filterClientDeliverableRecommendations");
-    expect(source).toContain("isClientFacingRecommendationAudience");
-    expect(source).toContain("-internal");
-    expect(source).toContain("Fail-closed");
+    const audienceSource = readFileSync(
+      join(process.cwd(), "src/lib/assessments/customer-facing-report.ts"),
+      "utf8",
+    );
+    // SS-REL-013: PDF export uses audience presentation helper, which applies the
+    // same fail-closed client-deliverable filter used by other customer surfaces.
+    expect(routeSource).toContain("buildAudienceAssessmentReportData");
+    expect(routeSource).toContain("isClientFacingRecommendationAudience");
+    expect(routeSource).toContain("-internal");
+    expect(audienceSource).toContain("filterClientDeliverableRecommendations");
+    expect(audienceSource).toContain("selectRecommendationsForAudience");
   });
 
   it("filters stubs from automated email recommendation workflows", () => {

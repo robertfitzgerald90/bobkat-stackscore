@@ -1,4 +1,4 @@
-import type { CommunicationQueueStatus, Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { recordCommunicationSentActivity } from "@/lib/communications/activity/record-activity";
 import { withCommunicationDbFallback } from "@/lib/communications/db-safe";
 import { resolveRecipients } from "@/lib/communications/recipients/resolver";

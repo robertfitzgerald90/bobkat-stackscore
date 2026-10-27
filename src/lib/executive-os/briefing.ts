@@ -1,6 +1,6 @@
 import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
 import { PRIORITY_LABELS } from "@/lib/display";
-import { executiveKpiLabel, executiveRiskLabel, greetingForHour } from "@/lib/executive-os/business-language";
+import { executiveKpiLabel, greetingForHour } from "@/lib/executive-os/business-language";
 import { conciseFocusTitle } from "@/lib/client-workspace";
 import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
@@ -62,7 +62,6 @@ export function buildExecutiveBriefing(
     profile,
     pillarInsights,
     openRecommendations,
-    journeyScores,
     scoreDeltaSincePrevious,
   } = detail;
 
@@ -134,7 +133,6 @@ export function buildExecutiveBriefing(
         ? "Review recent changes to restore momentum."
         : "Technology maturity is holding steady.";
 
-  const riskLevel = executiveRiskLabel(score);
   const riskTrend =
     score !== null && score >= 70
       ? "Business risk continues to decrease."

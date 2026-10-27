@@ -219,7 +219,11 @@ export function buildClientWorkspaceSnapshot(input: {
     .sort((left, right) => right.sortScore - left.sortScore)
     .slice(0, MAX_FOCUS_ITEMS);
 
-  const items = ranked.map(({ sortScore: _sortScore, ...item }) => item);
+  const items = ranked.map((row) => {
+    const { sortScore, ...item } = row;
+    void sortScore;
+    return item;
+  });
 
   return {
     kpis: {

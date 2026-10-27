@@ -84,6 +84,8 @@ export function stripInternalRecurringService<T extends { internalCostCents?: nu
   role: UserRole,
 ): T {
   if (role === "admin" || role === "technician") return service;
-  const { internalCostCents: _c, internalMarginPercent: _m, ...rest } = service;
+  const { internalCostCents, internalMarginPercent, ...rest } = service;
+  void internalCostCents;
+  void internalMarginPercent;
   return rest as T;
 }
