@@ -17,6 +17,8 @@ describe("assessment paper-safe pilot PDF", () => {
         overallScore: 68,
         overallRating: "stable",
         overallRatingLabel: "Stable",
+        projectionImpact: 18,
+        rawImpactSum: 18,
         projectedScore: 86,
         hasCriticalExposure: true,
         criticalFindingsCount: 2,

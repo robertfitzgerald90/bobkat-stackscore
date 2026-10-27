@@ -30,9 +30,11 @@ export default async function TechnologyLifecyclePage({ params }: PageProps) {
   const dashboard = await getTechnologyLifecycleDashboard(id, session.user.role);
   if (!dashboard) notFound();
 
+  const audience = isCustomerMode(session.user.role) ? "customer" : "staff";
+
   return (
     <ClientPageShell>
-      <LifecycleDashboard dashboard={dashboard} />
+      <LifecycleDashboard dashboard={dashboard} audience={audience} />
     </ClientPageShell>
   );
 }

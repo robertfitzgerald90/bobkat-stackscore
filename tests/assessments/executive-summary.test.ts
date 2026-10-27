@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildAssessmentExecutiveSummary } from "@/lib/assessments/executive-summary";
+import {
+  buildAssessmentExecutiveSummary,
+  recommendationTopic,
+} from "@/lib/assessments/executive-summary";
 
 const baseInput = {
   clientName: "Acme Corp",
@@ -9,12 +12,35 @@ const baseInput = {
   strengths: ["Identity & Access", "Productivity & Collaboration"],
   risks: ["Endpoint Management", "Data Protection & Recovery", "Technology Strategy"],
   topRecommendations: [
-    { title: "Is network documentation current", priority: "critical" as const },
-    { title: "Are retention requirements documented", priority: "high" as const },
-    { title: "Is there a technology vision", priority: "medium" as const },
+    {
+      title: "Establish a practical incident response process",
+      priority: "critical" as const,
+    },
+    {
+      title: "Require multi-factor authentication for privileged and business-critical access",
+      priority: "high" as const,
+    },
+    {
+      title: "Centralize workforce identity and authentication",
+      priority: "medium" as const,
+    },
   ],
-  projectedScore: 100,
+  projectedScore: 62,
 };
+
+describe("recommendationTopic", () => {
+  it("rejects unfinished stub titles and raw question stems", () => {
+    expect(recommendationTopic("Improve Endpoint Management: Is there an inventory")).toBeNull();
+    expect(recommendationTopic("Is network documentation current")).toBeNull();
+    expect(recommendationTopic("Are retention requirements documented")).toBeNull();
+  });
+
+  it("keeps professional recommendation titles", () => {
+    expect(recommendationTopic("Establish a practical incident response process")).toContain(
+      "establish a practical incident response process",
+    );
+  });
+});
 
 describe("buildAssessmentExecutiveSummary", () => {
   it("generates structured paragraphs instead of label dumps", () => {
@@ -28,13 +54,13 @@ describe("buildAssessmentExecutiveSummary", () => {
     expect(summary).not.toMatch(/Overall StackScore: 42 \/ 100/i);
   });
 
-  it("references technology health and maturity language", () => {
+  it("uses DOC-119 maturity language without conflicting rating bands", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 
-    expect(summary).toContain("Acme Corp's organization");
-    expect(summary).toContain("basic level of technology health");
+    expect(summary).toContain("Acme Corp currently reflects a basic level of technology maturity");
     expect(summary).toContain("StackScore of 42");
-    expect(summary).toContain("critical range");
+    expect(summary).not.toMatch(/critical range/i);
+    expect(summary).not.toContain("Acme Corp's organization");
   });
 
   it("mentions strongest and highest-risk pillars in prose", () => {
@@ -47,20 +73,23 @@ describe("buildAssessmentExecutiveSummary", () => {
     expect(summary).toContain("critical security or recovery gaps");
   });
 
-  it("summarizes recommendations in natural language", () => {
+  it("summarizes recommendations in professional language", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 
     expect(summary).toContain("Near-term priorities should focus on");
-    expect(summary).toContain("network documentation current");
-    expect(summary).toContain("retention requirements documented");
+    expect(summary).toContain("establish a practical incident response process");
+    expect(summary).toContain("practical starting point for remediation planning");
+    expect(summary).not.toContain("strongest maturity gains first");
   });
 
-  it("explains projected improvement", () => {
+  it("explains projected improvement without guaranteeing outcomes", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 
-    expect(summary).toContain("improve from 42 to 100");
-    expect(summary).toContain("gain of 58 points");
-    expect(summary).toContain("80+ maturity threshold");
+    expect(summary).toContain("improve from 42 to 62");
+    expect(summary).toContain("potential gain of 20 points");
+    expect(summary).toContain("additional approved initiatives would be required");
+    expect(summary).not.toContain("80+ maturity threshold");
+    expect(summary).not.toContain("guaranteed");
   });
 
   it("ends with the strategy session paragraph", () => {
@@ -89,5 +118,24 @@ describe("buildAssessmentExecutiveSummary", () => {
 
     expect(summary).toContain("sustain current maturity levels");
     expect(summary).not.toContain("gain of 0 points");
+  });
+
+  it("omits stub recommendation titles from narrative priorities", () => {
+    const summary = buildAssessmentExecutiveSummary({
+      ...baseInput,
+      topRecommendations: [
+        {
+          title: "Improve Documentation & Knowledge: Are credentials securely managed",
+          priority: "critical",
+        },
+        {
+          title: "Establish a practical incident response process",
+          priority: "critical",
+        },
+      ],
+    });
+
+    expect(summary).not.toContain("credentials securely managed");
+    expect(summary).toContain("establish a practical incident response process");
   });
 });

@@ -5,6 +5,8 @@ import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboard }) {
+  const showSpeculativeFinancials = dashboard.isConsultant;
+
   const items = [
     {
       label: "Current StackScore",
@@ -37,28 +39,32 @@ export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboa
       label: "Implementation Status",
       value: dashboard.metrics.currentPhaseImplementationStatusLabel ?? "—",
     },
-    {
-      label: "Remaining Investment",
-      value: formatCurrency(dashboard.metrics.remainingOneTimeInvestment),
-      hint:
-        dashboard.metrics.remainingMonthlyRecurring > 0
-          ? `+ ${formatCurrency(dashboard.metrics.remainingMonthlyRecurring)}/mo remaining`
-          : undefined,
-    },
-    {
-      label: "Current Monthly Services",
-      value:
-        dashboard.metrics.currentMonthlyServices > 0
-          ? `${formatCurrency(dashboard.metrics.currentMonthlyServices)}/mo`
-          : "None",
-    },
-    {
-      label: "Projected Monthly After Completion",
-      value:
-        dashboard.metrics.projectedMonthlyServicesAfterCompletion > 0
-          ? `${formatCurrency(dashboard.metrics.projectedMonthlyServicesAfterCompletion)}/mo`
-          : "None",
-    },
+    ...(showSpeculativeFinancials
+      ? [
+          {
+            label: "Remaining Investment",
+            value: formatCurrency(dashboard.metrics.remainingOneTimeInvestment),
+            hint:
+              dashboard.metrics.remainingMonthlyRecurring > 0
+                ? `+ ${formatCurrency(dashboard.metrics.remainingMonthlyRecurring)}/mo remaining`
+                : undefined,
+          },
+          {
+            label: "Current Monthly Services",
+            value:
+              dashboard.metrics.currentMonthlyServices > 0
+                ? `${formatCurrency(dashboard.metrics.currentMonthlyServices)}/mo`
+                : "None",
+          },
+          {
+            label: "Projected Monthly After Completion",
+            value:
+              dashboard.metrics.projectedMonthlyServicesAfterCompletion > 0
+                ? `${formatCurrency(dashboard.metrics.projectedMonthlyServicesAfterCompletion)}/mo`
+                : "None",
+          },
+        ]
+      : []),
   ];
 
   return (

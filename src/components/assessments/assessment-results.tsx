@@ -153,6 +153,7 @@ export function AssessmentResults({
     );
 
     const projectedScore = calculateProjectedScore(overallScore, [projectionImpact]);
+    const rawImpactSum = actionable.reduce((sum, r) => sum + r.estimatedImpactPoints, 0);
     const priorityOrder: Priority[] = ["critical", "high", "medium", "low"];
 
     const immediateActions = recommendations
@@ -168,6 +169,8 @@ export function AssessmentResults({
       ...prev,
       recommendations,
       openRecommendationsCount: recommendations.filter((r) => r.status === "open").length,
+      projectionImpact,
+      rawImpactSum,
       projectedScore,
       immediateActions,
     }));

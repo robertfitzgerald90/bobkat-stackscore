@@ -34,8 +34,11 @@ const HEALTH_STYLES = {
 
 export function LifecycleDashboard({
   dashboard,
+  audience = "staff",
 }: {
   dashboard: TechnologyLifecycleDashboard;
+  /** Customers never see speculative TIP investment quotations. */
+  audience?: "customer" | "staff";
 }) {
   return (
     <div className="space-y-6">
@@ -119,7 +122,7 @@ export function LifecycleDashboard({
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <BudgetPlanningPanel dashboard={dashboard} />
+        <BudgetPlanningPanel dashboard={dashboard} audience={audience} />
 
         <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
           <div className="flex items-center gap-2">
@@ -384,12 +387,80 @@ function BandCard({
 
 function BudgetPlanningPanel({
   dashboard,
+  audience,
 }: {
   dashboard: TechnologyLifecycleDashboard;
+  audience: "customer" | "staff";
 }) {
   const { budget, clientId } = dashboard;
   const recommendationsHref = clientRecommendationsPath(clientId);
   const roadmapHref = clientWorkspaceRoadmapPath(clientId);
+
+  if (audience === "customer") {
+    return (
+      <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+        <div className="flex items-center gap-2">
+          <Wallet className="h-4 w-4 text-primary" />
+          <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
+            Technology Improvement Planning
+          </h2>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Your assessment identifies technology improvement opportunities and a phased execution
+          path. Implementation costs are scoped with Bobkat IT—StackScore does not generate
+          speculative investment quotations in the customer portal.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href={recommendationsHref}
+            className={buttonClassName({ variant: "default", size: "sm" })}
+          >
+            View recommendations
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+          <Link
+            href={roadmapHref}
+            className={buttonClassName({ variant: "outline", size: "sm" })}
+          >
+            Open technology roadmap
+          </Link>
+        </div>
+        {budget.hasVerifiedFinancials ? (
+          <div className="mt-5 space-y-3 border-t border-border/60 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Recorded financial activity for your organization (invoices, approved work, and
+              contracted services)—not automatic estimates.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {budget.completedInvestment > 0 ? (
+                <BudgetRow label="Completed investment" value={budget.completedInvestment} />
+              ) : null}
+              {budget.approvedInvestment > 0 ? (
+                <BudgetRow label="Approved investment" value={budget.approvedInvestment} />
+              ) : null}
+              {budget.contractedMonthlyServices > 0 ? (
+                <BudgetRow
+                  label="Contracted monthly services"
+                  value={budget.contractedMonthlyServices}
+                  suffix="/mo"
+                />
+              ) : null}
+              {budget.contractedAnnualServices > 0 ? (
+                <BudgetRow
+                  label="Contracted annual services"
+                  value={budget.contractedAnnualServices}
+                  suffix="/yr"
+                />
+              ) : null}
+              {budget.futureRefreshBudget > 0 ? (
+                <BudgetRow label="Future refresh budget" value={budget.futureRefreshBudget} />
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+      </section>
+    );
+  }
 
   return (
     <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
@@ -412,7 +483,7 @@ function BudgetPlanningPanel({
       {budget.presentationMode === "estimates_only" ? (
         <BudgetEmptyState
           title="Implementation costs require scoping"
-          body="Priority recommendations have been identified from your assessment, but estimated roadmap figures are preliminary planning inputs—not approved budgets or contracted spending. Bobkat IT scopes implementation costs before any commitment."
+          body="Priority recommendations have been identified from the assessment. Preliminary TIP figures below are internal planning inputs—not customer-facing quotations."
           recommendationsHref={recommendationsHref}
           roadmapHref={roadmapHref}
         />

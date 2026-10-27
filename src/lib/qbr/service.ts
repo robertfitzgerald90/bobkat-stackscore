@@ -2,6 +2,10 @@ import type { Prisma, UserRole } from "@/generated/prisma/client";
 import { formatPrimaryBusinessGoal } from "@/lib/business-profile/labels";
 import { prisma } from "@/lib/db";
 import {
+  scrubQbrBudgetForecastForCustomer,
+  shouldHideSpeculativeFinancials,
+} from "@/lib/financial/customer-facing";
+import {
   defaultQbrTitle,
   formatReviewPeriodLabel,
   getQuarterBounds,
@@ -341,9 +345,22 @@ export async function getQuarterlyBusinessReview(
   }
 
   const report = await assembleQbrReportData(record);
+
+  const customerSafeReport: QbrReportData = shouldHideSpeculativeFinancials(role)
+    ? {
+        ...report,
+        budgetForecast: scrubQbrBudgetForecastForCustomer(report.budgetForecast),
+        roadmapPhases: report.roadmapPhases.map((phase) => ({
+          ...phase,
+          oneTimeInvestment: 0,
+          monthlyRecurringInvestment: 0,
+        })),
+      }
+    : report;
+
   return {
     ...toSummary(record),
-    report,
+    report: customerSafeReport,
     isEditable: record.status === "draft" && role !== "client",
   };
 }

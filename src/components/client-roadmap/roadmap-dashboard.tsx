@@ -57,6 +57,7 @@ export function RoadmapDashboard({
               key={phase.id}
               clientId={dashboard.clientId}
               phase={phase}
+              showSpeculativeFinancials={dashboard.isConsultant}
             />
           ))}
         </div>

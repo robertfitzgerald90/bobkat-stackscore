@@ -23,6 +23,9 @@ export type AssessmentReportSections = {
     items: AssessmentReportData["summary"]["recommendations"];
   }>;
   roadmapMilestones: AssessmentReportRoadmapMilestone[];
+  /** Authoritative category-max projection impact (not raw point sum). */
+  projectionImpact: number;
+  /** @deprecated Use projectionImpact — retained alias for older callers. */
   totalImpact: number;
   estimatedImprovement: number;
   criticalCount: number;
@@ -122,10 +125,8 @@ export function buildAssessmentReportSections(
     sortedRecommendations,
     recommendationsByPriority,
     roadmapMilestones,
-    totalImpact: clientRecommendations.reduce(
-      (sum, recommendation) => sum + recommendation.estimatedImpactPoints,
-      0,
-    ),
+    projectionImpact: summary.projectionImpact,
+    totalImpact: summary.projectionImpact,
     estimatedImprovement,
     criticalCount: countByPriority(summary.recommendations, "critical"),
     highCount: countByPriority(summary.recommendations, "high"),

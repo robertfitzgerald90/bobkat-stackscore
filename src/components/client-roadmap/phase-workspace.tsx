@@ -121,20 +121,29 @@ export function PhaseWorkspace({
           <RoadmapStatusBadge status={phase.status} />
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          className={cn(
+            "mt-5 grid gap-3 sm:grid-cols-2",
+            phase.isConsultant ? "lg:grid-cols-4" : "lg:grid-cols-2",
+          )}
+        >
           <MetaCard label="Expected StackScore Improvement" value={`+${phase.expectedScoreImprovement} pts`} />
-          <MetaCard
-            label="One-Time Investment"
-            value={formatCurrency(phase.oneTimeInvestment)}
-          />
-          <MetaCard
-            label="Monthly Services"
-            value={
-              phase.monthlyRecurringInvestment > 0
-                ? `${formatCurrency(phase.monthlyRecurringInvestment)}/mo`
-                : "None"
-            }
-          />
+          {phase.isConsultant ? (
+            <>
+              <MetaCard
+                label="One-Time Investment"
+                value={formatCurrency(phase.oneTimeInvestment)}
+              />
+              <MetaCard
+                label="Monthly Services"
+                value={
+                  phase.monthlyRecurringInvestment > 0
+                    ? `${formatCurrency(phase.monthlyRecurringInvestment)}/mo`
+                    : "None"
+                }
+              />
+            </>
+          ) : null}
           <MetaCard
             label="Completion Date"
             value={

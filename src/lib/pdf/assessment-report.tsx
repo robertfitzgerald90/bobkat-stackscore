@@ -769,10 +769,8 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
   const criticalCount = countByPriority(summary.recommendations, "critical");
   const highCount = countByPriority(summary.recommendations, "high");
 
-  const totalImpact = clientRecommendations.reduce(
-    (sum, recommendation) => sum + recommendation.estimatedImpactPoints,
-    0,
-  );
+  // Authoritative category-max impact (DOC-111A) — never the raw sum of recommendation points.
+  const projectionImpact = summary.projectionImpact;
 
   const overallRiskBullets = [
     `Overall StackScore: ${summary.overallScore} / 100 (${summary.overallRatingLabel})`,
@@ -890,8 +888,8 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               <Text style={styles.summaryStatLabel}>Open Items</Text>
             </View>
             <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>+{totalImpact}</Text>
-              <Text style={styles.summaryStatLabel}>Potential Points</Text>
+              <Text style={styles.summaryStatValue}>+{projectionImpact}</Text>
+              <Text style={styles.summaryStatLabel}>Projected Impact</Text>
             </View>
             <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{criticalCount + highCount}</Text>

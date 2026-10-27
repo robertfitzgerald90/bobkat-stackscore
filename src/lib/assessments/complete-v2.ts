@@ -86,7 +86,14 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
 
   const triggeredResponses = collectV2TriggeredResponses(assessment.responses);
   const generatedRecommendations = evaluateV2Triggers(triggeredResponses);
-  const projectionImpact = calculateProjectionImpacts(generatedRecommendations);
+  // Persist a customer-safe narrative/projection (client-deliverable set only).
+  // Full generatedRecommendations (including stubs) still sync for staff review.
+  const { filterGeneratedRecommendationsForCustomer } = await import(
+    "@/lib/assessments/customer-facing-report"
+  );
+  const customerFacingRecommendations =
+    filterGeneratedRecommendationsForCustomer(generatedRecommendations);
+  const projectionImpact = calculateProjectionImpacts(customerFacingRecommendations);
   const projectedScore = calculateProjectedScore(overallScore, [projectionImpact]);
 
   const completePillars = scoring.pillarScores.filter(
@@ -118,7 +125,7 @@ export async function completeAssessmentV2(assessmentId: string, userId: string)
     hasCriticalExposure,
     strengths,
     risks,
-    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => ({
+    topRecommendations: customerFacingRecommendations.slice(0, 5).map((rec) => ({
       title: rec.title,
       priority: rec.priority,
     })),

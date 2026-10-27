@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { buildAssessmentReportData } from "@/lib/assessments/report-data";
-import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { buildAudienceAssessmentReportData } from "@/lib/assessments/customer-facing-report";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
-import {
-  filterClientDeliverableRecommendations,
-  isClientFacingRecommendationAudience,
-} from "@/lib/recommendations/visibility";
+import { isClientFacingRecommendationAudience } from "@/lib/recommendations/visibility";
 import { generateAssessmentReportPdf } from "@/lib/pdf/generate";
 import { sanitizeFilename } from "@/lib/pdf/types";
 import { getSessionUserWithClient, requireAssessmentAccess } from "@/lib/api/access";
@@ -46,12 +42,6 @@ export async function GET(_request: Request, context: RouteContext) {
   const overallScore = Number(assessment.overallScore);
 
   const rawRecommendations = await getRecommendationsTriggeredByAssessment(id);
-  // Fail-closed: clients never receive stub/unapproved recommendation copy in PDFs.
-  // Staff exports may still include stubs for internal consulting review.
-  const recommendations = filterClientDeliverableRecommendations(
-    rawRecommendations as Array<Record<string, unknown>>,
-    user.role,
-  ) as typeof rawRecommendations;
 
   const criticalFindingsCount = await prisma.assessmentResponse.count({
     where: {
@@ -60,22 +50,21 @@ export async function GET(_request: Request, context: RouteContext) {
     },
   });
 
-  const summary = buildAssessmentResultsSummary(
-    overallScore,
-    assessment.hasCriticalExposure,
-    criticalFindingsCount,
-    assessment.categoryScores,
-    recommendations,
-  );
-
-  const reportData = buildAssessmentReportData({
+  // Clients: filtered recs + regenerated narrative. Staff: full set; stored narrative kept.
+  // Never writes Assessment.executiveSummary.
+  const reportData = buildAudienceAssessmentReportData({
+    role: user.role,
     clientName: assessment.client.companyName,
     assessmentName: assessment.assessmentName,
     assessmentType: assessment.assessmentType,
     assessmentDate: assessment.assessmentDate,
     completedAt: assessment.completedAt?.toISOString() ?? null,
-    executiveSummary: assessment.executiveSummary,
-    summary,
+    overallScore,
+    hasCriticalExposure: assessment.hasCriticalExposure,
+    criticalFindingsCount,
+    categoryScores: assessment.categoryScores,
+    recommendations: rawRecommendations,
+    storedExecutiveSummary: assessment.executiveSummary,
   });
 
   const buffer = await generateAssessmentReportPdf(reportData);

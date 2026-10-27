@@ -2,6 +2,10 @@ import type { Prisma, UserRole } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { ROADMAP_PHASE_STATUS_LABELS } from "@/lib/client-roadmap/labels";
 import { computeRoadmapProgressMetrics } from "@/lib/client-roadmap/metrics";
+import {
+  scrubLifecycleDashboardForCustomer,
+  shouldHideSpeculativeFinancials,
+} from "@/lib/financial/customer-facing";
 import { computeLifecycleBudget } from "./budget";
 import { LIFECYCLE_HEALTH_LABELS, scoreToBusinessRisk, scoreToHealthBand, trendLabel } from "./health";
 import {
@@ -49,7 +53,6 @@ export async function getTechnologyLifecycleDashboard(
   clientId: string,
   role: UserRole,
 ): Promise<TechnologyLifecycleDashboard | null> {
-  void role;
   const client = await prisma.client.findUnique({
     where: { id: clientId },
     select: {
@@ -295,7 +298,7 @@ export async function getTechnologyLifecycleDashboard(
     client.quarterlyReviewAnchorAt?.toISOString() ??
     null;
 
-  return {
+  const dashboard = {
     clientId: client.id,
     clientName: client.companyName,
     currentStackScore,
@@ -373,6 +376,11 @@ export async function getTechnologyLifecycleDashboard(
     openOpportunityCount: client.lifecycleOpportunities.filter((item) => item.status === "open")
       .length,
   };
+
+  if (shouldHideSpeculativeFinancials(role)) {
+    return scrubLifecycleDashboardForCustomer(dashboard);
+  }
+  return dashboard;
 }
 
 export async function evaluateAndPersistPhaseOpportunities(input: {

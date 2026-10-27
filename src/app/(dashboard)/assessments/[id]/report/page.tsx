@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { buildAssessmentReportData } from "@/lib/assessments/report-data";
-import { buildAssessmentResultsSummary } from "@/lib/assessments/results-summary";
+import { buildAudienceAssessmentReportData } from "@/lib/assessments/customer-facing-report";
 import { prisma } from "@/lib/db";
 import { getRecommendationsTriggeredByAssessment } from "@/lib/recommendations/queries";
 import { AssessmentReportPreview } from "@/components/assessments/assessment-report-preview";
@@ -44,22 +43,19 @@ export default async function AssessmentReportPage({ params }: PageProps) {
     },
   });
 
-  const summary = buildAssessmentResultsSummary(
-    Number(assessment.overallScore),
-    assessment.hasCriticalExposure,
-    criticalFindingsCount,
-    assessment.categoryScores,
-    recommendations,
-  );
-
-  const reportData = buildAssessmentReportData({
+  const reportData = buildAudienceAssessmentReportData({
+    role: session.user.role,
     clientName: assessment.client.companyName,
     assessmentName: assessment.assessmentName,
     assessmentType: assessment.assessmentType,
     assessmentDate: assessment.assessmentDate,
     completedAt: assessment.completedAt?.toISOString() ?? null,
-    executiveSummary: assessment.executiveSummary,
-    summary,
+    overallScore: Number(assessment.overallScore),
+    hasCriticalExposure: assessment.hasCriticalExposure,
+    criticalFindingsCount,
+    categoryScores: assessment.categoryScores,
+    recommendations,
+    storedExecutiveSummary: assessment.executiveSummary,
   });
 
   return (

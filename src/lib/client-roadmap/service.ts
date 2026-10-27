@@ -1,9 +1,23 @@
-import type { PhaseProposalStatus, UserRole } from "@/generated/prisma/client";
+import type {
+  PhaseProposalStatus,
+  RecommendationStatus,
+  UserRole,
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { PHASE_PROPOSAL_STATUS_LABELS } from "@/lib/phase-proposals/types";
 import { isStubRecommendationTemplate } from "@/lib/recommendations/stubs";
 import { hasUnpublishedStubTitle } from "@/lib/recommendations/visibility";
-import { computeEffectiveScoreJourney } from "./effective-score";
+import {
+  scrubRoadmapDashboardForCustomer,
+  scrubRoadmapPhaseDetailForCustomer,
+  shouldHideSpeculativeFinancials,
+} from "@/lib/financial/customer-facing";
+import { calculateProjectedScore } from "@/lib/scoring";
+import {
+  computeEffectiveScoreJourney,
+  computeImpactPoints,
+  type ScoreImpactInput,
+} from "./effective-score";
 import { computeRoadmapProgressMetrics } from "./metrics";
 import { isConsultantRole } from "./permissions";
 import {
@@ -260,6 +274,58 @@ async function findPrimaryRoadmap(clientId: string) {
   });
 }
 
+function toScoreImpactInput(initiative: {
+  recommendationId: string;
+  title: string;
+  description: string;
+  businessImpact: string;
+  priority: string;
+  estimatedImpactPoints: number;
+  categoryName: string;
+  status: RecommendationStatus;
+}): ScoreImpactInput {
+  return {
+    id: initiative.recommendationId,
+    title: initiative.title,
+    description: initiative.description,
+    businessImpact: initiative.businessImpact,
+    suggestedService: null,
+    priority: initiative.priority as ScoreImpactInput["priority"],
+    estimatedImpactPoints: initiative.estimatedImpactPoints,
+    categoryName: initiative.categoryName,
+    status: initiative.status,
+  };
+}
+
+/**
+ * Recompute phase projected scores from the visible initiative set only.
+ * Prevents stub-inflated stored projections from leaking to customers (SS-REL-013).
+ */
+function recomputePhasesForVisibleInitiatives(
+  baselineScore: number,
+  phases: RoadmapPhaseView[],
+): RoadmapPhaseView[] {
+  const withInitiatives = phases.filter((phase) => phase.initiatives.length > 0);
+  const cumulative: ScoreImpactInput[] = [];
+  let previousScore = baselineScore;
+
+  return withInitiatives.map((phase) => {
+    for (const initiative of phase.initiatives) {
+      cumulative.push(toScoreImpactInput(initiative));
+    }
+    const projectedScoreAfterPhase = calculateProjectedScore(baselineScore, [
+      computeImpactPoints(cumulative),
+    ]);
+    const expectedScoreImprovement = projectedScoreAfterPhase - previousScore;
+    previousScore = projectedScoreAfterPhase;
+    return {
+      ...phase,
+      projectedScoreAfterPhase,
+      expectedScoreImprovement,
+    };
+  });
+}
+
 export async function getClientRoadmapDashboard(
   clientId: string,
   role: UserRole,
@@ -268,24 +334,23 @@ export async function getClientRoadmapDashboard(
   if (!roadmap) return null;
 
   const isConsultant = isConsultantRole(role);
-  const phases = roadmap.phases.map((phase) => toPhaseView(phase, isConsultant));
+  const mappedPhases = roadmap.phases.map((phase) => toPhaseView(phase, isConsultant));
+  // Customers: drop empty stub-only phases and recompute projections from visible initiatives.
+  const phases = isConsultant
+    ? mappedPhases
+    : recomputePhasesForVisibleInitiatives(roadmap.baselineScore, mappedPhases);
+
   const initiativeInputs = phases.flatMap((phase) =>
-    phase.initiatives.map((initiative) => ({
-      id: initiative.recommendationId,
-      title: initiative.title,
-      description: initiative.description,
-      businessImpact: initiative.businessImpact,
-      suggestedService: null,
-      priority: initiative.priority as "low" | "medium" | "high" | "critical",
-      estimatedImpactPoints: initiative.estimatedImpactPoints,
-      categoryName: initiative.categoryName,
-      status: initiative.status,
-    })),
+    phase.initiatives.map((initiative) => toScoreImpactInput(initiative)),
   );
+
+  const audienceProjectedFinal = isConsultant
+    ? roadmap.projectedFinalScore
+    : calculateProjectedScore(roadmap.baselineScore, [computeImpactPoints(initiativeInputs)]);
 
   const scoreJourney = computeEffectiveScoreJourney(
     roadmap.baselineScore,
-    roadmap.projectedFinalScore,
+    audienceProjectedFinal,
     initiativeInputs,
   );
 
@@ -301,7 +366,7 @@ export async function getClientRoadmapDashboard(
     initiativeInputs,
   );
 
-  return {
+  const dashboard: ClientRoadmapDashboard = {
     id: roadmap.id,
     clientId: roadmap.clientId,
     assessmentId: roadmap.assessmentId,
@@ -316,6 +381,11 @@ export async function getClientRoadmapDashboard(
     viewerRole: role,
     isConsultant,
   };
+
+  if (shouldHideSpeculativeFinancials(role)) {
+    return scrubRoadmapDashboardForCustomer(dashboard);
+  }
+  return dashboard;
 }
 
 export async function getClientRoadmapPhaseDetail(
@@ -366,9 +436,14 @@ export async function getClientRoadmapPhaseDetail(
   if (!dashboard) return null;
 
   const isConsultant = isConsultantRole(role);
-  const phaseView = toPhaseView(phase, isConsultant);
+  // Prefer audience-adjusted phase from dashboard (customer projections already recomputed).
+  const phaseView =
+    dashboard.phases.find((row) => row.id === phaseId) ?? toPhaseView(phase, isConsultant);
+  if (!isConsultant && !dashboard.phases.some((row) => row.id === phaseId)) {
+    return null;
+  }
 
-  return {
+  const detail: ClientRoadmapPhaseDetail = {
     ...phaseView,
     roadmapId: phase.roadmapId,
     roadmapTitle: phase.roadmap.title,
@@ -385,4 +460,9 @@ export async function getClientRoadmapPhaseDetail(
     })),
     isConsultant,
   };
+
+  if (shouldHideSpeculativeFinancials(role)) {
+    return scrubRoadmapPhaseDetailForCustomer(detail);
+  }
+  return detail;
 }

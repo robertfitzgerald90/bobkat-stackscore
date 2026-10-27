@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { filterClientDeliverableRecommendations } from "@/lib/recommendations/visibility";
 import { createDefaultInvestment } from "@/lib/technology-improvement-plan/defaults";
 import { createDefaultPhaseAssignments, buildTechnologyRoadmap } from "@/lib/technology-improvement-plan/roadmap-engine";
 import type { TipRecommendationView } from "@/lib/technology-improvement-plan/types";
@@ -13,7 +14,10 @@ async function loadAssessmentContext(assessmentId: string) {
       client: { select: { id: true, companyName: true } },
       recommendations: {
         where: { status: { in: ["open", "accepted", "in_progress", "deferred"] } },
-        include: { category: { select: { name: true } } },
+        include: {
+          category: { select: { name: true } },
+          recommendationTemplate: { select: { code: true } },
+        },
         orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
       },
     },
@@ -30,7 +34,15 @@ async function loadAssessmentContext(assessmentId: string) {
 function toRecommendationViews(
   recommendations: Awaited<ReturnType<typeof loadAssessmentContext>>["recommendations"],
 ): TipRecommendationView[] {
-  return recommendations.map((rec, index) => ({
+  // SS-REL-013: draft roadmaps materialize from client-deliverable recommendations only
+  // so stored projectedFinalScore matches customer-facing projections. Stub templates
+  // remain on AssessmentRecommendation for staff review outside the living roadmap.
+  const deliverable = filterClientDeliverableRecommendations(
+    recommendations as Array<(typeof recommendations)[number] & Record<string, unknown>>,
+    "client",
+  ) as typeof recommendations;
+
+  return deliverable.map((rec, index) => ({
     id: rec.id,
     title: rec.title,
     description: rec.description,

@@ -443,46 +443,60 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
 
         <PdfSectionTitle
           title="Technology Investment Summary"
-          subtitle="Planned, completed, and recurring investment for the review horizon"
+          subtitle="Recorded spend and approved planning figures for the review horizon"
         />
         {!data.budgetForecast ? (
           <PdfEmptyState
-            title="Investment forecast unavailable"
-            description="Budget totals will appear when roadmap investment data is present."
+            title="Investment quotations not included"
+            description="Implementation costs are scoped with Bobkat IT. This review focuses on technology improvement progress rather than speculative estimates."
           />
         ) : (
           <View style={styles.panel} wrap={false}>
             {[
-              {
-                label: "Completed investment",
-                value: formatQbrCurrency(data.budgetForecast.completedInvestment),
-              },
-              {
-                label: "Planned investment",
-                value: formatQbrCurrency(data.budgetForecast.plannedInvestment),
-              },
-              {
-                label: "Deferred investment",
-                value: formatQbrCurrency(data.budgetForecast.deferredInvestment),
-              },
-              {
-                label: "Monthly services",
-                value: `${formatQbrCurrency(data.budgetForecast.monthlyServices)}/mo`,
-              },
-              {
-                label: "Estimated three-year investment",
-                value: formatQbrCurrency(data.budgetForecast.estimatedThreeYearInvestment),
-              },
-              {
-                label: "Budget utilization",
-                value: budgetUtilization !== null ? `${budgetUtilization}%` : "—",
-              },
-            ].map((row) => (
-              <View key={row.label} style={styles.budgetRow}>
-                <Text style={styles.budgetLabel}>{row.label}</Text>
-                <Text style={styles.budgetValue}>{row.value}</Text>
-              </View>
-            ))}
+              data.budgetForecast.completedInvestment > 0
+                ? {
+                    label: "Completed investment",
+                    value: formatQbrCurrency(data.budgetForecast.completedInvestment),
+                  }
+                : null,
+              data.budgetForecast.plannedInvestment > 0
+                ? {
+                    label: "Planned investment",
+                    value: formatQbrCurrency(data.budgetForecast.plannedInvestment),
+                  }
+                : null,
+              data.budgetForecast.deferredInvestment > 0
+                ? {
+                    label: "Deferred investment",
+                    value: formatQbrCurrency(data.budgetForecast.deferredInvestment),
+                  }
+                : null,
+              data.budgetForecast.monthlyServices > 0
+                ? {
+                    label: "Monthly services",
+                    value: `${formatQbrCurrency(data.budgetForecast.monthlyServices)}/mo`,
+                  }
+                : null,
+              data.budgetForecast.estimatedThreeYearInvestment > 0
+                ? {
+                    label: "Estimated three-year investment",
+                    value: formatQbrCurrency(data.budgetForecast.estimatedThreeYearInvestment),
+                  }
+                : null,
+              data.budgetForecast.plannedInvestment > 0 && budgetUtilization !== null
+                ? {
+                    label: "Budget utilization",
+                    value: `${budgetUtilization}%`,
+                  }
+                : null,
+            ]
+              .filter((row): row is { label: string; value: string } => row != null)
+              .map((row) => (
+                <View key={row.label} style={styles.budgetRow}>
+                  <Text style={styles.budgetLabel}>{row.label}</Text>
+                  <Text style={styles.budgetValue}>{row.value}</Text>
+                </View>
+              ))}
           </View>
         )}
       </Page>

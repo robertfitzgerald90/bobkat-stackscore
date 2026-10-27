@@ -14,9 +14,12 @@ import { cn } from "@/lib/utils";
 export function RoadmapPhaseCard({
   clientId,
   phase,
+  showSpeculativeFinancials = true,
 }: {
   clientId: string;
   phase: RoadmapPhaseView;
+  /** Staff/consultants see TIP estimates; customers do not. */
+  showSpeculativeFinancials?: boolean;
 }) {
   return (
     <article className={cn(CLIENT_INTERACTIVE_CARD, "bg-card p-5 shadow-sm")}>
@@ -33,7 +36,12 @@ export function RoadmapPhaseCard({
         {phase.executiveSummary}
       </p>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={cn(
+          "mt-4 grid gap-3 sm:grid-cols-2",
+          showSpeculativeFinancials ? "lg:grid-cols-4" : "lg:grid-cols-2",
+        )}
+      >
         <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             StackScore
@@ -42,22 +50,26 @@ export function RoadmapPhaseCard({
             +{phase.expectedScoreImprovement} pts
           </p>
         </div>
-        <div className={CLIENT_METRIC_WELL}>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
-            One-Time
-          </p>
-          <p className="mt-1 text-sm font-semibold">{formatCurrency(phase.oneTimeInvestment)}</p>
-        </div>
-        <div className={CLIENT_METRIC_WELL}>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
-            Monthly
-          </p>
-          <p className="mt-1 text-sm font-semibold">
-            {phase.monthlyRecurringInvestment > 0
-              ? `${formatCurrency(phase.monthlyRecurringInvestment)}/mo`
-              : "—"}
-          </p>
-        </div>
+        {showSpeculativeFinancials ? (
+          <>
+            <div className={CLIENT_METRIC_WELL}>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                One-Time
+              </p>
+              <p className="mt-1 text-sm font-semibold">{formatCurrency(phase.oneTimeInvestment)}</p>
+            </div>
+            <div className={CLIENT_METRIC_WELL}>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                Monthly
+              </p>
+              <p className="mt-1 text-sm font-semibold">
+                {phase.monthlyRecurringInvestment > 0
+                  ? `${formatCurrency(phase.monthlyRecurringInvestment)}/mo`
+                  : "—"}
+              </p>
+            </div>
+          </>
+        ) : null}
         <div className={CLIENT_METRIC_WELL}>
           <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
             Proposal

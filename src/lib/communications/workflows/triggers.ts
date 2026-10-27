@@ -16,7 +16,10 @@ export async function triggerAssessmentCompleteWorkflow(input: {
         where: { status: { in: ["open", "accepted", "in_progress"] } },
         orderBy: [{ priority: "asc" }, { estimatedImpactPoints: "desc" }],
         take: 20,
-        include: { recommendationTemplate: { select: { code: true } } },
+        include: {
+          recommendationTemplate: { select: { code: true } },
+          category: { select: { name: true, code: true } },
+        },
       },
     },
   });
@@ -41,18 +44,61 @@ export async function triggerAssessmentCompleteWorkflow(input: {
     .slice(0, 3)
     .map((rec) => rec.title);
 
+  // Regenerate customer-safe narrative for email without overwriting Assessment.executiveSummary.
+  const { buildExecutiveSummaryFromResultsSummary } = await import(
+    "@/lib/assessments/customer-facing-report"
+  );
+  const { buildAssessmentResultsSummary } = await import(
+    "@/lib/assessments/results-summary"
+  );
+  const categoryScores = await prisma.assessmentCategoryScore.findMany({
+    where: { assessmentId: assessment.id },
+    include: { category: true },
+  });
+  const overallScore =
+    assessment.overallScore !== null && assessment.overallScore !== undefined
+      ? Math.round(Number(assessment.overallScore))
+      : null;
+  const customerSafeSummary =
+    overallScore !== null
+      ? buildAssessmentResultsSummary(
+          overallScore,
+          assessment.hasCriticalExposure,
+          0,
+          categoryScores,
+          clientSafeRecommendations.map((rec) => ({
+            id: rec.id,
+            title: rec.title,
+            description: rec.description,
+            businessImpact: rec.businessImpact,
+            suggestedService: rec.suggestedService,
+            priority: rec.priority,
+            status: rec.status,
+            estimatedImpactPoints: rec.estimatedImpactPoints,
+            consolidationGroupId: rec.consolidationGroupId,
+            categoryId: rec.categoryId,
+            category: rec.category ?? { name: "General", code: "general" },
+            project: null,
+          })),
+        )
+      : null;
+  const customerSafeExecutiveSummary = customerSafeSummary
+    ? buildExecutiveSummaryFromResultsSummary({
+        clientName: assessment.client.companyName,
+        summary: customerSafeSummary,
+        hasCriticalExposure: assessment.hasCriticalExposure,
+      })
+    : assessment.executiveSummary;
+
   const payload = await buildAssessmentCompleteEmailData({
     assessmentId: assessment.id,
     assessmentName: assessment.assessmentName,
     organizationName: assessment.client.companyName,
     completedAt: assessment.completedAt.toLocaleDateString(),
-    overallScore:
-      assessment.overallScore !== null && assessment.overallScore !== undefined
-        ? Math.round(Number(assessment.overallScore))
-        : null,
+    overallScore,
     strengths,
     priorities,
-    executiveSummary: assessment.executiveSummary,
+    executiveSummary: customerSafeExecutiveSummary,
     firstName: assessment.client.primaryContactName.split(" ")[0],
   });
 

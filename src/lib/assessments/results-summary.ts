@@ -35,6 +35,10 @@ export type AssessmentResultsSummary = {
   overallScore: number;
   overallRating: Rating;
   overallRatingLabel: string;
+  /** Category-max projection impact (authoritative; DOC-111A). */
+  projectionImpact: number;
+  /** Naive sum of actionable estimatedImpactPoints — diagnostic only, never display as projected gain. */
+  rawImpactSum: number;
   projectedScore: number;
   hasCriticalExposure: boolean;
   criticalFindingsCount: number;
@@ -135,6 +139,10 @@ export function buildAssessmentResultsSummary(
   );
 
   const projectionImpact = calculateProjectionImpacts(projectionRecommendations);
+  const rawImpactSum = actionableForProjection.reduce(
+    (sum, recommendation) => sum + recommendation.estimatedImpactPoints,
+    0,
+  );
   const projectedScore = calculateProjectedScore(overallScore, [projectionImpact]);
 
   const priorityOrder: Priority[] = ["critical", "high", "medium", "low"];
@@ -155,6 +163,8 @@ export function buildAssessmentResultsSummary(
     overallScore,
     overallRating,
     overallRatingLabel: RATING_LABELS[overallRating],
+    projectionImpact,
+    rawImpactSum,
     projectedScore,
     hasCriticalExposure,
     criticalFindingsCount,

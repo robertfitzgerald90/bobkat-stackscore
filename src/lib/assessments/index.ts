@@ -109,10 +109,20 @@ async function completeAssessmentV1(assessmentId: string, userId: string) {
   const scoring = calculateScores(categoryInputs, hasCriticalExposure);
 
   const triggeredResponses = collectTriggeredResponses(assessment.responses);
-  const { recommendations: generatedRecommendations, projectedScore } = generateRecommendations(
+  const { recommendations: generatedRecommendations } = generateRecommendations(
     assessment.responses,
     scoring.overallScore,
   );
+  const { filterGeneratedRecommendationsForCustomer } = await import(
+    "@/lib/assessments/customer-facing-report"
+  );
+  const { calculateProjectionImpacts } = await import("@/lib/recommendations");
+  const { calculateProjectedScore } = await import("@/lib/scoring");
+  const customerFacingRecommendations =
+    filterGeneratedRecommendationsForCustomer(generatedRecommendations);
+  const projectedScore = calculateProjectedScore(scoring.overallScore, [
+    calculateProjectionImpacts(customerFacingRecommendations),
+  ]);
 
   const strengths = [...scoring.categoryScores]
     .sort((a, b) => b.percentScore - a.percentScore)
@@ -131,7 +141,7 @@ async function completeAssessmentV1(assessmentId: string, userId: string) {
     hasCriticalExposure,
     strengths,
     risks,
-    topRecommendations: generatedRecommendations.slice(0, 5).map((rec) => ({
+    topRecommendations: customerFacingRecommendations.slice(0, 5).map((rec) => ({
       title: rec.title,
       priority: rec.priority,
     })),

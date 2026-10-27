@@ -35,7 +35,7 @@ import {
 const receiveItems = [
   "Business Reviews",
   "Living Execution Plan Management",
-  "Technology Budget Planning",
+  "Technology Improvement Planning",
   "Improvement Tracking",
   "Executive Reports",
   "Project Prioritization",

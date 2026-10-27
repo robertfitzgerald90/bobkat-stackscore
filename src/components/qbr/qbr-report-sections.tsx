@@ -511,82 +511,106 @@ export function QbrInvestmentPage({ data }: { data: QbrReportData }) {
   const deferred = budget?.deferredInvestment ?? 0;
   const monthly = budget?.monthlyServices ?? 0;
   const threeYear = budget?.estimatedThreeYearInvestment ?? 0;
+  const hasPlanningFigures = planned > 0 || deferred > 0 || monthly > 0 || threeYear > 0;
   const maxBar = Math.max(planned, completed, deferred, threeYear, 1);
+  const phaseInvestments = data.roadmapPhases.filter(
+    (phase) =>
+      (phase.oneTimeInvestment ?? 0) > 0 || (phase.monthlyRecurringInvestment ?? 0) > 0,
+  );
 
   return (
     <>
       <ReportSection
         title="Technology Investment"
-        subtitle="Executive view of planned, completed, and ongoing technology spend"
+        subtitle={
+          hasPlanningFigures
+            ? "Executive view of planned, completed, and ongoing technology spend"
+            : "Recorded technology spend and improvement progress for this review period"
+        }
         documentTheme={DOCUMENT_THEME}
       >
         {!budget ? (
           <QbrEmpty>
-            A living technology budget forecast is not available yet. Activate roadmap budgeting
-            to unlock planned vs completed investment visibility.
+            Implementation costs are scoped with Bobkat IT. This review focuses on technology
+            improvement progress—StackScore does not present speculative investment quotations here.
           </QbrEmpty>
         ) : (
           <>
             <div className="qbr-budget-grid">
-              <article className="qbr-budget-card">
-                <p className="qbr-budget-label">Planned Investment</p>
-                <p className="qbr-budget-value">{formatQbrCurrency(planned)}</p>
-              </article>
-              <article className="qbr-budget-card">
-                <p className="qbr-budget-label">Completed Investment</p>
-                <p className="qbr-budget-value">{formatQbrCurrency(completed)}</p>
-              </article>
-              <article className="qbr-budget-card qbr-budget-card-emphasize">
-                <p className="qbr-budget-label">Budget Utilization</p>
-                <p className="qbr-budget-value">
-                  {utilization !== null ? `${utilization}%` : "—"}
-                </p>
-              </article>
-              <article className="qbr-budget-card">
-                <p className="qbr-budget-label">Deferred Investment</p>
-                <p className="qbr-budget-value">{formatQbrCurrency(deferred)}</p>
-              </article>
-              <article className="qbr-budget-card">
-                <p className="qbr-budget-label">Monthly Services</p>
-                <p className="qbr-budget-value">{formatQbrCurrency(monthly)}/mo</p>
-              </article>
-              <article className="qbr-budget-card">
-                <p className="qbr-budget-label">Estimated 3-Year Investment</p>
-                <p className="qbr-budget-value">{formatQbrCurrency(threeYear)}</p>
-              </article>
+              {completed > 0 || hasPlanningFigures ? (
+                <article className="qbr-budget-card">
+                  <p className="qbr-budget-label">Completed Investment</p>
+                  <p className="qbr-budget-value">{formatQbrCurrency(completed)}</p>
+                </article>
+              ) : null}
+              {planned > 0 ? (
+                <article className="qbr-budget-card">
+                  <p className="qbr-budget-label">Planned Investment</p>
+                  <p className="qbr-budget-value">{formatQbrCurrency(planned)}</p>
+                </article>
+              ) : null}
+              {hasPlanningFigures ? (
+                <article className="qbr-budget-card qbr-budget-card-emphasize">
+                  <p className="qbr-budget-label">Budget Utilization</p>
+                  <p className="qbr-budget-value">
+                    {utilization !== null ? `${utilization}%` : "—"}
+                  </p>
+                </article>
+              ) : null}
+              {deferred > 0 ? (
+                <article className="qbr-budget-card">
+                  <p className="qbr-budget-label">Deferred Investment</p>
+                  <p className="qbr-budget-value">{formatQbrCurrency(deferred)}</p>
+                </article>
+              ) : null}
+              {monthly > 0 ? (
+                <article className="qbr-budget-card">
+                  <p className="qbr-budget-label">Monthly Services</p>
+                  <p className="qbr-budget-value">{formatQbrCurrency(monthly)}/mo</p>
+                </article>
+              ) : null}
+              {threeYear > 0 ? (
+                <article className="qbr-budget-card">
+                  <p className="qbr-budget-label">Estimated 3-Year Investment</p>
+                  <p className="qbr-budget-value">{formatQbrCurrency(threeYear)}</p>
+                </article>
+              ) : null}
             </div>
 
-            <div className="qbr-bar-compare">
-              {[
-                { label: "Completed", value: completed, className: "qbr-bar-fill" },
-                { label: "Planned", value: planned, className: "qbr-bar-fill qbr-bar-fill-secondary" },
-                { label: "Deferred", value: deferred, className: "qbr-bar-fill" },
-              ].map((row) => (
-                <div key={row.label}>
-                  <div className="qbr-bar-row-label">
-                    <span>{row.label}</span>
-                    <span>{formatQbrCurrency(row.value)}</span>
+            {hasPlanningFigures ? (
+              <div className="qbr-bar-compare">
+                {[
+                  { label: "Completed", value: completed, className: "qbr-bar-fill" },
+                  {
+                    label: "Planned",
+                    value: planned,
+                    className: "qbr-bar-fill qbr-bar-fill-secondary",
+                  },
+                  { label: "Deferred", value: deferred, className: "qbr-bar-fill" },
+                ].map((row) => (
+                  <div key={row.label}>
+                    <div className="qbr-bar-row-label">
+                      <span>{row.label}</span>
+                      <span>{formatQbrCurrency(row.value)}</span>
+                    </div>
+                    <div className="qbr-bar-track">
+                      <div
+                        className={row.className}
+                        style={{ width: `${Math.round((row.value / maxBar) * 100)}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="qbr-bar-track">
-                    <div
-                      className={row.className}
-                      style={{ width: `${Math.round((row.value / maxBar) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : null}
 
-            {data.roadmapPhases.some(
-              (phase) =>
-                (phase.oneTimeInvestment ?? 0) > 0 || (phase.monthlyRecurringInvestment ?? 0) > 0,
-            ) ? (
+            {phaseInvestments.length > 0 ? (
               <>
                 <h3 className="qbr-priority-group-title" style={{ marginTop: "1.75rem" }}>
                   Investment by Roadmap Phase
                 </h3>
                 <div className="qbr-budget-grid">
-                  {data.roadmapPhases.map((phase) => (
+                  {phaseInvestments.map((phase) => (
                     <article
                       key={`${phase.phaseName}-${phase.timeframe}`}
                       className="qbr-budget-card"
@@ -682,14 +706,14 @@ export function QbrRoadmapPage({ data }: { data: QbrReportData }) {
                         <p className="qbr-meta-label">Initiatives</p>
                         <p className="qbr-meta-value">{phase.initiativeCount}</p>
                       </div>
-                      <div className="qbr-meta-box">
-                        <p className="qbr-meta-label">Investment</p>
-                        <p className="qbr-meta-value">
-                          {(phase.oneTimeInvestment ?? 0) > 0
-                            ? formatQbrCurrency(phase.oneTimeInvestment ?? 0)
-                            : "Scoped in proposal"}
-                        </p>
-                      </div>
+                      {(phase.oneTimeInvestment ?? 0) > 0 ? (
+                        <div className="qbr-meta-box">
+                          <p className="qbr-meta-label">Investment</p>
+                          <p className="qbr-meta-value">
+                            {formatQbrCurrency(phase.oneTimeInvestment ?? 0)}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   </article>
                 </div>

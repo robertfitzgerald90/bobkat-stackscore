@@ -4,6 +4,7 @@ import {
   TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS,
 } from "@/lib/scoring/v2/maturity-level";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
+import { hasUnpublishedStubTitle } from "@/lib/recommendations/visibility";
 
 export type ExecutiveSummaryRecommendation = {
   title: string;
@@ -13,6 +14,7 @@ export type ExecutiveSummaryRecommendation = {
 export type BuildAssessmentExecutiveSummaryInput = {
   clientName?: string;
   overallScore: number;
+  /** Retained for callers; opening copy uses DOC-119 maturity only (SS-REL-013). */
   overallRatingLabel: string;
   hasCriticalExposure: boolean;
   strengths: string[];
@@ -33,22 +35,47 @@ function formatNaturalList(items: string[]): string {
 
 function subjectPhrase(clientName?: string): string {
   if (clientName?.trim()) {
-    return `${clientName.trim()}'s organization`;
+    return `${clientName.trim()}`;
   }
   return "This organization";
 }
 
-function recommendationTopic(title: string): string {
-  return title.trim().replace(/\?+$/, "").toLowerCase();
+/**
+ * Normalize recommendation titles for executive prose.
+ * Drops unfinished stub titles and strips mechanical "Improve {Pillar}:" prefixes.
+ */
+export function recommendationTopic(title: string): string | null {
+  const trimmed = title.trim();
+  if (!trimmed) return null;
+  if (hasUnpublishedStubTitle(trimmed)) return null;
+
+  let topic = trimmed
+    .replace(/^Improve\s+[^:]+:\s*/i, "")
+    .replace(/\?+$/, "")
+    .trim();
+
+  // Reject leftover raw question stems.
+  if (/^(is|are|do|does|did|has|have|can|should|will)\b/i.test(topic)) {
+    return null;
+  }
+
+  if (topic.length < 8) return null;
+
+  // Prefer sentence-case for imperative titles already written as recommendations.
+  if (/^[A-Z]/.test(topic) && !topic.includes(":")) {
+    return topic.charAt(0).toLowerCase() + topic.slice(1);
+  }
+
+  return topic.toLowerCase();
 }
 
 function buildOpeningParagraph(input: BuildAssessmentExecutiveSummaryInput): string {
   const level = getTechnologyMaturityLevel(input.overallScore);
   const maturityLabel = input.maturityTierLabel ?? level.label;
-  const maturityDescription = TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS[level.code].toLowerCase();
+  const maturityDescription = TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS[level.code];
   const subject = subjectPhrase(input.clientName);
 
-  return `${subject} currently reflects a ${maturityLabel.toLowerCase()} level of technology health. ${maturityDescription.charAt(0).toUpperCase()}${maturityDescription.slice(1)} The overall StackScore of ${input.overallScore} places the environment in the ${input.overallRatingLabel.toLowerCase()} range, establishing a clear baseline for improvement planning.`;
+  return `${subject} currently reflects a ${maturityLabel.toLowerCase()} level of technology maturity. ${maturityDescription} The overall StackScore of ${input.overallScore} establishes a clear baseline for improvement planning.`;
 }
 
 function buildStrengthsParagraph(strengths: string[]): string {
@@ -95,18 +122,21 @@ function buildRecommendationsParagraph(
     })),
   ).slice(0, 5);
 
-  if (prioritized.length === 0) {
-    return "";
+  const topics = prioritized
+    .map((recommendation) => recommendationTopic(recommendation.title))
+    .filter((topic): topic is string => Boolean(topic));
+
+  if (topics.length === 0) {
+    return "Priority improvement opportunities from this assessment should be reviewed with Bobkat IT to confirm sequencing, ownership, and implementation scope.";
   }
 
-  const topics = prioritized.map((recommendation) => recommendationTopic(recommendation.title));
   const topicList = formatNaturalList(topics);
   const hasUrgent = prioritized.some(
     (recommendation) =>
       recommendation.priority === "critical" || recommendation.priority === "high",
   );
 
-  if (prioritized.length === 1) {
+  if (topics.length === 1) {
     return hasUrgent
       ? `The most urgent improvement opportunity is ${topicList}, which should be addressed in the near term to reduce exposure.`
       : `A key improvement opportunity is ${topicList}, which would strengthen overall technology maturity when addressed.`;
@@ -116,7 +146,7 @@ function buildRecommendationsParagraph(
     ? "Near-term priorities should focus on"
     : "Recommended improvements include";
 
-  return `${opener} ${topicList}. These items represent the highest-impact opportunities identified during the assessment and are sequenced to deliver the strongest maturity gains first.`;
+  return `${opener} ${topicList}. These items represent the highest-priority opportunities identified during the assessment and provide a practical starting point for remediation planning.`;
 }
 
 function buildProjectionParagraph(input: BuildAssessmentExecutiveSummaryInput): string {
@@ -124,10 +154,20 @@ function buildProjectionParagraph(input: BuildAssessmentExecutiveSummaryInput): 
   const gain = projectedScore - input.overallScore;
 
   if (gain <= 0) {
-    return "Addressing the recommendations in this report will help sustain current maturity levels and reduce residual risk across the environment.";
+    return "Addressing the recommendations in this report will help sustain current maturity levels and reduce residual risk across the environment. Actual outcomes depend on implementation quality, sequencing, and organizational follow-through.";
   }
 
-  return `If the prioritized recommendations in this report are implemented, the StackScore could improve from ${input.overallScore} to ${projectedScore}, a gain of ${gain} point${gain === 1 ? "" : "s"}. That trajectory moves the organization meaningfully toward the 80+ maturity threshold associated with reliable, well-governed technology operations.`;
+  const projectedLevel = getTechnologyMaturityLevel(projectedScore);
+  let trajectory: string;
+  if (projectedScore >= 80) {
+    trajectory = `That trajectory would place the organization in the ${projectedLevel.label.toLowerCase()} maturity band on the StackScore scale, subject to successful implementation.`;
+  } else if (projectedScore >= 70) {
+    trajectory = `That trajectory would move the organization toward the managed maturity band associated with more consistent technology operations, subject to successful implementation.`;
+  } else {
+    trajectory = `That trajectory would strengthen the foundation for further maturity gains; additional approved initiatives would be required to reach higher maturity bands.`;
+  }
+
+  return `If the prioritized recommendations in this report are implemented, the StackScore could improve from ${input.overallScore} to ${projectedScore}, a potential gain of ${gain} point${gain === 1 ? "" : "s"}. ${trajectory}`;
 }
 
 function buildClosingParagraph(): string {

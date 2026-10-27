@@ -69,5 +69,8 @@ describe("buildAssessmentReportSections", () => {
     expect(sections.roadmapMilestones.length).toBeGreaterThanOrEqual(4);
     expect(sections.overallRiskBullets[0]).toContain("62");
     expect(sections.priorityBullets[0]).toContain("Enable MFA");
+    expect(sections.projectionImpact).toBe(baseSummary.projectionImpact);
+    expect(sections.totalImpact).toBe(baseSummary.projectionImpact);
+    expect(sections.totalImpact).not.toBeGreaterThan(baseSummary.projectionImpact);
   });
 });
