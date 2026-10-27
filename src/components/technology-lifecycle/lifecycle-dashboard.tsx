@@ -16,6 +16,10 @@ import {
   CLIENT_SECTION_EYEBROW,
   CLIENT_SURFACE_CARD,
 } from "@/lib/client-ui/tokens";
+import {
+  clientRecommendationsPath,
+  clientWorkspaceRoadmapPath,
+} from "@/lib/clients/paths";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { buttonClassName } from "@/components/ui/button";
@@ -115,35 +119,7 @@ export function LifecycleDashboard({
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
-          <div className="flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-primary" />
-            <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
-              Technology Budget Planning
-            </h2>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <BudgetRow label="Completed Investment" value={dashboard.budget.completedInvestment} />
-            <BudgetRow label="Planned Investment" value={dashboard.budget.plannedInvestment} />
-            <BudgetRow label="Deferred Investment" value={dashboard.budget.deferredInvestment} />
-            <BudgetRow
-              label="Monthly Services"
-              value={dashboard.budget.monthlyServices}
-              suffix="/mo"
-            />
-            <BudgetRow
-              label="Annual Services"
-              value={dashboard.budget.annualServices}
-              suffix="/yr"
-            />
-            <BudgetRow label="Future Refresh Budget" value={dashboard.budget.futureRefreshBudget} />
-            <BudgetRow
-              label="Estimated 3-Year Investment"
-              value={dashboard.budget.estimatedThreeYearInvestment}
-              emphasize
-            />
-          </div>
-        </section>
+        <BudgetPlanningPanel dashboard={dashboard} />
 
         <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
           <div className="flex items-center gap-2">
@@ -402,6 +378,154 @@ function BandCard({
       >
         {value}
       </span>
+    </div>
+  );
+}
+
+function BudgetPlanningPanel({
+  dashboard,
+}: {
+  dashboard: TechnologyLifecycleDashboard;
+}) {
+  const { budget, clientId } = dashboard;
+  const recommendationsHref = clientRecommendationsPath(clientId);
+  const roadmapHref = clientWorkspaceRoadmapPath(clientId);
+
+  return (
+    <section className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
+      <div className="flex items-center gap-2">
+        <Wallet className="h-4 w-4 text-primary" />
+        <h2 className={cn(CLIENT_SECTION_EYEBROW, "text-sm tracking-wide")}>
+          Technology Budget Planning
+        </h2>
+      </div>
+
+      {budget.presentationMode === "empty" ? (
+        <BudgetEmptyState
+          title="No financial plan on file yet"
+          body="StackScore has not recorded approved investments, contracted services, or actual expenditures for this organization. Recommendations may still be available for scoping."
+          recommendationsHref={recommendationsHref}
+          roadmapHref={roadmapHref}
+        />
+      ) : null}
+
+      {budget.presentationMode === "estimates_only" ? (
+        <BudgetEmptyState
+          title="Implementation costs require scoping"
+          body="Priority recommendations have been identified from your assessment, but estimated roadmap figures are preliminary planning inputs—not approved budgets or contracted spending. Bobkat IT scopes implementation costs before any commitment."
+          recommendationsHref={recommendationsHref}
+          roadmapHref={roadmapHref}
+        />
+      ) : null}
+
+      {budget.presentationMode === "verified" ? (
+        <div className="mt-4 space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Verified figures reflect completed work, approved phases, contracted recurring
+            services, and recorded refresh budgets—not automatic recommendation pricing.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <BudgetRow label="Completed investment" value={budget.completedInvestment} />
+            <BudgetRow label="Approved investment" value={budget.approvedInvestment} />
+            <BudgetRow
+              label="Contracted monthly services"
+              value={budget.contractedMonthlyServices}
+              suffix="/mo"
+            />
+            <BudgetRow
+              label="Contracted annual services"
+              value={budget.contractedAnnualServices}
+              suffix="/yr"
+            />
+            <BudgetRow label="Future refresh budget" value={budget.futureRefreshBudget} />
+            {budget.deferredInvestment > 0 ? (
+              <BudgetRow label="Deferred investment" value={budget.deferredInvestment} />
+            ) : null}
+          </div>
+          {budget.hasProposedEstimates ? (
+            <PreliminaryEstimatesSection budget={budget} />
+          ) : null}
+        </div>
+      ) : null}
+
+      {budget.presentationMode === "estimates_only" ? (
+        <PreliminaryEstimatesSection budget={budget} />
+      ) : null}
+    </section>
+  );
+}
+
+function BudgetEmptyState({
+  title,
+  body,
+  recommendationsHref,
+  roadmapHref,
+}: {
+  title: string;
+  body: string;
+  recommendationsHref: string;
+  roadmapHref: string;
+}) {
+  return (
+    <div className="mt-4 rounded-xl border border-dashed border-border/80 bg-muted/20 p-4">
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link
+          href={recommendationsHref}
+          className={buttonClassName({ variant: "default", size: "sm" })}
+        >
+          View recommendations
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
+        <Link
+          href={roadmapHref}
+          className={buttonClassName({ variant: "outline", size: "sm" })}
+        >
+          Open roadmap
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function PreliminaryEstimatesSection({
+  budget,
+}: {
+  budget: TechnologyLifecycleDashboard["budget"];
+}) {
+  return (
+    <div className="mt-4 space-y-3 rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+      <div>
+        <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-amber-900/80 dark:text-amber-200/90">
+          Preliminary estimates only
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          Derived from Technology Improvement Plan / roadmap modeling. These are not approved
+          investments, invoices, or contracted service amounts.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <BudgetRow label="Proposed one-time (estimate)" value={budget.proposedInvestment} />
+        <BudgetRow
+          label="Proposed monthly services (estimate)"
+          value={budget.proposedMonthlyServices}
+          suffix="/mo"
+        />
+        <BudgetRow
+          label="Proposed annual services (estimate)"
+          value={budget.proposedAnnualServices}
+          suffix="/yr"
+        />
+        {budget.deferredInvestment > 0 ? (
+          <BudgetRow label="Deferred (estimate)" value={budget.deferredInvestment} />
+        ) : null}
+        <BudgetRow
+          label="Preliminary 3-year outlook (estimate)"
+          value={budget.estimatedThreeYearInvestment}
+          emphasize
+        />
+      </div>
     </div>
   );
 }

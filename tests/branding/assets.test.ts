@@ -15,6 +15,9 @@ describe("Bobkat IT branding assets", () => {
     expect(bobkatLogoSrc()).toContain("/branding/new-bobkat-it-logo.png");
     expect(REPORT_TOKENS.logoPath).toContain("/branding/new-bobkat-it-logo.png");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo).toContain("/branding/new-bobkat-it-logo.png");
+    expect(EMAIL_BRAND_ASSETS.bobkatItLogo.startsWith("https://")).toBe(true);
+    expect(EMAIL_BRAND_ASSETS.bobkatItLogo).not.toContain("staging.stackscore.tech");
+    expect(EMAIL_BRAND_ASSETS.bobkatItLogoAlt).toBe("Bobkat IT logo");
     expect(getPdfLogoPath()).toContain("new-bobkat-it-logo.png");
   });
 

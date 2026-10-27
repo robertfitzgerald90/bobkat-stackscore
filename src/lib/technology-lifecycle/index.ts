@@ -2,6 +2,7 @@ export type {
   ConsultingWorkspaceClient,
   ConsultingWorkspaceSummary,
   LifecycleBudgetPlan,
+  LifecycleBudgetPresentationMode,
   LifecycleHealthBand,
   LifecycleInitiativeEffectiveness,
   LifecycleManagedServiceLink,
@@ -11,7 +12,7 @@ export type {
   TechnologyLifecycleDashboard,
 } from "./types";
 
-export { computeLifecycleBudget } from "./budget";
+export { computeLifecycleBudget, effectivePhaseAnnualRecurring } from "./budget";
 export { buildRefreshEvents } from "./refresh";
 export { evaluatePostPhaseOpportunities } from "./opportunity";
 export {

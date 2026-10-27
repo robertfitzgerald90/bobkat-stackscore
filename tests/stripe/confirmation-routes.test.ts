@@ -14,6 +14,11 @@ describe("post-purchase confirmation pages", () => {
     );
 
     expect(assessmentPage).toContain("Your Technology Maturity Assessment Is Ready");
+    expect(assessmentPage).toContain("activation email has been sent");
+    expect(assessmentPage).toContain("Spam or Junk");
+    expect(assessmentPage).toContain("Not Spam");
+    expect(assessmentPage).toContain("manual_review");
+    expect(assessmentPage).toContain("have not sent an activation email yet");
     expect(assessmentPage).toContain("index: false");
     expect(assessmentPage).toContain("force-dynamic");
     expect(assessmentPage).toContain("verifyAssessmentConfirmation");

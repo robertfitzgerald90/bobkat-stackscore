@@ -14,12 +14,23 @@ export type AssessmentConfirmationPrimaryCta =
   | { kind: "sign_in"; href: string; label: "Sign In to Continue" }
   | { kind: "return_home"; href: "/"; label: "Return Home" };
 
+/**
+ * Fulfillment-aware email messaging for the confirmation page.
+ * Never claim an activation email was sent unless purchase is fulfilled.
+ */
+export type AssessmentConfirmationEmailState =
+  | "fulfillment_pending"
+  | "activation_email_sent"
+  | "manual_review"
+  | "other";
+
 export type AssessmentConfirmationResult =
   | { status: "invalid" }
   | { status: "pending"; primaryCta: AssessmentConfirmationPrimaryCta }
   | {
       status: "verified";
       primaryCta: AssessmentConfirmationPrimaryCta;
+      emailState: AssessmentConfirmationEmailState;
       analytics: {
         /** Stripe Checkout Session id — used only for GA transaction dedupe, never rendered. */
         transactionId: string;
@@ -113,6 +124,18 @@ export async function verifyAssessmentConfirmation(
       paymentProvider: "stripe" as const,
     };
 
+    let emailState: AssessmentConfirmationEmailState = "fulfillment_pending";
+    if (!purchase) {
+      emailState = "fulfillment_pending";
+    } else if (purchase.status === "fulfilled") {
+      // Fulfillment path always attempts activation or assessment-ready email when fulfilled.
+      emailState = "activation_email_sent";
+    } else if (purchase.status === "manual_review") {
+      emailState = "manual_review";
+    } else {
+      emailState = "other";
+    }
+
     const currentSession = await auth();
     const isAuthenticatedOwner =
       Boolean(currentSession?.user?.id) &&
@@ -151,6 +174,7 @@ export async function verifyAssessmentConfirmation(
     return {
       status: "verified",
       primaryCta,
+      emailState,
       analytics,
     };
   } catch {

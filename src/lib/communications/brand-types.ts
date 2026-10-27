@@ -1,5 +1,10 @@
 import { BRAND } from "@/lib/branding";
-import { EMAIL_BRAND_ASSETS } from "@/emails/assets";
+import {
+  EMAIL_BRAND_ASSETS,
+  EMAIL_FOOTER_TAGLINE,
+  normalizeEmailFooterTagline,
+  resolvePublicEmailLogoUrl,
+} from "@/emails/assets";
 import { emailTokens } from "@/emails/tokens";
 
 export type SocialLink = {
@@ -76,7 +81,7 @@ export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
   supportPhone: BRAND.phone,
   address: "",
   copyrightText: `© ${new Date().getFullYear()} ${BRAND.companyName}. All rights reserved.`,
-  footerTagline: "BUILD · ADVISE · STABILIZE",
+  footerTagline: EMAIL_FOOTER_TAGLINE,
   socialLinks: [],
   componentSettings: {
     primaryButton: {
@@ -91,10 +96,22 @@ export const DEFAULT_COMMUNICATION_BRAND: CommunicationBrandConfig = {
 export function normalizeBrandConfig(
   input: Partial<CommunicationBrandConfig> | null | undefined,
 ): CommunicationBrandConfig {
-  if (!input) return DEFAULT_COMMUNICATION_BRAND;
+  if (!input) {
+    return {
+      ...DEFAULT_COMMUNICATION_BRAND,
+      primaryLogoUrl: resolvePublicEmailLogoUrl(DEFAULT_COMMUNICATION_BRAND.primaryLogoUrl),
+      footerTagline: EMAIL_FOOTER_TAGLINE,
+    };
+  }
   return {
     ...DEFAULT_COMMUNICATION_BRAND,
     ...input,
+    primaryLogoUrl: resolvePublicEmailLogoUrl(
+      input.primaryLogoUrl ?? DEFAULT_COMMUNICATION_BRAND.primaryLogoUrl,
+    ),
+    footerTagline: normalizeEmailFooterTagline(
+      input.footerTagline ?? DEFAULT_COMMUNICATION_BRAND.footerTagline,
+    ),
     socialLinks: input.socialLinks ?? DEFAULT_COMMUNICATION_BRAND.socialLinks,
     componentSettings: {
       ...DEFAULT_COMMUNICATION_BRAND.componentSettings,

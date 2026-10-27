@@ -41,14 +41,52 @@ export type LifecycleRefreshEvent = {
   urgency: "overdue" | "upcoming" | "planned";
 };
 
+/** How the customer-facing budget panel should present numbers. */
+export type LifecycleBudgetPresentationMode =
+  | "verified"
+  | "estimates_only"
+  | "empty";
+
+/**
+ * Lifecycle budget figures with explicit financial categories.
+ * Proposed TIP/roadmap estimates must never be labeled as approved spend.
+ */
 export type LifecycleBudgetPlan = {
+  /** One-time spend on completed phases (realized / historical). */
   completedInvestment: number;
+  /** One-time on approved or in-progress phases. */
+  approvedInvestment: number;
+  /** One-time on planned / awaiting_approval phases (TIP estimates). */
+  proposedInvestment: number;
+  /**
+   * Legacy aggregate: approved + proposed one-time (QBR / older callers).
+   * Prefer approvedInvestment vs proposedInvestment in new UI.
+   */
   plannedInvestment: number;
   deferredInvestment: number;
+  /** Active billing recurring services (contracted). */
+  contractedMonthlyServices: number;
+  contractedAnnualServices: number;
+  /** Roadmap/TIP estimated monthly recurring (proposed). */
+  proposedMonthlyServices: number;
+  /** Roadmap/TIP effective annual recurring without monthly/annual double-count. */
+  proposedAnnualServices: number;
+  /**
+   * Effective monthly for projections: max(contracted, proposed) — not a sum.
+   * @deprecated Prefer contractedMonthlyServices / proposedMonthlyServices in UI.
+   */
   monthlyServices: number;
+  /**
+   * Effective annual for projections: max(contracted×12, proposed annual).
+   * @deprecated Prefer contractedAnnualServices / proposedAnnualServices in UI.
+   */
   annualServices: number;
   futureRefreshBudget: number;
+  /** Preliminary multi-year rollup — label as estimate when presentationMode !== verified. */
   estimatedThreeYearInvestment: number;
+  hasVerifiedFinancials: boolean;
+  hasProposedEstimates: boolean;
+  presentationMode: LifecycleBudgetPresentationMode;
 };
 
 export type LifecycleInitiativeEffectiveness = {
