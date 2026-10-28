@@ -21,6 +21,10 @@ import {
   isClientFacingRecommendationAudience,
 } from "@/lib/recommendations/visibility";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
+import {
+  exposeCatalogProjectedMaturity,
+  selectDemonstratedAssessmentStrengths,
+} from "@/lib/assessments/customer-trust";
 import type { Priority, Rating, RecommendationStatus, UserRole } from "@/generated/prisma/client";
 
 export type AudienceRecommendationInput = {
@@ -58,6 +62,8 @@ export function buildExecutiveSummaryFromResultsSummary(input: {
   clientName: string;
   summary: AssessmentResultsSummary;
   hasCriticalExposure: boolean;
+  /** Defaults to including catalog projection (staff). Customer paths pass false. */
+  includeCatalogProjectedMaturity?: boolean;
 }): string {
   const prioritized = sortByRecommendationPriority(
     input.summary.recommendations.filter(
@@ -71,15 +77,18 @@ export function buildExecutiveSummaryFromResultsSummary(input: {
     priority: row.priority,
   }));
 
+  const includeCatalogProjectedMaturity = input.includeCatalogProjectedMaturity !== false;
+
   return buildAssessmentExecutiveSummary({
     clientName: input.clientName,
     overallScore: input.summary.overallScore,
     overallRatingLabel: input.summary.overallRatingLabel,
     hasCriticalExposure: input.hasCriticalExposure,
-    strengths: input.summary.topStrengths.map((row) => row.categoryName),
+    strengths: selectDemonstratedAssessmentStrengths(input.summary.topStrengths),
     risks: input.summary.topRisks.map((row) => row.categoryName),
     topRecommendations,
     projectedScore: input.summary.projectedScore,
+    includeCatalogProjectedMaturity,
   });
 }
 
@@ -117,11 +126,13 @@ export function buildAudienceAssessmentPresentation(input: {
   );
 
   const customerAudience = isClientFacingRecommendationAudience(input.role);
+  const includeCatalogProjectedMaturity = exposeCatalogProjectedMaturity(input.role);
   const executiveSummary = customerAudience
     ? buildExecutiveSummaryFromResultsSummary({
         clientName: input.clientName,
         summary,
         hasCriticalExposure: input.hasCriticalExposure,
+        includeCatalogProjectedMaturity: false,
       })
     : input.storedExecutiveSummary?.trim()
       ? input.storedExecutiveSummary
@@ -129,6 +140,7 @@ export function buildAudienceAssessmentPresentation(input: {
           clientName: input.clientName,
           summary,
           hasCriticalExposure: input.hasCriticalExposure,
+          includeCatalogProjectedMaturity,
         });
 
   return {
@@ -172,6 +184,7 @@ export function buildAudienceAssessmentReportData(input: {
     completedAt: input.completedAt,
     executiveSummary: presentation.executiveSummary,
     summary: presentation.summary,
+    suppressCatalogProjectedMaturity: !exposeCatalogProjectedMaturity(input.role),
   };
 }
 

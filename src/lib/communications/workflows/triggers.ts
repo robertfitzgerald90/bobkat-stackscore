@@ -35,10 +35,6 @@ export async function triggerAssessmentCompleteWorkflow(input: {
     "client",
   ) as typeof assessment.recommendations;
 
-  const strengths = clientSafeRecommendations
-    .filter((rec) => rec.priority === "low" || rec.priority === "medium")
-    .slice(0, 3)
-    .map((rec) => rec.title);
   const priorities = clientSafeRecommendations
     .filter((rec) => rec.priority === "critical" || rec.priority === "high")
     .slice(0, 3)
@@ -51,10 +47,21 @@ export async function triggerAssessmentCompleteWorkflow(input: {
   const { buildAssessmentResultsSummary } = await import(
     "@/lib/assessments/results-summary"
   );
+  const { selectDemonstratedAssessmentStrengths } = await import(
+    "@/lib/assessments/customer-trust"
+  );
   const categoryScores = await prisma.assessmentCategoryScore.findMany({
     where: { assessmentId: assessment.id },
     include: { category: true },
   });
+  // SS-REL-015 / REL-014-C2: strengths must come from demonstrated pillar performance,
+  // never from remediation recommendation titles.
+  const strengths = selectDemonstratedAssessmentStrengths(
+    categoryScores.map((row) => ({
+      categoryName: row.category.name,
+      percentScore: Number(row.percentScore),
+    })),
+  );
   const overallScore =
     assessment.overallScore !== null && assessment.overallScore !== undefined
       ? Math.round(Number(assessment.overallScore))
@@ -87,6 +94,7 @@ export async function triggerAssessmentCompleteWorkflow(input: {
         clientName: assessment.client.companyName,
         summary: customerSafeSummary,
         hasCriticalExposure: assessment.hasCriticalExposure,
+        includeCatalogProjectedMaturity: false,
       })
     : assessment.executiveSummary;
 

@@ -36,9 +36,11 @@ export async function buildAssessmentCompleteEmailData(input: {
       `Organization: ${input.organizationName}`,
       `Assessment: ${input.assessmentName}`,
       `Completed: ${input.completedAt}`,
-      input.overallScore != null ? `Overall Technology Health Score: ${input.overallScore}` : "",
+      input.overallScore != null ? `StackScore: ${input.overallScore}` : "",
       ...(input.strengths?.length ? [`Top Strengths: ${input.strengths.join(" · ")}`] : []),
-      ...(input.priorities?.length ? [`Priority Improvements: ${input.priorities.join(" · ")}`] : []),
+      ...(input.priorities?.length
+        ? [`Priority Recommendations: ${input.priorities.join(" · ")}`]
+        : []),
     ].filter(Boolean),
     primaryCta: {
       label: "View Assessment Results",

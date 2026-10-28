@@ -114,11 +114,15 @@ export function TpWorkspaceSnapshot({
     <section className={cn(marketingPreview ? "space-y-3" : "space-y-4")}>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard label="StackScore" value={kpis.stackScore ?? "—"} emphasize />
-        <KpiCard
-          label="Projected"
-          value={kpis.projectedScore ?? "—"}
-          emphasize={kpis.projectedScore !== null}
-        />
+        {kpis.projectedScore !== null ? (
+          <KpiCard
+            label="Projected"
+            value={kpis.projectedScore}
+            emphasize
+          />
+        ) : (
+          <KpiCard label="Opportunities" value={kpis.immediateFocusCount} emphasize />
+        )}
         <KpiCard label="Open Projects" value={kpis.openProjectsCount} />
         <KpiCard
           label="Critical Recs"

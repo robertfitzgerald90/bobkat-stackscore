@@ -3,6 +3,12 @@ import {
   type GeneratedRecommendation,
 } from "@/lib/recommendations";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
+import {
+  countCustomerRecommendations,
+  getCustomerMaturityLabel,
+  isCustomerActiveOpportunityStatus,
+  type CustomerRecommendationCounts,
+} from "@/lib/assessments/customer-reporting";
 import { calculateProjectedScore, getRating, RATING_LABELS } from "@/lib/scoring";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
 
@@ -34,7 +40,10 @@ export type RecommendationSummary = {
 export type AssessmentResultsSummary = {
   overallScore: number;
   overallRating: Rating;
+  /** Legacy Rating label — staff/internal; prefer overallMaturityLabel for customers (SS-REL-016). */
   overallRatingLabel: string;
+  /** DOC-119 maturity label (Initial … Optimized) — customer-authoritative. */
+  overallMaturityLabel: string;
   /** Category-max projection impact (authoritative; DOC-111A). */
   projectionImpact: number;
   /** Naive sum of actionable estimatedImpactPoints — diagnostic only, never display as projected gain. */
@@ -42,7 +51,11 @@ export type AssessmentResultsSummary = {
   projectedScore: number;
   hasCriticalExposure: boolean;
   criticalFindingsCount: number;
+  /** status === open only (do not treat as all active opportunities). */
   openRecommendationsCount: number;
+  /** open + accepted + in_progress — customer “Improvement Opportunities”. */
+  activeImprovementOpportunityCount: number;
+  recommendationCounts: CustomerRecommendationCounts;
   categoryScores: CategoryScoreSummary[];
   topStrengths: CategoryScoreSummary[];
   topRisks: CategoryScoreSummary[];
@@ -114,9 +127,9 @@ export function buildAssessmentResultsSummary(
     }),
   );
 
-  const openRecommendationsCount = recommendationSummaries.filter(
-    (recommendation) => recommendation.status === "open",
-  ).length;
+  const recommendationCounts = countCustomerRecommendations(recommendationSummaries);
+  const openRecommendationsCount = recommendationCounts.open;
+  const activeImprovementOpportunityCount = recommendationCounts.activeOpportunities;
 
   const actionableForProjection = recommendations.filter(
     (recommendation) =>
@@ -149,9 +162,7 @@ export function buildAssessmentResultsSummary(
   const immediateActions = recommendationSummaries
     .filter(
       (recommendation) =>
-        (recommendation.status === "open" ||
-          recommendation.status === "accepted" ||
-          recommendation.status === "in_progress") &&
+        isCustomerActiveOpportunityStatus(recommendation.status) &&
         (recommendation.priority === "critical" || recommendation.priority === "high"),
     )
     .sort(
@@ -163,12 +174,15 @@ export function buildAssessmentResultsSummary(
     overallScore,
     overallRating,
     overallRatingLabel: RATING_LABELS[overallRating],
+    overallMaturityLabel: getCustomerMaturityLabel(overallScore),
     projectionImpact,
     rawImpactSum,
     projectedScore,
     hasCriticalExposure,
     criticalFindingsCount,
     openRecommendationsCount,
+    activeImprovementOpportunityCount,
+    recommendationCounts,
     categoryScores: categories,
     topStrengths,
     topRisks,

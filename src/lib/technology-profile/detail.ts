@@ -36,6 +36,7 @@ import {
 import { getClientJourneyTimeline } from "@/lib/technology-profile/timeline-build";
 import { buildPillarInsights } from "@/lib/technology-maturity/pillars";
 import { buildClientWorkspaceSnapshot } from "@/lib/client-workspace";
+import { resolveAudienceProjectedMaturityKpi } from "@/lib/assessments/customer-trust";
 import {
   computeTipDerivedState,
   parseWizardState,
@@ -292,8 +293,10 @@ export async function getTechnologyProfileDetail(
     scoreDelta,
   });
 
+  // Staff/internal: TIP wizard may drive projection. Client audience must never
+  // inherit unfinished/hidden TIP state (SS-REL-015 / REL-014-H2).
   const tipContext = resolveActiveTipContext({
-    tip: activeTipRecord,
+    tip: audience === "client" ? null : activeTipRecord,
     openRecommendations: openRecommendationRows.map((recommendation) => ({
       id: recommendation.id,
       title: recommendation.title,
@@ -312,8 +315,18 @@ export async function getTechnologyProfileDetail(
     recommendationSummaries,
   );
 
-  const projectedScore = tipContext.projectedScore ?? fallbackProjectedScore;
-  const longTermTargetScore = tipContext.longTermTargetScore ?? fallbackProjectedScore;
+  // Customer surfaces suppress catalog-impact projected maturity KPIs (SS-REL-015 / REL-014-C1).
+  // Staff retain tip-derived or recommendation-fallback projection for planning.
+  const projectedScore = resolveAudienceProjectedMaturityKpi({
+    isClientAudience: audience === "client",
+    tipProjectedScore: tipContext.projectedScore,
+    catalogFallbackProjectedScore: fallbackProjectedScore,
+  });
+  const longTermTargetScore = resolveAudienceProjectedMaturityKpi({
+    isClientAudience: audience === "client",
+    tipProjectedScore: tipContext.longTermTargetScore,
+    catalogFallbackProjectedScore: fallbackProjectedScore,
+  });
 
   const businessSnapshot = buildBusinessSnapshot({
     industry: client.industry,

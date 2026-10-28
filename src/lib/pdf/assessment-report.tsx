@@ -7,6 +7,8 @@ import {
   View,
 } from "@react-pdf/renderer";
 import { formatAssessmentType } from "@/lib/assessments/display";
+import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
+import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
 import type { RecommendationSummary } from "@/lib/assessments/results-summary";
 import { BRAND } from "@/lib/branding";
 import {
@@ -564,13 +566,18 @@ function CategoryScoreCard({
   categoryName,
   percentScore,
   rating,
+  useDoc119Maturity = false,
 }: {
   categoryName: string;
   percentScore: number;
   rating: Rating;
+  useDoc119Maturity?: boolean;
 }) {
   const roundedScore = Math.round(percentScore);
   const fillWidth = `${Math.max(0, Math.min(100, roundedScore))}%`;
+  const classificationLabel = useDoc119Maturity
+    ? getCustomerMaturityLabel(roundedScore)
+    : RATING_LABELS[rating];
 
   return (
     <PdfCornerBrackets corners="two" tone="ink">
@@ -589,8 +596,10 @@ function CategoryScoreCard({
         </View>
 
         <View style={styles.categoryRatingRow}>
-          <Text style={styles.categoryRatingLabel}>Rating:</Text>
-          <Text style={styles.categoryRatingValue}>{RATING_LABELS[rating]}</Text>
+          <Text style={styles.categoryRatingLabel}>
+            {useDoc119Maturity ? "Maturity:" : "Rating:"}
+          </Text>
+          <Text style={styles.categoryRatingValue}>{classificationLabel}</Text>
         </View>
       </View>
     </PdfCornerBrackets>
@@ -620,8 +629,8 @@ function RecommendationCard({
           <PdfPriorityBadge priority={priority} />
         </View>
         <View style={styles.recommendationField}>
-          <Text style={styles.recommendationFieldLabel}>Potential Score Impact</Text>
-          <Text style={styles.recommendationImpact}>+{estimatedImpactPoints} points</Text>
+          <Text style={styles.recommendationFieldLabel}>Estimated Priority Impact</Text>
+          <Text style={styles.recommendationImpact}>+{estimatedImpactPoints} pts</Text>
         </View>
         {suggestedService ? (
           <View style={styles.recommendationField}>
@@ -747,6 +756,14 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
     executiveSummary,
   } = data;
 
+  const suppressCatalogProjectedMaturity = Boolean(data.suppressCatalogProjectedMaturity);
+  const maturityLabel =
+    summary.overallMaturityLabel ?? getCustomerMaturityLabel(summary.overallScore);
+  const scoreClassificationLabel = suppressCatalogProjectedMaturity
+    ? maturityLabel
+    : summary.overallRatingLabel;
+  const opportunityCount =
+    summary.activeImprovementOpportunityCount ?? summary.openRecommendationsCount;
   const generatedDate = formatGeneratedDate();
   const assessmentTypeLabel = formatAssessmentType(assessmentType);
 
@@ -773,63 +790,92 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
   const projectionImpact = summary.projectionImpact;
 
   const overallRiskBullets = [
-    `Overall StackScore: ${summary.overallScore} / 100 (${summary.overallRatingLabel})`,
+    `Overall StackScore: ${summary.overallScore} / 100 (${scoreClassificationLabel})`,
     summary.hasCriticalExposure
       ? `${summary.criticalFindingsCount} critical security or recovery gap${summary.criticalFindingsCount === 1 ? "" : "s"} identified`
       : "No critical exposure flags were triggered in this assessment",
-    `${summary.openRecommendationsCount} open recommendation${summary.openRecommendationsCount === 1 ? "" : "s"} requiring follow-up`,
+    `${opportunityCount} improvement opportunit${opportunityCount === 1 ? "y" : "ies"} requiring follow-up (${summary.openRecommendationsCount} open)`,
   ];
 
-  const strengthBullets = summary.topStrengths.map(
-    (strength) =>
-      `${strength.categoryName}: ${Math.round(strength.percentScore)}% (${RATING_LABELS[strength.rating]})`,
-  );
+  const strengthBullets = summary.topStrengths
+    .filter((strength) => strength.percentScore >= MEANINGFUL_STRENGTH_MIN_PERCENT)
+    .map((strength) => {
+      const score = Math.round(strength.percentScore);
+      const label = suppressCatalogProjectedMaturity
+        ? getCustomerMaturityLabel(score)
+        : RATING_LABELS[strength.rating];
+      return `${strength.categoryName}: ${score}% (${label})`;
+    });
 
-  const riskBullets = summary.topRisks.map(
-    (risk) => `${risk.categoryName}: ${Math.round(risk.percentScore)}% (${RATING_LABELS[risk.rating]})`,
-  );
+  const riskBullets = summary.topRisks.map((risk) => {
+    const score = Math.round(risk.percentScore);
+    const label = suppressCatalogProjectedMaturity
+      ? getCustomerMaturityLabel(score)
+      : RATING_LABELS[risk.rating];
+    return `${risk.categoryName}: ${score}% (${label})`;
+  });
 
   const priorityBullets =
     summary.immediateActions.length > 0
       ? summary.immediateActions.map(
-          (action) => `${action.title} (+${action.estimatedImpactPoints} pts)`,
+          (action) =>
+            `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
         )
       : sortedRecommendations.slice(0, 3).map(
-          (action) => `${action.title} (+${action.estimatedImpactPoints} pts)`,
+          (action) =>
+            `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
         );
 
-  const improvementBullets = [
-    `Current score: ${summary.overallScore} → Projected score: ${summary.projectedScore}`,
-    `Estimated improvement: +${estimatedImprovement} point${estimatedImprovement === 1 ? "" : "s"} if recommendations are addressed`,
-    `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
-  ];
+  const improvementBullets = suppressCatalogProjectedMaturity
+    ? [
+        `Current StackScore: ${summary.overallScore} (${maturityLabel})`,
+        `${opportunityCount} improvement opportunit${
+          opportunityCount === 1 ? "y" : "ies"
+        } identified for follow-up`,
+        "Roadmap progress tracks approved initiatives; official StackScore updates after reassessment",
+      ]
+    : [
+        `Current score: ${summary.overallScore} → Projected score: ${summary.projectedScore}`,
+        `Estimated improvement: +${estimatedImprovement} point${estimatedImprovement === 1 ? "" : "s"} if recommendations are addressed`,
+        `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
+      ];
 
   const overviewBullets = executiveSummary
     ? executiveSummary
         .split(/\n+/)
         .map((line) => line.trim())
         .filter(Boolean)
-    : [
-        `${clientName} was assessed across core technology maturity categories.`,
-        `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
-      ];
+    : suppressCatalogProjectedMaturity
+      ? [
+          `${clientName} was assessed across core technology maturity categories.`,
+          `The current StackScore is ${summary.overallScore}. Prioritized recommendations identify improvement opportunities for follow-through.`,
+        ]
+      : [
+          `${clientName} was assessed across core technology maturity categories.`,
+          `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
+        ];
 
   const roadmapMilestones: Array<{
     label: string;
     score: number;
     highlight: boolean;
     isTarget?: boolean;
-  }> = [
-    { label: "Current StackScore", score: roadmap.current, highlight: false },
-    { label: "After Critical Recommendations", score: roadmap.afterCritical, highlight: false },
-    {
-      label: "After Critical + High Recommendations",
-      score: roadmap.afterCriticalAndHigh,
-      highlight: true,
-    },
-    { label: "After All Recommendations", score: summary.projectedScore, highlight: false },
-    { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
-  ];
+  }> = suppressCatalogProjectedMaturity
+    ? [
+        { label: "Current StackScore", score: roadmap.current, highlight: true },
+        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
+      ]
+    : [
+        { label: "Current StackScore", score: roadmap.current, highlight: false },
+        { label: "After Critical Recommendations", score: roadmap.afterCritical, highlight: false },
+        {
+          label: "After Critical + High Recommendations",
+          score: roadmap.afterCriticalAndHigh,
+          highlight: true,
+        },
+        { label: "After All Recommendations", score: summary.projectedScore, highlight: false },
+        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
+      ];
 
   return (
     <Document
@@ -859,37 +905,49 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
         <PdfFlowSection
           title="Recommendation Summary"
-          subtitle="Prioritized remediation opportunities and projected StackScore impact"
+          subtitle={
+            suppressCatalogProjectedMaturity
+              ? "Prioritized remediation opportunities and estimated priority impact"
+              : "Prioritized remediation opportunities and projected StackScore impact"
+          }
         >
           <View wrap={false} style={styles.scoreRow}>
             <PdfScoreGauge
               score={summary.overallScore}
               label="Current StackScore"
-              ratingLabel={summary.overallRatingLabel}
+              ratingLabel={scoreClassificationLabel}
               bracketCorners="four"
             />
-            <PdfScoreGauge
-              score={summary.projectedScore}
-              label="Projected StackScore"
-              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-              variant="accent"
-              barVariant="improvement"
-              bracketCorners="two"
-            />
+            {suppressCatalogProjectedMaturity ? null : (
+              <PdfScoreGauge
+                score={summary.projectedScore}
+                label="Projected StackScore"
+                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+                variant="accent"
+                barVariant="improvement"
+                bracketCorners="two"
+              />
+            )}
           </View>
 
           <View style={styles.summaryGrid}>
             <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{clientRecommendations.length}</Text>
-              <Text style={styles.summaryStatLabel}>Total Recommendations</Text>
+              <Text style={styles.summaryStatLabel}>Identified Recommendations</Text>
             </View>
             <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>{summary.openRecommendationsCount}</Text>
-              <Text style={styles.summaryStatLabel}>Open Items</Text>
+              <Text style={styles.summaryStatValue}>{opportunityCount}</Text>
+              <Text style={styles.summaryStatLabel}>Improvement Opportunities</Text>
             </View>
             <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>+{projectionImpact}</Text>
-              <Text style={styles.summaryStatLabel}>Projected Impact</Text>
+              <Text style={styles.summaryStatValue}>
+                {suppressCatalogProjectedMaturity
+                  ? String(criticalCount + highCount)
+                  : `+${projectionImpact}`}
+              </Text>
+              <Text style={styles.summaryStatLabel}>
+                {suppressCatalogProjectedMaturity ? "Priority Actions" : "Projected Impact"}
+              </Text>
             </View>
             <View wrap={false} style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{criticalCount + highCount}</Text>
@@ -903,7 +961,8 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
                 <Text style={styles.panelTitle}>Recommendation Index</Text>
                 <Text style={[styles.bodyText, { marginBottom: 0 }]}>
                   Sorted by priority (Critical → High → Medium → Low), then by highest
-                  potential score impact within each group.
+                  estimated priority impact within each group. Impact points guide planning
+                  and are not a guaranteed StackScore increase.
                 </Text>
               </View>
               <RecommendationIndex sortedRecommendations={sortedRecommendations} />
@@ -919,12 +978,16 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
         <PdfFlowSection
           title="Technology Maturity Roadmap"
-          subtitle="Phased StackScore improvement path for executive planning"
+          subtitle={
+            suppressCatalogProjectedMaturity
+              ? "Current maturity and target threshold for executive planning"
+              : "Phased StackScore improvement path for executive planning"
+          }
         >
           <Text style={styles.bodyText}>
-            This roadmap shows how your StackScore can improve as recommendations are addressed
-            in priority order. Use it to sequence remediation, allocate budget, and align
-            technology projects with business risk reduction.
+            {suppressCatalogProjectedMaturity
+              ? "Use this view to compare your current StackScore against the maturity target. Prioritized recommendations identify where remediation work should begin; StackScore improvement is confirmed through reassessment."
+              : "This roadmap shows how your StackScore can improve as recommendations are addressed in priority order. Use it to sequence remediation, allocate budget, and align technology projects with business risk reduction."}
           </Text>
 
           {roadmapMilestones.map((milestone) => (
@@ -971,17 +1034,19 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             <PdfScoreGauge
               score={summary.overallScore}
               label="Current StackScore"
-              ratingLabel={summary.overallRatingLabel}
+              ratingLabel={scoreClassificationLabel}
               bracketCorners="four"
             />
-            <PdfScoreGauge
-              score={summary.projectedScore}
-              label="Projected StackScore"
-              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-              variant="accent"
-              barVariant="improvement"
-              bracketCorners="two"
-            />
+            {suppressCatalogProjectedMaturity ? null : (
+              <PdfScoreGauge
+                score={summary.projectedScore}
+                label="Projected StackScore"
+                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+                variant="accent"
+                barVariant="improvement"
+                bracketCorners="two"
+              />
+            )}
           </View>
 
           {summary.hasCriticalExposure ? (
@@ -996,10 +1061,19 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
           <View style={styles.panel}>
             <PdfBulletSection title="Overall Risk" items={overallRiskBullets} />
-            <PdfBulletSection title="Top Strengths" items={strengthBullets} />
+            {strengthBullets.length > 0 ? (
+              <PdfBulletSection title="Top Strengths" items={strengthBullets} />
+            ) : null}
             <PdfBulletSection title="Top Risks" items={riskBullets} />
             <PdfBulletSection title="Immediate Priorities" items={priorityBullets} />
-            <PdfBulletSection title="Projected Improvement" items={improvementBullets} />
+            <PdfBulletSection
+              title={
+                suppressCatalogProjectedMaturity
+                  ? "Improvement Opportunities"
+                  : "Projected Improvement"
+              }
+              items={improvementBullets}
+            />
             <PdfBulletSection title="Assessment Overview" items={overviewBullets} />
           </View>
         </PdfFlowSection>
@@ -1021,6 +1095,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
                 categoryName={category.categoryName}
                 percentScore={category.percentScore}
                 rating={category.rating}
+                useDoc119Maturity={suppressCatalogProjectedMaturity}
               />
             ))
           )}
@@ -1035,8 +1110,9 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           subtitle="Prioritized remediation guidance with business impact and service alignment"
         >
           <Text style={styles.bodyText}>
-            Recommendations are organized by priority. Each card includes potential score
-            impact, recommended service, and business impact to support project planning.
+            Recommendations are organized by priority. Each card includes estimated priority
+            impact (planning guidance, not a guaranteed StackScore increase), recommended
+            service, and business impact to support project planning.
           </Text>
 
           {recommendationsByPriority.length === 0 ? (
@@ -1059,23 +1135,29 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
         <View>
           <PdfClosingHero
             title="Technology Improvement Plan"
-            subtitle="A prioritized path from current maturity to your projected StackScore target"
+            subtitle={
+              suppressCatalogProjectedMaturity
+                ? "A prioritized path from current maturity toward stronger operational readiness"
+                : "A prioritized path from current maturity to your projected StackScore target"
+            }
           />
 
           <View wrap={false} style={styles.scoreRow}>
             <PdfScoreGauge
               score={summary.overallScore}
               label="Current Score"
-              ratingLabel={summary.overallRatingLabel}
+              ratingLabel={scoreClassificationLabel}
               bracketCorners="four"
             />
-            <PdfScoreGauge
-              score={summary.projectedScore}
-              label="Projected Score"
-              ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-              variant="accent"
-              bracketCorners="two"
-            />
+            {suppressCatalogProjectedMaturity ? null : (
+              <PdfScoreGauge
+                score={summary.projectedScore}
+                label="Projected Score"
+                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
+                variant="accent"
+                bracketCorners="two"
+              />
+            )}
           </View>
 
           <View style={styles.closingStatGrid}>

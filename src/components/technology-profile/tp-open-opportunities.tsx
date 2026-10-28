@@ -107,7 +107,7 @@ export function TpOpenOpportunities({
                 className="mb-2 space-y-1"
               />
               <p className="text-xs text-muted-foreground">
-                +{recommendation.estimatedImpactPoints} pts estimated maturity impact ·{" "}
+                Estimated priority impact: +{recommendation.estimatedImpactPoints} pts ·{" "}
                 {RECOMMENDATION_STATUS_LABELS[recommendation.status]}
                 {recommendation.project ? (
                   <> · Project: {formatProjectStatus(recommendation.project.status)}</>

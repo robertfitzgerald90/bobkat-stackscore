@@ -9,24 +9,41 @@ export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboa
 
   const items = [
     {
-      label: "Current StackScore",
+      label: "Official StackScore",
       value: dashboard.scoreJourney.baselineScore,
       score: true,
     },
-    {
-      label: "Effective StackScore",
-      value: dashboard.scoreJourney.effectiveScore,
-      score: true,
-    },
-    {
-      label: "Projected StackScore",
-      value: dashboard.scoreJourney.projectedFinalScore,
-      score: true,
-    },
-    {
-      label: "Roadmap Completion",
-      value: `${dashboard.metrics.completionPercent}%`,
-    },
+    ...(showSpeculativeFinancials
+      ? [
+          {
+            label: "Effective StackScore",
+            value: dashboard.scoreJourney.effectiveScore,
+            score: true,
+          },
+          {
+            label: "Projected StackScore",
+            value: dashboard.scoreJourney.projectedFinalScore,
+            score: true,
+          },
+        ]
+      : [
+          {
+            label: "Roadmap Progress",
+            value: `${dashboard.metrics.completionPercent}%`,
+          },
+          {
+            label: "Remaining Opportunities",
+            value: dashboard.scoreJourney.remainingOpportunity,
+          },
+        ]),
+    ...(showSpeculativeFinancials
+      ? [
+          {
+            label: "Roadmap Completion",
+            value: `${dashboard.metrics.completionPercent}%`,
+          },
+        ]
+      : []),
     {
       label: "Current Phase",
       value: dashboard.metrics.currentPhaseName ?? "Complete",

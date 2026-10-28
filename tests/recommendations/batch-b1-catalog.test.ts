@@ -29,7 +29,9 @@ describe("SS-OPT-003B batch B1 catalog finalization", () => {
     expect(b1).toHaveLength(20);
     expect(new Set(b1.map((template) => template.id)).size).toBe(20);
     expect(b1.every((template) => template.isStub === false)).toBe(true);
-    expect(catalog.templates.filter((template) => template.isStub)).toHaveLength(60);
+    // SS-CONTENT-006 completed the catalog → 80 approved / 0 stubs overall.
+    expect(catalog.templates.filter((template) => template.isStub)).toHaveLength(0);
+    expect(catalog.templates.filter((template) => !template.isStub)).toHaveLength(80);
   });
 
   it("applies approved editorial and priority adjustments", () => {
@@ -64,10 +66,17 @@ describe("SS-OPT-003B batch B1 catalog finalization", () => {
     }
   });
 
-  it("does not rewrite non-B1 stub templates", () => {
+  it("publishes all non-B1 pillars with no remaining catalog stubs", () => {
+    const unfinished = others.filter((template) => template.isStub);
+    const laterPublished = others.filter((template) => !template.isStub);
     expect(others).toHaveLength(60);
-    expect(others.every((template) => template.isStub)).toBe(true);
-    expect(others.every((template) => template.title.startsWith("Improve "))).toBe(true);
+    expect(unfinished).toHaveLength(0);
+    expect(laterPublished).toHaveLength(60);
+    expect(laterPublished.every((template) => !template.title.startsWith("Improve "))).toBe(true);
+    expect(
+      laterPublished.some((template) => template.id.startsWith("REC-NW-")) &&
+        laterPublished.some((template) => template.id.startsWith("REC-PC-")),
+    ).toBe(true);
   });
 
   it("still triggers and dedupes B1 templates from No answers", () => {
@@ -94,12 +103,27 @@ describe("SS-OPT-003B batch B1 catalog finalization", () => {
       templateCode: template.id,
       latestTriggerReason: "test",
     }));
-    const stubRows = others.slice(0, 3).map((template) => ({
-      id: template.id,
-      title: template.title,
-      templateCode: template.id,
-      latestTriggerReason: "test",
-    }));
+    // Synthetic unfinished fixtures — catalog no longer carries real stubs (SS-CONTENT-006).
+    const stubRows = [
+      {
+        id: "synthetic-1",
+        title: "Improve Synthetic Network Gap",
+        templateCode: "REC-TEST-STUB-001",
+        latestTriggerReason: "test",
+      },
+      {
+        id: "synthetic-2",
+        title: "Improve Synthetic Collaboration Gap",
+        templateCode: "REC-TEST-STUB-002",
+        latestTriggerReason: "test",
+      },
+      {
+        id: "synthetic-3",
+        title: "Improve Synthetic Documentation Gap",
+        templateCode: "REC-TEST-STUB-003",
+        latestTriggerReason: "test",
+      },
+    ];
 
     expect(presentRecommendationsForRole(approvedRows, "client")).toHaveLength(20);
     expect(presentRecommendationsForRole(stubRows, "client")).toHaveLength(0);

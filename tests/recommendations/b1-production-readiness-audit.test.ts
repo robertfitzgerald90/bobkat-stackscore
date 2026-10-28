@@ -76,13 +76,15 @@ describe("SS-OPT-003B Phase 1 — catalog integrity", () => {
   const stubs = templates.filter((t) => t.isStub);
   const published = templates.filter((t) => !t.isStub);
 
-  it("has exactly 80 unique templates with 20 published B1 and 60 stubs", () => {
+  it("has exactly 80 unique templates with B1 published and remaining unfinished stubs", () => {
     expect(templates).toHaveLength(80);
     expect(new Set(templates.map((t) => t.id)).size).toBe(80);
-    expect(published).toHaveLength(20);
-    expect(stubs).toHaveLength(60);
+    // SS-CONTENT-006 completed the catalog → 80 approved / 0 stubs. B1 IA/SO remain published.
+    expect(published).toHaveLength(80);
+    expect(stubs).toHaveLength(0);
     expect(b1.every((t) => t.isStub === false)).toBe(true);
-    expect(published.map((t) => t.id).sort()).toEqual([...B1_IDS].sort());
+    expect(B1_IDS.every((id) => published.some((t) => t.id === id))).toBe(true);
+    expect(new Set(published.map((t) => t.pillarCode)).size).toBe(8);
   });
 
   it("resolves every template to a valid pillar and question reference", () => {
@@ -134,9 +136,9 @@ describe("SS-OPT-003B Phase 1 — catalog integrity", () => {
     ).toBe(true);
   });
 
-  it("keeps remaining stubs as mechanical Improve titles", () => {
-    expect(stubs.every((t) => t.title.startsWith("Improve "))).toBe(true);
-    expect(stubs.every((t) => !B1_IDS.includes(t.id))).toBe(true);
+  it("has no remaining catalog stubs or Improve titles on published templates", () => {
+    expect(stubs).toHaveLength(0);
+    expect(published.every((t) => !t.title.startsWith("Improve "))).toBe(true);
   });
 });
 
@@ -289,7 +291,7 @@ describe("SS-OPT-003B Phase 3 — database synchronization contracts", () => {
     expect(result.ok).toBe(true);
     expect(result.skippedMissingCategory.length).toBeGreaterThan(0);
     expect(result.skippedMissingCategory).toContain("REC-SO-001");
-    expect(result.approvedCodes).toHaveLength(20);
+    expect(result.approvedCodes).toHaveLength(80);
     expect(upsert.mock.calls.every((call) => call[0].where.code.startsWith("REC-IA-"))).toBe(true);
   });
 
@@ -311,8 +313,8 @@ describe("SS-OPT-003B Phase 4 — client delivery safeguards", () => {
   };
   const stubRow = {
     id: "s1",
-    title: "Improve Endpoint Management",
-    templateCode: "REC-EP-001",
+    title: "Improve Network & Connectivity",
+    templateCode: "REC-TEST-STUB-001",
   };
   const stalePublishedRow = {
     id: "stale",
@@ -330,17 +332,22 @@ describe("SS-OPT-003B Phase 4 — client delivery safeguards", () => {
     expect(filterClientDeliverableRecommendations(rows, "admin")).toEqual(rows);
     expect(presentRecommendationsForRole([stubRow], "client")).toHaveLength(0);
     expect(isClientFacingRecommendationAudience("client")).toBe(true);
-    expect(isStubRecommendationTemplate("REC-EP-001")).toBe(true);
-    expect(hasUnpublishedStubTitle("Improve Endpoint Management")).toBe(true);
+    expect(isStubRecommendationTemplate("REC-TEST-STUB-001")).toBe(true);
+    expect(hasUnpublishedStubTitle("Improve Network & Connectivity")).toBe(true);
   });
 
   it("assessment PDF route filters deliverables and suffixes internal filenames", () => {
-    const source = readFileSync(
+    const routeSource = readFileSync(
       join(process.cwd(), "src/app/api/v1/assessments/[id]/export/pdf/route.ts"),
       "utf8",
     );
-    expect(source).toContain("filterClientDeliverableRecommendations");
-    expect(source).toContain("-internal");
+    const audienceSource = readFileSync(
+      join(process.cwd(), "src/lib/assessments/customer-facing-report.ts"),
+      "utf8",
+    );
+    expect(routeSource).toContain("buildAudienceAssessmentReportData");
+    expect(routeSource).toContain("-internal");
+    expect(audienceSource).toContain("filterClientDeliverableRecommendations");
   });
 
   it("client roadmap and email workflows apply stub/title gates", () => {
@@ -379,7 +386,7 @@ describe("SS-OPT-003B Phase 5 — end-to-end maturity scenarios (automated)", ()
       const isInfra =
         template.pillarCode === "endpoint_management" ||
         template.pillarCode === "network_connectivity" ||
-        template.pillarCode === "backup_recovery";
+        template.pillarCode === "data_protection_recovery";
 
       if (mode === "low") {
         map.set(template.id, { answerText: "No", scoreValue: 0 });
@@ -408,22 +415,22 @@ describe("SS-OPT-003B Phase 5 — end-to-end maturity scenarios (automated)", ()
     expect(forStaff).toHaveLength(rows.length);
     expect(forClient.every((row) => !isStubRecommendationTemplate(row.templateCode))).toBe(true);
     expect(forClient.every((row) => !hasUnpublishedStubTitle(row.title))).toBe(true);
-    expect(forClient.every((row) => B1_IDS.includes(row.templateCode))).toBe(true);
+    expect(forClient.every((row) => row.templateCode.startsWith("REC-"))).toBe(true);
     return { forClient, forStaff };
   }
 
-  it("Scenario A — low maturity triggers broadly; clients only see published B1", () => {
+  it("Scenario A — low maturity triggers broadly; clients see all published templates", () => {
     const generated = evaluateV2Triggers(responsesForAnswers(scenarioAnswers("low")));
     expect(generated.length).toBe(80);
     const { forClient } = assertClientVisibility(generated);
-    expect(forClient).toHaveLength(20);
+    expect(forClient).toHaveLength(80);
   });
 
-  it("Scenario B — moderate maturity triggers partials; clients only see published B1", () => {
+  it("Scenario B — moderate maturity triggers partials; clients see all published templates", () => {
     const generated = evaluateV2Triggers(responsesForAnswers(scenarioAnswers("moderate")));
     expect(generated.length).toBe(80);
     const { forClient } = assertClientVisibility(generated);
-    expect(forClient).toHaveLength(20);
+    expect(forClient).toHaveLength(80);
   });
 
   it("Scenario C — high maturity generates no recommendations", () => {
@@ -432,15 +439,16 @@ describe("SS-OPT-003B Phase 5 — end-to-end maturity scenarios (automated)", ()
     expect(filterClientDeliverableRecommendations([], "client")).toHaveLength(0);
   });
 
-  it("Scenario D — mixed maturity surfaces IA/SO gaps; clients only see B1 from those pillars", () => {
+  it("Scenario D — mixed maturity surfaces IA/SO gaps; clients see published triggered pillars", () => {
     const generated = evaluateV2Triggers(responsesForAnswers(scenarioAnswers("mixed")));
     expect(generated.length).toBeGreaterThan(20);
     const { forClient } = assertClientVisibility(generated);
-    expect(forClient).toHaveLength(20);
-    expect(
-      forClient.every(
-        (row) => row.templateCode.startsWith("REC-IA-") || row.templateCode.startsWith("REC-SO-"),
-      ),
-    ).toBe(true);
+    // IA/SO = No; DK/TS/PC partials fire; EP/NW/DP = Yes (no trigger).
+    expect(forClient).toHaveLength(50);
+    expect(forClient.some((row) => row.templateCode.startsWith("REC-IA-"))).toBe(true);
+    expect(forClient.some((row) => row.templateCode.startsWith("REC-SO-"))).toBe(true);
+    expect(forClient.some((row) => row.templateCode.startsWith("REC-PC-"))).toBe(true);
+    expect(forClient.every((row) => !row.templateCode.startsWith("REC-NW-"))).toBe(true);
+    expect(forClient.every((row) => !row.templateCode.startsWith("REC-EP-"))).toBe(true);
   });
 });

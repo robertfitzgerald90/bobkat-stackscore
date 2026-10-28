@@ -13,7 +13,7 @@ describe("vCIO client recommendation visibility", () => {
     {
       id: "stub",
       title: "Improve Endpoint Management",
-      recommendationTemplate: { code: "REC-EP-001" },
+      recommendationTemplate: { code: "REC-TEST-STUB-001" },
     },
     {
       id: "stale",

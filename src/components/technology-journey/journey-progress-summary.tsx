@@ -80,14 +80,21 @@ export function JourneyProgressSummary({
   marketingPreview = false,
   clientId,
 }: JourneyProgressSummaryProps) {
+  // Omit null projected/target steps so customer views do not show empty catalog-impact KPIs (SS-REL-015).
   const steps: LadderStep[] = [
     { label: "Initial", score: initialScore },
     { label: "Current", score: currentScore, highlight: true },
-    { label: "Projected", score: projectedScore },
-    { label: "Target", score: targetScore },
+    ...(projectedScore !== null ? [{ label: "Projected", score: projectedScore }] : []),
+    ...(targetScore !== null ? [{ label: "Target", score: targetScore }] : []),
   ];
 
-  const openRecsLabel = marketingPreview ? "Open recommendations" : "Open recs";
+  const openRecsLabel = marketingPreview ? "Improvement opportunities" : "Opportunities";
+  const scoreGridCols =
+    steps.length <= 2
+      ? "grid-cols-2"
+      : steps.length === 3
+        ? "grid-cols-1 min-[400px]:grid-cols-3 sm:grid-cols-3"
+        : "grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4";
 
   return (
     <div className={cn("space-y-5", marketingPreview && "space-y-6")}>
@@ -118,8 +125,10 @@ export function JourneyProgressSummary({
             className={cn(
               "grid gap-2",
               marketingPreview
-                ? "grid-cols-2 lg:grid-cols-4 lg:gap-3"
-                : "grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4",
+                ? steps.length <= 2
+                  ? "grid-cols-2 lg:gap-3"
+                  : "grid-cols-2 lg:grid-cols-4 lg:gap-3"
+                : scoreGridCols,
             )}
           >
             {steps.map((step) => (

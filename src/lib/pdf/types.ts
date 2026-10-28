@@ -11,6 +11,11 @@ export type AssessmentReportData = {
   completedAt: string | null;
   executiveSummary: string | null;
   summary: AssessmentResultsSummary;
+  /**
+   * When true (customer PDF/report), omit catalog-impact projected StackScore KPIs
+   * while preserving summary.projectedScore for internal calc compatibility (SS-REL-015).
+   */
+  suppressCatalogProjectedMaturity?: boolean;
 };
 
 export const PRIORITY_ORDER: Priority[] = ["critical", "high", "medium", "low"];

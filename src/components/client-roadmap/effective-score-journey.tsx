@@ -4,20 +4,39 @@ import { CLIENT_METRIC_WELL, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens"
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
-export function EffectiveScoreJourneyView({ journey }: { journey: EffectiveScoreJourney }) {
-  const steps = [
-    { label: "Current", value: journey.baselineScore, emphasize: true },
-    { label: "Completed Work", value: `+${journey.completedImprovement}` },
-    { label: "Effective Score", value: journey.effectiveScore, emphasize: true },
-    { label: "Remaining Opportunity", value: journey.remainingOpportunity },
-    { label: "Projected Final", value: journey.projectedFinalScore, emphasize: true },
-  ];
+export function EffectiveScoreJourneyView({
+  journey,
+  showProjectedFinal = true,
+}: {
+  journey: EffectiveScoreJourney;
+  /** Staff/consultant only — customers omit catalog-impact projected final (SS-REL-015). */
+  showProjectedFinal?: boolean;
+}) {
+  const steps = showProjectedFinal
+    ? [
+        { label: "Official StackScore", value: journey.baselineScore, emphasize: true },
+        { label: "Completed Initiatives", value: `+${journey.completedImprovement}` },
+        { label: "Effective Score", value: journey.effectiveScore, emphasize: true },
+        { label: "Remaining Opportunity", value: journey.remainingOpportunity },
+        { label: "Projected Final", value: journey.projectedFinalScore, emphasize: true },
+      ]
+    : [
+        { label: "Official StackScore", value: journey.baselineScore, emphasize: true },
+        { label: "Completed Initiatives", value: `+${journey.completedImprovement}` },
+        { label: "Remaining Opportunities", value: journey.remainingOpportunity },
+      ];
 
   return (
     <div className={cn("rounded-xl border bg-card p-5", CLIENT_SURFACE_CARD)}>
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        StackScore Progress
+        {showProjectedFinal ? "StackScore Progress" : "Roadmap Progress vs Official StackScore"}
       </p>
+      {!showProjectedFinal ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          Official StackScore updates only after reassessment. Completing initiatives tracks roadmap
+          progress and does not guarantee a specific maturity increase.
+        </p>
+      ) : null}
       <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-stretch md:gap-3">
         {steps.map((step, index) => (
           <div key={step.label} className="flex flex-1 flex-col items-stretch md:flex-row md:items-center">

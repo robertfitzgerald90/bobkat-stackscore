@@ -1,4 +1,6 @@
 import { formatAssessmentType } from "@/lib/assessments/display";
+import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
+import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
 import { computeRoadmapScores, countByPriority, sortRecommendationsForDisplay } from "@/lib/pdf/report-helpers";
 import type { AssessmentReportData } from "@/lib/pdf/types";
 import { PRIORITY_LABELS, PRIORITY_ORDER } from "@/lib/pdf/types";
@@ -43,6 +45,14 @@ export function buildAssessmentReportSections(
   data: AssessmentReportData,
 ): AssessmentReportSections {
   const { summary, clientName, assessmentType, executiveSummary } = data;
+  const suppressCatalogProjectedMaturity = Boolean(data.suppressCatalogProjectedMaturity);
+  const maturityLabel =
+    summary.overallMaturityLabel ?? getCustomerMaturityLabel(summary.overallScore);
+  const scoreClassificationLabel = suppressCatalogProjectedMaturity
+    ? maturityLabel
+    : summary.overallRatingLabel;
+  const opportunityCount =
+    summary.activeImprovementOpportunityCount ?? summary.openRecommendationsCount;
 
   const clientRecommendations = summary.recommendations.filter(
     (recommendation) => recommendation.status !== "declined",
@@ -60,64 +70,95 @@ export function buildAssessmentReportSections(
   const estimatedImprovement = summary.projectedScore - summary.overallScore;
 
   const overallRiskBullets = [
-    `Overall StackScore: ${summary.overallScore} / 100 (${summary.overallRatingLabel})`,
+    `Overall StackScore: ${summary.overallScore} / 100 (${scoreClassificationLabel})`,
     summary.hasCriticalExposure
       ? `${summary.criticalFindingsCount} critical security or recovery gap${
           summary.criticalFindingsCount === 1 ? "" : "s"
         } identified`
       : "No critical exposure flags were triggered in this assessment",
-    `${summary.openRecommendationsCount} open recommendation${
-      summary.openRecommendationsCount === 1 ? "" : "s"
-    } requiring follow-up`,
+    `${opportunityCount} improvement opportunit${
+      opportunityCount === 1 ? "y" : "ies"
+    } requiring follow-up (${summary.openRecommendationsCount} open)`,
   ];
 
-  const strengthBullets = summary.topStrengths.map(
-    (strength) =>
-      `${strength.categoryName}: ${Math.round(strength.percentScore)}% (${RATING_LABELS[strength.rating]})`,
-  );
+  const strengthBullets = summary.topStrengths
+    .filter((strength) => strength.percentScore >= MEANINGFUL_STRENGTH_MIN_PERCENT)
+    .map((strength) => {
+      const score = Math.round(strength.percentScore);
+      const label = suppressCatalogProjectedMaturity
+        ? getCustomerMaturityLabel(score)
+        : RATING_LABELS[strength.rating];
+      return `${strength.categoryName}: ${score}% (${label})`;
+    });
 
-  const riskBullets = summary.topRisks.map(
-    (risk) => `${risk.categoryName}: ${Math.round(risk.percentScore)}% (${RATING_LABELS[risk.rating]})`,
-  );
+  const riskBullets = summary.topRisks.map((risk) => {
+    const score = Math.round(risk.percentScore);
+    const label = suppressCatalogProjectedMaturity
+      ? getCustomerMaturityLabel(score)
+      : RATING_LABELS[risk.rating];
+    return `${risk.categoryName}: ${score}% (${label})`;
+  });
 
   const priorityBullets =
     summary.immediateActions.length > 0
       ? summary.immediateActions.map(
-          (action) => `${action.title} (+${action.estimatedImpactPoints} pts)`,
+          (action) =>
+            `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
         )
       : sortedRecommendations
           .slice(0, 3)
-          .map((action) => `${action.title} (+${action.estimatedImpactPoints} pts)`);
+          .map(
+            (action) =>
+              `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
+          );
 
-  const improvementBullets = [
-    `Current score: ${summary.overallScore} → Projected score: ${summary.projectedScore}`,
-    `Estimated improvement: +${estimatedImprovement} point${
-      estimatedImprovement === 1 ? "" : "s"
-    } if recommendations are addressed`,
-    `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
-  ];
+  const improvementBullets = suppressCatalogProjectedMaturity
+    ? [
+        `Current StackScore: ${summary.overallScore} (${maturityLabel})`,
+        `${opportunityCount} improvement opportunit${
+          opportunityCount === 1 ? "y" : "ies"
+        } identified for follow-up`,
+        "Roadmap progress tracks approved initiatives; official StackScore updates after reassessment",
+      ]
+    : [
+        `Current score: ${summary.overallScore} → Projected score: ${summary.projectedScore}`,
+        `Estimated improvement: +${estimatedImprovement} point${
+          estimatedImprovement === 1 ? "" : "s"
+        } if recommendations are addressed`,
+        `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
+      ];
 
   const overviewBullets = executiveSummary
     ? executiveSummary
         .split(/\n+/)
         .map((line) => line.trim())
         .filter(Boolean)
-    : [
-        `${clientName} was assessed across core technology maturity categories.`,
-        `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
-      ];
+    : suppressCatalogProjectedMaturity
+      ? [
+          `${clientName} was assessed across core technology maturity categories.`,
+          `The current StackScore is ${summary.overallScore}. Prioritized recommendations identify improvement opportunities for follow-through.`,
+        ]
+      : [
+          `${clientName} was assessed across core technology maturity categories.`,
+          `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
+        ];
 
-  const roadmapMilestones: AssessmentReportRoadmapMilestone[] = [
-    { label: "Current StackScore", score: roadmap.current, highlight: false },
-    { label: "After Critical Recommendations", score: roadmap.afterCritical, highlight: false },
-    {
-      label: "After Critical + High Recommendations",
-      score: roadmap.afterCriticalAndHigh,
-      highlight: true,
-    },
-    { label: "After All Recommendations", score: summary.projectedScore, highlight: false },
-    { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
-  ];
+  const roadmapMilestones: AssessmentReportRoadmapMilestone[] = suppressCatalogProjectedMaturity
+    ? [
+        { label: "Current StackScore", score: roadmap.current, highlight: true },
+        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
+      ]
+    : [
+        { label: "Current StackScore", score: roadmap.current, highlight: false },
+        { label: "After Critical Recommendations", score: roadmap.afterCritical, highlight: false },
+        {
+          label: "After Critical + High Recommendations",
+          score: roadmap.afterCriticalAndHigh,
+          highlight: true,
+        },
+        { label: "After All Recommendations", score: summary.projectedScore, highlight: false },
+        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
+      ];
 
   return {
     assessmentTypeLabel: formatAssessmentType(assessmentType),

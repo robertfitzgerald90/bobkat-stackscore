@@ -303,7 +303,7 @@ export function PhaseWorkspace({
                     {initiative.businessImpact}
                   </p>
                   <p className="mt-2 text-xs font-semibold text-emerald-700">
-                    Estimated StackScore contribution: +{initiative.estimatedImpactPoints} points
+                    Estimated priority impact: +{initiative.estimatedImpactPoints} pts
                   </p>
                 </div>
                 {phase.isConsultant ? (

@@ -20,16 +20,12 @@ describe("SS-OPT-003B catalog template sync contract", () => {
     expect(activeBlock).toContain("latestTriggerReason");
   });
 
-  it("keeps approved vs stub partition aligned with Batch B1 publication", () => {
+  it("keeps approved vs stub partition aligned with published catalog batches", () => {
     const approved = catalog.templates.filter((template) => !template.isStub);
     const stubs = catalog.templates.filter((template) => template.isStub);
-    expect(approved).toHaveLength(20);
-    expect(stubs).toHaveLength(60);
-    expect(
-      approved.every(
-        (template) => template.id.startsWith("REC-IA-") || template.id.startsWith("REC-SO-"),
-      ),
-    ).toBe(true);
+    expect(approved).toHaveLength(80);
+    expect(stubs).toHaveLength(0);
+    expect(new Set(approved.map((template) => template.pillarCode)).size).toBe(8);
   });
 });
 
@@ -51,9 +47,9 @@ describe("SS-OPT-003B transactional catalog sync (DEF-004)", () => {
 
     const result = await syncRecommendationTemplatesFromCatalog(prisma as never);
     expect(result.ok).toBe(true);
-    expect(result.approvedCodes).toHaveLength(20);
+    expect(result.approvedCodes).toHaveLength(80);
     expect(result.skippedMissingCategory.length).toBeGreaterThan(0);
-    expect(result.upserted).toBe(20); // only IA+SO categories present
+    expect(result.upserted).toBe(20); // mock only provides IA+SO categories
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
     expect(upsert).toHaveBeenCalledTimes(20);
   });

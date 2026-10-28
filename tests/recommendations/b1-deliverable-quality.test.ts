@@ -67,11 +67,12 @@ describe("SS-OPT-003B B1 client deliverable quality (catalog + generation)", () 
         "client",
       );
 
-      expect(forClient.length, label).toBe(20);
-      expect(forClient.every((row) => B1_IDS.includes(String(row.templateCode)))).toBe(true);
+      // SS-CONTENT-006: full catalog is customer-deliverable (80).
+      expect(forClient.length, label).toBe(80);
       expect(forClient.every((row) => !isStubRecommendationTemplate(String(row.templateCode)))).toBe(
         true,
       );
+      expect(forClient.every((row) => String(row.templateCode).startsWith("REC-"))).toBe(true);
       expect(forClient.every((row) => !hasUnpublishedStubTitle(row.title))).toBe(true);
       expect(
         forClient.every((row) => MARKERS.every((marker) => String(row.description).includes(marker))),

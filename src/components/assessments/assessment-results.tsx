@@ -622,7 +622,7 @@ export function AssessmentResults({
                             className="space-y-1"
                           />
                           <p className="text-xs text-muted-foreground">
-                            +{recommendation.estimatedImpactPoints} pts estimated maturity impact
+                            Estimated priority impact: +{recommendation.estimatedImpactPoints} pts
                           </p>
                         </div>
 

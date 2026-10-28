@@ -52,7 +52,7 @@ describe("recommendation visibility", () => {
     const stubRow = {
       ...staffRow,
       id: "stub-1",
-      templateCode: "REC-EP-001",
+      templateCode: "REC-TEST-STUB-001",
       title: "Stub Endpoint Recommendation",
     };
     expect(presentRecommendationsForRole([stubRow, staffRow], "client")).toHaveLength(1);

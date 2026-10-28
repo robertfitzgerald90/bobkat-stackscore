@@ -27,6 +27,7 @@ import { getBookingUrl } from "@/lib/support/config";
 import { clientRecommendationsPath } from "@/lib/clients/paths";
 import { buttonClassName } from "@/components/ui/button";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
+import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -92,7 +93,8 @@ function RecommendationCard({
             documentTheme={DOCUMENT_THEME}
           />
           <p className="report-impact-line">
-            +{recommendation.estimatedImpactPoints} StackScore points estimated improvement
+            Estimated priority impact: +{recommendation.estimatedImpactPoints} pts (planning
+            guidance — not a guaranteed StackScore increase)
           </p>
         </div>
       }
@@ -170,6 +172,17 @@ export function AssessmentReportPreview({
   const bookingUrl = getBookingUrl();
   const hasRecommendations = data.summary.recommendations.length > 0;
   const recommendationsHref = clientRecommendationsPath(clientId);
+  const suppressCatalogProjectedMaturity =
+    Boolean(data.suppressCatalogProjectedMaturity) || isCustomerView;
+  const maturityLabel =
+    data.summary.overallMaturityLabel ??
+    getCustomerMaturityLabel(data.summary.overallScore);
+  const displayMaturityLabel = suppressCatalogProjectedMaturity
+    ? maturityLabel
+    : data.summary.overallRatingLabel;
+  const opportunityCount =
+    data.summary.activeImprovementOpportunityCount ??
+    data.summary.openRecommendationsCount;
 
   return (
     <ReportShell className="assessment-executive-report">
@@ -184,8 +197,10 @@ export function AssessmentReportPreview({
           clientName={data.clientName}
           assessmentDate={data.assessmentDate}
           overallScore={data.summary.overallScore}
-          overallRatingLabel={data.summary.overallRatingLabel}
+          overallMaturityLabel={displayMaturityLabel}
           projectedScore={data.summary.projectedScore}
+          improvementOpportunityCount={opportunityCount}
+          suppressCatalogProjectedMaturity={suppressCatalogProjectedMaturity}
         />
 
         <ReportBody className="report-body-executive">
@@ -206,7 +221,7 @@ export function AssessmentReportPreview({
                 <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                   <p className="report-highlight-label">Overall maturity</p>
                   <p className="report-highlight-value">
-                    {data.summary.overallScore} — {data.summary.overallRatingLabel}
+                    {data.summary.overallScore} — {displayMaturityLabel}
                   </p>
                 </ReportHighlightCard>
                 <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
@@ -239,15 +254,27 @@ export function AssessmentReportPreview({
               <SnapshotCard
                 label="Overall StackScore"
                 value={data.summary.overallScore}
-                subtitle={data.summary.overallRatingLabel}
+                subtitle={displayMaturityLabel}
                 emphasize
               />
-              <SnapshotCard
-                label="Projected Improvement"
-                value={data.summary.projectedScore}
-                subtitle={`+${sections.estimatedImprovement} points potential`}
-                emphasize
-              />
+              {suppressCatalogProjectedMaturity ? (
+                <SnapshotCard
+                  label="Priority Recommendations"
+                  value={
+                    data.summary.immediateActions.length > 0
+                      ? data.summary.immediateActions.length
+                      : Math.min(opportunityCount, 5)
+                  }
+                  subtitle="Highest-priority improvement opportunities"
+                />
+              ) : (
+                <SnapshotCard
+                  label="Projected Improvement"
+                  value={data.summary.projectedScore}
+                  subtitle={`+${sections.estimatedImprovement} points potential`}
+                  emphasize
+                />
+              )}
               <SnapshotCard
                 label="Critical Findings"
                 value={data.summary.criticalFindingsCount}
@@ -258,9 +285,9 @@ export function AssessmentReportPreview({
                 }
               />
               <SnapshotCard
-                label="Open Recommendations"
-                value={data.summary.openRecommendationsCount}
-                subtitle="Active improvement opportunities"
+                label="Improvement Opportunities"
+                value={opportunityCount}
+                subtitle={`${data.summary.openRecommendationsCount} open · active recommended actions`}
               />
             </div>
           </ReportSection>
@@ -297,7 +324,9 @@ export function AssessmentReportPreview({
                     </div>
                     <p className="report-pillar-note">
                       {score !== null
-                        ? RATING_LABELS[getRating(score)]
+                        ? suppressCatalogProjectedMaturity
+                          ? getCustomerMaturityLabel(score)
+                          : RATING_LABELS[getRating(score)]
                         : "Not assessed in this review"}
                     </p>
                   </div>

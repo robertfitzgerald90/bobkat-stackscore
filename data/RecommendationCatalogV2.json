@@ -198,10 +198,10 @@
       "questionId": "EP-001",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Is there an accurate inventory of company-owned devices",
-      "description": "Address gaps identified during assessment of \"Is there an accurate inventory of company-owned devices?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Know what you own.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain an accurate company-owned device inventory",
+      "description": "Finding: An accurate inventory of company-owned devices is missing or incomplete based on the assessment response. “No” typically means no reliable device list; “Partially” usually means lists exist but omit sites, remote workers, or recently issued hardware.\n\nRecommended action: Build a living inventory of company-owned endpoints in scope (workstations, laptops, tablets, and other managed portable devices). Capture identifier, assigned user or role, site or remote status, OS, and warranty or purchase date where known. Reconcile against procurement, directory, and support tooling on a defined cadence and after hire, transfer, or offboarding events.\n\nExpected outcome: Security and support coverage decisions are based on what the organization actually owns, reducing blind spots in patching, encryption, and retirement.\n\nImplementation considerations: Focus first on devices that access business email, line-of-business apps, or customer data. Reuse existing management or directory sources where available rather than maintaining a disconnected spreadsheet. Distinguish company-owned from BYOD if personal devices are in use. Complements broader technology inventory work (Documentation & Knowledge) by staying endpoint-specific.",
+      "businessImpact": "When company-owned workstations, laptops, and related devices are not inventoried accurately, patching, encryption, support, and retirement work miss systems. Lost or forgotten devices also raise data-exposure risk after departure or theft.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -210,17 +210,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-002",
       "questionId": "EP-002",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Is there a documented device lifecycle",
-      "description": "Address gaps identified during assessment of \"Is there a documented device lifecycle?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Supports planned refreshes.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document and run a device lifecycle process",
+      "description": "Finding: A documented device lifecycle is missing or only partially defined. “No” suggests procurement, deployment, refresh, and retirement are ad hoc; “Partially” suggests some steps exist without end-to-end ownership or consistent execution.\n\nRecommended action: Document the endpoint lifecycle from request and procurement through imaging, assignment, refresh, redeployment, and secure retirement. Define target ages or warranty triggers for replacement classes, and a checklist for wiping, reclaiming licenses, and removing accounts when devices leave service. Publish the process to IT support and business requestors.\n\nExpected outcome: Device spend and risk become more predictable, and retired hardware is less likely to retain business data or active access.\n\nImplementation considerations: Align refresh windows with budget planning. Keep the document practical—flowcharts and checklists beat unused policy prose. Coordinate with hardware lifecycle planning in Technology Strategy so endpoint practice and capital planning do not diverge.",
+      "businessImpact": "Without a clear device lifecycle, organizations overpay for aging hardware, rush emergency replacements, and leave retired devices with residual data or accounts. Lifecycle gaps also make warranty, imaging, and redeployment inconsistent.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -229,17 +229,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-003",
       "questionId": "EP-003",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Are operating systems and applications patched consistently",
-      "description": "Address gaps identified during assessment of \"Are operating systems and applications patched consistently?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Reduces vulnerabilities.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Patch operating systems and applications consistently",
+      "description": "Finding: Operating systems and applications are not patched consistently across endpoints. “No” typically means patching is reactive or absent; “Partially” usually means some devices or products are updated while others lag, including remote or infrequently connected machines.\n\nRecommended action: Define patch expectations by device class and product set (OS plus common business applications). Use centralized update or management tooling where available, report compliance, and remediate chronic exceptions. Include a path for emergency updates when actively exploited issues affect in-scope software.\n\nExpected outcome: Exposure windows shrink for known endpoint vulnerabilities, and update practice becomes measurable rather than dependent on individual user habits.\n\nImplementation considerations: Balance speed with change risk for specialty apps. Plan maintenance windows for shared or production-adjacent workstations. Complements Security Operations vulnerability assessment and critical-system update recommendations by focusing on endpoint OS/application consistency rather than full environment scanning.",
+      "businessImpact": "Inconsistent endpoint patching leaves known defects available longer and creates uneven risk across users. Unpatched browsers, office suites, and operating systems are frequent entry paths for malware and account compromise in SMB environments.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -248,17 +248,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-004",
       "questionId": "EP-004",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Are endpoints protected by centrally managed security software",
-      "description": "Address gaps identified during assessment of \"Are endpoints protected by centrally managed security software?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Improves protection.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Protect endpoints with centrally managed security software",
+      "description": "Finding: Endpoints are not fully covered by centrally managed security software. “No” suggests protection is missing or unmanaged; “Partially” suggests some devices have agents while others—often remotes, specialty machines, or newly issued hardware—do not report to a central console.\n\nRecommended action: Deploy or complete rollout of centrally managed endpoint protection for in-scope company devices. Confirm agents report health and detections to a monitored console, define who triages alerts, and remediate offline or unprotected devices. Cover common Windows and, where used, macOS business fleets in scope.\n\nExpected outcome: Malware and suspicious endpoint activity are more likely to be detected and contained with consistent policy, rather than relying on unmonitored local tools.\n\nImplementation considerations: Validate licensing and OS compatibility before forced rollout. Exclude only intentional exceptions with owners and review dates. Align alert routing with existing security monitoring ownership so detections are not orphaned.",
+      "businessImpact": "Endpoints without centrally managed security software are harder to protect consistently and harder to investigate when something goes wrong. Local-only or missing protection increases the chance that malware or unauthorized tools persist unnoticed.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -267,17 +267,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-005",
       "questionId": "EP-005",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Are portable devices encrypted",
-      "description": "Address gaps identified during assessment of \"Are portable devices encrypted?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Protects data.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Encrypt portable devices that store or cache business data",
+      "description": "Finding: Encryption is missing or incomplete on portable devices that store or cache business data. “No” typically means full-disk or equivalent encryption is not required for those devices; “Partially” usually means some portable devices are encrypted while others—or recovery key escrow—are inconsistent.\n\nRecommended action: Require encryption on company-owned portable devices that store or cache business data (for example laptops and tablets used for email, files, or line-of-business apps). Prefer platform-native full-disk encryption managed centrally where practical, verify compliance, and escrow recovery keys with authorized administrators. Remediate exceptions before those devices travel or leave the premises routinely.\n\nExpected outcome: Lost or stolen portable hardware that held business data is far less likely to expose readable content.\n\nImplementation considerations: Confirm performance and compatibility on older hardware. Document recovery-key access for support without sharing keys broadly. Clarify BYOD expectations separately if personal devices access company data. Stationary desktops without portable data risk are out of scope unless they similarly store unprotected business data that travels with removable media.",
+      "businessImpact": "Unencrypted portable devices that store or cache business data turn loss or theft into a likely data-exposure event. Encryption reduces the chance that those files remain readable if hardware leaves organizational control.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -286,17 +286,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-006",
       "questionId": "EP-006",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Can devices be remotely managed",
-      "description": "Address gaps identified during assessment of \"Can devices be remotely managed?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Improves support.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Enable remote management for company devices",
+      "description": "Finding: Devices cannot be reliably managed remotely, or remote management covers only part of the fleet. “No” suggests no remote tooling; “Partially” suggests coverage gaps for remotes, specialty roles, or devices that never check in.\n\nRecommended action: Place in-scope company endpoints under a remote management capability that supports inventory, scripted or policy-based maintenance, and guided support. Ensure devices check in regularly, including remote workers, and define how offline devices are brought back into management. Use remote actions only through authorized support roles.\n\nExpected outcome: Support and security maintenance can proceed without waiting for devices to return on-site, improving response time for common issues and urgent updates.\n\nImplementation considerations: Respect privacy and change-control expectations—document what remote actions are allowed. Confirm network and identity prerequisites for agent installation. Pair with ownership so unmanaged devices are escalated rather than ignored.",
+      "businessImpact": "Without remote management, routine support, patching, and emergency response depend on physical access or user-driven steps. That slows incident response and increases downtime when staff work remotely or across sites.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -305,17 +305,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-007",
       "questionId": "EP-007",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Are standard device configurations used",
-      "description": "Address gaps identified during assessment of \"Are standard device configurations used?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Improves consistency.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Standardize endpoint configurations",
+      "description": "Finding: Standard device configurations are not used consistently. “No” typically means each device is built uniquely; “Partially” usually means a baseline exists but is frequently bypassed or not applied to remotes and specialty roles.\n\nRecommended action: Define a small set of approved endpoint baselines (for example, standard workstation and remote laptop) covering OS build, core applications, security agents, and local policy. Image or provision new devices from those baselines, and remediate drift on existing devices where practical. Document justified exceptions with owners.\n\nExpected outcome: New devices are ready faster, support is more predictable, and security settings are applied uniformly rather than negotiated per machine.\n\nImplementation considerations: Keep baseline count small. Involve application owners for specialty software so the standard is usable. Revisit baselines when major OS versions change.",
+      "businessImpact": "One-off device builds create support variation, weaken security baselines, and make onboarding slower. Standard configurations reduce “works on my machine” failures and make policy enforcement practical.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -324,17 +324,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-008",
       "questionId": "EP-008",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Is hardware health monitored",
-      "description": "Address gaps identified during assessment of \"Is hardware health monitored?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Prevents downtime.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Monitor endpoint hardware health",
+      "description": "Finding: Hardware health monitoring for endpoints is missing or limited. “No” suggests failures are discovered only when users report them; “Partially” suggests some alerts exist without consistent coverage or follow-up.\n\nRecommended action: Enable health signals available through existing management tooling (disk failure warnings, critical hardware alerts) for in-scope endpoints. Define who reviews alerts and how failing devices are scheduled for repair or replacement before total failure when possible.\n\nExpected outcome: Failing hardware is caught earlier, reducing abrupt outages and last-minute device swaps that interrupt business work.\n\nImplementation considerations: Start with high-impact warning types to avoid alert noise. Not every consumer laptop exposes rich telemetry—focus on actionable signals. Coordinate replacements with lifecycle and warranty records.",
+      "businessImpact": "Undetected disk, battery, or hardware faults lead to surprise downtime and data-loss risk when devices fail mid-work. Light health monitoring shifts replacements from emergency to planned work.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -343,17 +343,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-009",
       "questionId": "EP-009",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Are operating systems vendor supported",
-      "description": "Address gaps identified during assessment of \"Are operating systems vendor supported?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Ensures updates.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Keep endpoint operating systems on vendor-supported versions",
+      "description": "Finding: Endpoint operating systems are not consistently vendor supported. “No” typically means unsupported versions remain in production use; “Partially” usually means most devices are current while a material subset remains on end-of-support releases.\n\nRecommended action: Inventory OS versions across company endpoints, identify unsupported or soon-to-be-unsupported releases, and schedule upgrades or hardware replacement for those devices. Prioritize machines that access email, finance, or customer systems. Track exceptions with owners and target exit dates.\n\nExpected outcome: Endpoints remain eligible for security updates and modern management controls, reducing concentrated risk on aging OS versions.\n\nImplementation considerations: Some specialty apps pin OS versions—plan application testing before forced upgrades. Budget may require phased waves. Do not equate “still boots” with “still supportable.”",
+      "businessImpact": "Unsupported operating systems stop receiving security updates and compatible tooling, concentrating risk on the users still running them. That also blocks modern endpoint protection and identity controls that assume a supported OS.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -362,17 +362,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-EP-010",
       "questionId": "EP-010",
       "pillarCode": "endpoint_management",
       "pillarName": "Endpoint Management",
-      "title": "Improve Endpoint Management: Has endpoint management ownership been assigned",
-      "description": "Address gaps identified during assessment of \"Has endpoint management ownership been assigned?\" within the Endpoint Management Technology Pillar.",
-      "businessImpact": "Creates accountability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Assign ownership for endpoint management",
+      "description": "Finding: Endpoint management ownership is missing or unclear. “No” suggests no accountable owner; “Partially” suggests informal responsibility without authority, cadence, or coverage of the full fleet.\n\nRecommended action: Assign a primary owner (internal or provider lead) accountable for endpoint inventory accuracy, protection coverage, patch posture, and lifecycle execution. Define a simple review cadence and escalation path when devices fall out of compliance. Communicate the owner to support staff and business leaders who request devices.\n\nExpected outcome: Endpoint work has a durable owner, so gaps are remediated and rechecked rather than rediscovered each assessment cycle.\n\nImplementation considerations: Ownership can sit with an MSP account lead plus an internal business sponsor. Authority to set standards matters more than deep technical skill. Align with broader technology leadership so endpoint decisions are not orphaned.",
+      "businessImpact": "Without a named owner, inventory, patching, encryption, and lifecycle work stall between IT providers and business leaders. Ambiguous ownership is a common reason endpoint gaps recur after one-time cleanup projects.",
+      "suggestedService": "Endpoint Management Improvement",
       "priority": "low",
       "estimatedImpactPoints": 3,
       "triggerAnswers": [
@@ -381,17 +381,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-001",
       "questionId": "NW-001",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is business-grade networking equipment used",
-      "description": "Address gaps identified during assessment of \"Is business-grade networking equipment used?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Improves reliability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Use networking equipment that meets business reliability and support needs",
+      "description": "Finding: Networking equipment on critical business paths may not meet reliability, manageability, or supportability needs based on the assessment response. “No” typically means key paths rely on gear that is difficult to manage or support; “Partially” usually means some sites or segments meet business requirements while others do not. Suitability depends on role and risk—not every consumer-labeled device is automatically unsuitable in every scenario.\n\nRecommended action: Identify networking devices that carry business traffic (internet edge, core switching, wireless serving offices, and site-to-site links). For each critical path, confirm the equipment can be managed, monitored, and supported to the organization’s requirements (configuration access, logging, warranty or vendor support, and replacement practicality). Upgrade or isolate devices that cannot meet those needs; leave appropriately sized solutions in place where they already satisfy business requirements. Record make/model, support contacts, and warranty or subscription status for the in-scope fleet.\n\nExpected outcome: Critical connectivity paths are more reliable and supportable, with clearer options for configuration, monitoring, and replacement when devices fail.\n\nImplementation considerations: Prioritize the internet edge and shared office infrastructure before specialty closets. Match equipment class to business requirements rather than brand labels alone. Reuse existing cabling and rack space where practical. Coordinate cutovers outside peak business hours. Complements Technology Strategy hardware lifecycle planning without duplicating endpoint device refresh work.",
+      "businessImpact": "Networking equipment that cannot be reliably managed, monitored, or supported increases outage risk on paths the business depends on. Gaps in manageability and supportability also make security changes and replacements slower when failures occur.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -400,17 +400,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-002",
       "questionId": "NW-002",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is a properly configured firewall protecting the network",
-      "description": "Address gaps identified during assessment of \"Is a properly configured firewall protecting the network?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Primary defense.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Protect the network with a properly configured firewall",
+      "description": "Finding: Firewall protection is missing, unmanaged, or incompletely configured. “No” typically means no business firewall is in place or rules are effectively open; “Partially” usually means a firewall exists but defaults, unused rules, or unmanaged changes leave material gaps.\n\nRecommended action: Place a managed firewall at the primary internet edge (and secondary edges where separate circuits exist). Define allow rules based on business need, remove unused or overly broad permits, enable logging for security-relevant events, and assign who reviews rule changes. Confirm remote-access and published services are intentional rather than accidental.\n\nExpected outcome: Inbound and outbound traffic follow known business needs, reducing exposure from open ports and unmanaged edge devices.\n\nImplementation considerations: Schedule rule reviews after major application or VPN changes. Coordinate with Security Operations monitoring so firewall logs are watched. Avoid vendor lock-in language—focus on configuration ownership and change control. Do not equate “firewall appliance present” with “rules are appropriate.”",
+      "businessImpact": "Without a properly configured firewall at the network edge, unauthorized inbound access and poorly controlled outbound paths increase breach and ransomware risk. Misconfigured or unused firewalls create a false sense of protection while leaving business systems exposed.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -419,17 +419,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-003",
       "questionId": "NW-003",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is wireless reliable and secure",
-      "description": "Address gaps identified during assessment of \"Is wireless reliable and secure?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Supports productivity.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Make wireless connectivity reliable and secure",
+      "description": "Finding: Wireless is not reliably secure or performant across business locations. “No” typically means coverage, capacity, or security basics are absent; “Partially” usually means some areas work well while guest networks, shared credentials, or weak encryption remain.\n\nRecommended action: Assess coverage for primary work areas and meeting spaces, separate guest from business SSIDs, and require modern encryption with unique or directory-backed access rather than a single shared password for staff networks. Remediate dead zones and interference that block business work. Document SSID purpose and who may join each network.\n\nExpected outcome: Staff can connect productively while guest and unknown devices stay off business segments, reducing both downtime friction and wireless-borne risk.\n\nImplementation considerations: Survey before buying denser hardware. Align guest access with acceptable-use expectations. Coordinate with network segmentation so wireless gains are not undermined by flat LAN design (NW-004).",
+      "businessImpact": "Unreliable or weakly secured wireless slows staff, invites guest/device sprawl onto business networks, and creates a common path for unauthorized access. Dead zones and shared passwords also drive shadow hotspots that bypass intended controls.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -438,17 +438,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-004",
       "questionId": "NW-004",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is the network segmented appropriately",
-      "description": "Address gaps identified during assessment of \"Is the network segmented appropriately?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Limits attack spread.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Segment the network to limit unnecessary access",
+      "description": "Finding: Network segmentation is missing or incomplete. “No” typically means a flat LAN where most devices share broad reachability; “Partially” usually means some VLANs or zones exist without consistent enforcement for guests, IoT, servers, or remote-access entry points.\n\nRecommended action: Define practical zones for at least business workstations, servers/line-of-business systems, guests, and any IoT or specialty devices in scope. Enforce separation with firewall or switch controls so zones only exchange traffic required for business functions. Document allowed paths and revisit when new systems are added.\n\nExpected outcome: Compromise or misbehavior in one zone is less likely to reach critical systems immediately, improving containment and support clarity.\n\nImplementation considerations: Start with high-value separations (guest vs business, workstations vs servers/backups) rather than an elaborate microsegmentation program. Test print, VoIP, and application paths after changes. Align with firewall rule hygiene (NW-002) and remote-access design (NW-005).",
+      "businessImpact": "Flat networks let a single compromised device or guest reach servers, backups, and line-of-business systems. Appropriate segmentation contains incidents and reduces accidental access to sensitive systems.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -457,17 +457,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-005",
       "questionId": "NW-005",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is remote connectivity secure",
-      "description": "Address gaps identified during assessment of \"Is remote connectivity secure?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Protects remote users.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Secure remote connectivity for offsite access",
+      "description": "Finding: Remote connectivity is not securely designed or consistently applied. “No” typically means ad hoc remote access without a managed standard; “Partially” usually means some staff use secure methods while others rely on exposed services or shared access paths.\n\nRecommended action: Standardize on a managed remote-access approach (for example VPN or equivalent brokered access) with unique user authentication and MFA where the identity platform supports it. Disable unused direct remote-desktop exposure to the internet. Define who may grant remote access and how access is removed at offboarding.\n\nExpected outcome: Offsite work uses a known, controlled path, reducing exposure from open remote services and shared remote credentials.\n\nImplementation considerations: Coordinate with Identity & Access for MFA and joiner/mover/leaver processes—this recommendation focuses on the network remote-access path, not full identity redesign. Test performance for common business apps. Document break-glass access for IT support.",
+      "businessImpact": "Insecure remote access (shared credentials, exposed remote desktop, or unmanaged tunnels) is a frequent entry point for account takeover and ransomware. Weak remote design also makes support and offboarding unreliable.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -476,17 +476,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-006",
       "questionId": "NW-006",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is there an appropriate internet resilience strategy",
-      "description": "Address gaps identified during assessment of \"Is there an appropriate internet resilience strategy?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Supports continuity.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Establish an internet resilience strategy for business continuity",
+      "description": "Finding: An appropriate internet resilience strategy is missing or incomplete. “No” typically means a single circuit with no failover plan; “Partially” usually means a backup path exists but is untested, undersized, or unknown to staff who would use it.\n\nRecommended action: Document primary and backup internet options (secondary circuit, LTE/5G failover, or temporary hotspot policy for critical roles). Define what must stay online first (payments, email/collaboration, phone, line-of-business apps). Test failover at a defined cadence and record who declares and communicates an outage.\n\nExpected outcome: Internet disruptions become manageable degradations with a known temporary path, rather than complete business freezes.\n\nImplementation considerations: Match investment to downtime tolerance—resilience can be a tested process before a second dedicated circuit. Align with Data Protection business continuity planning for non-network workarounds. Avoid overpromising carrier SLAs the organization does not purchase.",
+      "businessImpact": "Single-circuit internet failure stops cloud apps, payments, VoIP, and remote work for many SMBs. Without a resilience plan, outages become all-or-nothing events with no agreed temporary path.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -495,17 +495,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-007",
       "questionId": "NW-007",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Are DNS, DHCP and core services maintained",
-      "description": "Address gaps identified during assessment of \"Are DNS, DHCP and core services maintained?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Critical infrastructure.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain DNS, DHCP, and other core network services",
+      "description": "Finding: DNS, DHCP, and related core services are not consistently maintained. “No” typically means unmanaged or unknown ownership of these services; “Partially” usually means they work day-to-day without backups, documentation, or clear change control.\n\nRecommended action: Identify where DNS and DHCP (and any other critical name/address services in scope) run today. Place them on supported infrastructure with configuration backups, define who may change scopes and records, and document recovery steps if the service host fails. Eliminate temporary or desktop-hosted core services on business networks.\n\nExpected outcome: Address and name resolution remain available and recoverable, reducing unexplained “network is down” incidents that are actually core-service failures.\n\nImplementation considerations: Coordinate changes carefully—DHCP/DNS mistakes can outage an entire site. Keep reverse/forward DNS aligned for key servers. Pair with monitoring (NW-008) so service failures alert before users flood the help desk.",
+      "businessImpact": "When DNS, DHCP, or related core services are unstable or undocumented, users lose connectivity even when circuits and firewalls are healthy. Informal “someone’s PC is the DHCP server” patterns create fragile single points of failure.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -514,17 +514,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-008",
       "questionId": "NW-008",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is the network monitored proactively",
-      "description": "Address gaps identified during assessment of \"Is the network monitored proactively?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Detects issues early.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Monitor the network for availability and performance issues",
+      "description": "Finding: Proactive network monitoring is missing or limited. “No” typically means no availability or performance monitoring for critical network paths; “Partially” usually means some devices are watched while circuits, wireless controllers, or remote sites are not.\n\nRecommended action: Monitor critical network devices and internet/edge availability with alerting to an accountable responder. Include basic signals such as device down, high utilization, or circuit loss for in-scope sites. Review recurring alerts and close noisy or orphaned monitors.\n\nExpected outcome: Network problems are noticed earlier, shortening outages and reducing reliance on user reports as the primary detection method.\n\nImplementation considerations: Start with a small set of high-value monitors to avoid alert fatigue. This recommendation focuses on network health/availability—not full security-event detection covered under Security Operations. Align after-hours expectations with business risk.",
+      "businessImpact": "Without proactive network monitoring, outages and degraded circuits are discovered only when users complain. Late detection extends downtime and makes root-cause analysis harder after the fact.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -533,17 +533,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-009",
       "questionId": "NW-009",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is physical infrastructure maintained",
-      "description": "Address gaps identified during assessment of \"Is physical infrastructure maintained?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Supports stability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain physical network infrastructure in workable condition",
+      "description": "Finding: Physical network infrastructure maintenance is missing or inconsistent. “No” typically means closets, cabling, or power for network gear are neglected; “Partially” usually means some sites are orderly while others have unlabeled patching, UPS gaps, or environmental issues.\n\nRecommended action: Inspect primary network closets and racks for safe power, reasonable airflow, labeled patching, and clear access. Remediate damaged cabling and unsupported mounting. Establish a light periodic check (for example quarterly) for critical sites and after moves or renovations.\n\nExpected outcome: Physical faults and accidental outages decline, and support staff can work in closets without guesswork.\n\nImplementation considerations: Keep scope proportional—focus on rooms that house edge and core gear. Coordinate electrical or HVAC work with facilities. Low priority relative to firewall and segmentation gaps, but often cheap to improve.",
+      "businessImpact": "Neglected cabling, power, cooling, or closet organization causes intermittent faults that are expensive to diagnose. Physical neglect also raises accidental disconnect and environmental failure risk.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -552,17 +552,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-NW-010",
       "questionId": "NW-010",
       "pillarCode": "network_connectivity",
       "pillarName": "Network & Connectivity",
-      "title": "Improve Network & Connectivity: Is network documentation current",
-      "description": "Address gaps identified during assessment of \"Is network documentation current?\" within the Network & Connectivity Technology Pillar.",
-      "businessImpact": "Improves support.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Keep network documentation current after changes",
+      "description": "Finding: Network documentation is not kept current. “No” typically means usable network docs are absent or abandoned; “Partially” usually means initial diagrams exist but are outdated after moves, circuit changes, or equipment swaps.\n\nRecommended action: Maintain a practical network package (sites, circuits, edge devices, major VLANs/zones, and critical paths) and update it after material changes. Assign who updates the package and where the current version is stored. Spot-check currency during planned maintenance windows.\n\nExpected outcome: Support staff and providers can orient quickly during outages and changes without reconstructing the network from memory.\n\nImplementation considerations: Complements Documentation & Knowledge network documentation recommendations by focusing on currency after change, not the first-time creation of a full documentation program. Prefer simple living diagrams over elaborate unused tools. Protect docs that reveal addressing or credentials.",
+      "businessImpact": "Stale network diagrams and inventories slow incident response and make vendor handoffs unreliable. Documentation that exists but is never updated after changes recreates tribal-knowledge risk.",
+      "suggestedService": "Network & Connectivity Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -571,17 +571,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-001",
       "questionId": "DP-001",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are all critical systems included in backups",
-      "description": "Address gaps identified during assessment of \"Are all critical systems included in backups?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Protection.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Include all critical systems in backups",
+      "description": "Finding: Not all critical systems are included in backups, or coverage is incomplete. “No” typically means backup scope is unclear or major systems are unprotected; “Partially” usually means some servers or SaaS workloads are backed up while others—often newer systems, cloud apps, or shared drives—are not.\n\nRecommended action: List systems and data stores that the business cannot afford to lose (servers, file shares, email/cloud collaboration, line-of-business apps, and databases in scope). Confirm each has a backup job or equivalent protected copy, close gaps, and record what is intentionally excluded with a business owner. Revisit coverage when systems are added.\n\nExpected outcome: Recovery options exist for the systems that matter most, reducing the chance that an outage becomes irreversible data loss.\n\nImplementation considerations: Include SaaS and cloud workloads, not only on-premises servers. Pair with critical-data identification (DP-008) so scope is business-driven. Validate job success separately from “a backup product is installed.”",
+      "businessImpact": "Critical systems left out of backups turn routine failures, ransomware, or accidental deletion into prolonged outages or permanent data loss. Incomplete coverage is one of the most common and costly recovery failures for SMBs.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -590,17 +590,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-002",
       "questionId": "DP-002",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are backups monitored",
-      "description": "Address gaps identified during assessment of \"Are backups monitored?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Detect failures.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Monitor backup jobs for success and failure",
+      "description": "Finding: Backup monitoring is missing or inconsistent. “No” suggests nobody regularly reviews job outcomes; “Partially” suggests some jobs are watched while others fail silently or alerts go unowned.\n\nRecommended action: Enable failure and missed-job alerting for backup workloads that protect critical systems. Assign who reviews alerts on business days, define escalation for repeated failures, and keep a simple record of unresolved backup issues until closed.\n\nExpected outcome: Backup problems are noticed while they are still fixable, instead of during an emergency restore.\n\nImplementation considerations: Tune alerts to avoid noise from known maintenance windows. Monitoring without ownership does not help—name a responder. Separate “job reported success” from restore-test validation (DP-003).",
+      "businessImpact": "Unmonitored backups create false confidence—failures can accumulate unnoticed until restore is needed. Detecting failed or incomplete jobs early preserves the recovery window.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -609,17 +609,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-003",
       "questionId": "DP-003",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are restore tests performed regularly",
-      "description": "Address gaps identified during assessment of \"Are restore tests performed regularly?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Validates recovery.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Perform restore tests on a regular schedule",
+      "description": "Finding: Restore tests are not performed regularly. “No” typically means restores are only attempted during real emergencies; “Partially” usually means occasional ad hoc tests without a schedule, scope, or recorded results.\n\nRecommended action: Establish a recurring restore-test cadence for representative critical workloads (for example quarterly for highest-value systems, with spot checks after major backup changes). Record what was restored, how long it took, and what failed. Remediate gaps discovered in testing.\n\nExpected outcome: Leadership gains evidence that backups can actually recover needed data within a useful timeframe.\n\nImplementation considerations: Test restores into isolated targets to avoid overwriting production. Start with the systems that would stop the business first. Document lessons without treating every test as a full disaster rehearsal unless planned.",
+      "businessImpact": "Backups that are never restore-tested may be incomplete, unrestorable, or too slow for business needs. Regular tests are how organizations learn whether recovery will work before a real incident.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -628,17 +628,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-004",
       "questionId": "DP-004",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Is there a disaster recovery plan",
-      "description": "Address gaps identified during assessment of \"Is there a disaster recovery plan?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Guides recovery.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain a practical disaster recovery plan",
+      "description": "Finding: A disaster recovery plan is missing or incomplete. “No” suggests no documented technical recovery approach; “Partially” suggests notes or vendor runbooks exist but are outdated, untested, or unknown to the people who would use them.\n\nRecommended action: Create a concise DR plan covering critical systems, backup/recovery sources, restoration sequence, roles, and communication during a major outage or data-loss event. Store it where responders can reach it offline if primary systems are unavailable. Review after material infrastructure changes and after restore tests.\n\nExpected outcome: Responders follow a known sequence instead of inventing recovery order during a crisis, improving speed and coordination.\n\nImplementation considerations: Prefer a living runbook over a lengthy unread binder. Align technical recovery steps with business continuity priorities (DP-005) and recovery objectives (DP-006). Include provider contacts and break-glass access paths.",
+      "businessImpact": "Without a disaster recovery plan, teams improvise under pressure, extending downtime and increasing the chance of conflicting decisions. A usable plan shortens the path from incident to restored systems.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -647,17 +647,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-005",
       "questionId": "DP-005",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Is there a business continuity plan",
-      "description": "Address gaps identified during assessment of \"Is there a business continuity plan?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Maintains operations.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain a business continuity plan for critical operations",
+      "description": "Finding: A business continuity plan is missing or only partially defined. “No” typically means no agreed approach for operating through major disruption; “Partially” usually means informal workarounds exist without documented priorities, roles, or triggers.\n\nRecommended action: Identify critical business functions and how they continue during prolonged IT outages (manual processes, alternate sites or remote work, key vendor contacts, and decision authority). Document activation criteria, communication expectations, and handoffs to technical recovery. Review with leadership at a defined cadence.\n\nExpected outcome: The organization can sustain essential operations while technology is restored, rather than freezing until every system returns.\n\nImplementation considerations: Keep the plan proportional to business size—prioritize a few critical functions first. Distinguish BCP (business operations) from DR (technology restore) clearly so owners do not assume one document covers both. Involve operations leaders, not only IT.",
+      "businessImpact": "Technology recovery alone does not keep the business running if people lack alternate ways to serve customers, process payroll, or communicate. Continuity planning reduces revenue and reputation damage while systems are restored.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -666,17 +666,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-006",
       "questionId": "DP-006",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are recovery objectives defined",
-      "description": "Address gaps identified during assessment of \"Are recovery objectives defined?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Aligns with business.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Define recovery time and recovery point objectives",
+      "description": "Finding: Recovery objectives are not defined or are only informal. “No” suggests no RTO/RPO-style targets exist; “Partially” suggests some targets are discussed for a few systems without documented agreement or alignment to backup design.\n\nRecommended action: For each critical system or data class, define target recovery time (how quickly it must return) and recovery point (how much data loss is tolerable). Use those targets to validate backup frequency, retention, and restore-test expectations. Review when business priorities change.\n\nExpected outcome: Backup and DR investments match business tolerance for downtime and data loss, making recovery design measurable.\n\nImplementation considerations: Use plain language with leaders (“email back same day,” “lose at most one hour of entries”) before introducing acronyms. Objectives should be ambitious but achievable—aspirational targets without funding create false confidence. Feed results into DR planning and backup scope decisions.",
+      "businessImpact": "Without agreed recovery objectives, backup design and vendor expectations drift from what the business actually needs. Ambiguous targets lead to underinvestment in critical systems and overinvestment in low-impact ones.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -685,17 +685,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-007",
       "questionId": "DP-007",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are backups protected from compromise",
-      "description": "Address gaps identified during assessment of \"Are backups protected from compromise?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Protects recovery.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Protect backups from compromise and tampering",
+      "description": "Finding: Backups are not adequately protected from compromise. “No” typically means backup stores are reachable with the same privileged access as production; “Partially” usually means some immutability, offline, or separate-credential controls exist without consistent coverage.\n\nRecommended action: Separate backup administrative credentials from ordinary production administrative access so routine domain or server admins cannot delete, alter retention, or encrypt backup repositories by default. Enable immutability, offline, or air-gapped copies for critical backup sets according to platform capability, restrict who can change backup jobs, and monitor backup infrastructure for suspicious changes. Confirm at least one recovery copy would survive a production-wide credential compromise scenario appropriate to business risk.\n\nExpected outcome: A recoverable copy is more likely to remain intact when production systems are attacked or mistakenly wiped.\n\nImplementation considerations: Perfect isolation is not always feasible—prioritize critical backup repositories first. Coordinate with identity and privileged-access practices so backup admin accounts are few, monitored, and distinct from day-to-day production admin roles. Test that protected copies can still be restored by authorized responders.",
+      "businessImpact": "Backups that share the same access path as production can be encrypted or deleted by the same incident that destroys primary data. Hardening backup copies preserves a clean recovery path after ransomware or insider misuse.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -704,17 +704,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-008",
       "questionId": "DP-008",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Has critical data been identified",
-      "description": "Address gaps identified during assessment of \"Has critical data been identified?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Prioritizes recovery.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Identify critical data for protection and recovery priority",
+      "description": "Finding: Critical data has not been clearly identified, or identification is incomplete. “No” suggests no agreed data priorities; “Partially” suggests some systems are labeled critical without a shared inventory of data classes and owners.\n\nRecommended action: Work with business leaders to list critical data classes (for example financial records, customer files, operational databases, and email/collaboration content in scope). Map each to systems, owners, and recovery priority. Use the list to drive backup inclusion, retention, and restore-test selection.\n\nExpected outcome: Protection and recovery effort concentrates on data the business cannot afford to lose or rebuild slowly.\n\nImplementation considerations: Keep the first version short and executive-readable. Update when major applications change. Complements backup coverage (DP-001) by defining what matters before how it is copied.",
+      "businessImpact": "Without knowing which data is critical, backup scope and restore order become guesswork. Teams may protect low-value stores thoroughly while under-protecting the records that actually run the business.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -723,17 +723,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-009",
       "questionId": "DP-009",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Are retention requirements documented",
-      "description": "Address gaps identified during assessment of \"Are retention requirements documented?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Governance.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document data retention requirements",
+      "description": "Finding: Retention requirements are not documented or are only partially defined. “No” typically means no written retention guidance; “Partially” usually means some systems have settings while business and legal expectations remain unclear.\n\nRecommended action: Document retention expectations for major data classes (how long backups and primary records should be kept, and any legal or contractual drivers known to the business). Align backup retention settings to those expectations where practical, and record intentional differences. Review when regulations or contracts change.\n\nExpected outcome: Retention becomes an intentional business decision rather than an accident of default backup settings.\n\nImplementation considerations: This recommendation does not replace formal legal counsel—capture known requirements and escalate uncertain obligations. Avoid promising compliance certification. Start with the few data classes that drive the most risk.",
+      "businessImpact": "Undocumented retention leads to keeping everything forever—or deleting too soon. Either outcome creates legal, operational, or storage risk and complicates restore and e-discovery expectations.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -742,17 +742,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DP-010",
       "questionId": "DP-010",
       "pillarCode": "data_protection_recovery",
       "pillarName": "Data Protection & Recovery",
-      "title": "Improve Data Protection & Recovery: Has recovery ownership been assigned",
-      "description": "Address gaps identified during assessment of \"Has recovery ownership been assigned?\" within the Data Protection & Recovery Technology Pillar.",
-      "businessImpact": "Accountability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Assign ownership for recovery readiness",
+      "description": "Finding: Recovery ownership is missing or unclear. “No” suggests no accountable owner for backups, restore testing, and DR readiness; “Partially” suggests fragmented responsibility across vendors and staff without a single accountable lead.\n\nRecommended action: Assign a primary owner accountable for backup coverage, monitoring follow-up, restore-test cadence, and DR plan currency. Define how that owner escalates to business leadership when recovery objectives cannot be met. Communicate the owner to providers and executives who would declare a disaster.\n\nExpected outcome: Recovery gaps have a durable owner, so issues found in monitoring or tests are closed rather than rediscovered after the next incident.\n\nImplementation considerations: Ownership may combine a technical provider lead with an internal business sponsor. Authority to prioritize restore tests and budget matters as much as tool expertise. Align with overall technology leadership so recovery is not treated as “the backup vendor’s problem alone.”",
+      "businessImpact": "Backup products without a recovery owner still fail in practice—failed jobs, stale plans, and untested restores go unaddressed. Clear ownership keeps recovery readiness current between assessments.",
+      "suggestedService": "Data Protection & Recovery Improvement",
       "priority": "low",
       "estimatedImpactPoints": 3,
       "triggerAnswers": [
@@ -761,17 +761,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-001",
       "questionId": "PC-001",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Is a centralized productivity platform used",
-      "description": "Address gaps identified during assessment of \"Is a centralized productivity platform used?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Consistency.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Standardize centrally administered productivity capabilities",
+      "description": "Finding: Standardized, centrally administered productivity capabilities are missing or only partially adopted. “No” typically means core collaboration still relies on personal accounts or disconnected tools; “Partially” usually means administered capabilities exist but material teams remain outside them. Organizations do not need a single vendor or suite for every business function—the gap is lack of consistent administration for core productivity work.\n\nRecommended action: Establish or complete centrally administered capabilities for email, calendar, and core file collaboration for in-scope staff. Migrate remaining holdouts with a cutover plan, and retire personal-account use for business communication where policy requires. Confirm identity join/leave processes cover those capabilities. Specialty or departmental tools may remain where they serve distinct needs, provided core productivity work is administered consistently.\n\nExpected outcome: Employees work in administered environments that are supportable and controllable, improving offboarding reliability and making security and retention settings practical for core collaboration.\n\nImplementation considerations: Plan migration waves by department. Confirm licensing and mailbox/file size needs before forced cutover. Coordinate with Identity & Access for sign-in standards. Remain vendor-agnostic—focus on central administration and ownership rather than mandating one product for all functions.",
+      "businessImpact": "When email, calendar, and core file collaboration are scattered across personal accounts or disconnected tools, support and offboarding become inconsistent and security controls are hard to apply evenly. Standardized, centrally administered productivity capabilities give the organization a manageable baseline for day-to-day work.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -780,17 +780,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-002",
       "questionId": "PC-002",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Can employees securely access required files",
-      "description": "Address gaps identified during assessment of \"Can employees securely access required files?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Productivity.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Enable secure employee access to required business files",
+      "description": "Finding: Secure access to required files is incomplete. “No” typically means no dependable shared file approach for core roles; “Partially” usually means some teams have structured access while others rely on insecure workarounds.\n\nRecommended action: Provide a standard, permissioned way for employees to reach the business files they need (cloud file platform and/or secured file shares in scope). Define access by role, enable secure remote access paths, and reduce reliance on emailed attachments for living documents. Review permissions when people change roles.\n\nExpected outcome: Staff find and update authoritative files without unsafe sharing shortcuts, improving both productivity and control.\n\nImplementation considerations: Start with the highest-friction teams (remote workers, multi-site groups). Align permissions with least privilege. Complements Data Protection backup scope once file locations are known. Avoid promising a full records-management program in the first pass.",
+      "businessImpact": "When staff cannot reliably and securely reach the files they need, work shifts to email attachments, USB drives, and unsanctioned sharing. That slows execution and increases data-leak and version-chaos risk.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -799,17 +799,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-003",
       "questionId": "PC-003",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Is document organization standardized",
-      "description": "Address gaps identified during assessment of \"Is document organization standardized?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Efficiency.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Standardize how business documents are organized",
+      "description": "Finding: Document organization is not standardized. “No” typically means no agreed structure for shared business files; “Partially” usually means some departments follow conventions while others do not.\n\nRecommended action: Define a simple organization standard for shared workspaces (top-level structure, naming conventions, and ownership of key libraries). Migrate or map high-value content into that structure, and publish brief guidance for staff. Assign library owners who keep structures from re-fragmenting.\n\nExpected outcome: Employees spend less time hunting for files, and shared content remains navigable as the organization grows.\n\nImplementation considerations: Keep the standard lightweight—overdesigned taxonomies fail. Do not boil the ocean; prioritize active business libraries first. Pair with PC-002 so organization work lands in the approved access platform.",
+      "businessImpact": "Ad hoc folder sprawl and inconsistent naming waste time and cause version errors. Standardization reduces search friction and makes onboarding and audits far simpler.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -818,17 +818,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-004",
       "questionId": "PC-004",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Are collaboration tools standardized",
-      "description": "Address gaps identified during assessment of \"Are collaboration tools standardized?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Teamwork.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Standardize collaboration tools for teams",
+      "description": "Finding: Collaboration tools are not standardized. “No” typically means teams pick tools independently; “Partially” usually means a preferred stack exists but unsanctioned alternatives remain common for day-to-day work.\n\nRecommended action: Designate approved collaboration tools for messaging, meetings, and team workspaces. Communicate the standard, migrate high-traffic teams, and retire redundant tools where practical. Define how exceptions are requested and reviewed.\n\nExpected outcome: Teams collaborate in fewer, supported channels, improving findability of decisions and reducing shadow-IT sprawl.\n\nImplementation considerations: Choose tools that integrate with the productivity platform where possible. Address cultural adoption—mandate without enablement fails. Distinct from PC-001 (core productivity capabilities) by focusing on team collaboration channels and meeting norms.",
+      "businessImpact": "Multiple chat, meeting, and whiteboard tools fragment conversations and complicate security and retention. Standardization reduces tool sprawl and makes support and training feasible.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -837,17 +837,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-005",
       "questionId": "PC-005",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Is secure mobile work supported",
-      "description": "Address gaps identified during assessment of \"Is secure mobile work supported?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Mobility.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Support secure mobile and on-the-go work",
+      "description": "Finding: Secure mobile work is not adequately supported. “No” typically means no approved way to work from phones/tablets; “Partially” usually means some apps work while others force insecure workarounds.\n\nRecommended action: Define which business functions must work on mobile (email, files, line-of-business apps in scope) and enable them through approved apps or secure browser access. Set expectations for device PIN/biometrics and lost-device reporting. Limit download of sensitive files to unmanaged personal devices where policy requires.\n\nExpected outcome: Mobile and traveling staff can complete essential work through supported channels instead of unsafe improvisation.\n\nImplementation considerations: Complements Endpoint encryption recommendations by focusing on how work is done on mobile, not solely full-disk encryption of company laptops. Clarify BYOD vs company-owned device rules. Start with the roles that travel most.",
+      "businessImpact": "Mobile work without a supported pattern pushes staff toward personal email, unsecured apps, and local copies of business data. A clear secure-mobile approach protects productivity for field and traveling roles.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -856,17 +856,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-006",
       "questionId": "PC-006",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Are business applications standardized",
-      "description": "Address gaps identified during assessment of \"Are business applications standardized?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Supportability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Standardize core business applications",
+      "description": "Finding: Business applications are not standardized. “No” typically means teams adopt tools independently for the same job; “Partially” usually means preferred applications exist without consistent enforcement or retirement of duplicates.\n\nRecommended action: Inventory applications used for major business functions, designate preferred standards where duplication exists, and plan consolidation or controlled exceptions. Publish an approved application list for common roles and review additions through a lightweight intake process.\n\nExpected outcome: Support, training, and security effort concentrate on a manageable application set rather than an ever-growing shadow portfolio.\n\nImplementation considerations: Distinct from Technology Strategy application review cadence (strategy/governance)—this recommendation focuses on operational standardization for day-to-day productivity. Involve department owners so standards are usable. Do not force specialty tools into a one-size-fits-all suite.",
+      "businessImpact": "Uncontrolled application variety increases license cost, training burden, and integration failures. Standardization improves supportability and makes security reviews practical.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -875,17 +875,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-007",
       "questionId": "PC-007",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Are software licenses managed",
-      "description": "Address gaps identified during assessment of \"Are software licenses managed?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Cost control.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Manage software licenses intentionally",
+      "description": "Finding: Software license management is missing or incomplete. “No” typically means no clear inventory of entitlements and assignments; “Partially” usually means some major suites are tracked while others are purchased ad hoc.\n\nRecommended action: Maintain a living view of major software entitlements, assigned users, and renewal dates for productivity and line-of-business tools in scope. Reclaim unused seats during offboarding and before renewals. Align purchases to the approved application standards where practical.\n\nExpected outcome: License spend better matches real usage, and renewal surprises decline.\n\nImplementation considerations: Complements Documentation & Knowledge licensing/warranty recordkeeping by focusing on active assignment and renewal management for software seats. Start with the highest-cost suites. Avoid legal certification claims—capture known entitlements and escalate unclear obligations.",
+      "businessImpact": "Unmanaged licenses cause overspending, surprise true-ups, and compliance exposure—or leave staff without seats they need. Intentional license management ties spend to actual use.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -894,17 +894,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-008",
       "questionId": "PC-008",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Have manual workflows been improved through technology",
-      "description": "Address gaps identified during assessment of \"Have manual workflows been improved through technology?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Automation.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Reduce high-friction manual workflows with technology",
+      "description": "Finding: Manual workflows have not been systematically improved with technology. “No” typically means known paper/email-heavy processes remain untouched; “Partially” usually means a few automations exist without a prioritized pipeline of improvements.\n\nRecommended action: Identify a short list of high-friction manual processes (for example intake, approvals, status tracking, or handoffs). Select one or two to improve using existing productivity/collaboration capabilities or lightweight workflow tools. Measure whether handoff time or error rates improve, then iterate.\n\nExpected outcome: Staff reclaim time from repetitive work, and process quality becomes less dependent on heroic manual effort.\n\nImplementation considerations: Prefer improving processes the business already owns over buying new platforms first. Avoid automation theater—pick workflows with clear owners and measurable pain. Do not promise enterprise-wide transformation in a single engagement.",
+      "businessImpact": "Manual, repetitive workflows consume staff time and introduce errors that technology can often reduce. Leaving known friction unaddressed caps productivity gains from platforms the organization already owns.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -913,17 +913,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-009",
       "questionId": "PC-009",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Do employees have the technology needed to succeed",
-      "description": "Address gaps identified during assessment of \"Do employees have the technology needed to succeed?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "User success.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Ensure employees have the technology needed to succeed",
+      "description": "Finding: Employees do not consistently have the technology needed to succeed. “No” typically means material role gaps in devices or required tools; “Partially” usually means some teams are well equipped while others operate with chronic deficits.\n\nRecommended action: Define role-based technology baselines (device class, core apps, and peripherals) for major job families. Survey or sample gaps against that baseline, and remediate the highest-impact shortages first. Revisit baselines when roles or software standards change.\n\nExpected outcome: Staff can perform expected work without fighting inadequate tools, improving throughput and reducing shadow purchases.\n\nImplementation considerations: Coordinate with Endpoint lifecycle and Technology Strategy refresh planning for hardware. Keep baselines realistic for SMB budgets. Capture exceptions intentionally rather than letting gaps linger silently.",
+      "businessImpact": "Underpowered devices, missing peripherals, or lack of required software create quiet productivity losses and workarounds. Equipping roles appropriately is foundational to every other productivity investment.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -932,17 +932,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-PC-010",
       "questionId": "PC-010",
       "pillarCode": "productivity_collaboration",
       "pillarName": "Productivity & Collaboration",
-      "title": "Improve Productivity & Collaboration: Has responsibility for productivity improvements been assigned",
-      "description": "Address gaps identified during assessment of \"Has responsibility for productivity improvements been assigned?\" within the Productivity & Collaboration Technology Pillar.",
-      "businessImpact": "Accountability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Assign ownership for productivity and collaboration improvements",
+      "description": "Finding: Responsibility for productivity improvements is missing or unclear. “No” suggests no accountable owner; “Partially” suggests informal interest without authority, cadence, or coverage across departments.\n\nRecommended action: Assign a primary owner (internal lead and/or provider counterpart) accountable for productivity platform standards, collaboration tool governance, and the improvement backlog for high-friction workflows. Define a simple review cadence with business stakeholders. Communicate the owner to department managers who request new tools.\n\nExpected outcome: Productivity gaps have a durable owner, so standards and improvements persist between assessment cycles.\n\nImplementation considerations: Ownership can combine an operations or office lead with IT/provider support. Authority to set standards matters more than deep technical skill. Align with overall technology leadership so tool decisions are not orphaned.",
+      "businessImpact": "Without a named owner, platform sprawl, license waste, and workflow friction recur after one-time cleanups. Durable ownership keeps productivity standards current as teams and tools change.",
+      "suggestedService": "Productivity & Collaboration Improvement",
       "priority": "low",
       "estimatedImpactPoints": 3,
       "triggerAnswers": [
@@ -951,7 +951,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-SO-001",
@@ -1148,10 +1148,10 @@
       "questionId": "DK-001",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Is the network documented",
-      "description": "Address gaps identified during assessment of \"Is the network documented?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Support.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document the business network for support and recovery",
+      "description": "Finding: Network documentation is missing or incomplete based on the assessment response. A “No” answer typically means usable diagrams or inventories are absent; “Partially” usually means some notes exist but are incomplete, outdated, or not shared with the people who support the environment.\n\nRecommended action: Produce a practical network overview covering sites, internet circuits, firewalls/routers, core switches, wireless, VPN/remote access, and major server or cloud connectivity. Label critical paths (email, line-of-business apps, payments, voice). Store the package where IT support can reach it, and schedule a lightweight refresh after material changes.\n\nExpected outcome: Support staff and providers can orient faster during incidents and changes, reducing time-to-diagnose and dependency on a single individual’s memory.\n\nImplementation considerations: Prefer simple diagrams and device lists over unused elaborate tooling. Protect documentation that reveals internal addressing or credentials. Align updates with change tickets so the package does not go stale after the first draft.",
+      "businessImpact": "When network layout, key devices, and connectivity paths are not documented, outages take longer to diagnose, vendor handoffs become unreliable, and recovery work depends on tribal knowledge. That raises downtime risk and increases the cost of every change or emergency.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -1160,17 +1160,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-002",
       "questionId": "DK-002",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Is there a current technology asset inventory",
-      "description": "Address gaps identified during assessment of \"Is there a current technology asset inventory?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Visibility.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain a current technology asset inventory",
+      "description": "Finding: A current technology asset inventory is missing or only partially maintained. “No” suggests no reliable inventory; “Partially” suggests lists exist but are incomplete or infrequently updated.\n\nRecommended action: Establish a living inventory of workstations, servers, network appliances, major SaaS/line-of-business applications, and mobile devices in scope. Capture owner, location/site, warranty or subscription dates where known, and criticality. Reconcile the list at a defined cadence (for example quarterly) and after onboarding or retirement events.\n\nExpected outcome: Planning, support, and security coverage decisions are based on a shared view of what the organization actually runs.\n\nImplementation considerations: Start with business-critical systems, then expand. Reuse existing RMM, directory, or purchase records where available rather than rebuilding from scratch. Assign an owner for inventory accuracy.",
+      "businessImpact": "Without a current inventory of devices, servers, and major software, leaders cannot plan refresh cycles, license needs, or security coverage confidently. Missing assets are easier to overlook in patching, backup, and retirement decisions.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1179,17 +1179,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-003",
       "questionId": "DK-003",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Are credentials securely managed",
-      "description": "Address gaps identified during assessment of \"Are credentials securely managed?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Security.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Manage shared and service credentials in a controlled secret store",
+      "description": "Finding: Credentials are not securely managed in a consistent way. “No” typically means no controlled vault or process; “Partially” often means some secrets are protected while others remain in informal locations.\n\nRecommended action: Inventory privileged, shared, vendor, and service credentials. Move them into an approved password manager or secrets vault with individual accountability, MFA on the vault, and least-privilege sharing. Retire plaintext lists. Define who may retrieve break-glass credentials and how rotations are recorded.\n\nExpected outcome: Sensitive passwords are harder to lose casually, easier to rotate after staff changes, and less likely to appear in email or chat during routine work.\n\nImplementation considerations: Prioritize domain/admin, firewall, backup, banking, and vendor portals first. Train staff who currently share passwords. Coordinate rotations so production services are not interrupted. This complements—but does not replace—individual workforce accounts and MFA under Identity & Access recommendations.",
+      "businessImpact": "Credentials stored in spreadsheets, browsers, or shared chats are easy to leak and hard to revoke. For an SMB, one exposed admin or vendor password can interrupt operations, enable fraud, or prolong recovery after an incident.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -1198,17 +1198,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-004",
       "questionId": "DK-004",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Are vendors documented",
-      "description": "Address gaps identified during assessment of \"Are vendors documented?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Continuity.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document critical vendors and support contacts",
+      "description": "Finding: Vendor documentation is missing or incomplete. “No” means no usable vendor register; “Partially” means some contacts exist but key providers or renewal details are missing.\n\nRecommended action: Create a concise vendor register for internet, telecom, cloud, security, backup, line-of-business applications, and managed IT. Capture primary contacts, support portals, account numbers, renewal windows, and what each vendor supports. Review the register at least annually and after provider changes.\n\nExpected outcome: Incidents and renewals proceed with less hunting for contacts, and ownership of third-party relationships is clearer.\n\nImplementation considerations: Keep the register short enough to maintain. Store it with other operations documentation. Mark which vendors are business-critical versus discretionary.",
+      "businessImpact": "When vendor contacts, contract terms, and escalation paths are unknown, outages and renewals create avoidable delay. Leadership loses negotiating leverage and support teams waste time finding who can help.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -1217,17 +1217,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-005",
       "questionId": "DK-005",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Are SOPs documented",
-      "description": "Address gaps identified during assessment of \"Are SOPs documented?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Consistency.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document standard operating procedures for key IT work",
+      "description": "Finding: Standard operating procedures (SOPs) for technology operations are missing or incomplete. “No” implies SOPs are largely absent; “Partially” implies some procedures exist but coverage is uneven.\n\nRecommended action: Document a short set of SOPs for high-frequency or high-risk work—examples: new-user setup, offboarding, backup verification, restoring a critical application, and vendor escalation. Use checklists with owners and expected timing. Store them where the support team actually works.\n\nExpected outcome: Routine and emergency tasks are performed more consistently, and coverage does not depend solely on one individual’s memory.\n\nImplementation considerations: Prefer brief checklists over long manuals that nobody updates. Pilot with the two or three most painful processes first. Tie SOP updates to change events.",
+      "businessImpact": "Undocumented repeatable work produces inconsistent results, longer onboarding for new support staff, and higher error rates during pressure events. Knowledge walks out the door when one person is unavailable.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -1236,17 +1236,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-006",
       "questionId": "DK-006",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Are configurations documented",
-      "description": "Address gaps identified during assessment of \"Are configurations documented?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Recovery.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Document critical system configurations for rebuild and support",
+      "description": "Finding: Configuration documentation is missing or incomplete. “No” suggests little durable config documentation; “Partially” suggests some notes exist but critical systems are incomplete.\n\nRecommended action: Capture configuration baselines for firewalls, identity/directory essentials, backup jobs, email/security gateways, and other systems that would be painful to recreate from memory. Include versions, key settings, and where authoritative backups of config files are stored. Protect sensitive values and reference the credential vault where secrets belong.\n\nExpected outcome: Support and recovery teams can rebuild or diagnose faster with less guesswork after failures or staff changes.\n\nImplementation considerations: Focus on systems that are hard to rediscover under pressure. Automate exports where the platform allows. Avoid duplicating secrets into documents—link to the vault instead.",
+      "businessImpact": "Without configuration baselines, rebuilds and troubleshooting take longer and increase the chance of incorrect recovery. Provider transitions become riskier because essential settings live only in production systems or personal notes.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -1255,17 +1255,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-007",
       "questionId": "DK-007",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Are licensing and warranty records maintained",
-      "description": "Address gaps identified during assessment of \"Are licensing and warranty records maintained?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Planning.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Maintain licensing and warranty records",
+      "description": "Finding: Licensing and warranty records are not maintained reliably. “No” means records are largely absent; “Partially” means some entitlements are tracked while others are not.\n\nRecommended action: Centralize records for major software subscriptions, cloud tenants, security tools, and hardware warranties—purchase date, term, seats/quantity, renewal date, and owner. Review upcoming renewals on a defined calendar (for example 60–90 days ahead).\n\nExpected outcome: Renewals and refresh decisions are planned with fewer surprises, and ownership of entitlements is clearer.\n\nImplementation considerations: Start with the highest-cost and business-critical subscriptions. Reconcile against invoices and admin consoles. Pair with the asset inventory so devices and licenses stay aligned.",
+      "businessImpact": "Missing license and warranty records lead to surprise renewals, compliance uncertainty, and hardware left unprotected after coverage expires. Budget planning becomes reactive rather than scheduled.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -1274,17 +1274,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-008",
       "questionId": "DK-008",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Could another IT professional support the environment",
-      "description": "Address gaps identified during assessment of \"Could another IT professional support the environment?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Knowledge transfer.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Make the environment supportable by another IT professional",
+      "description": "Finding: Another qualified IT professional could not readily support the environment with current documentation and access practices. “No” implies heavy reliance on tribal knowledge; “Partially” implies some transferability but remaining single points of failure.\n\nRecommended action: Combine living network/asset docs, credential vault access for designated backups, SOPs, and a short “how we support this company” briefing. Ensure at least one backup person or provider can authenticate, escalate vendors, and perform core recovery steps. Test knowledge transfer with a tabletop or shadowed incident.\n\nExpected outcome: Support continuity improves when the primary administrator is unavailable, and provider transitions become less disruptive.\n\nImplementation considerations: This recommendation is largely the roll-up of documentation, vaulting, and ownership work in this pillar. Prioritize break-glass access and the top five recovery procedures before polishing secondary diagrams.",
+      "businessImpact": "When only one person can support the environment, illness, turnover, or provider change creates outsized operational risk. Knowledge concentration slows incident response and raises transition cost.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1293,17 +1293,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-009",
       "questionId": "DK-009",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Is documentation maintained",
-      "description": "Address gaps identified during assessment of \"Is documentation maintained?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Accuracy.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Keep technology documentation current after changes",
+      "description": "Finding: Documentation is not maintained as the environment changes. “No” suggests documentation is rarely updated; “Partially” suggests updates happen inconsistently.\n\nRecommended action: Define a lightweight maintenance rule: update network, inventory, SOP, and config docs as part of completed changes, and perform a periodic review (for example quarterly) for drift. Assign reviewers and track overdue refreshes.\n\nExpected outcome: Documentation remains trustworthy enough to use under pressure, reducing diagnosis time and transition risk.\n\nImplementation considerations: Attach “docs updated?” to change tickets or project closeout. Prefer fewer documents that stay accurate over many that go stale. Clear ownership makes the cadence enforceable.",
+      "businessImpact": "Outdated documentation creates false confidence—teams follow wrong diagrams or miss new systems during incidents. Stale records waste time and can extend outages.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1312,17 +1312,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-DK-010",
       "questionId": "DK-010",
       "pillarCode": "documentation_knowledge",
       "pillarName": "Documentation & Knowledge",
-      "title": "Improve Documentation & Knowledge: Has documentation ownership been assigned",
-      "description": "Address gaps identified during assessment of \"Has documentation ownership been assigned?\" within the Documentation & Knowledge Technology Pillar.",
-      "businessImpact": "Accountability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Assign ownership for technology documentation",
+      "description": "Finding: Documentation ownership has not been clearly assigned. “No” means no clear owner; “Partially” means ownership is informal or split without accountability.\n\nRecommended action: Name a primary owner (and backup) for technology documentation quality—inventory, network overview, SOPs, vendor register, and config baselines. Document whether an internal manager or MSP executes updates, and include documentation health in a recurring operations review.\n\nExpected outcome: Documentation work has a clear point of accountability, improving the odds that records stay usable over time.\n\nImplementation considerations: Ownership can sit with a business leader supported by a provider; the key is explicit responsibility. Avoid distributing edit rights widely without a single accountable owner.",
+      "businessImpact": "Without a named owner, documentation tasks fall through the cracks between internal staff and providers. Accountability gaps are a common reason inventories and diagrams decay.",
+      "suggestedService": "Documentation & Knowledge Improvement",
       "priority": "low",
       "estimatedImpactPoints": 3,
       "triggerAnswers": [
@@ -1331,17 +1331,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-001",
       "questionId": "TS-001",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Is there a documented technology roadmap",
-      "description": "Address gaps identified during assessment of \"Is there a documented technology roadmap?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Planning.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Establish a documented technology roadmap",
+      "description": "Finding: A documented technology roadmap is missing or incomplete. “No” typically means no living plan; “Partially” means informal lists exist without shared sequencing or ownership.\n\nRecommended action: Produce a practical multi-horizon roadmap (near-term stabilization, mid-term improvements, longer-term enhancements) tied to assessment priorities and business goals. Review and adjust it on a defined cadence with leadership. Keep it short enough to use in planning conversations.\n\nExpected outcome: Stakeholders share a sequenced view of technology priorities, making funding and scheduling decisions clearer and reducing purely reactive spend.\n\nImplementation considerations: Use StackScore recommendations and living execution plans as inputs, not as a substitute for leadership agreement. Revisit after major business changes. Do not treat the roadmap as a fixed delivery guarantee—capacity and approvals still govern timing.",
+      "businessImpact": "Without a shared roadmap, technology work becomes reactive—urgent fires crowd out improvements that protect uptime, security, and growth. Leaders lack a sequenced view of what matters next and why.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -1350,17 +1350,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-002",
       "questionId": "TS-002",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Are technology decisions aligned with business goals",
-      "description": "Address gaps identified during assessment of \"Are technology decisions aligned with business goals?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Alignment.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Align technology decisions with stated business goals",
+      "description": "Finding: Technology decisions are not consistently aligned with business goals. “No” suggests little explicit linkage; “Partially” suggests occasional alignment without a repeatable method.\n\nRecommended action: Document the organization’s primary business goals and technology constraints. Require a short “business purpose” note for material technology decisions (new systems, major upgrades, security investments). Review alignment in executive technology discussions.\n\nExpected outcome: Investments and projects more clearly support growth, efficiency, risk reduction, or customer obligations—and low-value work is easier to defer.\n\nImplementation considerations: Keep the decision record lightweight (a paragraph, not a bureaucracy). Involve both operations and leadership for decisions that affect customer delivery or compliance. Revisit goals when strategy changes.",
+      "businessImpact": "Technology spend that is not tied to business outcomes creates frustration, duplicate tools, and missed risk reduction. Leaders struggle to decide what to fund when priorities are unclear.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -1369,17 +1369,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-003",
       "questionId": "TS-003",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Is there a planned technology budget",
-      "description": "Address gaps identified during assessment of \"Is there a planned technology budget?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Sustainability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Establish a planned technology budget",
+      "description": "Finding: A planned technology budget is missing or incomplete. “No” means budgeting is largely reactive; “Partially” means some categories are planned while others are ad hoc.\n\nRecommended action: Build an annual (or rolling) technology budget covering recurring services, licenses, anticipated refresh, and a reserve for urgent risk items. Align major roadmap items to budget categories. Review actuals versus plan at least quarterly with the budget owner.\n\nExpected outcome: Leadership can approve sequenced work with fewer surprise invoices and clearer tradeoffs between deferral and risk.\n\nImplementation considerations: Start with known recurring costs from vendors and invoices. Separate run-the-business spend from improvement initiatives. Actual figures come from contracts, quotes, and finance—not from speculative estimates.",
+      "businessImpact": "Without a planned technology budget, renewals, hardware refresh, and security work arrive as surprises. That forces rushed decisions and undercuts multi-quarter improvement plans.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -1388,17 +1388,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-004",
       "questionId": "TS-004",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Is hardware lifecycle planned",
-      "description": "Address gaps identified during assessment of \"Is hardware lifecycle planned?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Reliability.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Plan hardware lifecycle and refresh",
+      "description": "Finding: Hardware lifecycle planning is missing or incomplete. “No” suggests refresh is reactive; “Partially” suggests some planning exists without consistent execution.\n\nRecommended action: Using the asset inventory, classify devices by age, warranty, and business criticality. Define target refresh windows for workstations, servers, and network gear. Schedule replacements before failure where practical, and capture exceptions intentionally.\n\nExpected outcome: Refresh becomes predictable, reducing emergency purchases and surprise downtime from aged equipment.\n\nImplementation considerations: Prioritize devices that gate revenue or safety-critical work. Coordinate with budget planning. Pair with warranty and license records.",
+      "businessImpact": "Unplanned hardware aging increases failure risk, performance complaints, and emergency replacement cost. Warranty cliffs and unsupported devices also complicate security and support.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1407,17 +1407,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-005",
       "questionId": "TS-005",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Are business applications reviewed regularly",
-      "description": "Address gaps identified during assessment of \"Are business applications reviewed regularly?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Currency.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Review business applications on a defined cadence",
+      "description": "Finding: Business applications are not reviewed regularly. “No” means reviews rarely happen; “Partially” means reviews are informal or incomplete.\n\nRecommended action: Maintain an application catalog of systems that matter to operations. Review ownership, business fit, renewals, and risk on a defined cadence (for example semiannual). Decide to retain, replace, consolidate, or retire with a named owner for each decision.\n\nExpected outcome: The application portfolio stays closer to actual business needs, with fewer redundant tools and clearer renewal decisions.\n\nImplementation considerations: Start with paid and business-critical apps. Involve department leads for fitness-to-purpose. Link retirements to data migration and access removal so shadow use does not continue.",
+      "businessImpact": "Unreviewed applications accumulate unused licenses, overlapping tools, and outdated platforms that increase cost and support burden. Security and vendor risk can linger unnoticed.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1426,17 +1426,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-006",
       "questionId": "TS-006",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Are technology risks reviewed",
-      "description": "Address gaps identified during assessment of \"Are technology risks reviewed?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Prioritization.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Review technology risks with leadership on a defined cadence",
+      "description": "Finding: Technology risks are not reviewed in a reliable way. “No” suggests little structured review; “Partially” suggests ad hoc discussion without cadence or tracking.\n\nRecommended action: Maintain a short risk register of technology issues that could disrupt operations, compromise data, or block growth. Review it with leadership on a set cadence, update status after remediation, and connect top risks to roadmap and budget items.\n\nExpected outcome: Risk discussion becomes proactive, improving prioritization of limited remediation capacity.\n\nImplementation considerations: Keep the register focused (top 10, not hundreds). Use assessment findings and incident history as inputs. Avoid implying that a listed risk has already caused harm unless evidence exists.",
+      "businessImpact": "When technology risks are not reviewed, known gaps remain unprioritized and new threats or dependencies go unnoticed. Leadership learns about problems primarily through incidents.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "high",
       "estimatedImpactPoints": 8,
       "triggerAnswers": [
@@ -1445,17 +1445,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-007",
       "questionId": "TS-007",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Is continuous improvement practiced",
-      "description": "Address gaps identified during assessment of \"Is continuous improvement practiced?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Growth.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Establish a continuous technology improvement cadence",
+      "description": "Finding: Continuous improvement is not practiced consistently. “No” means improvement is largely crisis-driven; “Partially” means some improvement happens without a repeatable rhythm.\n\nRecommended action: Institute a lightweight recurring improvement cycle—review open recommendations and incidents, pick a small number of next actions, assign owners, and verify completion. Align the cycle with roadmap and executive review forums.\n\nExpected outcome: Progress compounds over time instead of depending solely on large one-time projects, and residual risks receive steady attention.\n\nImplementation considerations: Protect a modest capacity for improvement amid break/fix work. Measure completion of agreed actions, not activity volume. Do not promise specific StackScore gains; score movement depends on which items are completed and how thoroughly.",
+      "businessImpact": "Without continuous improvement habits, environments plateau after one project wave and slowly accumulate debt. Small recurring fixes that prevent outages never get scheduled.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "critical",
       "estimatedImpactPoints": 10,
       "triggerAnswers": [
@@ -1464,17 +1464,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-008",
       "questionId": "TS-008",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Is there a technology vision",
-      "description": "Address gaps identified during assessment of \"Is there a technology vision?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Direction.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Define a clear technology vision for the organization",
+      "description": "Finding: A technology vision is missing or unclear. “No” means no articulated vision; “Partially” means informal ideas exist without documented agreement.\n\nRecommended action: Draft a short technology vision (one page or less) describing how technology should enable the business over the next 2–3 years—reliability, security posture, customer experience, and operating model. Confirm it with leadership and use it to test major decisions.\n\nExpected outcome: Roadmap and purchase decisions have a shared directional filter, reducing contradictory initiatives.\n\nImplementation considerations: Keep language business-readable. Revisit annually or after strategy shifts. Vision should guide—not replace—budget and risk prioritization.",
+      "businessImpact": "Without a shared technology vision, teams make local tool choices that conflict, and multi-year investments lack a north star. Vendors and staff receive mixed signals about what “good” looks like.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "low",
       "estimatedImpactPoints": 4,
       "triggerAnswers": [
@@ -1483,17 +1483,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-009",
       "questionId": "TS-009",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Are executive technology reviews performed",
-      "description": "Address gaps identified during assessment of \"Are executive technology reviews performed?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Governance.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Conduct executive technology reviews on a defined schedule",
+      "description": "Finding: Executive technology reviews are not performed reliably. “No” means reviews rarely occur; “Partially” means occasional discussions without a standing rhythm.\n\nRecommended action: Schedule a recurring executive technology review (for example quarterly) covering StackScore/pillar health, top risks, roadmap status, budget outlook, and decisions needed. Capture actions and owners. Use Business Reviews or strategy sessions where those forums already exist.\n\nExpected outcome: Leadership stays informed enough to approve sequencing and tradeoffs before problems become outages.\n\nImplementation considerations: Keep materials executive-short. Separate informational updates from decision requests. Align with the continuous improvement cadence.",
+      "businessImpact": "When executives do not review technology health, priorities, and risks, decisions default to the loudest incident. Strategic work loses sponsorship and funding clarity.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "medium",
       "estimatedImpactPoints": 6,
       "triggerAnswers": [
@@ -1502,17 +1502,17 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     },
     {
       "id": "REC-TS-010",
       "questionId": "TS-010",
       "pillarCode": "technology_strategy",
       "pillarName": "Technology Strategy",
-      "title": "Improve Technology Strategy: Has technology leadership been assigned",
-      "description": "Address gaps identified during assessment of \"Has technology leadership been assigned?\" within the Technology Strategy Technology Pillar.",
-      "businessImpact": "Ownership.",
-      "suggestedService": "Technology Improvement Services",
+      "title": "Assign clear technology leadership ownership",
+      "description": "Finding: Technology leadership has not been clearly assigned. “No” means no named leader; “Partially” means informal influence without explicit authority.\n\nRecommended action: Name the internal owner accountable for technology outcomes (and a backup), including roadmap sponsorship, budget advocacy, and provider oversight. Document decision rights versus any MSP or IT provider. Include this role in executive reviews.\n\nExpected outcome: Prioritization and escalation have a clear internal point of accountability, improving follow-through on agreed work.\n\nImplementation considerations: Ownership can be a business executive supported by technical providers; technical depth is less important than authority and cadence. Avoid equating “has admin passwords” with leadership ownership.",
+      "businessImpact": "Ambiguous technology leadership slows decisions, blurs accountability with providers, and leaves risk ownership unclear. Improvements stall when nobody is empowered to prioritize.",
+      "suggestedService": "Technology Strategy Improvement",
       "priority": "low",
       "estimatedImpactPoints": 3,
       "triggerAnswers": [
@@ -1521,7 +1521,7 @@
       ],
       "alsoTriggerOnPartial": true,
       "consolidationGroupId": null,
-      "isStub": true
+      "isStub": false
     }
   ],
   "consolidationGroups": []

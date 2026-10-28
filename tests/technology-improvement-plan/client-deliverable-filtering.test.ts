@@ -17,7 +17,7 @@ describe("TIP / published proposal client deliverable filtering (DEF-002)", () =
     {
       id: "stub",
       title: "Improve Endpoint Management",
-      recommendationTemplate: { code: "REC-EP-001" },
+      recommendationTemplate: { code: "REC-TEST-STUB-001" },
       category: { name: "Endpoint Management" },
     },
     {

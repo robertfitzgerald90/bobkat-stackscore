@@ -29,7 +29,7 @@ describe("assessment-complete email recommendation filter (DEF-003)", () => {
         id: "stub",
         title: "Improve Endpoint Management",
         priority: "high",
-        recommendationTemplate: { code: "REC-EP-001" },
+        recommendationTemplate: { code: "REC-TEST-STUB-001" },
       },
       {
         id: "stale",

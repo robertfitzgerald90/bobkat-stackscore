@@ -44,7 +44,10 @@ export function RoadmapDashboard({
       </div>
 
       <RoadmapKpiStrip dashboard={dashboard} />
-      <EffectiveScoreJourneyView journey={dashboard.scoreJourney} />
+      <EffectiveScoreJourneyView
+        journey={dashboard.scoreJourney}
+        showProjectedFinal={dashboard.isConsultant}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <RoadmapTimeline dashboard={dashboard} />

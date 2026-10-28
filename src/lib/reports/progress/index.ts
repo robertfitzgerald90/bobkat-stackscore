@@ -4,7 +4,7 @@ import { buildProgressReportData } from "@/lib/reports/progress/report-data";
 import type { ProgressReportData } from "@/lib/reports/progress/types";
 import { computeJourneyProgress } from "@/lib/technology-profile/journey";
 import { getTechnologyProfile } from "@/lib/technology-profile";
-import { MATURITY_TIER_LABELS } from "@/lib/scoring/maturity";
+import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
 
 export async function loadProgressReport(clientId: string): Promise<ProgressReportData | null> {
   const client = await prisma.client.findUnique({
@@ -81,9 +81,10 @@ export async function loadProgressReport(clientId: string): Promise<ProgressRepo
     clientName: client.companyName,
     generatedAt: new Date(),
     currentStackScore: profileView?.overallStackScore ?? null,
-    currentMaturityLabel: profileView?.maturityTier
-      ? MATURITY_TIER_LABELS[profileView.maturityTier]
-      : null,
+    currentMaturityLabel:
+      profileView?.overallStackScore != null
+        ? getCustomerMaturityLabel(profileView.overallStackScore)
+        : null,
     lastAssessment: {
       assessmentName: lastAssessment.assessmentName,
       completedAt: lastAssessment.completedAt,

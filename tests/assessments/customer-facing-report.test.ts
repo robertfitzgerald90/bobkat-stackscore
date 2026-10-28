@@ -186,10 +186,13 @@ describe("client vs staff recommendation visibility for projections", () => {
     });
 
     expect(client.recommendations.every((row) => !row.title.startsWith("Improve "))).toBe(true);
+    // Underlying catalog-impact calc remains for staff/internal compatibility.
     expect(client.summary.projectedScore).toBe(ABC_PROJECTED);
     expect(client.summary.projectionImpact).toBe(ABC_PROJECTION_IMPACT);
-    expect(client.executiveSummary).toContain("improve from 39 to 59");
+    // SS-REL-015: customer narrative must not present catalog projection as a future StackScore.
+    expect(client.executiveSummary).not.toContain("improve from 39 to 59");
     expect(client.executiveSummary).not.toContain("to 100");
+    expect(client.executiveSummary).toContain("confirmed through reassessment");
     expect(client.executiveSummary).not.toContain("credentials securely managed");
     expect(client.usedCustomerSafeNarrative).toBe(true);
   });

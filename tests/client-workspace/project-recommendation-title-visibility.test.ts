@@ -11,7 +11,7 @@ describe("project linked recommendation title visibility", () => {
     };
     const stub = {
       title: "Improve Endpoint Management",
-      recommendationTemplate: { code: "REC-EP-001" },
+      recommendationTemplate: { code: "REC-TEST-STUB-001" },
     };
 
     expect(isClientDeliverableRecommendation(approved, "client")).toBe(true);

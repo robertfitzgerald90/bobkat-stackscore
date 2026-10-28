@@ -6,17 +6,28 @@ type AssessmentReportHeroProps = {
   clientName: string;
   assessmentDate: string;
   overallScore: number;
-  overallRatingLabel: string;
-  projectedScore: number;
+  /** Display maturity/rating label under StackScore (DOC-119 for customers). */
+  overallMaturityLabel: string;
+  projectedScore?: number | null;
+  /** Active improvement opportunities (open + accepted + in_progress) when known. */
+  improvementOpportunityCount?: number;
+  suppressCatalogProjectedMaturity?: boolean;
 };
 
 export function AssessmentReportHero({
   clientName,
   assessmentDate,
   overallScore,
-  overallRatingLabel,
+  overallMaturityLabel,
   projectedScore,
+  improvementOpportunityCount,
+  suppressCatalogProjectedMaturity = false,
 }: AssessmentReportHeroProps) {
+  const showProjected =
+    !suppressCatalogProjectedMaturity &&
+    projectedScore !== null &&
+    projectedScore !== undefined;
+
   return (
     <header className="report-cover">
       <div className="report-cover-brand">
@@ -26,7 +37,7 @@ export function AssessmentReportHero({
 
       <h1 className="report-cover-title">Technology Maturity Assessment Report</h1>
       <p className="report-cover-description">
-        A comprehensive evaluation of technology posture, operational readiness, and improvement
+        A comprehensive evaluation of technology posture, technology maturity, and improvement
         opportunities prepared for executive review.
       </p>
 
@@ -44,13 +55,19 @@ export function AssessmentReportHero({
           <p className={cn("report-cover-score", getReportScoreTextClass(overallScore))}>
             {overallScore}
           </p>
-          <p className="report-cover-meta-note">{overallRatingLabel}</p>
+          <p className="report-cover-meta-note">{overallMaturityLabel}</p>
         </div>
         <div className="report-cover-meta-item">
-          <p className="report-cover-meta-label">Technology health</p>
-          <p className="report-cover-meta-value">{overallRatingLabel}</p>
+          <p className="report-cover-meta-label">Technology maturity</p>
+          <p className="report-cover-meta-value">{overallMaturityLabel}</p>
           <p className="report-cover-meta-note">
-            Projected {projectedScore} with recommended actions
+            {showProjected
+              ? `Projected ${projectedScore} with recommended actions`
+              : improvementOpportunityCount !== undefined
+                ? `${improvementOpportunityCount} improvement ${
+                    improvementOpportunityCount === 1 ? "opportunity" : "opportunities"
+                  } identified`
+                : "Prioritized improvement opportunities identified"}
           </p>
         </div>
       </div>

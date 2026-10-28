@@ -21,7 +21,7 @@ describe("client roadmap stub visibility (DEF-001)", () => {
     expect(hasUnpublishedStubTitle("Centralize workforce identity and authentication")).toBe(
       false,
     );
-    expect(isStubRecommendationTemplate("REC-EP-001")).toBe(true);
+    expect(isStubRecommendationTemplate("REC-TEST-STUB-001")).toBe(true);
     expect(isStubRecommendationTemplate("REC-IA-001")).toBe(false);
   });
 });

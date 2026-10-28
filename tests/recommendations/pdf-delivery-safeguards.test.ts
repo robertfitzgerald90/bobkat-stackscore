@@ -18,7 +18,7 @@ describe("SS-OPT-003B PDF and client delivery safeguards", () => {
       {
         id: "stub",
         title: "Improve Endpoint Protection",
-        templateCode: "REC-EP-001",
+        templateCode: "REC-TEST-STUB-001",
       },
       {
         id: "stale-b1",
@@ -28,7 +28,7 @@ describe("SS-OPT-003B PDF and client delivery safeguards", () => {
     ];
 
     expect(isStubRecommendationTemplate("REC-IA-001")).toBe(false);
-    expect(isStubRecommendationTemplate("REC-EP-001")).toBe(true);
+    expect(isStubRecommendationTemplate("REC-TEST-STUB-001")).toBe(true);
     expect(filterClientDeliverableRecommendations(rows, "client")).toEqual([rows[0]]);
     expect(filterClientDeliverableRecommendations(rows, "admin")).toEqual(rows);
   });

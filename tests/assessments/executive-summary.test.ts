@@ -92,6 +92,17 @@ describe("buildAssessmentExecutiveSummary", () => {
     expect(summary).not.toContain("guaranteed");
   });
 
+  it("omits catalog projected maturity figures for customer surfaces (SS-REL-015)", () => {
+    const summary = buildAssessmentExecutiveSummary({
+      ...baseInput,
+      includeCatalogProjectedMaturity: false,
+    });
+
+    expect(summary).not.toContain("improve from 42 to 62");
+    expect(summary).not.toContain("potential gain of 20 points");
+    expect(summary).toContain("confirmed through reassessment");
+  });
+
   it("ends with the strategy session paragraph", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 

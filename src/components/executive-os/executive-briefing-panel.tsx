@@ -64,7 +64,7 @@ export function ExecutiveBriefingPanel({ briefing }: ExecutiveBriefingPanelProps
         <div className="space-y-5">
           <div className={EXECUTIVE_OS_SCORE_RING}>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Overall Technology Health
+              Overall StackScore
             </p>
             <p
               className={cn(

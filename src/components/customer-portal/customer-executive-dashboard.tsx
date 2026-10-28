@@ -33,7 +33,13 @@ import {
 import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
-import { RATING_LABELS, getRating } from "@/lib/scoring";
+import {
+  CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES,
+  CUSTOMER_TERM_ROADMAP_PROGRESS,
+  CUSTOMER_TERM_STACKSCORE,
+  getCustomerMaturityLabel,
+  customerRoadmapProgressFootnote,
+} from "@/lib/assessments/customer-reporting";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { getBookingUrl } from "@/lib/support/config";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
@@ -73,7 +79,6 @@ export function CustomerExecutiveDashboard({
   const {
     profile,
     client,
-    journeyScores,
     pillarInsights,
     openRecommendations,
     journey,
@@ -82,7 +87,7 @@ export function CustomerExecutiveDashboard({
   } = detail;
 
   const score = profile.overallStackScore;
-  const rating = score !== null ? getRating(score) : null;
+  const maturityLabel = score !== null ? getCustomerMaturityLabel(score) : null;
   const hasCompletedAssessment = journey.assessmentsCompleted > 0;
   const assessmentInProgress = Boolean(draftAssessmentId);
   const bookingUrl = getBookingUrl();
@@ -178,10 +183,10 @@ export function CustomerExecutiveDashboard({
       {hasCompletedAssessment ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <ExecutiveKpiCard
-            label="Technology Health"
+            label={CUSTOMER_TERM_STACKSCORE}
             value={score ?? "—"}
-            sublabel={rating ? RATING_LABELS[rating] : "Complete your assessment"}
-            description="Your overall technology readiness for business operations."
+            sublabel={maturityLabel ?? "Complete your assessment"}
+            description="Official technology maturity from your latest completed assessment."
             trend={trendFromDelta(detail.scoreDeltaSincePrevious)}
             trendLabel={
               detail.scoreDeltaSincePrevious !== null && detail.scoreDeltaSincePrevious !== 0
@@ -194,15 +199,16 @@ export function CustomerExecutiveDashboard({
             emphasizeClassName={score !== null ? getScoreTextColorClass(score) : undefined}
           />
           <ExecutiveKpiCard
-            label="Projected Improvement"
-            value={journeyScores.projectedScore ?? "—"}
-            sublabel="With recommended actions"
-            description="Expected StackScore after implementing strategic priorities."
-            emphasizeClassName={
-              journeyScores.projectedScore !== null
-                ? getScoreTextColorClass(journeyScores.projectedScore)
-                : undefined
+            label={CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES}
+            value={profile.openRecommendationCount}
+            sublabel={
+              profile.criticalExposureCount > 0
+                ? `${profile.criticalExposureCount} critical exposure${
+                    profile.criticalExposureCount === 1 ? "" : "s"
+                  }`
+                : "Active recommended actions"
             }
+            description="Actionable recommendations still open, accepted, or in progress. Outcomes are confirmed through reassessment."
           />
           <ExecutiveKpiCard
             label="Business Risk"
@@ -215,14 +221,14 @@ export function CustomerExecutiveDashboard({
             description="Estimated operational and security exposure based on current maturity."
           />
           <ExecutiveKpiCard
-            label="Operational Readiness"
-            value={profile.maturityTierLabel ?? "—"}
+            label={CUSTOMER_TERM_ROADMAP_PROGRESS}
+            value={`${journey.progressPercent}%`}
             sublabel={
               profile.lastAssessedAt
                 ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
                 : undefined
             }
-            description="How prepared your technology environment is to support daily operations."
+            description={customerRoadmapProgressFootnote()}
           />
         </div>
       ) : null}
@@ -396,17 +402,19 @@ export function CustomerExecutiveDashboard({
         </section>
       ) : null}
 
-      {journeyScores.projectedScore !== null && score !== null ? (
+      {score !== null && profile.openRecommendationCount > 0 ? (
         <Card className={CLIENT_SURFACE_CARD}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="h-4 w-4 text-primary" />
-              Projected Business Outcome
+              Recommended Next Focus
             </CardTitle>
             <CardDescription>
-              Implementing recommended actions could improve technology health from {score} to{" "}
-              {journeyScores.projectedScore} — strengthening operational readiness and reducing
-              business risk.
+              Your official {CUSTOMER_TERM_STACKSCORE} is {score} ({maturityLabel}).{" "}
+              {profile.openRecommendationCount} improvement{" "}
+              {profile.openRecommendationCount === 1 ? "opportunity is" : "opportunities are"}{" "}
+              active. Address priority recommendations with BobKat IT; roadmap progress does not
+              replace reassessment for official maturity.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -415,8 +423,8 @@ export function CustomerExecutiveDashboard({
       {pillarInsights.length > 0 ? (
         <section className="space-y-4">
           <ClientSectionHeader
-            title="Technology Health by Domain"
-            description="How each area contributes to overall business readiness — with context, not just scores."
+            title="Technology Pillars"
+            description="How each technology pillar contributes to overall maturity — with context, not just scores."
           />
           <div className="grid gap-3 sm:grid-cols-2">
             {pillarInsights.map((pillar) => (

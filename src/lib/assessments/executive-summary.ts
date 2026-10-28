@@ -5,6 +5,7 @@ import {
 } from "@/lib/scoring/v2/maturity-level";
 import { sortByRecommendationPriority } from "@/lib/recommendations/display";
 import { hasUnpublishedStubTitle } from "@/lib/recommendations/visibility";
+import { buildCustomerOpportunityFollowThroughParagraph } from "@/lib/assessments/customer-trust";
 
 export type ExecutiveSummaryRecommendation = {
   title: string;
@@ -21,6 +22,11 @@ export type BuildAssessmentExecutiveSummaryInput = {
   risks: string[];
   topRecommendations: ExecutiveSummaryRecommendation[];
   projectedScore?: number;
+  /**
+   * When false (customer surfaces), omit catalog-impact projected StackScore figures (SS-REL-015).
+   * Defaults to true for staff/internal narrative compatibility.
+   */
+  includeCatalogProjectedMaturity?: boolean;
   /** When omitted, derived from overallScore via DOC-119 maturity levels. */
   maturityTierLabel?: string;
 };
@@ -150,6 +156,10 @@ function buildRecommendationsParagraph(
 }
 
 function buildProjectionParagraph(input: BuildAssessmentExecutiveSummaryInput): string {
+  if (input.includeCatalogProjectedMaturity === false) {
+    return buildCustomerOpportunityFollowThroughParagraph();
+  }
+
   const projectedScore = input.projectedScore ?? input.overallScore;
   const gain = projectedScore - input.overallScore;
 
