@@ -16,6 +16,7 @@ import {
 } from "@/lib/customer-portal/projects-dto";
 import { clientRecommendationDetailPath } from "@/lib/clients/paths";
 import { prisma } from "@/lib/db";
+import { listPublishedCustomerProjectUpdates } from "@/lib/projects/customer-update-service";
 import { computeProjectProgress } from "@/lib/projects/progress";
 import {
   isClientDeliverableRecommendation,
@@ -181,46 +182,48 @@ export async function getCustomerProjectDetail(
       ),
   );
 
-  const [taskRows, milestoneRows, recommendationLinks, activity] = await Promise.all([
-    prisma.projectTask.findMany({
-      where: { projectId, clientId },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        dueDate: true,
-        completedAt: true,
-      },
-    }),
-    prisma.projectMilestone.findMany({
-      where: { projectId, clientId },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        targetDate: true,
-        completedAt: true,
-      },
-    }),
-    prisma.projectRecommendation.findMany({
-      where: { projectId, clientId },
-      orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
-      include: {
-        recommendation: {
-          select: {
-            id: true,
-            title: true,
-            status: true,
-            recommendationTemplate: { select: { code: true } },
+  const [taskRows, milestoneRows, recommendationLinks, activity, publishedUpdates] =
+    await Promise.all([
+      prisma.projectTask.findMany({
+        where: { projectId, clientId },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          dueDate: true,
+          completedAt: true,
+        },
+      }),
+      prisma.projectMilestone.findMany({
+        where: { projectId, clientId },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          targetDate: true,
+          completedAt: true,
+        },
+      }),
+      prisma.projectRecommendation.findMany({
+        where: { projectId, clientId },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+        include: {
+          recommendation: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              recommendationTemplate: { select: { code: true } },
+            },
           },
         },
-      },
-    }),
-    getClientActivityTimeline(clientId, { includeInternal: false, limit: 40 }),
-  ]);
+      }),
+      getClientActivityTimeline(clientId, { includeInternal: false, limit: 40 }),
+      listPublishedCustomerProjectUpdates({ projectId, clientId }),
+    ]);
 
   const progress = computeProjectProgress(taskRows);
 
@@ -285,5 +288,6 @@ export async function getCustomerProjectDetail(
     progressPercent: progress.progressPercent,
     tasksTotal: progress.tasksTotal,
     tasksCompleted: progress.tasksCompleted,
+    publishedUpdates,
   });
 }

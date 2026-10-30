@@ -36,6 +36,7 @@ export const CUSTOMER_PROJECT_ACTIVITY_EVENT_TYPES = [
   "project_completed",
   "project_started",
   "project_status_changed",
+  "project_customer_update_published",
   "projects_shared",
 ] as const;
 
@@ -159,6 +160,7 @@ export type CustomerProjectDetailDto = {
   recommendations: CustomerProjectRecommendationDto[];
   roadmapInitiatives: CustomerProjectInitiativeDto[];
   activity: CustomerProjectActivityDto[];
+  publishedUpdates: CustomerPublishedProjectUpdateDto[];
   completionReportHref: string | null;
   listHref: string;
 };
@@ -234,7 +236,22 @@ const ACTIVITY_KIND_LABEL: Record<string, string> = {
   project_completed: "Project completed",
   project_started: "Project started",
   project_status_changed: "Status changed",
+  project_customer_update_published: "Update published",
   projects_shared: "Project update",
+};
+
+export type CustomerPublishedProjectUpdateDto = {
+  id: string;
+  publishedAtLabel: string;
+  subject: string | null;
+  projectStatusLabel: string | null;
+  progressPercent: number | null;
+  workCompleted: Array<{ title: string; completedAtLabel: string | null }>;
+  inProgress: Array<{ title: string; targetOrDueLabel: string | null }>;
+  comingNext: Array<{ title: string; targetOrDueLabel: string | null }>;
+  nextMilestoneTitle: string | null;
+  nextMilestoneTargetLabel: string | null;
+  staffMessage: string | null;
 };
 
 export function normalizeCustomerProjectViewFilter(
@@ -420,6 +437,21 @@ export function buildCustomerProjectDetail(input: {
   progressPercent?: number | null;
   tasksTotal?: number;
   tasksCompleted?: number;
+  publishedUpdates?: Array<{
+    id: string;
+    publishedAt: Date | string;
+    subject: string | null;
+    customerFacing: {
+      projectStatusLabel: string | null;
+      progressPercent: number | null;
+      workCompleted: Array<{ title: string; completedAtLabel: string | null }>;
+      inProgress: Array<{ title: string; targetOrDueLabel: string | null }>;
+      comingNext: Array<{ title: string; targetOrDueLabel: string | null }>;
+      nextMilestoneTitle: string | null;
+      nextMilestoneTargetLabel: string | null;
+      staffMessage: string | null;
+    };
+  }>;
   now?: Date;
 }): CustomerProjectDetailDto {
   const { row, clientId } = input;
@@ -538,6 +570,28 @@ export function buildCustomerProjectDetail(input: {
       href: clientRoadmapPhasePath(clientId, initiative.phaseId),
     })),
     activity,
+    publishedUpdates: (input.publishedUpdates ?? []).map((update) => ({
+      id: update.id,
+      publishedAtLabel: dateLabel(update.publishedAt) ?? "",
+      subject: update.subject,
+      projectStatusLabel: update.customerFacing.projectStatusLabel,
+      progressPercent: update.customerFacing.progressPercent,
+      workCompleted: update.customerFacing.workCompleted.map((item) => ({
+        title: item.title,
+        completedAtLabel: item.completedAtLabel,
+      })),
+      inProgress: update.customerFacing.inProgress.map((item) => ({
+        title: item.title,
+        targetOrDueLabel: item.targetOrDueLabel,
+      })),
+      comingNext: update.customerFacing.comingNext.map((item) => ({
+        title: item.title,
+        targetOrDueLabel: item.targetOrDueLabel,
+      })),
+      nextMilestoneTitle: update.customerFacing.nextMilestoneTitle,
+      nextMilestoneTargetLabel: update.customerFacing.nextMilestoneTargetLabel,
+      staffMessage: update.customerFacing.staffMessage,
+    })),
     completionReportHref:
       row.status === "completed"
         ? `/clients/${clientId}/projects/${row.id}/completion-report`

@@ -385,6 +385,39 @@ export const EMAIL_TEMPLATE_REGISTRY: EmailTemplateDefinition[] = [
       },
     },
   }),
+  workflowTemplate({
+    key: "EMAIL-011",
+    documentId: "EMAIL-011",
+    name: "Project Customer Update",
+    description:
+      "Manually approved project progress update prepared by Bobkat IT staff (SS-UX-015). Never auto-sent.",
+    category: "project",
+    status: "active",
+    subject: "Project Progress Update from Bobkat IT",
+    previewText: "A progress update for your technology improvement project.",
+    lastUpdated: "2026-10-30",
+    requiredVariables: ["primaryCta"],
+    optionalVariables: ["firstName", "organizationName", "projectName"],
+    defaults: {
+      subject: "Project Progress Update from Bobkat IT",
+      previewText: "A progress update for your technology improvement project.",
+    },
+    sampleData: {
+      heroTitle: "Project Progress Update",
+      heroDescription: "Delivery update from Bobkat IT.",
+      paragraphs: [
+        "Here is a progress update on your project.",
+        "Sign in to StackScore for the full project workspace.",
+      ],
+      summaryTitle: "Update Summary",
+      summaryItems: ["Project: Sample Project", "Status: In Progress", "Progress: 50%"],
+      primaryCta: {
+        label: "View Project Workspace",
+        href: PREVIEW_PROTECTED_URL,
+      },
+      founderClosing: true,
+    },
+  }),
   EMAIL_009,
   workflowTemplate({
     key: "EMAIL-010",

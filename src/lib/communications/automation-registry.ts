@@ -172,6 +172,27 @@ export const COMMUNICATION_AUTOMATION_REGISTRY: CommunicationAutomationDefinitio
     verified: true,
   },
   {
+    event: "PROJECT_CUSTOMER_UPDATE",
+    description:
+      "Staff manually prepares and sends a customer project progress update (SS-UX-015). Never automatic.",
+    templateKey: "EMAIL-011",
+    triggerSource: "Prepare Customer Update → explicit Send",
+    handler: "src/lib/projects/customer-update-service.ts#sendProjectCustomerUpdate",
+    recipient: "Project client recipients via resolveRecipients(audience=projects)",
+    conditions: [
+      "Staff explicit send confirmation",
+      "Draft has customer-visible content",
+      "Recipient resolved from client ownership only",
+    ],
+    enabled: true,
+    status: "manual_only",
+    idempotencyKey: "project-customer-update:{updateId}",
+    retryBehavior: "No automatic retry; staff may edit failed draft and resend.",
+    logBehavior: "ProjectCustomerUpdate + CommunicationMessage",
+    manualResend: true,
+    verified: true,
+  },
+  {
     event: "ASSESSMENT_INVITATION_SENT",
     description: "Administrator sends an assessment invitation.",
     templateKey: "EMAIL-009",

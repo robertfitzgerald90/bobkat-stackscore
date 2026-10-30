@@ -114,6 +114,15 @@ enum ProjectTaskStatus {
   completed
 }
 
+/// SS-UX-015 — manually approved customer project update lifecycle.
+enum ProjectCustomerUpdateStatus {
+  draft
+  sending
+  sent
+  failed
+  cancelled
+}
+
 enum Rating {
   exceptional
   strong
@@ -273,6 +282,8 @@ model User {
   assessments                            Assessment[]                   @relation("AssessorAssessments")
   recommendationsCreated                 AssessmentRecommendation[]     @relation("RecommendationCreator")
   projectsAssigned                       Project[]                      @relation("ProjectAssignee")
+  projectCustomerUpdatesCreated          ProjectCustomerUpdate[]        @relation("ProjectCustomerUpdateCreatedBy")
+  projectCustomerUpdatesSent             ProjectCustomerUpdate[]        @relation("ProjectCustomerUpdateSentBy")
   documentsUploaded                      Document[]
   notes                                  Note[]
   improvementPlansCreated                TechnologyImprovementPlan[]
@@ -345,6 +356,7 @@ model Client {
   projectTasks                ProjectTask[]
   projectMilestones           ProjectMilestone[]
   projectRecommendations      ProjectRecommendation[]
+  projectCustomerUpdates      ProjectCustomerUpdate[]
   scoreHistory                ClientScoreHistory[]
   documents                   Document[]
   activityNotes               Note[]
@@ -723,6 +735,41 @@ model Project {
   tasks                 ProjectTask[]
   milestones            ProjectMilestone[]
   recommendationLinks   ProjectRecommendation[]
+  customerUpdates       ProjectCustomerUpdate[]
+}
+
+/// SS-UX-015 — staff-authored customer project update (manual send only).
+model ProjectCustomerUpdate {
+  id                     String                       @id @default(uuid())
+  projectId              String
+  clientId               String
+  status                 ProjectCustomerUpdateStatus  @default(draft)
+  /// Editable draft (sections, included items, staff message).
+  draftJson              Json
+  /// Immutable approved content + rendered email after successful send.
+  snapshotJson           Json?
+  subject                String?
+  previewText            String?
+  /// Set only when the update is successfully published to the customer.
+  publishedAt            DateTime?
+  communicationMessageId String?                      @unique
+  idempotencyKey         String?                      @unique
+  createdByUserId        String?
+  sentByUserId           String?
+  sentAt                 DateTime?
+  failureReason          String?                      @db.Text
+  createdAt              DateTime                     @default(now())
+  updatedAt              DateTime                     @updatedAt
+
+  project              Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client               Client                @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  communicationMessage CommunicationMessage? @relation(fields: [communicationMessageId], references: [id], onDelete: SetNull)
+  createdBy            User?                 @relation("ProjectCustomerUpdateCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  sentBy               User?                 @relation("ProjectCustomerUpdateSentBy", fields: [sentByUserId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, publishedAt])
+  @@index([clientId])
+  @@index([status])
 }
 
 /// SS-UX-013 — customer-visible delivery checklist item (staff-managed).
@@ -1436,9 +1483,10 @@ model CommunicationMessage {
   campaign          CommunicationCampaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   tip               TechnologyImprovementPlan? @relation(fields: [proposalId], references: [id], onDelete: SetNull)
   queueItem         CommunicationQueueItem?    @relation(fields: [queueItemId], references: [id], onDelete: SetNull)
-  events            CommunicationEvent[]
-  testSend          CommunicationTestSend?
-  campaignRecipient CampaignRecipient?
+  events                CommunicationEvent[]
+  testSend              CommunicationTestSend?
+  campaignRecipient     CampaignRecipient?
+  projectCustomerUpdate ProjectCustomerUpdate?
 
   @@index([clientId])
   @@index([templateKey])

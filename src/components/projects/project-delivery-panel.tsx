@@ -12,6 +12,7 @@ import type {
   SerializedProjectTask,
 } from "@/lib/projects/delivery-service";
 import type { ProjectProgressResult } from "@/lib/projects/progress";
+import { ProjectCustomerUpdatePanel } from "@/components/projects/project-customer-update-panel";
 import { toast } from "sonner";
 
 type DeliveryBundle = {
@@ -301,6 +302,8 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
 
   return (
     <div className="space-y-5 rounded-lg border border-border/60 bg-muted/10 p-3.5">
+      <ProjectCustomerUpdatePanel projectId={projectId} />
+
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Delivery progress

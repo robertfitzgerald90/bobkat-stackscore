@@ -30,6 +30,7 @@ import type {
   CustomerProjectMilestoneDto,
   CustomerProjectTaskDto,
   CustomerProjectTaskGroupsDto,
+  CustomerPublishedProjectUpdateDto,
 } from "@/lib/customer-portal/projects-dto";
 import { cn } from "@/lib/utils";
 
@@ -187,6 +188,8 @@ export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
           </div>
         ) : null}
       </section>
+
+      <PublishedUpdatesFeed updates={detail.publishedUpdates} />
 
       <TaskBoard groups={detail.taskGroups} hasTasks={hasTasks} />
 
@@ -542,6 +545,130 @@ function RelatedImprovements({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function PublishedUpdatesFeed({
+  updates,
+}: {
+  updates: CustomerPublishedProjectUpdateDto[];
+}) {
+  if (updates.length === 0) return null;
+
+  return (
+    <section className="space-y-3" aria-labelledby="project-updates-heading">
+      <ClientSectionHeader
+        eyebrow="Communications"
+        title="Updates"
+        description="Published project updates from Bobkat IT."
+      />
+      <h2 id="project-updates-heading" className="sr-only">
+        Project updates
+      </h2>
+      <ol className="space-y-3">
+        {updates.map((update) => (
+          <li
+            key={update.id}
+            className={cn(CLIENT_SURFACE_CARD, "space-y-3 rounded-sm border bg-card p-4")}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <ClientStatusBadge tone="default">Published</ClientStatusBadge>
+              <p className="text-xs text-muted-foreground">{update.publishedAtLabel}</p>
+            </div>
+            {update.subject ? (
+              <p className="font-medium text-foreground">{update.subject}</p>
+            ) : null}
+            {update.projectStatusLabel || update.progressPercent !== null ? (
+              <p className="text-sm text-muted-foreground">
+                {update.projectStatusLabel
+                  ? `Status · ${update.projectStatusLabel}`
+                  : null}
+                {update.projectStatusLabel && update.progressPercent !== null
+                  ? " · "
+                  : null}
+                {update.progressPercent !== null
+                  ? `${update.progressPercent}% complete`
+                  : null}
+              </p>
+            ) : null}
+            {update.workCompleted.length > 0 ? (
+              <UpdateList
+                label="Work completed"
+                items={update.workCompleted.map((item) => ({
+                  title: item.title,
+                  meta: item.completedAtLabel,
+                }))}
+              />
+            ) : null}
+            {update.inProgress.length > 0 ? (
+              <UpdateList
+                label="Currently in progress"
+                items={update.inProgress.map((item) => ({
+                  title: item.title,
+                  meta: item.targetOrDueLabel,
+                }))}
+              />
+            ) : null}
+            {update.comingNext.length > 0 || update.nextMilestoneTitle ? (
+              <div className="space-y-1.5">
+                <UpdateList
+                  label="Coming next"
+                  items={update.comingNext.map((item) => ({
+                    title: item.title,
+                    meta: item.targetOrDueLabel,
+                  }))}
+                />
+                {update.nextMilestoneTitle ? (
+                  <p className="text-sm text-foreground/90">
+                    Next milestone · {update.nextMilestoneTitle}
+                    {update.nextMilestoneTargetLabel
+                      ? ` (target ${update.nextMilestoneTargetLabel})`
+                      : ""}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            {update.staffMessage ? (
+              <div className="space-y-1 border-t border-border/60 pt-3">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Message
+                </p>
+                <p className="whitespace-pre-line text-sm leading-relaxed text-foreground/90">
+                  {update.staffMessage}
+                </p>
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function UpdateList({
+  label,
+  items,
+}: {
+  label: string;
+  items: Array<{ title: string; meta: string | null }>;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <ul className="space-y-1">
+        {items.map((item, index) => (
+          <li key={`${item.title}-${index}`} className="text-sm text-foreground/90">
+            {item.title}
+            {item.meta ? (
+              <span className="text-muted-foreground"> · {item.meta}</span>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
