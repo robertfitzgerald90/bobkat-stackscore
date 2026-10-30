@@ -18,7 +18,11 @@ import { OverviewStrengthsExposure } from "@/components/customer-portal/overview
 import { OverviewVcioStrip } from "@/components/customer-portal/overview/overview-vcio-strip";
 import { BookingButton } from "@/components/support/booking-button";
 import { buttonClassName } from "@/components/ui/button";
-import { clientExplorePath, clientRecommendationsPath } from "@/lib/clients/paths";
+import {
+  clientExplorePath,
+  clientRecommendationsPath,
+  clientWorkspaceProjectsPath,
+} from "@/lib/clients/paths";
 import type { CustomerOverviewDto } from "@/lib/customer-portal/overview";
 import { getBookingUrl } from "@/lib/support/config";
 
@@ -44,6 +48,11 @@ export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashbo
       href: overview.roadmap.href,
       title: "Roadmap",
       description: "Living execution plan and progress",
+    },
+    {
+      href: clientWorkspaceProjectsPath(overview.clientId),
+      title: "Projects",
+      description: "Active delivery work and completion status",
     },
     {
       href: recommendationsHref,

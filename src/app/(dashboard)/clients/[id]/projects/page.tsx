@@ -1,17 +1,27 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { ClientPageHeader, ClientPageShell } from "@/components/client-ui";
+import { CustomerProjectsExperience } from "@/components/customer-portal/projects/customer-projects-experience";
 import { WorkspaceProjectsList } from "@/components/client-workspace/workspace-projects-list";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { prisma } from "@/lib/db";
+import { getCustomerProjectsExperience } from "@/lib/customer-portal/projects-experience";
+import { normalizeCustomerProjectViewFilter } from "@/lib/customer-portal/projects-dto";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import { isClientDeliverableRecommendation } from "@/lib/recommendations/visibility";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default async function ClientWorkspaceProjectsPage({ params }: PageProps) {
+export default async function ClientWorkspaceProjectsPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { id } = await params;
+  const query = await searchParams;
   const session = await auth();
   if (!session?.user) redirect("/login");
   if (session.user.role === "client") {
@@ -27,35 +37,54 @@ export default async function ClientWorkspaceProjectsPage({ params }: PageProps)
     select: {
       id: true,
       companyName: true,
-      projects: {
-        where: { status: { not: "cancelled" } },
-        orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          priority: true,
-          estimatedImpactPoints: true,
-          actualImpactPoints: true,
-          estimatedCost: true,
-          completedAt: true,
-          recommendation: {
-            select: {
-              title: true,
-              recommendationTemplate: { select: { code: true } },
-            },
-          },
-        },
-      },
     },
   });
   if (!client) notFound();
 
-  const projects: ProfileProjectSummary[] = client.projects.map((project) => {
+  if (isCustomerMode(session.user.role)) {
+    const viewRaw = typeof query.view === "string" ? query.view : undefined;
+    const experience = await getCustomerProjectsExperience(
+      client.id,
+      client.companyName,
+      normalizeCustomerProjectViewFilter(viewRaw),
+    );
+
+    return (
+      <Suspense>
+        <CustomerProjectsExperience experience={experience} />
+      </Suspense>
+    );
+  }
+
+  const projectsRaw = await prisma.project.findMany({
+    where: { clientId: id, status: { not: "cancelled" } },
+    orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      priority: true,
+      estimatedImpactPoints: true,
+      actualImpactPoints: true,
+      estimatedCost: true,
+      completedAt: true,
+      recommendation: {
+        select: {
+          title: true,
+          recommendationTemplate: { select: { code: true } },
+        },
+      },
+    },
+  });
+
+  const projects: ProfileProjectSummary[] = projectsRaw.map((project) => {
     const recommendation = project.recommendation;
     const recommendationTitle =
       recommendation &&
-      isClientDeliverableRecommendation(recommendation as Record<string, unknown>, session.user.role)
+      isClientDeliverableRecommendation(
+        recommendation as Record<string, unknown>,
+        session.user.role,
+      )
         ? recommendation.title
         : null;
 
@@ -71,19 +100,6 @@ export default async function ClientWorkspaceProjectsPage({ params }: PageProps)
       recommendationTitle,
     };
   });
-
-  if (isCustomerMode(session.user.role)) {
-    return (
-      <ClientPageShell>
-        <ClientPageHeader
-          eyebrow="Delivery"
-          title="Projects"
-          description="Track improvement work, progress, and expected StackScore impact for your organization."
-        />
-        <WorkspaceProjectsList clientId={client.id} projects={projects} />
-      </ClientPageShell>
-    );
-  }
 
   return (
     <div className="space-y-6">

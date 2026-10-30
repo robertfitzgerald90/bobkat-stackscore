@@ -53,11 +53,13 @@ function customerHref(clientId: string | null, path: string): string {
 }
 
 /**
- * SS-UX-002 primary customer navigation — Overview, Explore, Roadmap, Reports.
+ * SS-UX-002 / SS-UX-012 primary customer navigation —
+ * Overview, Explore, Roadmap, Projects, Reports.
  * Billing, Account, and Support live in secondary (account menu).
  */
 export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[] {
   const roadmapHref = customerHref(clientId, "roadmap");
+  const projectsHref = customerHref(clientId, "projects");
   const reportsHref = customerHref(clientId, "executive-reports");
 
   return [
@@ -78,10 +80,17 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       icon: Map,
       requiresClient: true,
       activePathPrefixes: clientId
+        ? [`/clients/${clientId}/recommendations`, `/clients/${clientId}/roadmap`]
+        : undefined,
+    },
+    {
+      href: projectsHref,
+      label: "Projects",
+      icon: FolderKanban,
+      requiresClient: true,
+      activePathPrefixes: clientId
         ? [
-            `/clients/${clientId}/recommendations`,
             `/clients/${clientId}/projects`,
-            `/clients/${clientId}/roadmap`,
           ]
         : undefined,
     },

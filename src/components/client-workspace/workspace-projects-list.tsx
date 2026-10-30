@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CLIENT_INTERACTIVE_TILE, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
-import { clientProjectsPath } from "@/lib/clients/paths";
+import { clientProjectDetailPath, clientProjectsPath } from "@/lib/clients/paths";
 import { formatPriority } from "@/lib/display";
 import { formatProjectStatus } from "@/lib/projects";
 import type { ProfileProjectSummary } from "@/lib/technology-profile/types";
@@ -71,16 +71,28 @@ export function WorkspaceProjectsList({ clientId, projects }: WorkspaceProjectsL
                   ? ` · ${project.recommendationTitle}`
                   : ""}
               </p>
-              <Link
-                href={`${clientProjectsPath(clientId)}&selected=${project.id}`}
-                className={buttonClassName({
-                  variant: "link",
-                  size: "sm",
-                  className: "mt-1 h-auto p-0",
-                })}
-              >
-                Open in Project Register
-              </Link>
+              <div className="mt-1 flex flex-wrap gap-3">
+                <Link
+                  href={clientProjectDetailPath(clientId, project.id)}
+                  className={buttonClassName({
+                    variant: "link",
+                    size: "sm",
+                    className: "h-auto p-0",
+                  })}
+                >
+                  Open project workspace
+                </Link>
+                <Link
+                  href={`${clientProjectsPath(clientId)}&selected=${project.id}`}
+                  className={buttonClassName({
+                    variant: "link",
+                    size: "sm",
+                    className: "h-auto p-0 text-muted-foreground",
+                  })}
+                >
+                  Open in Project Register
+                </Link>
+              </div>
             </div>
           ))
         )}

@@ -107,21 +107,28 @@ export function clientRoadmapPhasePath(clientId: string, phaseId: string) {
 }
 
 /**
- * Future Client Workspace Projects section (DOC-201).
- * Not yet routed — use clientProjectsPath for live project register links.
+ * Customer / client-workspace Projects list (SS-UX-012).
  */
 export function clientWorkspaceProjectsPath(clientId: string) {
   return clientWorkspaceSectionPath(clientId, "projects");
 }
 
 /**
- * Project deep link. Uses the global Project Register for detail views.
+ * Customer project detail workspace (SS-UX-012).
  */
 export function clientProjectDetailPath(clientId: string, projectId: string) {
-  return `${clientProjectsPath(clientId)}&selected=${projectId}`;
+  return `${clientWorkspaceProjectsPath(clientId)}/${projectId}`;
 }
 
-/** Project Register filtered to a single client. */
+/**
+ * Staff Project Register filtered to a single client.
+ * Customers must use clientWorkspaceProjectsPath / clientProjectDetailPath.
+ */
 export function clientProjectsPath(clientId: string) {
   return `/projects?client=${clientId}`;
+}
+
+/** Staff Project Register deep link for a selected project. */
+export function staffProjectRegisterDetailPath(clientId: string, projectId: string) {
+  return `${clientProjectsPath(clientId)}&selected=${encodeURIComponent(projectId)}`;
 }

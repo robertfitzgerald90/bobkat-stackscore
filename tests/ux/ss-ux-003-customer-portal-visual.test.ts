@@ -42,11 +42,12 @@ describe("SS-UX-003 customer portal visual foundation", () => {
     expect(CLIENT_SECTION_TITLE).toContain("font-bold");
   });
 
-  it("preserves four-item customer navigation under the visual foundation", () => {
+  it("preserves five-item customer navigation under the visual foundation", () => {
     expect(getCustomerSidebarNav("abc").map((item) => item.label)).toEqual([
       "Overview",
       "Explore",
       "Roadmap",
+      "Projects",
       "Reports",
     ]);
   });

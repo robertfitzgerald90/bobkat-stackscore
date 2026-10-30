@@ -12,7 +12,7 @@ import {
 import type { ClientRoadmapDashboard, RoadmapInitiativeView, RoadmapPhaseView } from "@/lib/client-roadmap/types";
 import {
   clientExplorePillarPath,
-  clientProjectsPath,
+  clientProjectDetailPath,
   clientRecommendationDetailPath,
   clientRecommendationsPath,
   clientRoadmapPhasePath,
@@ -301,7 +301,7 @@ export function buildCustomerRoadmapProjectSummary(
 ): CustomerRoadmapProjectSummary {
   return {
     ...project,
-    href: `${clientProjectsPath(clientId)}&selected=${project.id}`,
+    href: clientProjectDetailPath(clientId, project.id),
   };
 }
 

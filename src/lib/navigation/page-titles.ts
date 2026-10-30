@@ -53,6 +53,8 @@ const CLIENT_SUBROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
     pattern: /^\/clients\/[^/]+\/projects\/[^/]+\/completion-report$/,
     title: "Completion Report",
   },
+  { pattern: /^\/clients\/[^/]+\/projects\/[^/]+$/, title: "Project" },
+  { pattern: /^\/clients\/[^/]+\/projects$/, title: "Projects" },
   { pattern: /^\/clients\/[^/]+\/improvement$/, title: "Improvement Dashboard" },
 ];
 

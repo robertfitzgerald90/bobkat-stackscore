@@ -28,12 +28,13 @@ function clientContext(overrides?: Partial<PageContext>): PageContext {
 }
 
 describe("SS-UX-002 customer navigation", () => {
-  it("exposes exactly four primary sidebar items", () => {
+  it("exposes five primary sidebar items including Projects", () => {
     const nav = getCustomerSidebarNav(OWN);
     expect(nav.map((item) => item.label)).toEqual([
       "Overview",
       "Explore",
       "Roadmap",
+      "Projects",
       "Reports",
     ]);
   });
@@ -57,13 +58,25 @@ describe("SS-UX-002 customer navigation", () => {
     expect(staff.filter((item) => item.label === "Explore")).toHaveLength(0);
   });
 
-  it("marks Roadmap active for recommendations and projects paths", () => {
-    const roadmap = getCustomerSidebarNav(OWN).find((item) => item.label === "Roadmap");
+  it("marks Roadmap and Projects active on their own path families", () => {
+    const nav = getCustomerSidebarNav(OWN);
+    const roadmap = nav.find((item) => item.label === "Roadmap");
+    const projects = nav.find((item) => item.label === "Projects");
     expect(roadmap).toBeDefined();
+    expect(projects).toBeDefined();
     expect(isSidebarNavItemActive(`/clients/${OWN}/recommendations`, roadmap!)).toBe(true);
-    expect(isSidebarNavItemActive(`/clients/${OWN}/projects`, roadmap!)).toBe(true);
     expect(isSidebarNavItemActive(`/clients/${OWN}/roadmap`, roadmap!)).toBe(true);
-    expect(isSidebarNavItemActive(`/clients/${OWN}/technology-profile`, roadmap!)).toBe(false);
+    expect(isSidebarNavItemActive(`/clients/${OWN}/projects`, roadmap!)).toBe(false);
+    expect(isSidebarNavItemActive(`/clients/${OWN}/projects`, projects!)).toBe(true);
+    expect(
+      isSidebarNavItemActive(`/clients/${OWN}/projects/proj-1`, projects!),
+    ).toBe(true);
+    expect(
+      isSidebarNavItemActive(
+        `/clients/${OWN}/projects/proj-1/completion-report`,
+        projects!,
+      ),
+    ).toBe(true);
   });
 
   it("allows explore as a client-visible workspace section", () => {
