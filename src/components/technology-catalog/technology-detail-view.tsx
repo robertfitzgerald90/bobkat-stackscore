@@ -102,7 +102,7 @@ export function TechnologyDetailView({ technology }: { technology: CatalogTechno
                 className={cn(
                   "shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   activeTab === tab.id
-                    ? "bg-accent-blue/15 text-accent-blue"
+                    ? "bg-primary/15 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
@@ -164,7 +164,7 @@ export function TechnologyDetailView({ technology }: { technology: CatalogTechno
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium text-foreground">{product.name}</p>
                       {product.isPreferred ? (
-                        <Badge variant="outline" className="border-accent-blue/40 text-accent-blue">
+                        <Badge variant="outline" className="border-primary/40 text-primary">
                           Preferred
                         </Badge>
                       ) : null}

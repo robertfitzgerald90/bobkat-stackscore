@@ -26,7 +26,10 @@ export function OverviewMaturityHero({ overview }: OverviewMaturityHeroProps) {
 
   return (
     <section
-      className={cn(CLIENT_SURFACE_CARD_INDUSTRIAL, "overflow-hidden p-6 sm:p-8")}
+      className={cn(
+        CLIENT_SURFACE_CARD_INDUSTRIAL,
+        "brand-level-1 brand-frame overflow-hidden p-6 sm:p-8",
+      )}
       aria-labelledby="overview-maturity-heading"
     >
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">

@@ -180,7 +180,7 @@ export function ClientTechnologyProfile({
                     <div className="space-y-1">
                       <Link
                         href={`/technology-catalog/${deployment.technology.slug}`}
-                        className="font-medium text-foreground hover:text-accent-blue"
+                        className="font-medium text-foreground hover:text-primary"
                       >
                         {deployment.displayName ?? deployment.technology.name}
                       </Link>

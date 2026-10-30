@@ -162,18 +162,18 @@ export function TemplateLibraryView({ templates }: { templates: TemplateLibraryI
                       <div className="flex flex-wrap gap-2 text-xs">
                         <Link
                           href={`/admin/communications/templates/${template.key}`}
-                          className="inline-flex items-center gap-1 font-medium text-accent-blue hover:underline"
+                          className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
                         >
                           <Eye className="size-4" />
                           Preview
                         </Link>
-                        <Link href={`/admin/communications/templates/${template.key}`} className="font-medium text-accent-blue hover:underline">
+                        <Link href={`/admin/communications/templates/${template.key}`} className="font-medium text-primary hover:underline">
                           Send Test
                         </Link>
-                        <Link href={`/admin/communications/automations?template=${template.key}`} className="font-medium text-accent-blue hover:underline">
+                        <Link href={`/admin/communications/automations?template=${template.key}`} className="font-medium text-primary hover:underline">
                           Automation
                         </Link>
-                        <Link href={`/admin/communications/history?templateKey=${template.key}`} className="font-medium text-accent-blue hover:underline">
+                        <Link href={`/admin/communications/history?templateKey=${template.key}`} className="font-medium text-primary hover:underline">
                           History
                         </Link>
                       </div>

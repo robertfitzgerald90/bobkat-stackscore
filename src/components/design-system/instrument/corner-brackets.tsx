@@ -33,11 +33,9 @@ type CornerBracketsProps = {
 };
 
 const TONE_COLOR: Record<CornerBracketTone, string> = {
-  // Fallbacks let brackets work outside the `.instrument` demo scope too
-  // (e.g. wrapped around production score panels), where raw `--phosphor`
-  // / `--ember` aren't declared but the semantic `--primary` / `--destructive`
-  // tokens already carry the right color once the Midnight theme is active.
-  measured: "var(--phosphor, var(--primary, #3ecf7a))",
+  // Measured framing is brand chrome (purple). Critical stays ember.
+  // Fallbacks keep brackets usable outside `.instrument` / brand scopes.
+  measured: "var(--brand-primary, var(--primary, #a855f7))",
   critical: "var(--ember, var(--destructive, #b23a3a))",
 };
 

@@ -82,7 +82,7 @@ export function DashboardView({ summary }: DashboardViewProps) {
 
   return (
     <div className="min-w-0 space-y-5">
-      <header className="min-w-0">
+      <header className="brand-level-1 brand-frame min-w-0 rounded-sm border border-border bg-card/40 p-4 sm:p-5">
         <h1 className="page-title">Command Center</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Business performance, priorities, and direct paths into delivery work.
@@ -90,7 +90,10 @@ export function DashboardView({ summary }: DashboardViewProps) {
       </header>
 
       <section aria-labelledby="business-pulse-heading" className="space-y-2">
-        <h2 id="business-pulse-heading" className="text-sm font-semibold tracking-tight">
+        <h2
+          id="business-pulse-heading"
+          className="text-sm font-semibold tracking-tight text-primary"
+        >
           Business Pulse
         </h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">

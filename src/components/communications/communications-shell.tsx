@@ -95,7 +95,7 @@ export function CommunicationsMetricsGrid({
         return (
           <div key={metric.label} className="stat-card rounded-xl p-4">
             <div className="flex items-center gap-2">
-              {Icon ? <Icon className="size-4 shrink-0 text-accent-blue" aria-hidden /> : null}
+              {Icon ? <Icon className="size-4 shrink-0 text-primary" aria-hidden /> : null}
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {metric.label}
               </p>
@@ -134,7 +134,8 @@ export function StatusPill({
     success: "border border-success/30 bg-success/10 text-success",
     warning: "border border-warning/30 bg-warning/10 text-warning",
     neutral: "border border-border bg-muted/50 text-secondary-token",
-    info: "border border-accent-blue/30 bg-accent-blue/10 text-accent-blue",
+    /* Info = secondary blue technical signal — not success green, not CTA purple */
+    info: "border border-brand-secondary/30 bg-brand-secondary/10 text-brand-secondary",
   };
   return (
     <span

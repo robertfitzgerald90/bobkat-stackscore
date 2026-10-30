@@ -4,9 +4,8 @@
  * Scoped exclusively to `.customer-portal` on the authenticated customer shell.
  * Staff workspace, auth, and marketing surfaces are unaffected.
  *
- * Direction: Industrial Metalcore Meets Technology Intelligence —
- * charcoal surfaces, phosphor emerald accents, restrained texture,
- * angular details. Not a concert flyer.
+ * Direction (SS-BRAND-002): charcoal surfaces, purple brand chrome,
+ * phosphor green for semantic success only, restrained texture.
  */
 
 .customer-portal {
@@ -38,6 +37,7 @@
   --card-foreground: var(--bone);
   --popover: var(--frost-panel);
   --popover-foreground: var(--bone);
+  /* Interactive tokens overridden by brand-tokens.css to purple */
   --primary: var(--phosphor);
   --primary-foreground: var(--obsidian);
   --secondary: #16181f;
@@ -86,24 +86,34 @@
   font-family: var(--font-sans);
 }
 
-/* Restrained industrial grit — low-contrast grid, not heavy noise */
+/* Restrained industrial grit — ash grid with faint purple/blue technical tint */
 .customer-portal-main {
   position: relative;
   isolation: isolate;
   background-color: var(--background);
   background-image:
+    radial-gradient(
+      ellipse 90% 40% at 50% 0%,
+      rgba(168, 85, 247, 0.06),
+      transparent 55%
+    ),
     linear-gradient(rgba(139, 146, 160, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139, 146, 160, 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
+    linear-gradient(90deg, rgba(22, 139, 255, 0.028) 1px, transparent 1px);
+  background-size: auto, 56px 56px, 56px 56px;
   background-position: top left;
 }
 
 @media (max-width: 640px) {
   .customer-portal-main {
-    background-size: 40px 40px;
+    background-size: auto, 40px 40px, 40px 40px;
     background-image:
+      radial-gradient(
+        ellipse 90% 40% at 50% 0%,
+        rgba(168, 85, 247, 0.04),
+        transparent 55%
+      ),
       linear-gradient(rgba(139, 146, 160, 0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(139, 146, 160, 0.025) 1px, transparent 1px);
+      linear-gradient(90deg, rgba(22, 139, 255, 0.02) 1px, transparent 1px);
   }
 }
 
@@ -169,7 +179,11 @@
   width: 12px;
   height: 12px;
   pointer-events: none;
-  border-color: color-mix(in oklab, var(--phosphor) 55%, transparent);
+  border-color: color-mix(
+    in oklab,
+    var(--brand-primary, var(--primary)) 55%,
+    transparent
+  );
   border-style: solid;
   z-index: 1;
 }
@@ -202,9 +216,10 @@
   border-color: var(--border);
 }
 
-/* Focus visibility — phosphor ring, always visible */
+/* Focus visibility — brand-primary ring, always visible */
 .customer-portal :focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--phosphor) 90%, white 10%);
+  outline: 2px solid
+    color-mix(in oklab, var(--brand-primary, var(--primary)) 90%, white 10%);
   outline-offset: 2px;
 }
 

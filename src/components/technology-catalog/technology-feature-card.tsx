@@ -27,7 +27,7 @@ export function TechnologyFeatureCard({
           <h3 className="text-lg font-semibold tracking-tight text-foreground">{technology.name}</h3>
           <TechnologyStandardBadge status={technology.standardStatus} />
         </div>
-        <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-accent-blue" />
+        <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
       </div>
 
       <p className="mt-3 text-sm font-medium text-secondary-token">{technology.categoryName}</p>
@@ -36,7 +36,7 @@ export function TechnologyFeatureCard({
       <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
         {technology.topCapabilities.slice(0, 3).map((capability) => (
           <li key={capability} className="flex gap-2">
-            <span className="text-accent-blue" aria-hidden>
+            <span className="text-primary" aria-hidden>
               •
             </span>
             <span>{capability}</span>
@@ -96,7 +96,7 @@ export function TechnologyCatalogMetrics({
         const Icon = metric.icon;
         return (
           <div key={metric.label} className="stat-card rounded-xl bg-card p-4">
-            <div className="flex items-center gap-2 text-accent-blue">
+            <div className="flex items-center gap-2 text-primary">
               <Icon className="size-4" aria-hidden />
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {metric.label}

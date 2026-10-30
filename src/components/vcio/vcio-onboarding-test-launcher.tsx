@@ -169,7 +169,7 @@ export function VcioOnboardingTestLauncher({ clients }: { clients: ClientOption[
           </div>
 
           {previewUrl ? (
-            <a className="inline-flex text-sm font-medium text-accent-blue hover:underline" href={previewUrl}>
+            <a className="inline-flex text-sm font-medium text-primary hover:underline" href={previewUrl}>
               Open Onboarding Preview
             </a>
           ) : null}

@@ -6,13 +6,11 @@
  * `.midnight` yet — that is a deliberate, separate rollout step once the
  * direction is approved.
  *
- * Palette:
- *   --obsidian    background
- *   --frost-panel card / panel surfaces
- *   --ash         muted body text + hairline borders
- *   --bone        headline / high-contrast text
- *   --phosphor    single accent (StackScore's own — not Bobkat IT's blue)
- *   --ember       reserved for risk / critical / at-risk states only
+ * Palette (SS-BRAND-002):
+ *   --obsidian / --frost-panel / --ash / --bone — surfaces + type
+ *   --brand-primary (purple) — interactive / brand chrome (via brand-tokens.css)
+ *   --phosphor — semantic success / healthy only
+ *   --ember — critical / at-risk only
  *
  * Shape: 0–2px radius, hairline ash-opacity borders, no soft shadows/glow.
  */
@@ -35,19 +33,10 @@
   --ember-opacity-12: rgba(178, 58, 58, 0.12);
   --ember-opacity-20: rgba(178, 58, 58, 0.2);
 
-  /* Mid-tier "at risk" score band. Not one of the two named accents —
-     the palette only defines phosphor (good/measured) and ember
-     (critical/at-risk). Kept as a dim amber, well short of a third
-     saturated accent, so it doesn't compete with phosphor or ember.
-     Flag for review in Phase 1 sign-off. */
   --instrument-caution: #c9a227;
   --instrument-caution-opacity-12: rgba(201, 162, 39, 0.12);
 
-  /* Semantic tokens consumed by existing shadcn/Tailwind primitives.
-     Because `@theme inline` re-exports these by the same name, every
-     existing bg-card / text-foreground / border-border / rounded-lg
-     utility automatically repaints inside `.instrument` — no component
-     rewrites required. */
+  /* Base semantic bridge — brand-tokens.css overrides --primary to purple */
   --background: var(--obsidian);
   --foreground: var(--bone);
   --card: var(--frost-panel);
@@ -156,7 +145,7 @@
   width: 14px;
   height: 14px;
   pointer-events: none;
-  border: 0 solid var(--bracket-color, var(--phosphor));
+  border: 0 solid var(--bracket-color, var(--brand-primary, var(--primary)));
 }
 
 .instrument-bracket-corner[data-position="top-left"] {
@@ -200,7 +189,7 @@
 }
 
 .instrument-hoverable:hover {
-  border-color: var(--phosphor);
+  border-color: var(--brand-primary, var(--primary));
 }
 
 .instrument-bracket-interactive {

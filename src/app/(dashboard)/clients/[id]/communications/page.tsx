@@ -95,7 +95,7 @@ export default async function ClientCommunicationsPage({ params }: PageProps) {
                 <td className="p-4">
                   <Link
                     href={`/admin/communications/history/${message.id}`}
-                    className="font-medium text-accent-blue hover:underline"
+                    className="font-medium text-primary hover:underline"
                   >
                     Open
                   </Link>

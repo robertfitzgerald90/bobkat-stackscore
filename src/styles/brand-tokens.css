@@ -1,0 +1,119 @@
+/**
+ * SS-BRAND-002 — Purple-first brand tokens for authenticated application shells.
+ *
+ * Applied under `.executive-os` (staff) and `.customer-portal` (customer).
+ * Public `.midnight` / marketing shells are intentionally NOT retargeted here
+ * (SS-BRAND-003). Semantic success remains phosphor green.
+ */
+
+:is(.executive-os, .customer-portal, .instrument) {
+  /* Brand */
+  --brand-primary: #a855f7;
+  --brand-primary-hover: #c084fc;
+  /* Solid CTA fill — #A855F7 + white is ~3.96:1; #9333EA + white is ~5.38:1 (AA) */
+  --brand-primary-fill: #9333ea;
+  --brand-primary-subtle: rgba(168, 85, 247, 0.12);
+  --brand-primary-foreground: #ffffff;
+  --brand-primary-glow: rgba(168, 85, 247, 0.1);
+  --brand-secondary: #168bff;
+  --brand-secondary-subtle: rgba(22, 139, 255, 0.12);
+
+  /* Operational green — meaning only */
+  --phosphor: #3ecf7a;
+  --phosphor-hover: #56dd8d;
+  --phosphor-opacity-12: rgba(62, 207, 122, 0.12);
+  --phosphor-opacity-20: rgba(62, 207, 122, 0.2);
+
+  /*
+   * Interactive chrome uses canonical #A855F7 (borders, rings, text-primary).
+   * Solid primary buttons use --brand-primary-fill via Button default variant.
+   * Links use the lighter hover purple for AA contrast on charcoal.
+   */
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-primary-foreground);
+  --link: var(--brand-primary-hover);
+  --link-hover: var(--brand-primary);
+  --ring: var(--brand-primary);
+  --accent: var(--brand-primary-subtle);
+  --accent-foreground: #f1f2f4;
+
+  /* Semantic — preserve green success */
+  --success: var(--phosphor);
+  --warning: #c9a227;
+  --destructive: #b23a3a;
+
+  /* Sidebar interactive chrome */
+  --sidebar-primary: var(--brand-primary);
+  --sidebar-primary-foreground: var(--brand-primary-foreground);
+  --sidebar-accent: rgba(168, 85, 247, 0.14);
+  --sidebar-accent-foreground: #f1f2f4;
+  --sidebar-ring: var(--brand-primary);
+
+  /*
+   * Charts: keep success/health series green; ash for compare;
+   * brand purple available as chart accent series (not health).
+   */
+  --chart-1: var(--phosphor);
+  --chart-2: #8b92a0;
+  --chart-3: var(--brand-primary);
+  --chart-4: #c9a227;
+  --chart-5: #b23a3a;
+
+  /*
+   * Deprecated alias — do not use for new work.
+   * Left pointing at brand-primary so residual `accent-blue` utility
+   * classes in authenticated shells read as brand chrome, not green.
+   * Semantic green must use --success / --phosphor / text-success.
+   */
+  --accent-blue: var(--brand-primary);
+  --accent-blue-hover: var(--brand-primary-hover);
+}
+
+/**
+ * Level 1 — branded section atmosphere (Command Center, Overview heroes).
+ * Opt-in class only — never on tables/forms.
+ */
+.brand-level-1 {
+  position: relative;
+  isolation: isolate;
+}
+
+.brand-level-1::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      ellipse 80% 55% at 50% -10%,
+      var(--brand-primary-glow),
+      transparent 62%
+    ),
+    linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 139, 255, 0.025) 1px, transparent 1px);
+  background-size: auto, 56px 56px, 56px 56px;
+  opacity: 1;
+}
+
+.brand-level-1 > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-level-1::before {
+    background-image: linear-gradient(
+        rgba(168, 85, 247, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(22, 139, 255, 0.025) 1px, transparent 1px);
+  }
+}
+
+/** Thin purple technical frame for major Level 1 panels */
+.brand-frame {
+  border: 1px solid color-mix(in oklab, var(--brand-primary) 28%, var(--border));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand-secondary) 8%, transparent);
+}

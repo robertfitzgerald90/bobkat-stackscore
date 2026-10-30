@@ -87,20 +87,22 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
 
   return (
     <ClientPageShell className="max-w-6xl space-y-6">
-      <ClientPageHeader
-        eyebrow="Technology Maturity"
-        title="Explore"
-        description="Technology Intelligence Center — select a pillar to review maturity, what is working, what needs attention, and related improvement work."
-        actions={
-          <Link
-            href={customerOverviewPath(explore.clientId)}
-            className={buttonClassName({ variant: "outline", size: "sm" })}
-          >
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" aria-hidden />
-            Overview
-          </Link>
-        }
-      />
+      <div className="brand-level-1 brand-frame rounded-sm border border-border bg-card/40 p-4 sm:p-5">
+        <ClientPageHeader
+          eyebrow="Technology Maturity"
+          title="Explore"
+          description="Technology Intelligence Center — select a pillar to review maturity, what is working, what needs attention, and related improvement work."
+          actions={
+            <Link
+              href={customerOverviewPath(explore.clientId)}
+              className={buttonClassName({ variant: "outline", size: "sm" })}
+            >
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+              Overview
+            </Link>
+          }
+        />
+      </div>
 
       {explore.assessmentInProgress && !explore.hasCompletedAssessment ? (
         <ClientEmptyState

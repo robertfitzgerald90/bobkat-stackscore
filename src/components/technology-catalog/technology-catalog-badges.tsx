@@ -18,8 +18,8 @@ export function TechnologyStandardBadge({
     <Badge
       variant="outline"
       className={cn(
-        "border-accent-blue/40 bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/10",
-        status === "preferred" && "border-accent-blue/50 bg-accent-blue/15 font-medium",
+        "border-primary/40 bg-primary/10 text-primary hover:bg-primary/10",
+        status === "preferred" && "border-primary/50 bg-primary/15 font-medium",
         className,
       )}
     >

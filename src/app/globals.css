@@ -10,6 +10,7 @@
 @import "../styles/executive-os-theme.css";
 @import "../styles/instrument-tokens.css";
 @import "../styles/customer-portal-theme.css";
+@import "../styles/brand-tokens.css";
 
 @custom-variant dark (&:is(.dark *, .midnight *));
 
@@ -24,6 +25,10 @@
   --color-text-secondary: var(--text-secondary);
   --color-accent-blue: var(--accent-blue);
   --color-accent-blue-hover: var(--accent-blue-hover);
+  --color-brand-primary: var(--brand-primary, var(--primary));
+  --color-brand-primary-hover: var(--brand-primary-hover, var(--link-hover));
+  --color-brand-primary-fill: var(--brand-primary-fill, var(--primary));
+  --color-brand-secondary: var(--brand-secondary, #168bff);
   --color-chart-grid: var(--chart-grid);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
@@ -119,10 +124,11 @@
 }
 
 /**
- * StackScore Midnight — now the "Instrument" theme. Also applied via
- * `.dark` when OS/system prefers dark. Obsidian background, phosphor
- * accent, ember reserved for critical/at-risk states only. Flattened
- * 0–2px shape, hairline borders, no soft shadow/glow.
+ * StackScore Midnight / dark base surfaces.
+ * Public marketing uses `.midnight` on a wrapper — keep phosphor here so
+ * SS-BRAND-003 can own public purple migration. Authenticated shells
+ * (`.executive-os`, `.customer-portal`) override interactive tokens to
+ * purple via `brand-tokens.css` (SS-BRAND-002).
  */
 .midnight,
 .dark {
@@ -141,6 +147,7 @@
   --surface-card: #12141a;
   --surface-card-hover: #171a21;
   --text-secondary: #8b92a0;
+  /* Deprecated alias — public midnight still green until BRAND-003 */
   --accent-blue: #3ecf7a;
   --accent-blue-hover: #56dd8d;
   --chart-grid: rgba(139, 146, 160, 0.14);
@@ -151,10 +158,10 @@
   --card-foreground: #f1f2f4;
   --popover: #12141a;
   --popover-foreground: #f1f2f4;
-  --primary: var(--accent-blue);
+  --primary: #3ecf7a;
   --primary-foreground: #08090c;
-  --link: var(--accent-blue);
-  --link-hover: var(--accent-blue-hover);
+  --link: #3ecf7a;
+  --link-hover: #56dd8d;
   --secondary: #16181f;
   --secondary-foreground: #8b92a0;
   --muted: #16181f;
