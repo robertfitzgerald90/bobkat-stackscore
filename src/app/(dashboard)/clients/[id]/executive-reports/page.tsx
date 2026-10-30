@@ -1,25 +1,13 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Calendar, FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { getLatestDraftAssessmentForClientUser } from "@/lib/auth/client-access";
-import {
-  ClientEmptyState,
-  ClientPageHeader,
-  ClientPageShell,
-} from "@/components/client-ui";
 import {
   WorkspaceHubLinks,
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
-import { BookingButton } from "@/components/support/booking-button";
-import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
-import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
-import { getBookingUrl } from "@/lib/support/config";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonClassName } from "@/components/ui/button";
+import { CustomerReportsExperience } from "@/components/customer-portal/reports/customer-reports-experience";
 import { prisma } from "@/lib/db";
+import { getCustomerReportsExperience } from "@/lib/customer-portal/reports-experience";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -46,91 +34,13 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
     });
     if (clientUser?.clientId !== id) notFound();
 
-    const reportHref = client.technologyProfile?.currentAssessmentId
-      ? `/assessments/${client.technologyProfile.currentAssessmentId}/report`
-      : null;
-    const draftAssessment = await getLatestDraftAssessmentForClientUser(session.user.id);
-    const bookingUrl = getBookingUrl();
+    const experience = await getCustomerReportsExperience({
+      clientId: id,
+      companyName: client.companyName,
+      userId: session.user.id,
+    });
 
-    return (
-      <ClientPageShell className="max-w-3xl">
-        <ClientPageHeader
-          eyebrow="Executive Deliverables"
-          title="Reports"
-          description="Executive-ready deliverables from your technology assessment."
-        />
-
-        {reportHref ? (
-          <Card className={CLIENT_SURFACE_CARD}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <FileText className="h-4 w-4 text-primary" />
-                Executive Assessment Report
-              </CardTitle>
-              <CardDescription>
-                Your complete assessment results, maturity analysis, and prioritized
-                recommendations.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 sm:flex-row">
-              <Link href={reportHref} className={buttonClassName({})}>
-                <FileText className="mr-2 h-4 w-4" />
-                Review Assessment Report
-              </Link>
-              <Link
-                href={`/api/v1/assessments/${client.technologyProfile?.currentAssessmentId}/export/pdf`}
-                className={buttonClassName({ variant: "outline" })}
-              >
-                Download PDF
-              </Link>
-              {bookingUrl ? (
-                <BookingButton
-                  label="primary"
-                  variant="outline"
-                  icon={<Calendar className="mr-2 h-4 w-4" />}
-                />
-              ) : null}
-            </CardContent>
-          </Card>
-        ) : (
-          <ClientEmptyState
-            icon={FileText}
-            title="Report not available yet"
-            description="Your executive assessment report is generated after you complete a technology assessment."
-            nextStep="Complete or resume your assessment to unlock the report."
-            action={
-              draftAssessment ? (
-                <Link href="/assessment/start" className={buttonClassName({})}>
-                  Resume Assessment
-                </Link>
-              ) : (
-                <Link
-                  href={customerAssessmentDashboardPath(id)}
-                  className={buttonClassName({ variant: "outline" })}
-                >
-                  Back to Overview
-                </Link>
-              )
-            }
-          />
-        )}
-
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Related deliverables
-          </h2>
-          <WorkspaceHubLinks
-            links={[
-              {
-                href: `/clients/${id}/quarterly-reviews`,
-                title: "Business Reviews",
-                description: "vCIO quarterly and strategic review history",
-              },
-            ]}
-          />
-        </section>
-      </ClientPageShell>
-    );
+    return <CustomerReportsExperience experience={experience} />;
   }
 
   const links: WorkspaceHubLink[] = [
