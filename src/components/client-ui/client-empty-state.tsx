@@ -2,7 +2,10 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { EXECUTIVE_OS_BRIEFING_PANEL } from "@/lib/executive-os/tokens";
-import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
+import {
+  clientSurfaceCardClass,
+  type ClientVisualVariant,
+} from "@/lib/client-ui/tokens";
 import { cn } from "@/lib/utils";
 
 type ClientEmptyStateProps = {
@@ -12,6 +15,8 @@ type ClientEmptyStateProps = {
   nextStep?: string;
   action?: ReactNode;
   positive?: boolean;
+  /** Opt-in industrial corner treatment for major empty states (SS-UX-003). */
+  variant?: ClientVisualVariant;
   className?: string;
 };
 
@@ -22,12 +27,13 @@ export function ClientEmptyState({
   nextStep,
   action,
   positive = false,
+  variant = "industrial",
   className,
 }: ClientEmptyStateProps) {
   return (
     <Card
       className={cn(
-        CLIENT_SURFACE_CARD,
+        clientSurfaceCardClass(positive ? "default" : variant),
         "border-dashed",
         positive && "border-success/30 bg-success/5",
         !positive && EXECUTIVE_OS_BRIEFING_PANEL,

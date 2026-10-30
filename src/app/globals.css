@@ -9,6 +9,7 @@
 @import "../styles/funnel-instrument-theme.css";
 @import "../styles/executive-os-theme.css";
 @import "../styles/instrument-tokens.css";
+@import "../styles/customer-portal-theme.css";
 
 @custom-variant dark (&:is(.dark *, .midnight *));
 

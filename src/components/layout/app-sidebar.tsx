@@ -57,9 +57,10 @@ function SidebarNav({
   const pathClientId = resolveClientIdFromPathname(pathname);
   const effectiveClientId = pathClientId ?? clientId;
   const navItems = getSidebarNavForRole(role, effectiveClientId, navBadges);
+  const customerMode = isCustomerMode(role);
   const logoHref = canAccessPortfolio(role)
     ? "/portfolio"
-    : isCustomerMode(role) && effectiveClientId
+    : customerMode && effectiveClientId
       ? customerAssessmentDashboardPath(effectiveClientId)
       : "/dashboard";
 
@@ -98,13 +99,17 @@ function SidebarNav({
               aria-current={active ? "page" : undefined}
               className={cn(
                 EXECUTIVE_OS_SIDEBAR_LINK,
+                customerMode && "rounded-sm",
                 collapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-3",
                 active ? EXECUTIVE_OS_SIDEBAR_LINK_ACTIVE : EXECUTIVE_OS_SIDEBAR_LINK_IDLE,
               )}
             >
               {active ? (
                 <span
-                  className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-sidebar-primary"
+                  className={cn(
+                    "absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 bg-sidebar-primary",
+                    customerMode ? "customer-nav-active-rail rounded-none" : "rounded-r-full",
+                  )}
                   aria-hidden
                 />
               ) : null}
@@ -113,7 +118,12 @@ function SidebarNav({
                 <span className="flex min-w-0 flex-1 items-center justify-between gap-2 truncate">
                   <span className="truncate">{item.label}</span>
                   {item.badgeCount && item.badgeCount > 0 ? (
-                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                    <span
+                      className={cn(
+                        "inline-flex min-w-5 items-center justify-center bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground",
+                        customerMode ? "rounded-sm" : "rounded-full",
+                      )}
+                    >
                       {item.badgeCount > 99 ? "99+" : item.badgeCount}
                     </span>
                   ) : null}

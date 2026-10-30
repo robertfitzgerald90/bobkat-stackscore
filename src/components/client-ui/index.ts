@@ -7,3 +7,4 @@ export { ClientPageShell } from "./client-page-shell";
 export { ClientScoreHero } from "./client-score-hero";
 export { ClientSectionHeader } from "./client-section-header";
 export { ClientStatusBadge } from "./client-status-badge";
+export { ClientSurfaceCard } from "./client-surface-card";

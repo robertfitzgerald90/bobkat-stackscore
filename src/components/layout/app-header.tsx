@@ -51,10 +51,11 @@ export function AppHeader({
 
   return (
     <Root
+      data-customer-header={isCustomerMode(user.role) ? "true" : undefined}
       className={
         isWorkspaceShell
           ? "flex h-14 shrink-0 items-center justify-between gap-3 bg-sidebar px-4 lg:h-16 lg:px-6"
-          : "flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 shadow-[var(--shadow-glow)] lg:h-16 lg:px-6"
+          : "flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-card shadow-[var(--shadow-glow)] lg:h-16 lg:px-6 px-4"
       }
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">

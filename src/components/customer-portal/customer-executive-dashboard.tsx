@@ -35,7 +35,7 @@ import {
   executiveRiskLabel,
 } from "@/lib/executive-os/business-language";
 import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
-import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
+import { CLIENT_SURFACE_CARD_INDUSTRIAL } from "@/lib/client-ui/tokens";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import {
   CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES,
@@ -440,7 +440,7 @@ export function CustomerExecutiveDashboard({
       ) : null}
 
       {score !== null && profile.openRecommendationCount > 0 ? (
-        <Card className={CLIENT_SURFACE_CARD}>
+        <Card className={CLIENT_SURFACE_CARD_INDUSTRIAL}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="h-4 w-4 text-primary" />

@@ -28,7 +28,7 @@ export function ClientSectionHeader({
         {eyebrow ? <p className={CLIENT_SECTION_EYEBROW}>{eyebrow}</p> : null}
         <h2
           className={cn(
-            "text-lg font-semibold tracking-tight text-foreground sm:text-xl",
+            "text-lg font-bold tracking-tight text-foreground sm:text-xl",
             eyebrow && "mt-1",
           )}
         >

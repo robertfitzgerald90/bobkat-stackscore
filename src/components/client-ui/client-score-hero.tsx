@@ -1,6 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CLIENT_METRIC_VALUE, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
+import {
+  CLIENT_METRIC_VALUE,
+  clientSurfaceCardClass,
+  type ClientVisualVariant,
+} from "@/lib/client-ui/tokens";
 import { cn } from "@/lib/utils";
 
 type ClientScoreHeroProps = {
@@ -9,6 +13,8 @@ type ClientScoreHeroProps = {
   maxScore?: number;
   maturityLabel?: string | null;
   sublabel?: string;
+  /** Score hero is a major panel — industrial by default (SS-UX-003). */
+  variant?: ClientVisualVariant;
   className?: string;
   scoreClassName?: string;
 };
@@ -19,11 +25,12 @@ export function ClientScoreHero({
   maxScore = 100,
   maturityLabel,
   sublabel,
+  variant = "industrial",
   className,
   scoreClassName,
 }: ClientScoreHeroProps) {
   return (
-    <Card className={cn(CLIENT_SURFACE_CARD, className)}>
+    <Card className={cn(clientSurfaceCardClass(variant), className)}>
       <CardHeader className="pb-3">
         <CardTitle className="text-base">{label}</CardTitle>
       </CardHeader>

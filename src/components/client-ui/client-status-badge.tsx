@@ -11,7 +11,8 @@ type ClientStatusBadgeProps = {
 const TONE_CLASS: Record<NonNullable<ClientStatusBadgeProps["tone"]>, string> = {
   default: "",
   success: "border-success/30 bg-success/10 text-success",
-  warning: "border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200",
+  /* Amber reserved for warnings; phosphor remains primary accent (SS-UX-003). */
+  warning: "border-warning/40 bg-warning/10 text-warning",
   danger: "border-destructive/30 bg-destructive/10 text-destructive",
   muted: "border-border bg-muted/40 text-muted-foreground",
 };
