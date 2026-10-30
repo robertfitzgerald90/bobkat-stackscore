@@ -57,11 +57,13 @@ describe("SS-UX-002 customer navigation", () => {
     expect(primary.some((item) => item.label.includes("Billing"))).toBe(false);
   });
 
-  it("keeps staff sidebar unchanged in structure", () => {
+  it("keeps staff sidebar distinct from customer Explore nav", () => {
     const staff = getConsultantSidebarNav("admin", OWN);
-    expect(staff.some((item) => item.label === "Portfolio")).toBe(true);
     expect(staff.some((item) => item.label === "Clients")).toBe(true);
+    expect(staff.some((item) => item.label === "Command Center")).toBe(true);
     expect(staff.filter((item) => item.label === "Explore")).toHaveLength(0);
+    const command = staff.find((item) => item.id === "command-center");
+    expect(command?.children?.some((child) => child.label === "Portfolio")).toBe(true);
   });
 
   it("marks Roadmap and Projects active on their own path families", () => {

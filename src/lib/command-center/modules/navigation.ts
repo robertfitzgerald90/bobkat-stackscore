@@ -1,5 +1,6 @@
 import { registerCommands } from "@/lib/command-center/registry";
 
+/** SS-ADMIN-002 — Communications destinations (unchanged behavior). */
 const COMMUNICATIONS_NAV = [
   { href: "/admin/communications", label: "Communications Overview", keywords: ["comms", "email"] },
   { href: "/admin/communications/campaigns", label: "Campaigns", keywords: ["outreach"] },
@@ -10,25 +11,123 @@ const COMMUNICATIONS_NAV = [
   { href: "/admin/communications/variables", label: "Communication Variables", keywords: [] },
 ] as const;
 
-const CONSULTANT_NAV = [
-  { href: "/portfolio", label: "Portfolio", portfolioOnly: true, icon: "LayoutGrid" },
-  { href: "/dashboard", label: "Dashboard", staffOnly: true, icon: "LayoutDashboard" },
-  { href: "/clients", label: "Organizations", staffOnly: true, icon: "Users", keywords: ["clients"] },
-  { href: "/assessments", label: "Assessments", staffOnly: true, icon: "ClipboardList" },
-  { href: "/projects", label: "Projects", staffOnly: true, icon: "FolderKanban" },
-  { href: "/technology-catalog", label: "Technology Catalog", staffOnly: true, icon: "Library" },
-  { href: "/playbooks", label: "Playbooks", staffOnly: true, icon: "BookOpen" },
-  { href: "/settings", label: "Settings", icon: "Settings" },
-  { href: "/admin/users", label: "Users", adminOnly: true, icon: "Shield" },
+/**
+ * SS-ADMIN-002 staff command palette navigation — aligned with seven primary
+ * destinations + secondary Command Center / Leads / Operations children.
+ * Playbooks omitted from palette (route preserved; not primary).
+ */
+const STAFF_NAV = [
+  {
+    href: "/dashboard",
+    label: "Command Center",
+    staffOnly: true,
+    icon: "LayoutDashboard",
+    keywords: ["dashboard", "home"],
+  },
+  {
+    href: "/portfolio",
+    label: "Portfolio",
+    portfolioOnly: true,
+    icon: "LayoutGrid",
+    keywords: ["command center"],
+  },
+  {
+    href: "/insights",
+    label: "Business Insights",
+    staffOnly: true,
+    icon: "BarChart3",
+    keywords: ["command center", "insights"],
+  },
+  {
+    href: "/consulting",
+    label: "Consulting Workspace",
+    staffOnly: true,
+    icon: "Briefcase",
+    keywords: ["command center", "consulting"],
+  },
+  {
+    href: "/assessments",
+    label: "Assessments",
+    staffOnly: true,
+    icon: "ClipboardList",
+    keywords: ["command center", "assessment"],
+  },
+  {
+    href: "/clients",
+    label: "Clients",
+    staffOnly: true,
+    icon: "Users",
+    keywords: ["organizations", "customers"],
+  },
+  {
+    href: "/projects",
+    label: "Projects",
+    staffOnly: true,
+    icon: "FolderKanban",
+    keywords: ["delivery"],
+  },
+  {
+    href: "/snapshot-leads",
+    label: "Snapshot Leads",
+    adminOnly: true,
+    icon: "Camera",
+    keywords: ["leads"],
+  },
+  {
+    href: "/website-leads",
+    label: "Website Leads",
+    adminOnly: true,
+    icon: "Globe",
+    keywords: ["leads"],
+  },
+  {
+    href: "/admin/vcio",
+    label: "Recurring Services",
+    staffOnly: true,
+    icon: "Repeat",
+    keywords: ["vcio", "subscriptions"],
+  },
+  {
+    href: "/admin/communications",
+    label: "Communications",
+    staffOnly: true,
+    icon: "Mail",
+    keywords: ["email"],
+  },
+  {
+    href: "/admin/billing",
+    label: "Billing",
+    adminOnly: true,
+    icon: "WalletCards",
+    keywords: ["operations"],
+  },
+  {
+    href: "/admin/users",
+    label: "Users",
+    adminOnly: true,
+    icon: "Shield",
+    keywords: ["operations"],
+  },
   {
     href: "/admin/assessment-library",
     label: "Assessment Library",
     adminOnly: true,
     icon: "BookOpen",
+    keywords: ["operations"],
   },
-  { href: "/snapshot-leads", label: "Snapshot Leads", adminOnly: true, icon: "Camera" },
-  { href: "/website-leads", label: "Website Leads", adminOnly: true, icon: "Globe" },
-  { href: "/admin/communications", label: "Communications", staffOnly: true, icon: "Mail" },
+  {
+    href: "/technology-catalog",
+    label: "Technology Catalog",
+    staffOnly: true,
+    icon: "Library",
+    keywords: ["operations", "catalog"],
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: "Settings",
+    keywords: ["operations"],
+  },
 ] as const;
 
 function commsCommandId(href: string): string {
@@ -38,7 +137,7 @@ function commsCommandId(href: string): string {
 export function registerNavigationCommands(): void {
   registerCommands(
     "navigation",
-    CONSULTANT_NAV.map((item) => ({
+    STAFF_NAV.map((item) => ({
       id: `nav:${item.href}`,
       category: "navigation" as const,
       title: item.label,

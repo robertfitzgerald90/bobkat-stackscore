@@ -5,7 +5,7 @@ import {
 
 const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/portfolio$/, title: "Portfolio" },
-  { pattern: /^\/dashboard$/, title: "Dashboard" },
+  { pattern: /^\/dashboard$/, title: "Command Center" },
   { pattern: /^\/account$/, title: "Account" },
   { pattern: /^\/support$/, title: "Support" },
   { pattern: /^\/settings$/, title: "Settings" },
@@ -21,7 +21,7 @@ const STATIC_ROUTE_TITLES: Array<{ pattern: RegExp; title: string }> = [
   { pattern: /^\/assessments\/[^/]+$/, title: "Assessment" },
   { pattern: /^\/projects$/, title: "Projects" },
   { pattern: /^\/admin\/users$/, title: "Users" },
-  { pattern: /^\/admin\/vcio$/, title: "vCIO Clients" },
+  { pattern: /^\/admin\/vcio$/, title: "Recurring Services" },
   { pattern: /^\/admin\/billing$/, title: "Admin Billing" },
   { pattern: /^\/admin\/communications$/, title: "Communications" },
   { pattern: /^\/admin\/communications\/campaigns\/new$/, title: "New Campaign" },

@@ -4,7 +4,8 @@ import { getPageTitle } from "@/lib/navigation/page-titles";
 describe("getPageTitle", () => {
   it("returns global module titles", () => {
     expect(getPageTitle("/portfolio")).toBe("Portfolio");
-    expect(getPageTitle("/dashboard")).toBe("Dashboard");
+    expect(getPageTitle("/dashboard")).toBe("Command Center");
+    expect(getPageTitle("/admin/vcio")).toBe("Recurring Services");
     expect(getPageTitle("/projects")).toBe("Projects");
     expect(getPageTitle("/snapshot-leads")).toBe("Snapshot Leads");
   });

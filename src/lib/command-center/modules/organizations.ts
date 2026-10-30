@@ -5,7 +5,7 @@ export function registerOrganizationCommands(): void {
     {
       id: "organizations:new",
       category: "create",
-      title: "New Organization",
+      title: "New Client",
       subtitle: "Create client record",
       href: "/clients/new",
       icon: "Building2",
@@ -15,8 +15,8 @@ export function registerOrganizationCommands(): void {
     {
       id: "organizations:browse",
       category: "customers",
-      title: "Browse Organizations",
-      subtitle: "Client list",
+      title: "Browse Clients",
+      subtitle: "Client directory",
       href: "/clients",
       icon: "Users",
       keywords: ["clients", "organizations", "customers"],
