@@ -103,12 +103,14 @@ describe("SS-UX-012 — Customer Projects dashboard", () => {
     });
 
     expect(detail.progressPercent).toBeNull();
+    expect(detail.tasks).toEqual([]);
+    expect(detail.milestones).toEqual([]);
     expect(detail.listHref).toBe(clientWorkspaceProjectsPath("client-1"));
     expect(detail.recommendations[0]?.href).toContain("/recommendations?");
     expect(detail.roadmapInitiatives[0]?.href).toContain("/roadmap/phases/");
     expect(detail.completionReportHref).toBeNull();
-    expect(detail.showTaskPlaceholder).toBe(true);
-    expect(JSON.stringify(detail)).not.toMatch(/estimatedCost|assignedUser/i);
+    expect(detail.showUpdatesPlaceholder).toBe(true);
+    expect(JSON.stringify(detail)).not.toMatch(/estimatedCost|assignedUser|internalNotes/i);
   });
 
   it("hides non-deliverable recommendations and includes completion report when done", () => {

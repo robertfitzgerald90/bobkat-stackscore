@@ -11,6 +11,7 @@ import {
   requireConsultantOrAdmin,
   unauthorized,
 } from "@/lib/api/helpers";
+import { ensurePrimaryProjectRecommendationLink } from "@/lib/projects/delivery-service";
 import { createProjectSchema } from "@/lib/projects/schemas";
 import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 
@@ -121,6 +122,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
     });
 
     return created;
+  });
+
+  await ensurePrimaryProjectRecommendationLink({
+    projectId: project.id,
+    clientId,
+    recommendationId: data.recommendationId,
   });
 
   return NextResponse.json(serializeProject(project), { status: 201 });

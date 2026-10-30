@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, FileText, Loader2 } from "lucide-react";
 import {
   ClientPageHeader,
   ClientPageShell,
@@ -8,7 +8,11 @@ import {
 } from "@/components/client-ui";
 import { buttonClassName } from "@/components/ui/button";
 import { CLIENT_SURFACE_CARD, CLIENT_SURFACE_CARD_INDUSTRIAL } from "@/lib/client-ui/tokens";
-import type { CustomerProjectDetailDto } from "@/lib/customer-portal/projects-dto";
+import type {
+  CustomerProjectDetailDto,
+  CustomerProjectMilestoneDto,
+  CustomerProjectTaskDto,
+} from "@/lib/customer-portal/projects-dto";
 import { cn } from "@/lib/utils";
 
 type CustomerProjectDetailProps = {
@@ -16,12 +20,15 @@ type CustomerProjectDetailProps = {
 };
 
 export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
+  const hasTasks = detail.tasks.length > 0;
+  const hasMilestones = detail.milestones.length > 0;
+
   return (
     <ClientPageShell className="max-w-4xl space-y-8">
       <ClientPageHeader
         eyebrow="Project workspace"
         title={detail.title}
-        description="Delivery detail for this improvement project. Tasks and milestones will appear here when Bobkat IT adds them."
+        description="Delivery detail for this improvement project — status, progress, tasks, and milestones managed by Bobkat IT."
         actions={
           <Link
             href={detail.listHref}
@@ -74,11 +81,29 @@ export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
             label="Progress"
             value={
               detail.progressPercent !== null
-                ? `${detail.progressPercent}%`
+                ? `${detail.progressPercent}% (${detail.tasksCompleted}/${detail.tasksTotal} tasks)`
                 : `Tracked by status · ${detail.statusLabel}`
             }
           />
         </dl>
+
+        {detail.progressPercent !== null ? (
+          <div
+            className="h-2 overflow-hidden rounded-sm bg-muted"
+            role="progressbar"
+            aria-valuenow={detail.progressPercent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Task progress"
+          >
+            <div
+              className="h-full bg-primary transition-[width]"
+              style={{
+                width: `${Math.max(0, Math.min(100, detail.progressPercent))}%`,
+              }}
+            />
+          </div>
+        ) : null}
 
         {detail.expectedOutcome ? (
           <div className="space-y-1.5 border-t border-border/60 pt-4">
@@ -102,6 +127,58 @@ export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
             </Link>
           </div>
         ) : null}
+      </section>
+
+      <section className="space-y-3" aria-labelledby="project-tasks-heading">
+        <ClientSectionHeader
+          eyebrow="Delivery"
+          title="Tasks"
+          description={
+            hasTasks
+              ? "Customer-visible delivery steps for this project."
+              : "Task checklist will appear when Bobkat IT adds delivery steps."
+          }
+        />
+        <h2 id="project-tasks-heading" className="sr-only">
+          Project tasks
+        </h2>
+        {hasTasks ? (
+          <ul className="space-y-2">
+            {detail.tasks.map((task) => (
+              <TaskRow key={task.id} task={task} />
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-sm border border-dashed border-border bg-muted/15 px-4 py-6 text-sm text-muted-foreground">
+            No tasks yet. Progress stays tied to project status until tasks are added.
+          </p>
+        )}
+      </section>
+
+      <section className="space-y-3" aria-labelledby="project-milestones-heading">
+        <ClientSectionHeader
+          eyebrow="Checkpoints"
+          title="Milestones"
+          description={
+            hasMilestones
+              ? "Target checkpoints for this delivery."
+              : "Milestones will appear when Bobkat IT configures them."
+          }
+        />
+        <h2 id="project-milestones-heading" className="sr-only">
+          Project milestones
+        </h2>
+        {hasMilestones ? (
+          <ul className="space-y-2">
+            {detail.milestones.map((milestone) => (
+              <MilestoneRow key={milestone.id} milestone={milestone} />
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-sm border border-dashed border-border bg-muted/15 px-4 py-6 text-sm text-muted-foreground">
+            No milestones yet.
+          </p>
+        )}
       </section>
 
       {detail.recommendations.length > 0 ? (
@@ -193,26 +270,96 @@ export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
         </section>
       ) : null}
 
-      <section
-        className="rounded-sm border border-dashed border-border/80 bg-muted/10 px-4 py-3"
-        aria-label="Upcoming project capabilities"
-      >
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Coming next
-        </p>
-        <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-          {detail.showTaskPlaceholder ? (
-            <li>Task checklist — delivery steps will appear when Bobkat IT adds them.</li>
-          ) : null}
-          {detail.showMilestonePlaceholder ? (
-            <li>Milestones — target checkpoints will appear when configured.</li>
-          ) : null}
-          {detail.showUpdatesPlaceholder ? (
-            <li>Project updates — staff-initiated notifications will appear here.</li>
-          ) : null}
-        </ul>
-      </section>
+      {detail.showUpdatesPlaceholder ? (
+        <section
+          className="rounded-sm border border-dashed border-border/80 bg-muted/10 px-4 py-3"
+          aria-label="Upcoming project capabilities"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Coming next
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Project updates — staff-initiated notifications will appear here in a later release.
+          </p>
+        </section>
+      ) : null}
     </ClientPageShell>
+  );
+}
+
+function TaskRow({ task }: { task: CustomerProjectTaskDto }) {
+  const Icon =
+    task.status === "completed"
+      ? CheckCircle2
+      : task.status === "in_progress"
+        ? Loader2
+        : Circle;
+
+  return (
+    <li className={cn(CLIENT_SURFACE_CARD, "flex gap-3 rounded-sm border bg-card p-4")}>
+      <Icon
+        className={cn(
+          "mt-0.5 h-4 w-4 shrink-0",
+          task.status === "completed"
+            ? "text-primary"
+            : "text-muted-foreground",
+        )}
+        aria-hidden
+      />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-medium text-foreground">{task.title}</p>
+          <ClientStatusBadge tone="muted">{task.statusLabel}</ClientStatusBadge>
+        </div>
+        {task.description ? (
+          <p className="text-sm text-muted-foreground">{task.description}</p>
+        ) : null}
+        <dl className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          {task.dueDateLabel ? (
+            <div>
+              <dt className="inline">Due: </dt>
+              <dd className="inline">{task.dueDateLabel}</dd>
+            </div>
+          ) : null}
+          {task.completedAtLabel ? (
+            <div>
+              <dt className="inline">Completed: </dt>
+              <dd className="inline">{task.completedAtLabel}</dd>
+            </div>
+          ) : null}
+        </dl>
+      </div>
+    </li>
+  );
+}
+
+function MilestoneRow({ milestone }: { milestone: CustomerProjectMilestoneDto }) {
+  return (
+    <li className={cn(CLIENT_SURFACE_CARD, "rounded-sm border bg-card p-4")}>
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="font-medium text-foreground">{milestone.title}</p>
+        <ClientStatusBadge tone={milestone.isComplete ? "default" : "muted"}>
+          {milestone.isComplete ? "Complete" : "Open"}
+        </ClientStatusBadge>
+      </div>
+      {milestone.description ? (
+        <p className="mt-1 text-sm text-muted-foreground">{milestone.description}</p>
+      ) : null}
+      <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {milestone.targetDateLabel ? (
+          <div>
+            <dt className="inline">Target: </dt>
+            <dd className="inline">{milestone.targetDateLabel}</dd>
+          </div>
+        ) : null}
+        {milestone.completedAtLabel ? (
+          <div>
+            <dt className="inline">Completed: </dt>
+            <dd className="inline">{milestone.completedAtLabel}</dd>
+          </div>
+        ) : null}
+      </dl>
+    </li>
   );
 }
 

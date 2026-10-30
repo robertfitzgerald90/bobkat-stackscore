@@ -4,7 +4,11 @@ import { projectInclude, serializeProject } from "@/lib/projects/serialize";
 import type { UpdateProjectInput } from "@/lib/projects/schemas";
 import { assertProjectDepositGate } from "@/lib/billing/deposit-service";
 
-/** Keeps linked recommendation status in sync when a project completes or reopens. */
+/**
+ * Keeps the *primary* linked recommendation in sync when a project completes or reopens.
+ * SS-UX-013: additional ProjectRecommendation links are NOT auto-completed/reopened.
+ * Completing all tasks/milestones never calls this — project status remains staff-driven.
+ */
 export async function updateProjectWithWorkflow(
   projectId: string,
   input: UpdateProjectInput,
@@ -59,6 +63,7 @@ export async function updateProjectWithWorkflow(
       include: projectInclude,
     });
 
+    // Compatibility: only the legacy primary recommendationId is synced.
     if (isCompleting) {
       await tx.assessmentRecommendation.update({
         where: { id: existing.recommendationId },

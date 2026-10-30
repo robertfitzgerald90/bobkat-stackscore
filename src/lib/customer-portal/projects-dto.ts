@@ -43,9 +43,28 @@ export type CustomerProjectCardDto = {
   targetCompletionDateLabel: string | null;
   pillarName: string | null;
   pillarHref: string | null;
-  /** Always null until ProjectTask exists — never invent a percent. */
+  /** null when the project has zero tasks — never invent a percent. */
   progressPercent: number | null;
   href: string;
+};
+
+export type CustomerProjectTaskDto = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: "not_started" | "in_progress" | "completed";
+  statusLabel: string;
+  dueDateLabel: string | null;
+  completedAtLabel: string | null;
+};
+
+export type CustomerProjectMilestoneDto = {
+  id: string;
+  title: string;
+  description: string | null;
+  targetDateLabel: string | null;
+  completedAtLabel: string | null;
+  isComplete: boolean;
 };
 
 export type CustomerProjectsSummaryDto = {
@@ -105,13 +124,15 @@ export type CustomerProjectDetailDto = {
   pillarName: string | null;
   pillarHref: string | null;
   progressPercent: number | null;
+  tasksTotal: number;
+  tasksCompleted: number;
+  tasks: CustomerProjectTaskDto[];
+  milestones: CustomerProjectMilestoneDto[];
   recommendations: CustomerProjectRecommendationDto[];
   roadmapInitiatives: CustomerProjectInitiativeDto[];
   activity: CustomerProjectActivityDto[];
   completionReportHref: string | null;
   listHref: string;
-  showTaskPlaceholder: boolean;
-  showMilestonePlaceholder: boolean;
   showUpdatesPlaceholder: boolean;
 };
 
@@ -133,6 +154,25 @@ export type CustomerProjectRowInput = {
     businessImpact: string | null;
     templateCode: string | null;
   } | null;
+  /** Precomputed progress; null when no tasks. */
+  progressPercent?: number | null;
+};
+
+export type CustomerProjectTaskInput = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: "not_started" | "in_progress" | "completed";
+  dueDate: Date | string | null;
+  completedAt: Date | string | null;
+};
+
+export type CustomerProjectMilestoneInput = {
+  id: string;
+  title: string;
+  description: string | null;
+  targetDate: Date | string | null;
+  completedAt: Date | string | null;
 };
 
 export type CustomerProjectActivityInput = {
@@ -251,7 +291,7 @@ export function buildCustomerProjectCard(
     targetCompletionDateLabel: dateLabel(row.targetCompletionDate),
     pillarName: pillar.pillarName ?? row.categoryName,
     pillarHref: pillar.pillarHref,
-    progressPercent: null,
+    progressPercent: row.progressPercent ?? null,
     href: clientProjectDetailPath(clientId, row.id),
   };
 }
@@ -298,27 +338,41 @@ export function buildCustomerProjectsExperience(input: {
   };
 }
 
+const TASK_STATUS_LABEL: Record<CustomerProjectTaskInput["status"], string> = {
+  not_started: "Not Started",
+  in_progress: "In Progress",
+  completed: "Complete",
+};
+
 export function buildCustomerProjectDetail(input: {
   clientId: string;
   companyName: string;
   row: CustomerProjectRowInput;
   recommendationVisible: boolean;
+  recommendations?: CustomerProjectRecommendationDto[];
   initiatives: CustomerProjectInitiativeInput[];
   activity: CustomerProjectActivityInput[];
+  tasks?: CustomerProjectTaskInput[];
+  milestones?: CustomerProjectMilestoneInput[];
+  progressPercent?: number | null;
+  tasksTotal?: number;
+  tasksCompleted?: number;
 }): CustomerProjectDetailDto {
   const { row, clientId } = input;
   const pillar = pillarForCategory(clientId, row.categoryCode);
-  const recommendations: CustomerProjectRecommendationDto[] = [];
-
-  if (row.recommendation && input.recommendationVisible) {
-    recommendations.push({
-      id: row.recommendation.id,
-      title: row.recommendation.title,
-      status: row.recommendation.status,
-      statusLabel: row.recommendation.status.replace(/_/g, " "),
-      href: clientRecommendationDetailPath(clientId, row.recommendation.id),
-    });
-  }
+  const recommendations: CustomerProjectRecommendationDto[] =
+    input.recommendations ??
+    (row.recommendation && input.recommendationVisible
+      ? [
+          {
+            id: row.recommendation.id,
+            title: row.recommendation.title,
+            status: row.recommendation.status,
+            statusLabel: row.recommendation.status.replace(/_/g, " "),
+            href: clientRecommendationDetailPath(clientId, row.recommendation.id),
+          },
+        ]
+      : []);
 
   const expectedOutcome =
     input.recommendationVisible && row.recommendation?.businessImpact?.trim()
@@ -331,6 +385,25 @@ export function buildCustomerProjectDetail(input: {
     description: event.description,
     occurredAtLabel: dateLabel(event.occurredAt) ?? "",
     eventType: event.eventType,
+  }));
+
+  const tasks = (input.tasks ?? []).map((task) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    statusLabel: TASK_STATUS_LABEL[task.status],
+    dueDateLabel: dateLabel(task.dueDate),
+    completedAtLabel: dateLabel(task.completedAt),
+  }));
+
+  const milestones = (input.milestones ?? []).map((milestone) => ({
+    id: milestone.id,
+    title: milestone.title,
+    description: milestone.description,
+    targetDateLabel: dateLabel(milestone.targetDate),
+    completedAtLabel: dateLabel(milestone.completedAt),
+    isComplete: Boolean(milestone.completedAt),
   }));
 
   return {
@@ -349,7 +422,11 @@ export function buildCustomerProjectDetail(input: {
     completedAtLabel: dateLabel(row.completedAt),
     pillarName: pillar.pillarName ?? row.categoryName,
     pillarHref: pillar.pillarHref,
-    progressPercent: null,
+    progressPercent: input.progressPercent ?? null,
+    tasksTotal: input.tasksTotal ?? tasks.length,
+    tasksCompleted: input.tasksCompleted ?? tasks.filter((task) => task.status === "completed").length,
+    tasks,
+    milestones,
     recommendations,
     roadmapInitiatives: input.initiatives.map((initiative) => ({
       id: initiative.id,
@@ -363,8 +440,6 @@ export function buildCustomerProjectDetail(input: {
         ? `/clients/${clientId}/projects/${row.id}/completion-report`
         : null,
     listHref: clientWorkspaceProjectsPath(clientId),
-    showTaskPlaceholder: true,
-    showMilestonePlaceholder: true,
     showUpdatesPlaceholder: true,
   };
 }

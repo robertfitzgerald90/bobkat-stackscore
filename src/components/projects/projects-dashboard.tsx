@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProjectAdminActions } from "@/components/admin/project-admin-actions";
+import { ProjectDeliveryPanel } from "@/components/projects/project-delivery-panel";
 import { ExternalLink, FolderKanban, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
@@ -483,7 +484,7 @@ export function ProjectsDashboard({
                     ) : null}
                   </div>
 
-                  <div className="flex min-h-0 flex-1 flex-col gap-2">
+                  <div className="flex min-h-0 flex-col gap-2">
                     <Label htmlFor="project-notes">Notes</Label>
                     <textarea
                       id="project-notes"
@@ -491,11 +492,16 @@ export function ProjectsDashboard({
                       onChange={(event) => setEditNotes(event.target.value)}
                       placeholder="Implementation notes, scheduling details, or client context..."
                       className={cn(
-                        "flex min-h-[16rem] w-full flex-1 resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
+                        "flex min-h-[8rem] w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
                         "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
                       )}
                     />
                   </div>
+
+                  <ProjectDeliveryPanel
+                    projectId={selectedProject.id}
+                    clientId={selectedProject.clientId}
+                  />
 
                   <div className="space-y-2">
                     <Button onClick={saveProject} disabled={saving} className="w-full">

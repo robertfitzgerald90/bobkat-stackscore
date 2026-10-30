@@ -107,6 +107,13 @@ enum ProjectStatus {
   cancelled
 }
 
+/// SS-UX-013 — lightweight delivery checklist status (no assignees / time tracking).
+enum ProjectTaskStatus {
+  not_started
+  in_progress
+  completed
+}
+
 enum Rating {
   exceptional
   strong
@@ -335,6 +342,9 @@ model Client {
   assessments                 Assessment[]
   recommendations             AssessmentRecommendation[]
   projects                    Project[]
+  projectTasks                ProjectTask[]
+  projectMilestones           ProjectMilestone[]
+  projectRecommendations      ProjectRecommendation[]
   scoreHistory                ClientScoreHistory[]
   documents                   Document[]
   activityNotes               Note[]
@@ -657,6 +667,7 @@ model AssessmentRecommendation {
   recommendationTemplate RecommendationTemplate?           @relation(fields: [recommendationTemplateId], references: [id])
   createdBy              User                              @relation("RecommendationCreator", fields: [createdByUserId], references: [id])
   project                Project?
+  projectLinks           ProjectRecommendation[]
   triggers               RecommendationAssessmentTrigger[]
   roadmapInitiatives     ClientRoadmapInitiative[]
 
@@ -709,6 +720,77 @@ model Project {
   invoices              Invoice[]
   requiredDeposit       BillingDeposit?           @relation("ProjectRequiredDeposit", fields: [requiredDepositId], references: [id], onDelete: SetNull)
   requiredDepositId     String?                   @unique
+  tasks                 ProjectTask[]
+  milestones            ProjectMilestone[]
+  recommendationLinks   ProjectRecommendation[]
+}
+
+/// SS-UX-013 — customer-visible delivery checklist item (staff-managed).
+model ProjectTask {
+  id            String            @id @default(uuid())
+  projectId     String
+  clientId      String
+  title         String
+  /// Customer-visible description when present.
+  description   String?           @db.Text
+  /// Staff-only notes — never projected to customers.
+  internalNotes String?           @db.Text
+  status        ProjectTaskStatus @default(not_started)
+  dueDate       DateTime?
+  sortOrder     Int               @default(0)
+  completedAt   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+  @@index([clientId])
+  @@index([status])
+}
+
+/// SS-UX-013 — delivery milestone (staff-managed; does not auto-complete projects).
+model ProjectMilestone {
+  id          String    @id @default(uuid())
+  projectId   String
+  clientId    String
+  title       String
+  description String?   @db.Text
+  targetDate  DateTime?
+  completedAt DateTime?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+  @@index([clientId])
+}
+
+/**
+ * SS-UX-013 — many recommendations may link to one project.
+ * Legacy Project.recommendationId remains the primary compatibility FK until a later contract migration.
+ * recommendationId is globally unique so a recommendation belongs to at most one project.
+ */
+model ProjectRecommendation {
+  id               String   @id @default(uuid())
+  projectId        String
+  clientId         String
+  recommendationId String
+  isPrimary        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  project        Project                  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client         Client                   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  recommendation AssessmentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, recommendationId])
+  @@unique([recommendationId])
+  @@index([projectId])
+  @@index([clientId])
 }
 
 model ClientScoreHistory {
