@@ -10,6 +10,7 @@ import { getBookingUrl } from "@/lib/support/config";
 import { formatPriority } from "@/lib/display";
 import { formatProjectStatus } from "@/lib/projects";
 import { isClientDeliverableRecommendation } from "@/lib/recommendations/visibility";
+import { getTechnologyProfileDetail } from "@/lib/technology-profile";
 import {
   buildCustomerRoadmapExperience,
   buildCustomerRoadmapProjectSummary,
@@ -72,14 +73,16 @@ export async function getCustomerRoadmapExperience(
   const dashboard = await getClientRoadmapDashboard(clientId, role);
   if (!dashboard) return null;
 
-  const [projects, bookingHref] = await Promise.all([
+  const [projects, bookingHref, profileDetail] = await Promise.all([
     listCustomerRoadmapProjects(clientId, role),
     Promise.resolve(getBookingUrl()),
+    getTechnologyProfileDetail(clientId, role),
   ]);
 
   return buildCustomerRoadmapExperience({
     dashboard,
     projects,
     bookingHref,
+    officialStackScore: profileDetail?.profile.overallStackScore ?? null,
   });
 }

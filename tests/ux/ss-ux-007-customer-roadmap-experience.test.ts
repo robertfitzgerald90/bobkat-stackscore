@@ -149,6 +149,25 @@ describe("SS-UX-007 customer roadmap experience", () => {
     expect(JSON.stringify(dto)).not.toContain("projectedFinalScore");
   });
 
+  it("prefers technology-profile official StackScore over roadmap baseline", () => {
+    const dto = buildCustomerRoadmapExperience({
+      dashboard: baseDashboard({
+        scoreJourney: {
+          baselineScore: 53,
+          completedImprovement: 0,
+          effectiveScore: 53,
+          remainingOpportunity: 10,
+          projectedFinalScore: 63,
+        },
+      }),
+      projects: [],
+      bookingHref: null,
+      officialStackScore: 100,
+    });
+    expect(dto.summary.officialStackScore).toBe(100);
+    expect(dto.summary.progressPercent).toBe(0);
+  });
+
   it("marks draft roadmaps without fabricating completion", () => {
     const dto = buildCustomerRoadmapExperience({
       dashboard: baseDashboard({

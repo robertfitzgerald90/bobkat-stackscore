@@ -241,8 +241,14 @@ export function buildCustomerRoadmapExperience(input: {
   dashboard: ClientRoadmapDashboard;
   projects: CustomerRoadmapProjectSummary[];
   bookingHref: string | null;
+  /**
+   * Official StackScore from the technology profile / latest completed assessment.
+   * Prefer this over roadmap baseline when present so Overview and Roadmap stay aligned
+   * after reassessment (SS-UX-009).
+   */
+  officialStackScore?: number | null;
 }): CustomerRoadmapExperienceDto {
-  const { dashboard, projects, bookingHref } = input;
+  const { dashboard, projects, bookingHref, officialStackScore = null } = input;
   const currentPhaseId = resolveCurrentPhaseId(dashboard);
   const initiatives = dashboard.phases.flatMap((phase) =>
     phase.initiatives.map((initiative) => buildInitiativeDto(dashboard.clientId, phase, initiative)),
@@ -255,7 +261,10 @@ export function buildCustomerRoadmapExperience(input: {
     isDraft: dashboard.status === "draft",
     hasRoadmap: true,
     summary: {
-      officialStackScore: dashboard.scoreJourney.baselineScore,
+      officialStackScore:
+        typeof officialStackScore === "number" && Number.isFinite(officialStackScore)
+          ? officialStackScore
+          : dashboard.scoreJourney.baselineScore,
       stackScoreLabel: CUSTOMER_TERM_STACKSCORE,
       progressPercent: dashboard.metrics.completionPercent,
       progressLabel: CUSTOMER_TERM_ROADMAP_PROGRESS,
