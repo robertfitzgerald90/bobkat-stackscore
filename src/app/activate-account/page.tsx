@@ -8,9 +8,12 @@ import { MARKETING_AUTH_SHELL } from "@/lib/marketing/tokens";
 export default function ActivateAccountPage() {
   return (
     <PublicPageShell variant="auth">
-      <main className={MARKETING_AUTH_SHELL}>
-        <div className="mb-8">
+      <main className={`${MARKETING_AUTH_SHELL} brand-level-2`}>
+        <div className="mb-8 text-center">
           <BrandLogo size={72} variant="stacked" placement="auth" priority />
+          <p className="mt-3 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            By Bobkat IT
+          </p>
         </div>
         <CornerBrackets corners="two" className="w-full max-w-md">
           <Suspense>

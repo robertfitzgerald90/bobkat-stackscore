@@ -1,12 +1,13 @@
 /**
- * SS-BRAND-002 — Purple-first brand tokens for authenticated application shells.
+ * SS-BRAND-002 / SS-BRAND-003 — Purple-first brand tokens.
  *
- * Applied under `.executive-os` (staff) and `.customer-portal` (customer).
- * Public `.midnight` / marketing shells are intentionally NOT retargeted here
- * (SS-BRAND-003). Semantic success remains phosphor green.
+ * Authenticated: `.executive-os`, `.customer-portal`, `.instrument`
+ * Public: `.public-marketing` (Level 2 expressive shell; gradients in theme CSS)
+ *
+ * Semantic success remains phosphor green.
  */
 
-:is(.executive-os, .customer-portal, .instrument) {
+:is(.executive-os, .customer-portal, .instrument, .public-marketing) {
   /* Brand */
   --brand-primary: #a855f7;
   --brand-primary-hover: #c084fc;
@@ -116,4 +117,88 @@
 .brand-frame {
   border: 1px solid color-mix(in oklab, var(--brand-primary) 28%, var(--border));
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--brand-secondary) 8%, transparent);
+}
+
+/**
+ * Level 2 — expressive public gateway atmosphere (homepage, auth heroes).
+ * Opt-in; never apply inside `.executive-os` / `.customer-portal` ops surfaces.
+ */
+.brand-level-2 {
+  position: relative;
+  isolation: isolate;
+}
+
+.brand-level-2::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 50% -15%,
+      rgba(168, 85, 247, 0.18),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 100% 30%,
+      rgba(22, 139, 255, 0.1),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 0% 80%,
+      rgba(168, 85, 247, 0.08),
+      transparent 50%
+    ),
+    linear-gradient(rgba(168, 85, 247, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 139, 255, 0.03) 1px, transparent 1px);
+  background-size: auto, auto, auto, 48px 48px, 48px 48px;
+}
+
+.brand-level-2 > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-level-2::before {
+    background-image:
+      radial-gradient(
+        ellipse 90% 60% at 50% -15%,
+        rgba(168, 85, 247, 0.12),
+        transparent 58%
+      ),
+      linear-gradient(rgba(168, 85, 247, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 139, 255, 0.03) 1px, transparent 1px);
+    background-size: auto, 48px 48px, 48px 48px;
+  }
+}
+
+/** Public primary CTA — purple → blue gradient (Level 2 only) */
+.brand-cta-gradient {
+  border-color: transparent;
+  color: #ffffff;
+  background: linear-gradient(135deg, #9333ea 0%, #a855f7 42%, #168bff 100%);
+  box-shadow:
+    0 4px 14px rgba(147, 51, 234, 0.28),
+    0 0 18px rgba(22, 139, 255, 0.12);
+}
+
+.brand-cta-gradient:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 6px 18px rgba(147, 51, 234, 0.34),
+    0 0 22px rgba(22, 139, 255, 0.16);
+}
+
+.brand-cta-secondary {
+  border: 1px solid color-mix(in oklab, var(--brand-primary, #a855f7) 55%, transparent);
+  background: rgba(8, 9, 12, 0.55);
+  color: #f1f2f4;
+}
+
+.brand-cta-secondary:hover {
+  border-color: var(--brand-primary-hover, #c084fc);
+  background: rgba(168, 85, 247, 0.1);
 }

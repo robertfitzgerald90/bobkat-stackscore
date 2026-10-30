@@ -5,9 +5,9 @@ import { StackScoreGatewayHome } from "@/components/public/stackscore-gateway-ho
 import { getDefaultLandingPath } from "@/lib/navigation/default-landing";
 
 export const metadata: Metadata = {
-  title: "StackScore | Technology Planning Platform",
+  title: "StackScore | Technology Intelligence by Bobkat IT",
   description:
-    "StackScore is the assessment, planning, and client portal platform used by Bobkat IT.",
+    "Know your technology. Own your next move. StackScore is the technology intelligence platform developed by Bobkat IT.",
   alternates: { canonical: "/" },
 };
 

@@ -1,23 +1,24 @@
 /**
- * StackScore public marketing — executive dashboard aesthetic.
+ * StackScore public marketing — Level 2 Bobkat-aligned gateway aesthetic.
  * Scoped to `.public-marketing` so authenticated app surfaces stay unchanged.
+ * Interactive brand tokens come from `brand-tokens.css` (SS-BRAND-003).
  */
 
 .public-marketing {
-  --marketing-bg-deep: #050914;
-  --marketing-bg-mid: #07111f;
-  --marketing-bg-elevated: #0a1526;
-  --marketing-bg-panel: rgba(8, 15, 28, 0.82);
-  --marketing-border: rgba(70, 120, 255, 0.12);
-  --marketing-border-strong: rgba(70, 120, 255, 0.22);
-  --marketing-glow: rgba(50, 120, 255, 0.08);
-  --marketing-glow-strong: rgba(50, 120, 255, 0.16);
+  --marketing-bg-deep: #08090c;
+  --marketing-bg-mid: #0a0b10;
+  --marketing-bg-elevated: #12141a;
+  --marketing-bg-panel: rgba(18, 20, 26, 0.92);
+  --marketing-border: rgba(139, 146, 160, 0.2);
+  --marketing-border-strong: rgba(168, 85, 247, 0.35);
+  --marketing-glow: rgba(168, 85, 247, 0.1);
+  --marketing-glow-strong: rgba(22, 139, 255, 0.14);
   --marketing-shadow-deep: 0 20px 60px rgba(0, 0, 0, 0.45);
   --marketing-shadow-glow: 0 0 30px var(--marketing-glow);
-  --marketing-radius-lg: 1rem;
-  --marketing-radius-xl: 1.25rem;
-  --marketing-radius-2xl: 1.5rem;
-  --marketing-radius-3xl: 1.75rem;
+  --marketing-radius-lg: 0.5rem;
+  --marketing-radius-xl: 0.625rem;
+  --marketing-radius-2xl: 0.75rem;
+  --marketing-radius-3xl: 1rem;
 
   color-scheme: dark;
   position: relative;
@@ -25,7 +26,7 @@
   background-color: var(--marketing-bg-deep);
 }
 
-/* Layered ambient background */
+/* Layered atmospheric background — purple + electric blue */
 .public-marketing::before {
   content: "";
   pointer-events: none;
@@ -33,10 +34,10 @@
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(35, 135, 255, 0.1), transparent 58%),
-    radial-gradient(ellipse 60% 45% at 100% 20%, rgba(35, 135, 255, 0.06), transparent 52%),
-    radial-gradient(ellipse 55% 40% at 0% 75%, rgba(8, 47, 91, 0.14), transparent 55%),
-    linear-gradient(180deg, #050914 0%, #07111f 38%, #0a1526 72%, #0d1b31 100%);
+    radial-gradient(ellipse 90% 55% at 50% -8%, rgba(168, 85, 247, 0.16), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 100% 18%, rgba(22, 139, 255, 0.1), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 0% 78%, rgba(168, 85, 247, 0.08), transparent 55%),
+    linear-gradient(180deg, #08090c 0%, #0a0b10 40%, #12141a 78%, #08090c 100%);
 }
 
 .public-marketing::after {
@@ -45,11 +46,11 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.35;
+  opacity: 0.4;
   background-image:
-    linear-gradient(rgba(70, 120, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(70, 120, 255, 0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
+    linear-gradient(rgba(168, 85, 247, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 139, 255, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 85% 70% at 50% 35%, black 15%, transparent 72%);
 }
 
@@ -66,9 +67,9 @@
     @apply relative px-4 py-20 sm:px-6 sm:py-24 md:py-28;
     background: linear-gradient(
       180deg,
-      rgba(8, 15, 28, 0.35) 0%,
-      rgba(10, 21, 38, 0.55) 50%,
-      rgba(8, 15, 28, 0.35) 100%
+      rgba(8, 9, 12, 0.35) 0%,
+      rgba(18, 20, 26, 0.55) 50%,
+      rgba(8, 9, 12, 0.35) 100%
     );
   }
 
@@ -79,7 +80,7 @@
     inset: 0;
     background: radial-gradient(
       ellipse 70% 50% at 50% 0%,
-      rgba(35, 135, 255, 0.07),
+      rgba(168, 85, 247, 0.08),
       transparent 68%
     );
   }
@@ -89,8 +90,8 @@
     border: 1px solid var(--marketing-border);
     background: linear-gradient(
       165deg,
-      rgba(12, 22, 40, 0.92) 0%,
-      rgba(8, 15, 28, 0.88) 100%
+      rgba(18, 20, 26, 0.96) 0%,
+      rgba(8, 9, 12, 0.92) 100%
     );
     box-shadow: var(--marketing-shadow-deep), var(--marketing-shadow-glow);
   }
@@ -98,14 +99,14 @@
   .marketing-panel-soft {
     border-radius: var(--marketing-radius-xl);
     border: 1px solid var(--marketing-border);
-    background: rgba(8, 15, 28, 0.72);
+    background: rgba(18, 20, 26, 0.78);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.32), 0 0 24px var(--marketing-glow);
   }
 
   .marketing-glass {
     border-radius: var(--marketing-radius-xl);
     border: 1px solid var(--marketing-border);
-    background: rgba(8, 15, 28, 0.55);
+    background: rgba(8, 9, 12, 0.55);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 32px rgba(0, 0, 0, 0.28);
   }
 
@@ -115,10 +116,10 @@
     border: 1px solid var(--marketing-border);
     background: linear-gradient(
       165deg,
-      rgba(12, 22, 40, 0.88) 0%,
-      rgba(8, 15, 28, 0.82) 100%
+      rgba(18, 20, 26, 0.94) 0%,
+      rgba(8, 9, 12, 0.88) 100%
     );
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.28), 0 0 20px rgba(50, 120, 255, 0.04);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.28), 0 0 20px rgba(168, 85, 247, 0.04);
   }
 
   .marketing-feature-card:hover {
@@ -132,21 +133,21 @@
     border: 1px solid var(--marketing-border);
     background: linear-gradient(
       180deg,
-      rgba(12, 22, 40, 0.95) 0%,
-      rgba(8, 15, 28, 0.9) 100%
+      rgba(18, 20, 26, 0.96) 0%,
+      rgba(8, 9, 12, 0.9) 100%
     );
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .marketing-icon-well {
     @apply flex items-center justify-center rounded-xl transition-colors duration-300;
-    background: rgba(35, 135, 255, 0.12);
-    box-shadow: 0 0 20px rgba(35, 135, 255, 0.08);
+    background: rgba(168, 85, 247, 0.12);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.08);
   }
 
   .marketing-eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.22em];
-    color: var(--accent-blue);
+    color: var(--brand-primary-hover, var(--primary));
   }
 
   .marketing-section-title {
@@ -162,7 +163,7 @@
   }
 
   .marketing-text-gradient {
-    background: linear-gradient(135deg, #7ec0ff 0%, #2387ff 48%, #4a9dff 100%);
+    background: linear-gradient(135deg, #c084fc 0%, #a855f7 48%, #168bff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -171,37 +172,38 @@
   .marketing-badge {
     @apply inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium uppercase tracking-wider;
     border: 1px solid var(--marketing-border-strong);
-    background: rgba(35, 135, 255, 0.08);
-    color: var(--accent-blue);
-    box-shadow: 0 0 24px rgba(35, 135, 255, 0.08);
+    background: rgba(168, 85, 247, 0.1);
+    color: var(--brand-primary-hover, #c084fc);
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.08);
   }
 
   .marketing-btn-primary {
-    @apply border-transparent text-primary-foreground shadow-md transition-all duration-300 ease-out motion-reduce:transition-none;
-    background: linear-gradient(135deg, #1a7fff 0%, #2387ff 52%, #4a9dff 100%);
+    @apply border-transparent text-white shadow-md transition-all duration-300 ease-out motion-reduce:transition-none;
+    background: linear-gradient(135deg, #9333ea 0%, #a855f7 42%, #168bff 100%);
     box-shadow:
-      0 4px 12px rgba(35, 135, 255, 0.28),
-      0 0 14px rgba(35, 135, 255, 0.1);
+      0 4px 12px rgba(147, 51, 234, 0.28),
+      0 0 14px rgba(22, 139, 255, 0.12);
   }
 
   .marketing-btn-primary:hover {
     transform: translateY(-1px);
+    filter: brightness(1.05);
     box-shadow:
-      0 6px 16px rgba(35, 135, 255, 0.34),
-      0 0 18px rgba(35, 135, 255, 0.14);
+      0 6px 16px rgba(147, 51, 234, 0.34),
+      0 0 18px rgba(22, 139, 255, 0.16);
   }
 
   .marketing-btn-glass {
     @apply transition-all duration-300 ease-out motion-reduce:transition-none;
-    border: 1px solid var(--marketing-border);
-    background: rgba(8, 15, 28, 0.65);
+    border: 1px solid color-mix(in oklab, var(--brand-primary, #a855f7) 45%, transparent);
+    background: rgba(8, 9, 12, 0.65);
     color: var(--foreground);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .marketing-btn-glass:hover {
-    border-color: var(--marketing-border-strong);
-    background: rgba(12, 22, 40, 0.85);
+    border-color: var(--brand-primary-hover, #c084fc);
+    background: rgba(168, 85, 247, 0.1);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
       0 0 24px var(--marketing-glow);
@@ -210,15 +212,15 @@
   .marketing-input {
     @apply rounded-xl border transition-all duration-200;
     border-color: var(--marketing-border);
-    background: rgba(5, 9, 20, 0.72);
+    background: rgba(8, 9, 12, 0.72);
     box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
   }
 
   .marketing-input:focus-visible {
-    border-color: rgba(35, 135, 255, 0.55);
+    border-color: rgba(168, 85, 247, 0.55);
     box-shadow:
       inset 0 2px 6px rgba(0, 0, 0, 0.28),
-      0 0 0 3px rgba(35, 135, 255, 0.18);
+      0 0 0 3px rgba(168, 85, 247, 0.18);
   }
 
   .marketing-nav-link {
@@ -228,13 +230,13 @@
 
   .marketing-nav-link:hover {
     color: var(--foreground);
-    background: rgba(35, 135, 255, 0.08);
+    background: rgba(168, 85, 247, 0.1);
   }
 
   .marketing-nav-link-active {
-    color: var(--accent-blue);
-    background: rgba(35, 135, 255, 0.12);
-    box-shadow: 0 0 20px rgba(35, 135, 255, 0.08);
+    color: var(--brand-primary-hover, #c084fc);
+    background: rgba(168, 85, 247, 0.14);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.08);
   }
 
   .marketing-screenshot {
@@ -243,47 +245,48 @@
     border: 1px solid var(--marketing-border);
     box-shadow:
       var(--marketing-shadow-deep),
-      0 0 48px rgba(35, 135, 255, 0.1);
+      0 0 48px rgba(168, 85, 247, 0.1);
   }
 
   .marketing-screenshot:hover {
     transform: translateY(-2px);
     box-shadow:
       0 24px 64px rgba(0, 0, 0, 0.5),
-      0 0 56px rgba(35, 135, 255, 0.14);
+      0 0 56px rgba(168, 85, 247, 0.14);
   }
 
   .marketing-screenshot-hero {
     box-shadow:
       0 28px 72px rgba(0, 0, 0, 0.52),
-      0 0 64px rgba(35, 135, 255, 0.12);
+      0 0 64px rgba(22, 139, 255, 0.12);
   }
 }
 
-/* Premium buttons inside public marketing */
+/* Premium buttons inside public marketing — Level 2 gradient */
 .public-marketing [data-slot="button"].bg-primary,
 .public-marketing a.bg-primary {
   border-color: transparent;
-  color: var(--primary-foreground);
-  background: linear-gradient(135deg, #1a7fff 0%, #2387ff 52%, #4a9dff 100%);
+  color: #ffffff;
+  background: linear-gradient(135deg, #9333ea 0%, #a855f7 42%, #168bff 100%);
   box-shadow:
-    0 4px 12px rgba(35, 135, 255, 0.28),
-    0 0 14px rgba(35, 135, 255, 0.1);
+    0 4px 12px rgba(147, 51, 234, 0.28),
+    0 0 14px rgba(22, 139, 255, 0.12);
   transition: all 0.3s ease-out;
 }
 
 .public-marketing [data-slot="button"].bg-primary:hover,
 .public-marketing a.bg-primary:hover {
   transform: translateY(-1px);
+  filter: brightness(1.05);
   box-shadow:
-    0 6px 16px rgba(35, 135, 255, 0.34),
-    0 0 18px rgba(35, 135, 255, 0.14);
+    0 6px 16px rgba(147, 51, 234, 0.34),
+    0 0 18px rgba(22, 139, 255, 0.16);
 }
 
 .public-marketing [data-slot="button"].border-border.bg-background,
 .public-marketing a.border-border.bg-background {
-  border: 1px solid var(--marketing-border);
-  background: rgba(8, 15, 28, 0.65);
+  border: 1px solid color-mix(in oklab, var(--brand-primary, #a855f7) 45%, transparent);
+  background: rgba(8, 9, 12, 0.65);
   color: var(--foreground);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: all 0.3s ease-out;
@@ -291,8 +294,8 @@
 
 .public-marketing [data-slot="button"].border-border.bg-background:hover,
 .public-marketing a.border-border.bg-background:hover {
-  border-color: var(--marketing-border-strong);
-  background: rgba(12, 22, 40, 0.85);
+  border-color: var(--brand-primary-hover, #c084fc);
+  background: rgba(168, 85, 247, 0.1);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 0 24px var(--marketing-glow);
@@ -300,19 +303,19 @@
 
 .public-marketing [data-slot="input"],
 .public-marketing [data-slot="textarea"] {
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   border-color: var(--marketing-border);
-  background: rgba(5, 9, 20, 0.72);
+  background: rgba(8, 9, 12, 0.72);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
   transition: all 0.2s ease;
 }
 
 .public-marketing [data-slot="input"]:focus-visible,
 .public-marketing [data-slot="textarea"]:focus-visible {
-  border-color: rgba(35, 135, 255, 0.55);
+  border-color: rgba(168, 85, 247, 0.55);
   box-shadow:
     inset 0 2px 6px rgba(0, 0, 0, 0.28),
-    0 0 0 3px rgba(35, 135, 255, 0.18);
+    0 0 0 3px rgba(168, 85, 247, 0.18);
 }
 
 .public-marketing [data-slot="card"] {
@@ -320,14 +323,14 @@
   border: 1px solid var(--marketing-border);
   background: linear-gradient(
     165deg,
-    rgba(12, 22, 40, 0.92) 0%,
-    rgba(8, 15, 28, 0.88) 100%
+    rgba(18, 20, 26, 0.96) 0%,
+    rgba(8, 9, 12, 0.9) 100%
   );
   box-shadow: var(--marketing-shadow-deep), 0 0 24px var(--marketing-glow);
 }
 
 .public-marketing [data-demo-shell] {
   border-color: var(--marketing-border);
-  background: rgba(5, 9, 20, 0.94);
+  background: rgba(8, 9, 12, 0.94);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.38), 0 0 24px var(--marketing-glow);
 }

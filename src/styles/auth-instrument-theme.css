@@ -1,10 +1,7 @@
 /**
  * Auth pages (sign in, forgot password, reset password, activate account) —
- * StackScore Instrument treatment layered on top of the public marketing
- * shell they're hosted in. Scoped to `.auth-instrument` (set by
- * `PublicPageShell` when `variant="auth"`) combined with `.public-marketing`
- * for specificity, so the rest of the marketing site (hero, pricing, CTAs)
- * keeps its existing blue-branded look untouched.
+ * Level 2 public identity aligned with Bobkat purple/charcoal (SS-BRAND-003).
+ * Scoped to `.auth-instrument` + `.public-marketing`.
  */
 
 .public-marketing.auth-instrument {
@@ -13,41 +10,45 @@
   font-family: var(--font-sans);
 }
 
-/* Primary submit button (Sign In / Send Reset Link / Update Password / Activate) */
+/* Primary submit — purple→blue gradient (matches public gateway) */
 .public-marketing.auth-instrument [data-slot="button"].bg-primary,
 .public-marketing.auth-instrument a.bg-primary {
   border-radius: 2px;
   border-color: transparent;
-  color: var(--obsidian, #08090c);
-  background: var(--phosphor, #3ecf7a);
-  box-shadow: none;
-  transition: background-color 150ms ease-out;
+  color: #ffffff;
+  background: linear-gradient(135deg, #9333ea 0%, #a855f7 42%, #168bff 100%);
+  box-shadow:
+    0 4px 12px rgba(147, 51, 234, 0.28),
+    0 0 14px rgba(22, 139, 255, 0.12);
+  transition: filter 150ms ease-out, box-shadow 150ms ease-out;
 }
 
 .public-marketing.auth-instrument [data-slot="button"].bg-primary:hover,
 .public-marketing.auth-instrument a.bg-primary:hover {
   transform: none;
-  background: color-mix(in oklch, var(--phosphor, #3ecf7a), white 14%);
-  box-shadow: none;
+  filter: brightness(1.06);
+  box-shadow:
+    0 6px 16px rgba(147, 51, 234, 0.34),
+    0 0 18px rgba(22, 139, 255, 0.16);
 }
 
-/* Secondary/outline buttons, if any appear on auth pages */
+/* Secondary/outline buttons */
 .public-marketing.auth-instrument [data-slot="button"].border-border.bg-background,
 .public-marketing.auth-instrument a.border-border.bg-background {
   border-radius: 2px;
-  border: 1px solid rgba(139, 146, 160, 0.3);
+  border: 1px solid color-mix(in oklab, var(--brand-primary, #a855f7) 45%, transparent);
   background: transparent;
   box-shadow: none;
 }
 
 .public-marketing.auth-instrument [data-slot="button"].border-border.bg-background:hover,
 .public-marketing.auth-instrument a.border-border.bg-background:hover {
-  border-color: var(--phosphor, #3ecf7a);
-  background: rgba(62, 207, 122, 0.06);
+  border-color: var(--brand-primary-hover, #c084fc);
+  background: rgba(168, 85, 247, 0.1);
   box-shadow: none;
 }
 
-/* Email / password inputs */
+/* Email / password inputs — Level 0 form chrome */
 .public-marketing.auth-instrument [data-slot="input"],
 .public-marketing.auth-instrument [data-slot="textarea"] {
   border-radius: 1px;
@@ -59,11 +60,11 @@
 
 .public-marketing.auth-instrument [data-slot="input"]:focus-visible,
 .public-marketing.auth-instrument [data-slot="textarea"]:focus-visible {
-  border-color: var(--phosphor, #3ecf7a);
-  box-shadow: 0 0 0 2px rgba(62, 207, 122, 0.22);
+  border-color: var(--brand-primary, #a855f7);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.22);
 }
 
-/* Auth card / panel container (and any nested shadcn Card, e.g. Activate Account) */
+/* Auth card / panel */
 .public-marketing.auth-instrument [data-slot="card"],
 .public-marketing.auth-instrument .marketing-panel,
 .public-marketing.auth-instrument .marketing-panel-soft {

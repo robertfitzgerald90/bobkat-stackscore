@@ -7,7 +7,7 @@ import { MARKETING_AUTH_CARD, MARKETING_AUTH_SHELL } from "@/lib/marketing/token
 export default function ForgotPasswordPage() {
   return (
     <PublicPageShell variant="auth">
-      <main className={MARKETING_AUTH_SHELL}>
+      <main className={`${MARKETING_AUTH_SHELL} brand-level-2`}>
         <CornerBrackets corners="two" className="w-full max-w-md">
           <div className={`${MARKETING_AUTH_CARD} space-y-6`}>
             <div className="space-y-2 text-center">

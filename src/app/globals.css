@@ -125,10 +125,10 @@
 
 /**
  * StackScore Midnight / dark base surfaces.
- * Public marketing uses `.midnight` on a wrapper — keep phosphor here so
- * SS-BRAND-003 can own public purple migration. Authenticated shells
- * (`.executive-os`, `.customer-portal`) override interactive tokens to
- * purple via `brand-tokens.css` (SS-BRAND-002).
+ * Public `.public-marketing.midnight` and authenticated shells override
+ * interactive tokens to purple via `brand-tokens.css` (SS-BRAND-002/003).
+ * Base `.midnight` / `.dark` keep semantic phosphor for success-adjacent
+ * defaults until a scope-specific override applies.
  */
 .midnight,
 .dark {
@@ -147,7 +147,7 @@
   --surface-card: #12141a;
   --surface-card-hover: #171a21;
   --text-secondary: #8b92a0;
-  /* Deprecated alias — public midnight still green until BRAND-003 */
+  /* Deprecated alias — remapped under .public-marketing via brand-tokens */
   --accent-blue: #3ecf7a;
   --accent-blue-hover: #56dd8d;
   --chart-grid: rgba(139, 146, 160, 0.14);
