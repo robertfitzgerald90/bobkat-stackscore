@@ -34,7 +34,9 @@ export function canClientAccessPath(pathname: string, context: PageContext): boo
     path.startsWith("/technology-catalog") ||
     path.startsWith("/playbooks") ||
     path.startsWith("/settings") ||
-    path.startsWith("/snapshot-leads")
+    path.startsWith("/snapshot-leads") ||
+    path.startsWith("/website-leads") ||
+    path.startsWith("/leads")
   ) {
     return false;
   }

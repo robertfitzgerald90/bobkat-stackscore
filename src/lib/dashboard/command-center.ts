@@ -18,6 +18,7 @@ import { dashboardActiveProjectsWhere } from "@/lib/dashboard/active-projects";
 import { clientProjectDetailPath, clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { computeProjectProgress } from "@/lib/projects/progress";
 import { getTechnologySnapshotLeadSummaryStats } from "@/lib/technology-snapshot/lead-admin";
+import { countDistinctRecurringServiceClients } from "@/lib/vcio/recurring-services-overview";
 import { countNewWebsiteLeads } from "@/lib/website-leads/service";
 
 const ATTENTION_LIMIT = 8;
@@ -44,7 +45,7 @@ export async function getCommandCenterSummary(
     dashboard,
     activeAssessments,
     completedAssessments,
-    recurringClientRows,
+    recurringClientCount,
     activity,
     overdueTasks,
     overdueMilestones,
@@ -56,7 +57,7 @@ export async function getCommandCenterSummary(
     getDashboardSummary({ now }),
     prisma.assessment.count({ where: { status: "draft" } }),
     prisma.assessment.count({ where: { status: "completed" } }),
-    loadRecurringServiceClientIds(),
+    countDistinctRecurringServiceClients(),
     getRecentOrganizationActivity(ACTIVITY_LIMIT),
     prisma.projectTask.findMany({
       where: {
@@ -146,7 +147,7 @@ export async function getCommandCenterSummary(
     openLeadsBreakdown: isAdmin
       ? { snapshot: snapshotOpen, website: websiteOpen }
       : null,
-    recurringServiceClients: recurringClientRows.size,
+    recurringServiceClients: recurringClientCount,
   };
 
   const attention = sortAttentionItems(
@@ -250,31 +251,6 @@ export async function getCommandCenterSummary(
     generatedAt: now.toISOString(),
     role,
   };
-}
-
-async function loadRecurringServiceClientIds(): Promise<Set<string>> {
-  const [subscriptions, recurringServices] = await Promise.all([
-    prisma.subscription.findMany({
-      where: {
-        serviceType: "stackscore_vcio",
-        status: { in: ["active", "trialing"] },
-        client: { status: { not: "archived" } },
-      },
-      select: { clientId: true },
-    }),
-    prisma.recurringService.findMany({
-      where: {
-        status: { in: ["active", "pending_activation"] },
-        client: { status: { not: "archived" } },
-      },
-      select: { clientId: true },
-    }),
-  ]);
-
-  const ids = new Set<string>();
-  for (const row of subscriptions) ids.add(row.clientId);
-  for (const row of recurringServices) ids.add(row.clientId);
-  return ids;
 }
 
 async function buildAttentionItems(input: {

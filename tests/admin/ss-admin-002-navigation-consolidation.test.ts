@@ -29,6 +29,7 @@ describe("SS-ADMIN-002 — administrative navigation consolidation", () => {
     const leads = getConsultantSidebarNav("admin", null, { "/website-leads": 3 }).find(
       (item) => item.id === "leads",
     );
+    expect(leads?.href).toBe("/leads");
     expect(leads?.children?.map((child) => child.href)).toEqual([
       "/snapshot-leads",
       "/website-leads",
@@ -127,6 +128,7 @@ describe("SS-ADMIN-002 — administrative navigation consolidation", () => {
       ["/clients/abc/projects", "clients"],
       ["/projects", "projects"],
       ["/projects/xyz", "projects"],
+      ["/leads", "leads"],
       ["/snapshot-leads", "leads"],
       ["/website-leads", "leads"],
       ["/admin/vcio", "recurring-services"],

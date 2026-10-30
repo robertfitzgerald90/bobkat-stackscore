@@ -1,6 +1,6 @@
 /**
  * Pure SS-ADMIN-004 Command Center rules — no Prisma.
- * Open Leads = Snapshot (new + follow_up) + Website (NEW). Prospect omitted.
+ * Open Intake Leads = Snapshot (new + follow_up) + Website (NEW). Prospect omitted.
  */
 
 import type {
@@ -59,8 +59,8 @@ export function buildCommandCenterQuickActions(role: string): CommandCenterQuick
     actions.push({
       id: "leads",
       label: "Review Leads",
-      href: "/website-leads",
-      description: "Website & snapshot queues",
+      href: "/leads",
+      description: "Intake leads hub",
     });
   }
 

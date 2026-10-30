@@ -47,6 +47,9 @@ describe("SS-ADMIN-004 — Command Center rules", () => {
     const tech = buildCommandCenterQuickActions("technician").map((action) => action.id);
     expect(admin).toContain("leads");
     expect(tech).not.toContain("leads");
+    expect(buildCommandCenterQuickActions("admin").find((a) => a.id === "leads")?.href).toBe(
+      "/leads",
+    );
     expect(tech).toContain("clients");
     expect(tech).toContain("projects");
     expect(tech).toContain("assessments");

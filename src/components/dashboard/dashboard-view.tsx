@@ -120,14 +120,14 @@ export function DashboardView({ summary }: DashboardViewProps) {
           />
           {isAdmin && pulse.openLeads !== null ? (
             <PulseCard
-              label="Open Leads"
+              label="Open Intake Leads"
               value={pulse.openLeads}
               description={
                 pulse.openLeadsBreakdown
                   ? `Snapshot ${pulse.openLeadsBreakdown.snapshot} · Website ${pulse.openLeadsBreakdown.website}`
-                  : "Snapshot + website follow-up"
+                  : "Snapshot + website follow-up (prospects excluded)"
               }
-              href="/website-leads"
+              href="/leads"
             />
           ) : null}
           <PulseCard

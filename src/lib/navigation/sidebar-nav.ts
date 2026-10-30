@@ -203,7 +203,7 @@ export function getConsultantSidebarNav(
     },
     {
       id: "leads",
-      href: "/snapshot-leads",
+      href: "/leads",
       label: "Leads",
       icon: Camera,
       adminOnly: true,
@@ -306,6 +306,7 @@ export function resolveActiveStaffPrimaryId(pathname: string): StaffPrimaryNavId
     return "operations";
   }
   if (
+    pathMatchesPrefix(pathname, "/leads") ||
     pathMatchesPrefix(pathname, "/snapshot-leads") ||
     pathMatchesPrefix(pathname, "/website-leads")
   ) {

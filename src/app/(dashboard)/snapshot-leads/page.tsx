@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { SnapshotLeadsManagement } from "@/components/admin/snapshot-leads-management";
@@ -20,7 +21,13 @@ export default async function SnapshotLeadsPage() {
   return (
     <div className="min-w-0 space-y-6">
       <div>
-        <h2 className="page-title">Snapshot Leads</h2>
+        <p className="text-xs text-muted-foreground">
+          <Link href="/leads" className="text-primary hover:underline">
+            Leads
+          </Link>{" "}
+          · Technology Snapshot
+        </p>
+        <h2 className="page-title mt-1">Snapshot Leads</h2>
         <p className="page-description">
           Technology Snapshot submissions from the public lead-generation experience.
         </p>

@@ -67,6 +67,13 @@ const STAFF_NAV = [
     keywords: ["delivery"],
   },
   {
+    href: "/leads",
+    label: "Leads",
+    adminOnly: true,
+    icon: "Camera",
+    keywords: ["intake", "snapshot", "website"],
+  },
+  {
     href: "/snapshot-leads",
     label: "Snapshot Leads",
     adminOnly: true,
@@ -79,6 +86,13 @@ const STAFF_NAV = [
     adminOnly: true,
     icon: "Globe",
     keywords: ["leads"],
+  },
+  {
+    href: "/admin/communications/prospects",
+    label: "Communications Prospects",
+    adminOnly: true,
+    icon: "Mail",
+    keywords: ["leads", "prospects", "outreach"],
   },
   {
     href: "/admin/vcio",

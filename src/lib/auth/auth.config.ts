@@ -94,7 +94,9 @@ export const authConfig = {
           pathname.startsWith("/technology-catalog") ||
           pathname.startsWith("/playbooks") ||
           pathname.startsWith("/settings") ||
-          pathname.startsWith("/snapshot-leads")
+          pathname.startsWith("/snapshot-leads") ||
+          pathname.startsWith("/website-leads") ||
+          pathname.startsWith("/leads")
         ) {
           return Response.redirect(new URL("/dashboard", request.nextUrl));
         }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { WebsiteLeadsManagement } from "@/components/admin/website-leads-management";
@@ -20,7 +21,13 @@ export default async function WebsiteLeadsPage() {
   return (
     <div className="min-w-0 space-y-6">
       <div>
-        <h2 className="page-title">Website Leads</h2>
+        <p className="text-xs text-muted-foreground">
+          <Link href="/leads" className="text-primary hover:underline">
+            Leads
+          </Link>{" "}
+          · Website Inquiries
+        </p>
+        <h2 className="page-title mt-1">Website Leads</h2>
         <p className="page-description">
           Contact-form submissions received securely from Bobkat IT and other website entry points.
         </p>

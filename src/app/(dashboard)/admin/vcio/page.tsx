@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { RecurringServicesAdminView } from "@/components/vcio/recurring-services-admin-view";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
-import { formatDisplayDate } from "@/lib/display";
+import { getRecurringServicesOverview } from "@/lib/vcio/recurring-services-overview";
+import type { SubscriptionStatus } from "@/generated/prisma/client";
 
 type PageProps = {
   searchParams: Promise<{ status?: string }>;
@@ -17,220 +16,55 @@ function isMissingVcioSchemaError(error: unknown) {
   return (
     message.includes("Subscription") ||
     message.includes("VcioOnboarding") ||
-    message.includes("VcioQuarterlyReview")
+    message.includes("VcioQuarterlyReview") ||
+    message.includes("RecurringService")
   );
 }
 
 export default async function AdminVcioPage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if (session.user.role !== "admin" && session.user.role !== "technician") redirect("/dashboard");
+  if (session.user.role !== "admin" && session.user.role !== "technician") {
+    redirect("/dashboard");
+  }
 
   const { status } = await searchParams;
   const safeStatus = statusFilters.includes(status as (typeof statusFilters)[number])
-    ? (status as (typeof statusFilters)[number])
+    ? (status as SubscriptionStatus)
     : undefined;
 
-  let subscriptions;
   try {
-    subscriptions = await prisma.subscription.findMany({
-      where: {
-        serviceType: "stackscore_vcio",
-        ...(safeStatus ? { status: safeStatus } : {}),
-      },
-      orderBy: { updatedAt: "desc" },
-      include: {
-        client: {
-          select: {
-            id: true,
-            companyName: true,
-            primaryContactName: true,
-            primaryContactEmail: true,
-            technologyProfile: { select: { overallStackScore: true, criticalExposureCount: true } },
-            projects: {
-              where: { status: { in: ["approved", "scheduled", "in_progress"] } },
-              select: { id: true },
-            },
-          },
-        },
-        vcioOnboarding: true,
-        vcioQuarterlyReviews: {
-          orderBy: [{ nextReviewDate: "asc" }, { createdAt: "desc" }],
-          take: 1,
-        },
-      },
+    const overview = await getRecurringServicesOverview({
+      subscriptionStatus: safeStatus,
     });
+
+    return (
+      <RecurringServicesAdminView
+        overview={overview}
+        role={session.user.role}
+        activeStatusFilter={safeStatus}
+      />
+    );
   } catch (error) {
     if (!isMissingVcioSchemaError(error)) throw error;
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="page-title">vCIO Clients</h1>
+          <h1 className="page-title">Recurring Services</h1>
           <p className="page-description">
-            Subscription, onboarding, review, risk, and project visibility for StackScore vCIO.
+            Subscription and recurring-service visibility for StackScore relationships.
           </p>
         </div>
         <Card className="border-primary/25 bg-primary/5">
           <CardContent className="p-6">
-            <p className="font-semibold">vCIO database migration required</p>
+            <p className="font-semibold">Database migration required</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              The vCIO admin page is deployed, but the database tables it uses are not available
-              yet. Deploy the Prisma migrations, then reopen this page.
+              Recurring Services tables are not available yet. Deploy the Prisma migrations, then
+              reopen this page.
             </p>
           </CardContent>
         </Card>
       </div>
     );
   }
-
-  const active = subscriptions.filter((subscription) =>
-    ["active", "trialing"].includes(subscription.status),
-  );
-  const pastDue = subscriptions.filter((subscription) => subscription.status === "past_due");
-  const canceling = subscriptions.filter((subscription) => subscription.cancelAtPeriodEnd);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="page-title">vCIO Clients</h1>
-          <p className="page-description">
-            Subscription, onboarding, review, risk, and project visibility for StackScore vCIO.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/admin/communications/testing" className={buttonVariants({ variant: "default" })}>
-            vCIO Onboarding Test
-          </Link>
-          <Link href="/admin/billing" className={buttonVariants({ variant: "outline" })}>
-            Open Admin Billing
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Active</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">{active.length}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Past Due</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">{pastDue.length}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Canceling</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">{canceling.length}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">MRR</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              ${(active.reduce((sum, item) => sum + item.amountCents, 0) / 100).toFixed(0)}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <Link href="/admin/vcio" className={buttonVariants({ variant: !safeStatus ? "default" : "outline", size: "sm" })}>
-          All
-        </Link>
-        {statusFilters.map((filter) => (
-          <Link
-            key={filter}
-            href={`/admin/vcio?status=${filter}`}
-            className={buttonVariants({ variant: safeStatus === filter ? "default" : "outline", size: "sm" })}
-          >
-            {filter}
-          </Link>
-        ))}
-      </div>
-
-      <Card>
-        <CardContent className="overflow-x-auto p-0">
-          <table className="w-full min-w-[960px] text-sm">
-            <thead>
-              <tr className="border-b text-left text-muted-foreground">
-                <th className="p-4 font-medium">Client</th>
-                <th className="p-4 font-medium">Primary Contact</th>
-                <th className="p-4 font-medium">Subscription</th>
-                <th className="p-4 font-medium">Onboarding</th>
-                <th className="p-4 font-medium">Verification</th>
-                <th className="p-4 font-medium">Welcome Email</th>
-                <th className="p-4 font-medium">Strategy</th>
-                <th className="p-4 font-medium">Next Review</th>
-              </tr>
-            </thead>
-            <tbody>
-              {subscriptions.map((subscription) => (
-                <tr key={subscription.id} className="border-b border-border/60">
-                  <td className="p-4">
-                    <Link href={`/clients/${subscription.clientId}/vcio`} className="font-medium text-primary hover:underline">
-                      {subscription.client.companyName}
-                    </Link>
-                  </td>
-                  <td className="p-4">
-                    <p>{subscription.client.primaryContactName}</p>
-                    <p className="text-muted-foreground">{subscription.client.primaryContactEmail}</p>
-                  </td>
-                  <td className="p-4">
-                    <p>{subscription.status}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Entitlement: {["active", "trialing", "past_due"].includes(subscription.status) ? "Ready" : "Read-only"}
-                    </p>
-                  </td>
-                  <td className="p-4">
-                    <p>{subscription.vcioOnboarding?.status ?? "Onboarding Not Started"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {subscription.vcioOnboarding?.customerType ?? "Unknown"} · step{" "}
-                      {subscription.vcioOnboarding?.currentStep ?? "welcome"} ·{" "}
-                      {subscription.vcioOnboarding?.completionPercentage ?? 0}%
-                    </p>
-                  </td>
-                  <td className="p-4">
-                    <div className="space-y-1">
-                      <p>
-                        {subscription.vcioOnboarding?.initializationError
-                          ? "Initialization Failed"
-                          : subscription.vcioOnboarding?.initializedAt
-                            ? "Ready"
-                            : "Waiting for Subscription"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Source: {subscription.vcioOnboarding?.initializationSource ?? "none"}
-                      </p>
-                      <Link href={`/clients/${subscription.clientId}/vcio/onboarding`} className="text-xs text-primary hover:underline">
-                        Onboarding URL
-                      </Link>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <p>{subscription.vcioOnboarding?.welcomeEmailStatus ? "Welcome Email Sent" : "Welcome Email Pending"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {subscription.vcioOnboarding?.welcomeEmailRecipient ?? "No recipient"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {subscription.vcioOnboarding?.welcomeEmailSentAt
-                        ? formatDisplayDate(subscription.vcioOnboarding.welcomeEmailSentAt)
-                        : "Not sent"}
-                    </p>
-                  </td>
-                  <td className="p-4">
-                    {subscription.vcioOnboarding?.strategySessionScheduledAt
-                      ? `Scheduled ${formatDisplayDate(subscription.vcioOnboarding.strategySessionScheduledAt)}`
-                      : "Not scheduled"}
-                  </td>
-                  <td className="p-4">
-                    {subscription.vcioQuarterlyReviews[0]?.nextReviewDate
-                      ? formatDisplayDate(subscription.vcioQuarterlyReviews[0].nextReviewDate)
-                      : "Not scheduled"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-    </div>
-  );
 }
