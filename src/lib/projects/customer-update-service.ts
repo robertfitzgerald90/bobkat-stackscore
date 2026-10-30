@@ -7,10 +7,9 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { recordOrganizationActivity } from "@/lib/communications/activity/record-activity";
 import { buildProtectedAppUrl } from "@/lib/communications/links/build-protected-url";
-import { getEmailTemplate } from "@/lib/communications/registry";
 import { resolveRecipients } from "@/lib/communications/recipients/resolver";
+import { renderCommunicationTemplate } from "@/lib/communications/render-template";
 import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
-import { getCommunicationBrandSettings } from "@/lib/communications/brand-settings";
 import { prisma } from "@/lib/db";
 import {
   applyDraftEdits,
@@ -397,11 +396,6 @@ export async function previewProjectCustomerUpdate(projectId: string, updateId: 
     templateKey: PROJECT_CUSTOMER_UPDATE_TEMPLATE_KEY,
   });
 
-  const template = getEmailTemplate(PROJECT_CUSTOMER_UPDATE_TEMPLATE_KEY);
-  if (!template) {
-    return { ok: false as const, error: "EMAIL-011 template is not registered" };
-  }
-
   const { sections, emailData } = buildEmailPayload({
     draft,
     organizationName: project.client.companyName,
@@ -409,8 +403,16 @@ export async function previewProjectCustomerUpdate(projectId: string, updateId: 
     projectId: project.id,
   });
 
-  const brand = await getCommunicationBrandSettings();
-  const rendered = await template.render(emailData as Record<string, unknown>, { brand });
+  let rendered;
+  try {
+    rendered = await renderCommunicationTemplate(
+      PROJECT_CUSTOMER_UPDATE_TEMPLATE_KEY,
+      emailData as Record<string, unknown>,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Preview render failed";
+    return { ok: false as const, error: message };
+  }
 
   return {
     ok: true as const,
@@ -485,11 +487,6 @@ export async function sendProjectCustomerUpdate(input: {
     return { ok: false as const, error: "Recipient failed ownership validation" };
   }
 
-  const template = getEmailTemplate(PROJECT_CUSTOMER_UPDATE_TEMPLATE_KEY);
-  if (!template) {
-    return { ok: false as const, error: "EMAIL-011 template is not registered" };
-  }
-
   const { sections, emailData } = buildEmailPayload({
     draft,
     organizationName: project.client.companyName,
@@ -498,8 +495,18 @@ export async function sendProjectCustomerUpdate(input: {
     firstName: primary.name?.split(/\s+/)[0] ?? null,
   });
 
-  const brand = await getCommunicationBrandSettings();
-  const rendered = await template.render(emailData as Record<string, unknown>, { brand });
+  let rendered;
+  try {
+    rendered = await renderCommunicationTemplate(
+      PROJECT_CUSTOMER_UPDATE_TEMPLATE_KEY,
+      emailData as Record<string, unknown>,
+      { isTest: Boolean(input.isTest) },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "EMAIL-011 render failed";
+    return { ok: false as const, error: message };
+  }
+
   const idempotencyKey = `project-customer-update:${input.updateId}`;
 
   await prisma.projectCustomerUpdate.update({
@@ -549,7 +556,7 @@ export async function sendProjectCustomerUpdate(input: {
       },
       recipients: recipients.map((recipient) => ({
         email: recipient.email,
-        name: recipient.name,
+        name: recipient.name ?? null,
       })),
       draft,
     };

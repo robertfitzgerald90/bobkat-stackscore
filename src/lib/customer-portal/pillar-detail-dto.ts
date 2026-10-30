@@ -1,8 +1,13 @@
 /**
- * SS-UX-005 — Pure pillar detail DTO builders (no Prisma).
+ * SS-UX-005 / SS-UX-016 — Pure pillar detail DTO builders (no Prisma).
+ * SS-UX-016 adds findings, plural strengths/attention, roadmap + project activity.
  */
 
-import type { Priority, RecommendationStatus } from "@/generated/prisma/client";
+import type {
+  Priority,
+  ProjectStatus,
+  RecommendationStatus,
+} from "@/generated/prisma/client";
 import {
   getCustomerMaturityLabel,
   isCustomerActiveOpportunityStatus,
@@ -10,8 +15,11 @@ import {
 import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
 import {
   clientExplorePillarPath,
+  clientProjectDetailPath,
   clientRecommendationDetailPath,
   clientRecommendationsPath,
+  clientRoadmapPhasePath,
+  clientWorkspaceProjectsPath,
   clientWorkspaceRoadmapPath,
 } from "@/lib/clients/paths";
 import {
@@ -19,8 +27,18 @@ import {
   resolveCustomerOpportunityComplexity,
   type CustomerOpportunityComplexity,
 } from "@/lib/customer-portal/complexity";
-import { PRIORITY_LABELS } from "@/lib/display";
+import {
+  classifyPillarResponses,
+  countScorableControls,
+  selectExploreAttentionItems,
+  selectExploreStrengths,
+  type CustomerAssessmentResultKind,
+  type CustomerAssessmentResultLabel,
+} from "@/lib/customer-portal/explore-intelligence";
+import { presentRecommendationDescription } from "@/lib/customer-portal/recommendation-content";
+import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { conciseFocusTitle } from "@/lib/client-workspace";
+import { PROJECT_STATUS_LABELS } from "@/lib/projects";
 import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import {
   TECHNOLOGY_PILLARS,
@@ -47,6 +65,42 @@ export type CustomerPillarOpportunity = {
   statusLabel: string;
   href: string;
   complexity: CustomerOpportunityComplexity;
+  /** Approved catalog Finding section when present. */
+  finding: string | null;
+  recommendedAction: string | null;
+  expectedOutcome: string | null;
+  /** Customer-safe businessImpact; never invents copy. */
+  businessImpact: string | null;
+};
+
+export type CustomerPillarControlFinding = {
+  questionCode: string;
+  questionText: string;
+  answerText: string;
+  resultKind: CustomerAssessmentResultKind;
+  resultLabel: CustomerAssessmentResultLabel;
+  /** Only true when assessment option sets triggersCriticalFlag. */
+  isCritical: boolean;
+};
+
+export type CustomerPillarRoadmapItem = {
+  id: string;
+  title: string;
+  statusLabel: string;
+  phaseName: string;
+  targetDateLabel: string | null;
+  href: string;
+};
+
+export type CustomerPillarProjectItem = {
+  id: string;
+  title: string;
+  status: ProjectStatus;
+  statusLabel: string;
+  /** null when the project has zero tasks — never invent a percent. */
+  progressPercent: number | null;
+  nextMilestoneTitle: string | null;
+  href: string;
 };
 
 export type CustomerPillarStrength = {
@@ -79,12 +133,27 @@ export type CustomerPillarDetailDto = {
   score: number | null;
   maturityLabel: string | null;
   maturitySummary: string;
+  /** Assessed controls in this pillar (includes N/A). */
+  controlsAssessed: number;
+  /** Controls that participate in scoring (excludes N/A). */
+  controlsScorable: number;
+  opportunityCount: number;
+  /** SS-UX-005 single summary (kept for compatibility). */
   strength: CustomerPillarStrength;
   weakness: CustomerPillarWeakness;
+  /** SS-UX-016 — What's Working (Satisfied controls). */
+  strengths: CustomerPillarControlFinding[];
+  /** SS-UX-016 — What Needs Attention (Partial + No). */
+  attentionItems: CustomerPillarControlFinding[];
+  /** Full control breakdown for the pillar. */
+  findings: CustomerPillarControlFinding[];
   opportunities: CustomerPillarOpportunity[];
   nextActions: CustomerPillarOpportunity[];
+  roadmapInitiatives: CustomerPillarRoadmapItem[];
+  relatedProjects: CustomerPillarProjectItem[];
   opportunitiesHref: string;
   roadmapHref: string;
+  projectsHref: string;
   complexityFootnote: string;
   hasCompletedAssessment: boolean;
 };
@@ -115,6 +184,25 @@ export type PillarRecommendationInput = {
   status: RecommendationStatus;
   estimatedImpactPoints: number;
   suggestedService: string | null;
+  description?: string | null;
+  businessImpact?: string | null;
+};
+
+export type PillarRoadmapInitiativeInput = {
+  id: string;
+  title: string;
+  statusLabel: string;
+  phaseId: string;
+  phaseName: string;
+  targetDate: Date | string | null;
+};
+
+export type PillarRelatedProjectInput = {
+  id: string;
+  title: string;
+  status: ProjectStatus;
+  progressPercent: number | null;
+  nextMilestoneTitle: string | null;
 };
 
 const STATUS_LABELS: Partial<Record<RecommendationStatus, string>> = {
@@ -144,11 +232,33 @@ function maturitySummary(score: number | null, label: string | null, pillarName:
   return `${pillarName} is at ${label} maturity (${score}/100). Technology readiness in this domain is early-stage. Focused improvement opportunities can raise resilience after reassessment confirms progress.`;
 }
 
+function toDateLabel(value: Date | string | null | undefined): string | null {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return formatDisplayDate(date);
+}
+
+function toControlFinding(
+  item: ReturnType<typeof classifyPillarResponses>[number],
+): CustomerPillarControlFinding {
+  return {
+    questionCode: item.questionCode,
+    questionText: item.questionText,
+    answerText: item.answerText,
+    resultKind: item.resultKind,
+    resultLabel: item.resultLabel,
+    isCritical: item.isCritical,
+  };
+}
+
 function toOpportunity(
   clientId: string,
   row: PillarRecommendationInput,
   pillarCode: string,
 ): CustomerPillarOpportunity {
+  const presented = presentRecommendationDescription(row.description);
+  const sections = presented.sections;
   return {
     id: row.id,
     title: conciseFocusTitle(row.title),
@@ -158,6 +268,10 @@ function toOpportunity(
     statusLabel: STATUS_LABELS[row.status] ?? row.status,
     href: clientRecommendationDetailPath(clientId, row.id, { pillarCode }),
     complexity: resolveCustomerOpportunityComplexity(row.suggestedService),
+    finding: sections.finding,
+    recommendedAction: sections.recommendedAction,
+    expectedOutcome: sections.expectedOutcome,
+    businessImpact: row.businessImpact?.trim() ? row.businessImpact.trim() : null,
   };
 }
 
@@ -289,11 +403,21 @@ export function buildCustomerPillarDetail(input: {
   insight: PillarScoreInsight | null;
   responses: PillarResponseEvidence[];
   recommendations: PillarRecommendationInput[];
+  roadmapInitiatives?: PillarRoadmapInitiativeInput[];
+  relatedProjects?: PillarRelatedProjectInput[];
   hasCompletedAssessment: boolean;
 }): CustomerPillarDetailDto {
   const definition = TECHNOLOGY_PILLARS.find((p) => p.code === input.pillarCode)!;
   const score = input.insight?.percentScore ?? null;
   const maturityLabel = score !== null ? getCustomerMaturityLabel(score) : null;
+
+  const classified = classifyPillarResponses(input.responses);
+  const findings = classified
+    .slice()
+    .sort((a, b) => a.questionCode.localeCompare(b.questionCode))
+    .map(toControlFinding);
+  const strengths = selectExploreStrengths(classified).map(toControlFinding);
+  const attentionItems = selectExploreAttentionItems(classified).map(toControlFinding);
 
   const active = input.recommendations.filter((r) => isCustomerActiveOpportunityStatus(r.status));
   const ranked = takeTopRecommendations(
@@ -305,6 +429,31 @@ export function buildCustomerPillarDetail(input: {
   );
   const nextActions = opportunities.slice(0, PILLAR_NEXT_ACTION_LIMIT);
 
+  const roadmapInitiatives = (input.roadmapInitiatives ?? []).map((initiative) => ({
+    id: initiative.id,
+    title: conciseFocusTitle(initiative.title),
+    statusLabel: initiative.statusLabel,
+    phaseName: initiative.phaseName,
+    targetDateLabel: toDateLabel(initiative.targetDate),
+    href: clientRoadmapPhasePath(input.clientId, initiative.phaseId),
+  }));
+
+  const seenProjects = new Set<string>();
+  const relatedProjects: CustomerPillarProjectItem[] = [];
+  for (const project of input.relatedProjects ?? []) {
+    if (seenProjects.has(project.id)) continue;
+    seenProjects.add(project.id);
+    relatedProjects.push({
+      id: project.id,
+      title: project.title,
+      status: project.status,
+      statusLabel: PROJECT_STATUS_LABELS[project.status] ?? project.status,
+      progressPercent: project.progressPercent,
+      nextMilestoneTitle: project.nextMilestoneTitle,
+      href: clientProjectDetailPath(input.clientId, project.id),
+    });
+  }
+
   return {
     code: definition.code,
     name: definition.name,
@@ -312,12 +461,21 @@ export function buildCustomerPillarDetail(input: {
     score,
     maturityLabel,
     maturitySummary: maturitySummary(score, maturityLabel, definition.name),
+    controlsAssessed: classified.length,
+    controlsScorable: countScorableControls(classified),
+    opportunityCount: opportunities.length,
     strength: selectStrength(score, input.responses),
     weakness: selectWeakness(input.clientId, input.responses, opportunities),
+    strengths,
+    attentionItems,
+    findings,
     opportunities,
     nextActions,
+    roadmapInitiatives,
+    relatedProjects,
     opportunitiesHref: `${clientRecommendationsPath(input.clientId)}?pillar=${encodeURIComponent(definition.code)}`,
     roadmapHref: clientWorkspaceRoadmapPath(input.clientId),
+    projectsHref: clientWorkspaceProjectsPath(input.clientId),
     complexityFootnote: COMPLEXITY_FOOTNOTE,
     hasCompletedAssessment: input.hasCompletedAssessment,
   };

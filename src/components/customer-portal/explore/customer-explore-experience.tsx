@@ -27,7 +27,7 @@ type CustomerExploreExperienceProps = {
 const DESKTOP_MQ = "(min-width: 1024px)";
 
 /**
- * SS-UX-005 Explore experience.
+ * SS-UX-005 / SS-UX-016 Explore experience (Intelligence Center).
  * SS-UX-010 D3 — mount only one pillar detail surface at a time so the
  * accessibility tree never contains duplicate detail content.
  */
@@ -87,7 +87,7 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
         <ClientPageHeader
           eyebrow="Technology Maturity"
           title="Explore"
-          description="Select a technology pillar to review maturity, evidence, and improvement opportunities."
+          description="Select a technology pillar to review maturity, findings, opportunities, and related improvement work."
         />
         <ClientEmptyState
           icon={ClipboardList}
@@ -112,7 +112,7 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
       <ClientPageHeader
         eyebrow="Technology Maturity"
         title="Explore"
-        description="Select any of the eight technology pillars to understand maturity, evidence, and improvement opportunities."
+        description="Select any of the eight technology pillars to understand maturity, what is working, what needs attention, and related roadmap or project work."
         actions={
           <Link
             href={customerOverviewPath(explore.clientId)}
