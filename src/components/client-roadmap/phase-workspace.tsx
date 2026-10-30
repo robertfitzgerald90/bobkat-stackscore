@@ -19,8 +19,15 @@ import {
   CLIENT_SECTION_EYEBROW,
   CLIENT_SURFACE_CARD,
 } from "@/lib/client-ui/tokens";
+import { clientRecommendationDetailPath } from "@/lib/clients/paths";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
+import { getPillarDisplayForCategoryCode } from "@/lib/technology-maturity/pillars";
 import { buttonClassName } from "@/components/ui/button";
+import { InitiativeStatusBadge } from "./initiative-status-badge";
+import {
+  InitiativeBusinessBenefit,
+  InitiativeRecommendationContent,
+} from "./initiative-recommendation-content";
 import { RoadmapStatusBadge } from "./roadmap-status-badge";
 import { cn } from "@/lib/utils";
 
@@ -127,7 +134,17 @@ export function PhaseWorkspace({
             phase.isConsultant ? "lg:grid-cols-4" : "lg:grid-cols-2",
           )}
         >
-          <MetaCard label="Expected StackScore Improvement" value={`+${phase.expectedScoreImprovement} pts`} />
+          {phase.isConsultant ? (
+            <MetaCard
+              label="Expected StackScore Improvement"
+              value={`+${phase.expectedScoreImprovement} pts`}
+            />
+          ) : (
+            <MetaCard
+              label="Initiatives"
+              value={`${phase.initiatives.filter((item) => item.status === "completed").length}/${phase.initiatives.length}`}
+            />
+          )}
           {phase.isConsultant ? (
             <>
               <MetaCard
@@ -292,46 +309,74 @@ export function PhaseWorkspace({
 
       <Section title="Included Initiatives">
         <div className="space-y-3">
-          {phase.initiatives.map((initiative) => (
-            <article key={initiative.id} className="rounded-lg border border-border/70 bg-muted/20 p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{initiative.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{initiative.description}</p>
-                  <p className="mt-2 text-sm">
-                    <span className="font-medium">Business benefit:</span>{" "}
-                    {initiative.businessImpact}
-                  </p>
-                  <p className="mt-2 text-xs font-semibold text-emerald-700">
+          {phase.initiatives.map((initiative) => {
+            const pillar = getPillarDisplayForCategoryCode(initiative.categoryCode);
+            return (
+              <article
+                key={initiative.id}
+                className={cn(
+                  CLIENT_SURFACE_CARD,
+                  "rounded-sm border bg-muted/30 p-4 sm:p-5",
+                )}
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-semibold leading-snug text-foreground">
+                      {initiative.title}
+                    </h3>
+                    {(pillar?.pillarName || initiative.categoryName) && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Pillar: {pillar?.pillarName ?? initiative.categoryName}
+                      </p>
+                    )}
+                  </div>
+                  {phase.isConsultant ? (
+                    <label className="shrink-0 text-sm">
+                      <span className="sr-only">Initiative status for {initiative.title}</span>
+                      <select
+                        className="w-full rounded-sm border border-border bg-background px-2 py-1.5 text-sm text-foreground sm:w-auto"
+                        value={initiative.status}
+                        disabled={pending}
+                        onChange={(event) => {
+                          void updateInitiativeStatus(
+                            initiative.id,
+                            event.target.value as RecommendationStatus,
+                          );
+                        }}
+                      >
+                        {INITIATIVE_STATUSES.map((status) => (
+                          <option key={status} value={status}>
+                            {RECOMMENDATION_LIFECYCLE_LABELS[status]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : (
+                    <InitiativeStatusBadge
+                      status={initiative.status}
+                      label={initiative.statusLabel}
+                    />
+                  )}
+                </div>
+                <InitiativeRecommendationContent description={initiative.description} />
+                <InitiativeBusinessBenefit text={initiative.businessImpact} />
+                {phase.isConsultant ? (
+                  <p className="mt-3 text-xs font-semibold text-success">
                     Estimated priority impact: +{initiative.estimatedImpactPoints} pts
                   </p>
-                </div>
-                {phase.isConsultant ? (
-                  <select
-                    className="rounded-md border bg-background px-2 py-1.5 text-sm"
-                    value={initiative.status}
-                    disabled={pending}
-                    onChange={(event) => {
-                      void updateInitiativeStatus(
-                        initiative.id,
-                        event.target.value as RecommendationStatus,
-                      );
-                    }}
-                  >
-                    {INITIATIVE_STATUSES.map((status) => (
-                      <option key={status} value={status}>
-                        {RECOMMENDATION_LIFECYCLE_LABELS[status]}
-                      </option>
-                    ))}
-                  </select>
                 ) : (
-                  <span className="rounded-full border bg-white px-2.5 py-0.5 text-xs font-semibold">
-                    {initiative.statusLabel}
-                  </span>
+                  <Link
+                    href={clientRecommendationDetailPath(clientId, initiative.recommendationId, {
+                      pillarCode: initiative.categoryCode,
+                    })}
+                    className="mt-4 inline-flex text-sm font-medium text-primary hover:underline"
+                  >
+                    View linked opportunity
+                  </Link>
                 )}
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </Section>
 

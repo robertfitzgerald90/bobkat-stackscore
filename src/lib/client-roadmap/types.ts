@@ -68,6 +68,8 @@ export type RoadmapInitiativeView = {
   description: string;
   businessImpact: string;
   categoryName: string;
+  /** Assessment category code — used for pillar / Explore deep links (SS-UX-007). */
+  categoryCode: string;
   priority: string;
   estimatedImpactPoints: number;
   status: RecommendationStatus;

@@ -49,7 +49,7 @@ const roadmapInclude = {
         include: {
           recommendation: {
             include: {
-              category: { select: { name: true } },
+              category: { select: { name: true, code: true } },
               recommendationTemplate: { select: { code: true } },
             },
           },
@@ -82,7 +82,7 @@ function toInitiativeView(
       status: keyof typeof RECOMMENDATION_LIFECYCLE_LABELS;
       completedAt: Date | null;
       suggestedService: string | null;
-      category: { name: string };
+      category: { name: string; code: string };
       recommendationTemplate?: { code: string } | null;
     };
   },
@@ -94,6 +94,7 @@ function toInitiativeView(
     description: initiative.recommendation.description,
     businessImpact: initiative.recommendation.businessImpact,
     categoryName: initiative.recommendation.category.name,
+    categoryCode: initiative.recommendation.category.code,
     priority: initiative.recommendation.priority,
     estimatedImpactPoints: initiative.estimatedImpactPoints,
     status: initiative.recommendation.status,
@@ -416,7 +417,7 @@ export async function getClientRoadmapPhaseDetail(
         include: {
           recommendation: {
             include: {
-              category: { select: { name: true } },
+              category: { select: { name: true, code: true } },
               recommendationTemplate: { select: { code: true } },
             },
           },

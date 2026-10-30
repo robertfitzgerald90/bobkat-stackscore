@@ -1,18 +1,15 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { ClientPageHeader, ClientPageShell } from "@/components/client-ui";
-import {
-  WorkspaceHubLinks,
-  type WorkspaceHubLink,
-} from "@/components/client-workspace/workspace-hub-links";
-import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import {
   RoadmapDashboard,
   RoadmapEmptyState,
 } from "@/components/client-roadmap/roadmap-dashboard";
+import { CustomerRoadmapExperience } from "@/components/customer-portal/roadmap/customer-roadmap-experience";
+import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import { TipPlanList } from "@/components/technology-improvement-plan/tip-plan-list";
 import { prisma } from "@/lib/db";
 import { getClientRoadmapDashboard } from "@/lib/client-roadmap";
+import { getCustomerRoadmapExperience } from "@/lib/customer-portal/roadmap-experience";
 import { listTipPlans } from "@/lib/technology-improvement-plan";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
@@ -39,39 +36,8 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
     });
     if (clientUser?.clientId !== id) notFound();
 
-    const dashboard = await getClientRoadmapDashboard(id, session.user.role);
-    const relatedLinks: WorkspaceHubLink[] = [
-      {
-        href: `/clients/${id}/recommendations`,
-        title: "Improvement Opportunities",
-        description: "Prioritized recommendations from your assessment",
-      },
-      {
-        href: `/clients/${id}/projects`,
-        title: "Projects",
-        description: "Implementation projects tied to your roadmap",
-      },
-    ];
-
-    return (
-      <ClientPageShell>
-        <ClientPageHeader
-          eyebrow="Implementation Journey"
-          title="Roadmap"
-          description="Track your phased technology journey, approve the next implementation window, and measure progress over time."
-        />
-        <RoadmapDashboard
-          dashboard={dashboard}
-          emptyFallback={<RoadmapEmptyState clientId={id} />}
-        />
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Related
-          </h2>
-          <WorkspaceHubLinks links={relatedLinks} />
-        </section>
-      </ClientPageShell>
-    );
+    const experience = await getCustomerRoadmapExperience(id, session.user.role);
+    return <CustomerRoadmapExperience clientId={id} experience={experience} />;
   }
 
   const [dashboard, plans, roadmapAccess] = await Promise.all([
