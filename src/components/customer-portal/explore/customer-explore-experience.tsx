@@ -19,12 +19,18 @@ import {
   type CustomerExploreDto,
 } from "@/lib/customer-portal/pillar-detail-dto";
 import type { TechnologyPillarCode } from "@/lib/technology-maturity/pillars";
-import { cn } from "@/lib/utils";
 
 type CustomerExploreExperienceProps = {
   explore: CustomerExploreDto;
 };
 
+const DESKTOP_MQ = "(min-width: 1024px)";
+
+/**
+ * SS-UX-005 Explore experience.
+ * SS-UX-010 D3 — mount only one pillar detail surface at a time so the
+ * accessibility tree never contains duplicate detail content.
+ */
 export function CustomerExploreExperience({ explore }: CustomerExploreExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -38,6 +44,16 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
 
   const [selected, setSelected] = useState<TechnologyPillarCode | null>(selectedFromUrl);
   const [mobileDetailOpen, setMobileDetailOpen] = useState(Boolean(paramPillar));
+  /** `ssr` keeps desktop markup for first paint; after mount only one layout mounts detail. */
+  const [layout, setLayout] = useState<"ssr" | "desktop" | "mobile">("ssr");
+
+  useEffect(() => {
+    const media = window.matchMedia(DESKTOP_MQ);
+    const sync = () => setLayout(media.matches ? "desktop" : "mobile");
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     setSelected(selectedFromUrl);
@@ -62,6 +78,8 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
   }, []);
 
   const detail = selected ? explore.detailsByCode[selected] : null;
+  const showDesktopDetail = layout !== "mobile";
+  const showMobileDetail = layout === "mobile" && mobileDetailOpen && Boolean(detail);
 
   if (!explore.hasCompletedAssessment && !explore.assessmentInProgress) {
     return (
@@ -134,43 +152,44 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
           </div>
         </section>
 
-        {/* Desktop / tablet adjacent detail */}
+        {/* Desktop adjacent detail — unmounted on mobile layout (SS-UX-010 D3). */}
         <div className="hidden lg:block">
-          {detail ? (
-            <PillarDetailPanel detail={detail} />
-          ) : (
-            <p className="rounded-sm border border-dashed border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-              Select a pillar to view maturity detail.
-            </p>
-          )}
+          {showDesktopDetail ? (
+            detail ? (
+              <PillarDetailPanel detail={detail} />
+            ) : (
+              <p className="rounded-sm border border-dashed border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                Select a pillar to view maturity detail.
+              </p>
+            )
+          ) : null}
         </div>
       </div>
 
-      {/* Mobile / small tablet full-screen detail sheet */}
-      <div
-        className={cn(
-          "fixed inset-0 z-50 bg-background lg:hidden",
-          mobileDetailOpen && detail ? "flex flex-col" : "hidden",
-        )}
-        role="dialog"
-        aria-modal="true"
-        aria-label={detail ? `${detail.name} details` : "Pillar details"}
-      >
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <p className="text-sm font-semibold text-foreground">Pillar detail</p>
-          <button
-            type="button"
-            className={buttonClassName({ variant: "ghost", size: "sm" })}
-            onClick={closeMobileDetail}
-            aria-label="Close pillar detail"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      {/* Mobile detail sheet — only mounted below lg after layout resolve. */}
+      {showMobileDetail ? (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-background"
+          role="dialog"
+          aria-modal="true"
+          aria-label={detail ? `${detail.name} details` : "Pillar details"}
+        >
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <p className="text-sm font-semibold text-foreground">Pillar detail</p>
+            <button
+              type="button"
+              className={buttonClassName({ variant: "ghost", size: "sm" })}
+              onClick={closeMobileDetail}
+              aria-label="Close pillar detail"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            {detail ? <PillarDetailPanel detail={detail} /> : null}
+          </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
-          {detail ? <PillarDetailPanel detail={detail} /> : null}
-        </div>
-      </div>
+      ) : null}
     </ClientPageShell>
   );
 }

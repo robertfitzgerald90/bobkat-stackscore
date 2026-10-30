@@ -1,11 +1,13 @@
 /**
  * SS-UX-004 — Customer Overview service (authorized data assembly).
+ * SS-UX-010 — Roadmap Progress uses initiative completion only (no journey substitute).
  */
 
 import type { UserRole } from "@/generated/prisma/client";
 import { getClientRoadmapDashboard } from "@/lib/client-roadmap";
 import {
   buildCustomerOverviewFromDetail,
+  resolveOverviewRoadmapProgress,
   type CustomerOverviewDto,
 } from "@/lib/customer-portal/overview-dto";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
@@ -30,32 +32,32 @@ export async function getCustomerOverview(
     getClientVcioEntitlement(clientId),
   ]);
 
-  /**
-   * SS-UX-005 roadmap progress investigation:
-   * - Journey `progressPercent` (~33% after one completed assessment) is a 3-milestone heuristic.
-   * - Roadmap `metrics.completionPercent` is initiativesCompleted/initiativesTotal (0 when total=0).
-   * Defect: preferring an empty roadmap (0 initiatives → 0%) hid meaningful journey progress.
-   * Fix: use roadmap completion only when initiativesTotal > 0; otherwise fall back to journey.
-   * Does not change roadmap completion math or stored data.
-   */
-  const hasRoadmapMetrics =
-    Boolean(roadmap) && (roadmap!.metrics.initiativesTotal ?? 0) > 0;
   const hasRoadmap = Boolean(roadmap);
-  const roadmapProgressPercent = hasRoadmapMetrics
-    ? roadmap!.metrics.completionPercent
-    : detail.journey.progressPercent;
-  const roadmapPhaseLabel = hasRoadmapMetrics
+  const roadmapPhaseLabel = hasRoadmap
     ? roadmap!.phases.find((p) => p.status === "in_progress" || p.status === "approved")?.name ??
       roadmap!.phases[0]?.name ??
-      detail.journey.phaseLabel
-    : detail.journey.phaseLabel;
+      null
+    : null;
+
+  const resolved = resolveOverviewRoadmapProgress({
+    hasRoadmap,
+    initiativesTotal: roadmap?.metrics.initiativesTotal ?? 0,
+    completionPercent: roadmap?.metrics.completionPercent ?? 0,
+    phaseLabel: roadmapPhaseLabel,
+    journeyProgressPercent: detail.journey.progressPercent,
+    journeyPhaseLabel: detail.journey.phaseLabel,
+  });
 
   return buildCustomerOverviewFromDetail({
     detail,
     companyName,
     hasRoadmap,
-    roadmapProgressPercent,
-    roadmapPhaseLabel,
+    hasRoadmapInitiatives: resolved.hasInitiatives,
+    roadmapProgressPercent: resolved.progressPercent,
+    roadmapEmptyStateLabel: resolved.emptyStateLabel,
+    roadmapPhaseLabel: resolved.phaseLabel,
+    journeyProgressPercent: resolved.journeyProgressPercent,
+    journeyPhaseLabel: resolved.journeyPhaseLabel,
     vcioAccessState: entitlement.accessState,
   });
 }

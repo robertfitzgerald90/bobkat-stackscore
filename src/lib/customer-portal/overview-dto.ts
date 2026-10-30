@@ -63,6 +63,68 @@ export type CustomerOverviewStrength = {
   kind: "demonstrated" | "comparative";
 };
 
+/**
+ * SS-UX-010 — Resolve Overview "Roadmap Progress" from initiative completion only.
+ * Never substitutes journey milestone progress for the Roadmap Progress metric.
+ */
+export type OverviewRoadmapProgressSource = {
+  hasRoadmap: boolean;
+  initiativesTotal: number;
+  completionPercent: number;
+  phaseLabel: string | null;
+  journeyProgressPercent: number;
+  journeyPhaseLabel: string | null;
+};
+
+export type OverviewRoadmapProgressResolved = {
+  /** Actual initiative completion percent (0 when none exist). */
+  progressPercent: number;
+  hasInitiatives: boolean;
+  /** Shown instead of a percent when initiatives are absent. */
+  emptyStateLabel: string | null;
+  phaseLabel: string | null;
+  journeyProgressPercent: number;
+  journeyPhaseLabel: string | null;
+};
+
+export function resolveOverviewRoadmapProgress(
+  source: OverviewRoadmapProgressSource,
+): OverviewRoadmapProgressResolved {
+  const journey = {
+    journeyProgressPercent: source.journeyProgressPercent,
+    journeyPhaseLabel: source.journeyPhaseLabel,
+  };
+
+  if (!source.hasRoadmap) {
+    return {
+      progressPercent: 0,
+      hasInitiatives: false,
+      emptyStateLabel: "No roadmap established",
+      phaseLabel: null,
+      ...journey,
+    };
+  }
+
+  const hasInitiatives = source.initiativesTotal > 0;
+  if (!hasInitiatives) {
+    return {
+      progressPercent: 0,
+      hasInitiatives: false,
+      emptyStateLabel: "Not started",
+      phaseLabel: source.phaseLabel,
+      ...journey,
+    };
+  }
+
+  return {
+    progressPercent: source.completionPercent,
+    hasInitiatives: true,
+    emptyStateLabel: null,
+    phaseLabel: source.phaseLabel,
+    ...journey,
+  };
+}
+
 export type CustomerOverviewVcioSummary = {
   show: boolean;
   accessState: VcioAccessState;
@@ -94,9 +156,16 @@ export type CustomerOverviewDto = {
     progressPercent: number;
     phaseLabel: string | null;
     hasRoadmap: boolean;
+    hasInitiatives: boolean;
+    emptyStateLabel: string | null;
     href: string;
     footnote: string;
     stackScoreLabel: typeof CUSTOMER_TERM_STACKSCORE;
+  };
+  /** Journey milestone progress — separate from Roadmap Progress (SS-UX-010). */
+  journey: {
+    progressPercent: number;
+    phaseLabel: string | null;
   };
   nextAction: CustomerNextAction | null;
   vcio: CustomerOverviewVcioSummary;
@@ -295,12 +364,23 @@ export function buildCustomerOverviewFromDetail(input: {
   companyName: string;
   roadmapProgressPercent?: number;
   hasRoadmap?: boolean;
+  hasRoadmapInitiatives?: boolean;
+  roadmapEmptyStateLabel?: string | null;
   roadmapPhaseLabel?: string | null;
+  journeyProgressPercent?: number;
+  journeyPhaseLabel?: string | null;
   vcioAccessState?: VcioAccessState;
 }): CustomerOverviewDto {
   const { detail, companyName } = input;
   const hasRoadmap = input.hasRoadmap ?? false;
-  const roadmapProgressPercent = input.roadmapProgressPercent ?? detail.journey.progressPercent;
+  const hasInitiatives = input.hasRoadmapInitiatives ?? false;
+  const roadmapProgressPercent = input.roadmapProgressPercent ?? 0;
+  const emptyStateLabel =
+    input.roadmapEmptyStateLabel ??
+    (hasInitiatives ? null : hasRoadmap ? "Not started" : "No roadmap established");
+  const journeyProgressPercent =
+    input.journeyProgressPercent ?? detail.journey.progressPercent;
+  const journeyPhaseLabel = input.journeyPhaseLabel ?? detail.journey.phaseLabel;
   const score = detail.profile.overallStackScore;
   const maturityLabel = score !== null ? getCustomerMaturityLabel(score) : null;
   const { demonstrated, comparative } = buildStrengths(detail);
@@ -334,11 +414,17 @@ export function buildCustomerOverviewFromDetail(input: {
     comparativeStrengths: comparative,
     roadmap: {
       progressPercent: roadmapProgressPercent,
-      phaseLabel: input.roadmapPhaseLabel ?? detail.journey.phaseLabel,
+      phaseLabel: input.roadmapPhaseLabel ?? null,
       hasRoadmap,
+      hasInitiatives,
+      emptyStateLabel: hasInitiatives ? null : emptyStateLabel,
       href: clientWorkspaceRoadmapPath(detail.profile.clientId),
       footnote: customerRoadmapProgressFootnote(),
       stackScoreLabel: CUSTOMER_TERM_STACKSCORE,
+    },
+    journey: {
+      progressPercent: journeyProgressPercent,
+      phaseLabel: journeyPhaseLabel,
     },
     nextAction: enrichNextAction(detail, roadmapProgressPercent, hasRoadmap),
     vcio: buildVcioSummary(detail.profile.clientId, input.vcioAccessState ?? "NO_ACCESS"),

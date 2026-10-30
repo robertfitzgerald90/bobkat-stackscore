@@ -268,3 +268,58 @@
   position: relative;
   z-index: 1;
 }
+
+/**
+ * SS-UX-010 — Customer Technology Progress Report (charcoal / phosphor).
+ * Scoped to customer shell; staff progress report keeps prior presentation.
+ */
+.customer-portal .customer-progress-report-document {
+  background-color: var(--card);
+  color: var(--foreground);
+  border-color: var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.customer-portal .customer-progress-report-cover {
+  background:
+    linear-gradient(135deg, rgba(62, 207, 122, 0.08), transparent 55%),
+    var(--frost-panel);
+  color: var(--foreground);
+}
+
+.customer-portal .customer-progress-report .report-section-header h4,
+.customer-portal .customer-progress-report .font-bold.text-primary {
+  color: var(--bone);
+}
+
+.customer-portal .customer-progress-report .border-b-2.border-primary,
+.customer-portal .customer-progress-report .border-b.border-primary\/20 {
+  border-color: color-mix(in oklab, var(--phosphor) 45%, var(--border));
+}
+
+.customer-portal .customer-progress-metric-card {
+  background-color: var(--muted);
+  border-color: var(--border);
+  color: var(--foreground);
+  min-height: 100%;
+}
+
+.customer-portal .customer-progress-report .text-muted-foreground {
+  color: var(--ash);
+}
+
+.customer-portal .customer-progress-report .text-foreground {
+  color: var(--bone);
+}
+
+.customer-portal .customer-progress-report table th,
+.customer-portal .customer-progress-report table td {
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.customer-portal .customer-progress-report [data-slot="card"] {
+  background: var(--muted);
+  color: var(--foreground);
+}

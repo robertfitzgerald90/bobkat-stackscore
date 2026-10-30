@@ -28,6 +28,7 @@ import { clientRecommendationsPath } from "@/lib/clients/paths";
 import { buttonClassName } from "@/components/ui/button";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
 import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
+import { presentRecommendationDescription } from "@/lib/customer-portal/recommendation-content";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -67,11 +68,65 @@ function SnapshotCard({
   );
 }
 
+const REPORT_RECOMMENDATION_SECTIONS = [
+  { key: "finding", title: "Finding" },
+  { key: "recommendedAction", title: "Recommended Action" },
+  { key: "expectedOutcome", title: "Expected Outcome" },
+  { key: "implementationConsiderations", title: "Implementation Considerations" },
+] as const;
+
+function ReportRecommendationBody({ description }: { description: string }) {
+  const presented = presentRecommendationDescription(description);
+
+  if (presented.sections.hasStructuredSections) {
+    const { sections } = presented;
+    return (
+      <div className="mt-3 space-y-3">
+        {sections.leadingText ? (
+          <p className="report-prose-sm whitespace-pre-line">{sections.leadingText}</p>
+        ) : null}
+        {REPORT_RECOMMENDATION_SECTIONS.map((section) => {
+          const body = sections[section.key];
+          if (!body) return null;
+          return (
+            <section key={section.key} className="space-y-1">
+              <h5 className="text-xs font-semibold uppercase tracking-wide text-[color:var(--report-accent)]">
+                {section.title}
+              </h5>
+              <p className="report-prose-sm whitespace-pre-line">{body}</p>
+            </section>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (presented.paragraphs.length === 0) return null;
+
+  return (
+    <div className="mt-3 space-y-2">
+      {presented.paragraphs.map((paragraph, index) => (
+        <p
+          key={`${index}-${paragraph.slice(0, 24)}`}
+          className="report-prose-sm whitespace-pre-line"
+        >
+          {paragraph}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function RecommendationCard({
   recommendation,
 }: {
   recommendation: RecommendationSummary;
 }) {
+  const description = recommendation.description?.trim() ?? "";
+  const businessBenefit = recommendation.businessImpact?.trim() ?? "";
+  const showBusinessBenefit =
+    Boolean(businessBenefit) && businessBenefit !== description;
+
   return (
     <ReportDataCard
       documentTheme={DOCUMENT_THEME}
@@ -82,11 +137,18 @@ function RecommendationCard({
           <ReportPriorityBadge priority={recommendation.priority} documentTheme={DOCUMENT_THEME} />
         </div>
       }
-      description={recommendation.description || recommendation.businessImpact}
+      description={
+        description ? <ReportRecommendationBody description={description} /> : null
+      }
       meta={
-        <div className="space-y-2">
-          {recommendation.businessImpact ? (
-            <p className="report-prose-sm">{recommendation.businessImpact}</p>
+        <div className="space-y-3">
+          {showBusinessBenefit ? (
+            <section className="space-y-1">
+              <h5 className="text-xs font-semibold uppercase tracking-wide text-[color:var(--report-accent)]">
+                Business Benefit
+              </h5>
+              <p className="report-prose-sm whitespace-pre-line">{businessBenefit}</p>
+            </section>
           ) : null}
           <RecommendationPillarHint
             categoryCode={recommendation.categoryCode}

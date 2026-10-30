@@ -269,11 +269,15 @@ describe("SS-UX-004 premium executive overview", () => {
       detail: minimalDetail(),
       companyName: "ABC LLC",
       hasRoadmap: true,
+      hasRoadmapInitiatives: true,
       roadmapProgressPercent: 40,
       vcioAccessState: "FULL_ACCESS",
     });
 
     expect(overview.roadmap.progressPercent).toBe(40);
+    expect(overview.roadmap.hasInitiatives).toBe(true);
+    expect(overview.roadmap.emptyStateLabel).toBeNull();
+    expect(overview.journey.progressPercent).toBeTypeOf("number");
     expect(overview.roadmap.footnote).toMatch(/reassessment/i);
     expect(overview.roadmap.stackScoreLabel).toBe("StackScore");
     expect(overview.vcio.show).toBe(true);

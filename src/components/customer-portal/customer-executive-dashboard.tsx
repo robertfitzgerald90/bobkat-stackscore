@@ -156,6 +156,7 @@ export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashbo
 
           <OverviewRoadmapProgress
             roadmap={overview.roadmap}
+            journey={overview.journey}
             stackScore={overview.stackScore}
           />
         </>

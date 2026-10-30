@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { loadProgressReport } from "@/lib/reports/progress";
 import { ProgressReportPreview } from "@/components/reports/progress-report-preview";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,11 @@ export default async function ProgressReportPage({ params }: PageProps) {
 
   return (
     <div className="page-shell min-w-0">
-      <ProgressReportPreview clientId={clientId} data={report} />
+      <ProgressReportPreview
+        clientId={clientId}
+        data={report}
+        isCustomerView={isCustomerMode(session.user.role)}
+      />
     </div>
   );
 }
