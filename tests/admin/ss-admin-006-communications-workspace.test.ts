@@ -10,6 +10,7 @@ import {
   resolveActiveCommunicationsGroup,
 } from "@/lib/communications/nav";
 import { canClientAccessPath } from "@/lib/command-center/route-access";
+import { buildPageContext } from "@/lib/command-center/context";
 import { resolveActiveStaffPrimaryId } from "@/lib/navigation/sidebar-nav";
 
 describe("SS-ADMIN-006 — Communications workspace refinement", () => {
@@ -121,11 +122,15 @@ describe("SS-ADMIN-006 — Communications workspace refinement", () => {
       "communications",
     );
     expect(
-      canClientAccessPath("/admin/communications", {
-        role: "client",
-        userClientId: "c1",
-        userId: "u1",
-      }),
+      canClientAccessPath(
+        "/admin/communications",
+        buildPageContext({
+          pathname: "/dashboard",
+          role: "client",
+          userClientId: "c1",
+          userId: "u1",
+        }),
+      ),
     ).toBe(false);
   });
 

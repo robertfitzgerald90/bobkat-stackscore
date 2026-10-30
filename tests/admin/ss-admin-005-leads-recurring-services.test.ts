@@ -7,6 +7,7 @@ import {
 } from "@/lib/navigation/sidebar-nav";
 import { buildCommandCenterQuickActions, countOpenLeads } from "@/lib/dashboard/command-center-rules";
 import { canClientAccessPath } from "@/lib/command-center/route-access";
+import { buildPageContext } from "@/lib/command-center/context";
 import { getPageTitle } from "@/lib/navigation/page-titles";
 
 describe("SS-ADMIN-005 — Leads & Recurring Services", () => {
@@ -31,7 +32,12 @@ describe("SS-ADMIN-005 — Leads & Recurring Services", () => {
   });
 
   it("blocks customer access to the Leads hub and intake queues", () => {
-    const ctx = { role: "client" as const, userClientId: "c1", userId: "u1" };
+    const ctx = buildPageContext({
+      pathname: "/dashboard",
+      role: "client",
+      userClientId: "c1",
+      userId: "u1",
+    });
     expect(canClientAccessPath("/leads", ctx)).toBe(false);
     expect(canClientAccessPath("/snapshot-leads", ctx)).toBe(false);
     expect(canClientAccessPath("/website-leads", ctx)).toBe(false);
