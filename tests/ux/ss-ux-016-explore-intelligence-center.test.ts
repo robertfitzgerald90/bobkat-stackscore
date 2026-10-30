@@ -306,16 +306,21 @@ describe("SS-UX-016 — Explore Intelligence Center", () => {
       join(process.cwd(), "src/lib/customer-portal/pillar-explore.ts"),
       "utf8",
     );
-    const panel = readFileSync(
-      join(process.cwd(), "src/components/customer-portal/explore/pillar-detail-panel.tsx"),
+    const strengths = readFileSync(
+      join(process.cwd(), "src/components/customer-portal/explore/pillar-strengths-attention.tsx"),
+      "utf8",
+    );
+    const tabs = readFileSync(
+      join(process.cwd(), "src/components/customer-portal/explore/pillar-intelligence-tabs.tsx"),
       "utf8",
     );
     expect(dto).not.toMatch(/internalNotes/);
     expect(explore).not.toMatch(/internalNotes/);
-    expect(panel).not.toMatch(/internalNotes/);
-    expect(panel).toMatch(/What's Working/);
-    expect(panel).toMatch(/What Needs Attention/);
-    expect(panel).toMatch(/Improvement activity/);
+    expect(strengths).not.toMatch(/internalNotes/);
+    expect(tabs).not.toMatch(/internalNotes/);
+    expect(strengths).toMatch(/What's Working/);
+    expect(strengths).toMatch(/What Needs Attention/);
+    expect(tabs).toMatch(/Roadmap initiatives/);
   });
 
   it("keeps Explore read-only (no mutation APIs in explore service)", () => {

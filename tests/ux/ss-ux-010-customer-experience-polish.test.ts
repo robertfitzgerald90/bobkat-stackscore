@@ -196,15 +196,18 @@ describe("SS-UX-010 — Assessment recommendation sections (Phase 3)", () => {
 });
 
 describe("SS-UX-010 — Explore a11y + Progress Report wiring", () => {
-  it("Explore mounts only one detail surface after layout resolve", () => {
+  it("Explore uses a single full-width intelligence stack (SS-UX-016-R1)", () => {
     const experience = readFileSync(
       join(process.cwd(), "src/components/customer-portal/explore/customer-explore-experience.tsx"),
       "utf8",
     );
-    expect(experience).toContain('layout === "mobile"');
-    expect(experience).toContain("showDesktopDetail");
-    expect(experience).toContain("showMobileDetail");
-    expect(experience).toContain("matchMedia");
+    expect(experience).toContain("PillarSelector");
+    expect(experience).toContain("PillarOverview");
+    expect(experience).toContain("PillarStrengthsAttention");
+    expect(experience).toContain("PillarIntelligenceTabs");
+    expect(experience).not.toContain("lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]");
+    expect(experience).not.toContain("showDesktopDetail");
+    expect(experience).not.toContain("showMobileDetail");
   });
 
   it("customer progress report uses charcoal customer presentation flag", () => {

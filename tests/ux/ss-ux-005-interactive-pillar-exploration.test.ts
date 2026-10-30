@@ -169,7 +169,8 @@ describe("SS-UX-005 interactive pillar exploration", () => {
     expect(page).toContain("CustomerExploreExperience");
     expect(experience).toContain("router.push");
     expect(experience).toContain("searchParams");
-    expect(experience).toContain("PillarDetailPanel");
+    expect(experience).toContain("PillarSelector");
+    expect(experience).toContain("PillarOverview");
     expect(CLIENT_INTERACTIVE_TILE).toContain("h-full");
     expect(CLIENT_EQUAL_CARD_GRID).toContain("auto-rows-fr");
     expect(overview).toContain("initiativesTotal");

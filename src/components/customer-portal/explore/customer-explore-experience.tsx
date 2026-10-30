@@ -3,16 +3,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ClipboardList, Compass, X } from "lucide-react";
+import { ArrowLeft, ClipboardList, Compass } from "lucide-react";
 import {
   ClientEmptyState,
   ClientPageHeader,
   ClientPageShell,
 } from "@/components/client-ui";
-import { PillarDetailPanel } from "@/components/customer-portal/explore/pillar-detail-panel";
-import { PillarTile } from "@/components/customer-portal/explore/pillar-tile";
+import { PillarIntelligenceTabs } from "@/components/customer-portal/explore/pillar-intelligence-tabs";
+import { PillarOverview } from "@/components/customer-portal/explore/pillar-overview";
+import { PillarSelector } from "@/components/customer-portal/explore/pillar-selector";
+import { PillarStrengthsAttention } from "@/components/customer-portal/explore/pillar-strengths-attention";
 import { buttonClassName } from "@/components/ui/button";
-import { CLIENT_EQUAL_CARD_GRID } from "@/lib/client-ui/tokens";
 import { customerOverviewPath } from "@/lib/clients/paths";
 import {
   isTechnologyPillarCode,
@@ -24,12 +25,10 @@ type CustomerExploreExperienceProps = {
   explore: CustomerExploreDto;
 };
 
-const DESKTOP_MQ = "(min-width: 1024px)";
-
 /**
- * SS-UX-005 / SS-UX-016 Explore experience (Intelligence Center).
- * SS-UX-010 D3 — mount only one pillar detail surface at a time so the
- * accessibility tree never contains duplicate detail content.
+ * SS-UX-016-R1 — Technology Intelligence Center layout.
+ * Full-width stack: compact selector → overview → strengths/attention → tabs.
+ * Reuses SS-UX-016 DTO; no left-grid/right-detail panel.
  */
 export function CustomerExploreExperience({ explore }: CustomerExploreExperienceProps) {
   const router = useRouter();
@@ -43,29 +42,14 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
   }, [paramPillar, explore.selectedPillarCode]);
 
   const [selected, setSelected] = useState<TechnologyPillarCode | null>(selectedFromUrl);
-  const [mobileDetailOpen, setMobileDetailOpen] = useState(Boolean(paramPillar));
-  /** `ssr` keeps desktop markup for first paint; after mount only one layout mounts detail. */
-  const [layout, setLayout] = useState<"ssr" | "desktop" | "mobile">("ssr");
-
-  useEffect(() => {
-    const media = window.matchMedia(DESKTOP_MQ);
-    const sync = () => setLayout(media.matches ? "desktop" : "mobile");
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
 
   useEffect(() => {
     setSelected(selectedFromUrl);
-    if (paramPillar && isTechnologyPillarCode(paramPillar)) {
-      setMobileDetailOpen(true);
-    }
-  }, [selectedFromUrl, paramPillar]);
+  }, [selectedFromUrl]);
 
   const selectPillar = useCallback(
     (code: TechnologyPillarCode) => {
       setSelected(code);
-      setMobileDetailOpen(true);
       const params = new URLSearchParams(searchParams.toString());
       params.set("pillar", code);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -73,13 +57,7 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
     [pathname, router, searchParams],
   );
 
-  const closeMobileDetail = useCallback(() => {
-    setMobileDetailOpen(false);
-  }, []);
-
   const detail = selected ? explore.detailsByCode[selected] : null;
-  const showDesktopDetail = layout !== "mobile";
-  const showMobileDetail = layout === "mobile" && mobileDetailOpen && Boolean(detail);
 
   if (!explore.hasCompletedAssessment && !explore.assessmentInProgress) {
     return (
@@ -108,11 +86,11 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
   }
 
   return (
-    <ClientPageShell>
+    <ClientPageShell className="max-w-6xl space-y-6">
       <ClientPageHeader
         eyebrow="Technology Maturity"
         title="Explore"
-        description="Select any of the eight technology pillars to understand maturity, what is working, what needs attention, and related roadmap or project work."
+        description="Technology Intelligence Center — select a pillar to review maturity, what is working, what needs attention, and related improvement work."
         actions={
           <Link
             href={customerOverviewPath(explore.clientId)}
@@ -137,59 +115,27 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
         />
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
-        <section className="space-y-3" aria-label="Technology pillars">
-          <div className={CLIENT_EQUAL_CARD_GRID}>
-            {explore.pillars.map((pillar) => (
-              <PillarTile
-                key={pillar.code}
-                pillar={pillar}
-                selected={selected === pillar.code}
-                interactive
-                onSelect={selectPillar}
-              />
-            ))}
-          </div>
-        </section>
+      <PillarSelector
+        pillars={explore.pillars}
+        selected={selected}
+        onSelect={selectPillar}
+      />
 
-        {/* Desktop adjacent detail — unmounted on mobile layout (SS-UX-010 D3). */}
-        <div className="hidden lg:block">
-          {showDesktopDetail ? (
-            detail ? (
-              <PillarDetailPanel detail={detail} />
-            ) : (
-              <p className="rounded-sm border border-dashed border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                Select a pillar to view maturity detail.
-              </p>
-            )
-          ) : null}
+      {detail ? (
+        <div className="space-y-6" key={detail.code}>
+          <PillarOverview detail={detail} />
+          <PillarStrengthsAttention
+            code={detail.code}
+            strengths={detail.strengths}
+            attentionItems={detail.attentionItems}
+          />
+          <PillarIntelligenceTabs detail={detail} />
         </div>
-      </div>
-
-      {/* Mobile detail sheet — only mounted below lg after layout resolve. */}
-      {showMobileDetail ? (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-background"
-          role="dialog"
-          aria-modal="true"
-          aria-label={detail ? `${detail.name} details` : "Pillar details"}
-        >
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <p className="text-sm font-semibold text-foreground">Pillar detail</p>
-            <button
-              type="button"
-              className={buttonClassName({ variant: "ghost", size: "sm" })}
-              onClick={closeMobileDetail}
-              aria-label="Close pillar detail"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            {detail ? <PillarDetailPanel detail={detail} /> : null}
-          </div>
-        </div>
-      ) : null}
+      ) : (
+        <p className="rounded-sm border border-dashed border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+          Select a pillar to view maturity detail.
+        </p>
+      )}
     </ClientPageShell>
   );
 }
