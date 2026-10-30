@@ -104,12 +104,17 @@ describe("SS-UX-012 — Customer Projects dashboard", () => {
 
     expect(detail.progressPercent).toBeNull();
     expect(detail.tasks).toEqual([]);
+    expect(detail.taskGroups).toEqual({
+      inProgress: [],
+      upNext: [],
+      completed: [],
+    });
     expect(detail.milestones).toEqual([]);
+    expect(detail.nextMilestone).toBeNull();
     expect(detail.listHref).toBe(clientWorkspaceProjectsPath("client-1"));
     expect(detail.recommendations[0]?.href).toContain("/recommendations?");
     expect(detail.roadmapInitiatives[0]?.href).toContain("/roadmap/phases/");
     expect(detail.completionReportHref).toBeNull();
-    expect(detail.showUpdatesPlaceholder).toBe(true);
     expect(JSON.stringify(detail)).not.toMatch(/estimatedCost|assignedUser|internalNotes/i);
   });
 

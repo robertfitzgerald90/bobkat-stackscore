@@ -1,6 +1,6 @@
 /**
- * SS-UX-012 — Pure customer Projects DTO builders (no Prisma / I/O).
- * Reuses Project lifecycle statuses; does not invent tasks, milestones, or progress %.
+ * SS-UX-012/014 — Pure customer Projects DTO builders (no Prisma / I/O).
+ * Progress is task-derived only; never invents percentages or fabricated activity.
  */
 
 import type { Priority, ProjectStatus, RecommendationStatus } from "@/generated/prisma/client";
@@ -29,6 +29,16 @@ export const CUSTOMER_ACTIVE_PROJECT_STATUSES: readonly ProjectStatus[] = [
   "in_progress",
 ];
 
+/** Customer-visible project activity kinds (real events only). */
+export const CUSTOMER_PROJECT_ACTIVITY_EVENT_TYPES = [
+  "project_task_completed",
+  "project_milestone_completed",
+  "project_completed",
+  "project_started",
+  "project_status_changed",
+  "projects_shared",
+] as const;
+
 export type CustomerProjectViewFilter = "all" | "planned" | "active" | "completed";
 
 export type CustomerProjectCardDto = {
@@ -56,6 +66,13 @@ export type CustomerProjectTaskDto = {
   statusLabel: string;
   dueDateLabel: string | null;
   completedAtLabel: string | null;
+  group: "in_progress" | "up_next" | "completed";
+};
+
+export type CustomerProjectTaskGroupsDto = {
+  inProgress: CustomerProjectTaskDto[];
+  upNext: CustomerProjectTaskDto[];
+  completed: CustomerProjectTaskDto[];
 };
 
 export type CustomerProjectMilestoneDto = {
@@ -65,6 +82,14 @@ export type CustomerProjectMilestoneDto = {
   targetDateLabel: string | null;
   completedAtLabel: string | null;
   isComplete: boolean;
+  isOverdue: boolean;
+};
+
+export type CustomerProjectNextMilestoneDto = {
+  id: string;
+  title: string;
+  targetDateLabel: string | null;
+  isOverdue: boolean;
 };
 
 export type CustomerProjectsSummaryDto = {
@@ -105,6 +130,7 @@ export type CustomerProjectActivityDto = {
   description: string | null;
   occurredAtLabel: string;
   eventType: string;
+  kindLabel: string;
 };
 
 export type CustomerProjectDetailDto = {
@@ -127,13 +153,14 @@ export type CustomerProjectDetailDto = {
   tasksTotal: number;
   tasksCompleted: number;
   tasks: CustomerProjectTaskDto[];
+  taskGroups: CustomerProjectTaskGroupsDto;
   milestones: CustomerProjectMilestoneDto[];
+  nextMilestone: CustomerProjectNextMilestoneDto | null;
   recommendations: CustomerProjectRecommendationDto[];
   roadmapInitiatives: CustomerProjectInitiativeDto[];
   activity: CustomerProjectActivityDto[];
   completionReportHref: string | null;
   listHref: string;
-  showUpdatesPlaceholder: boolean;
 };
 
 export type CustomerProjectRowInput = {
@@ -195,6 +222,21 @@ export type CustomerProjectInitiativeInput = {
 
 const CARD_DESCRIPTION_MAX = 160;
 
+const TASK_STATUS_LABEL: Record<CustomerProjectTaskInput["status"], string> = {
+  not_started: "Not Started",
+  in_progress: "In Progress",
+  completed: "Complete",
+};
+
+const ACTIVITY_KIND_LABEL: Record<string, string> = {
+  project_task_completed: "Task completed",
+  project_milestone_completed: "Milestone completed",
+  project_completed: "Project completed",
+  project_started: "Project started",
+  project_status_changed: "Status changed",
+  projects_shared: "Project update",
+};
+
 export function normalizeCustomerProjectViewFilter(
   value: string | null | undefined,
 ): CustomerProjectViewFilter {
@@ -230,6 +272,12 @@ function dateLabel(value: Date | string | null | undefined): string | null {
   return date ? formatDisplayDate(date) : null;
 }
 
+function startOfDay(value: Date): Date {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
 function priorityLabel(priority: Priority): string {
   return PRIORITY_LABELS[priority] ?? priority;
 }
@@ -261,16 +309,37 @@ function countUpcomingTargetDates(
   rows: CustomerProjectRowInput[],
   now: Date,
 ): number {
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
+  const today = startOfDay(now);
 
   return rows.filter((row) => {
     if (!isCustomerVisibleProjectStatus(row.status)) return false;
     if (row.status === "completed") return false;
     const target = toDate(row.targetCompletionDate);
     if (!target) return false;
-    return target.getTime() >= startOfToday.getTime();
+    return target.getTime() >= today.getTime();
   }).length;
+}
+
+function taskGroupForStatus(
+  status: CustomerProjectTaskInput["status"],
+): CustomerProjectTaskDto["group"] {
+  if (status === "completed") return "completed";
+  if (status === "in_progress") return "in_progress";
+  return "up_next";
+}
+
+export function groupCustomerProjectTasks(
+  tasks: CustomerProjectTaskDto[],
+): CustomerProjectTaskGroupsDto {
+  return {
+    inProgress: tasks.filter((task) => task.group === "in_progress"),
+    upNext: tasks.filter((task) => task.group === "up_next"),
+    completed: tasks.filter((task) => task.group === "completed"),
+  };
+}
+
+export function isCustomerProjectActivityEvent(eventType: string): boolean {
+  return (CUSTOMER_PROJECT_ACTIVITY_EVENT_TYPES as readonly string[]).includes(eventType);
 }
 
 export function buildCustomerProjectCard(
@@ -338,12 +407,6 @@ export function buildCustomerProjectsExperience(input: {
   };
 }
 
-const TASK_STATUS_LABEL: Record<CustomerProjectTaskInput["status"], string> = {
-  not_started: "Not Started",
-  in_progress: "In Progress",
-  completed: "Complete",
-};
-
 export function buildCustomerProjectDetail(input: {
   clientId: string;
   companyName: string;
@@ -357,8 +420,11 @@ export function buildCustomerProjectDetail(input: {
   progressPercent?: number | null;
   tasksTotal?: number;
   tasksCompleted?: number;
+  now?: Date;
 }): CustomerProjectDetailDto {
   const { row, clientId } = input;
+  const now = input.now ?? new Date();
+  const today = startOfDay(now);
   const pillar = pillarForCategory(clientId, row.categoryCode);
   const recommendations: CustomerProjectRecommendationDto[] =
     input.recommendations ??
@@ -379,13 +445,16 @@ export function buildCustomerProjectDetail(input: {
       ? row.recommendation.businessImpact.trim()
       : null;
 
-  const activity = input.activity.map((event) => ({
-    id: event.id,
-    title: event.title,
-    description: event.description,
-    occurredAtLabel: dateLabel(event.occurredAt) ?? "",
-    eventType: event.eventType,
-  }));
+  const activity = input.activity
+    .filter((event) => isCustomerProjectActivityEvent(event.eventType))
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      occurredAtLabel: dateLabel(event.occurredAt) ?? "",
+      eventType: event.eventType,
+      kindLabel: ACTIVITY_KIND_LABEL[event.eventType] ?? "Update",
+    }));
 
   const tasks = (input.tasks ?? []).map((task) => ({
     id: task.id,
@@ -395,16 +464,47 @@ export function buildCustomerProjectDetail(input: {
     statusLabel: TASK_STATUS_LABEL[task.status],
     dueDateLabel: dateLabel(task.dueDate),
     completedAtLabel: dateLabel(task.completedAt),
+    group: taskGroupForStatus(task.status),
   }));
 
-  const milestones = (input.milestones ?? []).map((milestone) => ({
-    id: milestone.id,
-    title: milestone.title,
-    description: milestone.description,
-    targetDateLabel: dateLabel(milestone.targetDate),
-    completedAtLabel: dateLabel(milestone.completedAt),
-    isComplete: Boolean(milestone.completedAt),
-  }));
+  const milestones = (input.milestones ?? []).map((milestone) => {
+    const target = toDate(milestone.targetDate);
+    const isComplete = Boolean(milestone.completedAt);
+    const isOverdue = Boolean(
+      !isComplete && target && target.getTime() < today.getTime(),
+    );
+    return {
+      id: milestone.id,
+      title: milestone.title,
+      description: milestone.description,
+      targetDateLabel: dateLabel(milestone.targetDate),
+      completedAtLabel: dateLabel(milestone.completedAt),
+      isComplete,
+      isOverdue,
+    };
+  });
+
+  const nextOpen = (input.milestones ?? [])
+    .map((milestone, index) => ({ milestone, index }))
+    .filter(({ milestone }) => !milestone.completedAt)
+    .sort((a, b) => {
+      const aDate = toDate(a.milestone.targetDate)?.getTime() ?? Number.POSITIVE_INFINITY;
+      const bDate = toDate(b.milestone.targetDate)?.getTime() ?? Number.POSITIVE_INFINITY;
+      if (aDate !== bDate) return aDate - bDate;
+      return a.index - b.index;
+    })[0];
+
+  const nextMilestone: CustomerProjectNextMilestoneDto | null = nextOpen
+    ? {
+        id: nextOpen.milestone.id,
+        title: nextOpen.milestone.title,
+        targetDateLabel: dateLabel(nextOpen.milestone.targetDate),
+        isOverdue: Boolean(
+          toDate(nextOpen.milestone.targetDate) &&
+            toDate(nextOpen.milestone.targetDate)!.getTime() < today.getTime(),
+        ),
+      }
+    : null;
 
   return {
     clientId,
@@ -424,9 +524,12 @@ export function buildCustomerProjectDetail(input: {
     pillarHref: pillar.pillarHref,
     progressPercent: input.progressPercent ?? null,
     tasksTotal: input.tasksTotal ?? tasks.length,
-    tasksCompleted: input.tasksCompleted ?? tasks.filter((task) => task.status === "completed").length,
+    tasksCompleted:
+      input.tasksCompleted ?? tasks.filter((task) => task.status === "completed").length,
     tasks,
+    taskGroups: groupCustomerProjectTasks(tasks),
     milestones,
+    nextMilestone,
     recommendations,
     roadmapInitiatives: input.initiatives.map((initiative) => ({
       id: initiative.id,
@@ -440,6 +543,5 @@ export function buildCustomerProjectDetail(input: {
         ? `/clients/${clientId}/projects/${row.id}/completion-report`
         : null,
     listHref: clientWorkspaceProjectsPath(clientId),
-    showUpdatesPlaceholder: true,
   };
 }
