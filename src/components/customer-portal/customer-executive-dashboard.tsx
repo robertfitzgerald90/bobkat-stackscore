@@ -1,15 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import {
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
-  ClipboardList,
-  FileText,
-  History,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, Calendar, ClipboardList, FileText } from "lucide-react";
 import {
   ClientEmptyState,
   ClientNextActionCard,
@@ -20,137 +10,62 @@ import {
   WorkspaceHubLinks,
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
-import { ExecutiveBriefingPanel } from "@/components/executive-os/executive-briefing-panel";
-import { ExecutiveKpiCard } from "@/components/executive-os/executive-kpi-card";
+import { OverviewMaturityHero } from "@/components/customer-portal/overview/overview-maturity-hero";
+import { OverviewPillarGrid } from "@/components/customer-portal/overview/overview-pillar-grid";
+import { OverviewPriorityOpportunities } from "@/components/customer-portal/overview/overview-priority-opportunities";
+import { OverviewRoadmapProgress } from "@/components/customer-portal/overview/overview-roadmap-progress";
+import { OverviewStrengthsExposure } from "@/components/customer-portal/overview/overview-strengths-exposure";
+import { OverviewVcioStrip } from "@/components/customer-portal/overview/overview-vcio-strip";
 import { BookingButton } from "@/components/support/booking-button";
-import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
-import { EXECUTIVE_OS_PILLAR_ROW, EXECUTIVE_OS_PRIORITY_ROW } from "@/lib/executive-os/tokens";
-import { buildExecutiveBriefing } from "@/lib/executive-os/briefing";
-import {
-  confidenceFromScore,
-  executiveKpiLabel,
-  executiveRiskLabel,
-} from "@/lib/executive-os/business-language";
-import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
-import { CLIENT_SURFACE_CARD_INDUSTRIAL } from "@/lib/client-ui/tokens";
-import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
-import {
-  CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES,
-  CUSTOMER_TERM_ROADMAP_PROGRESS,
-  CUSTOMER_TERM_STACKSCORE,
-  getCustomerMaturityLabel,
-  customerRoadmapProgressFootnote,
-} from "@/lib/assessments/customer-reporting";
-import { clientExplorePath } from "@/lib/clients/paths";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { clientExplorePath, clientRecommendationsPath } from "@/lib/clients/paths";
+import type { CustomerOverviewDto } from "@/lib/customer-portal/overview";
 import { getBookingUrl } from "@/lib/support/config";
-import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
-import { takeTopRecommendations } from "@/lib/recommendations/sort";
-import { conciseFocusTitle } from "@/lib/client-workspace";
-import { cn } from "@/lib/utils";
 
 type CustomerExecutiveDashboardProps = {
-  detail: TechnologyProfileDetail;
-  companyName: string;
+  overview: CustomerOverviewDto;
 };
 
-function pillarIntelligenceDescription(
-  score: number | null,
-  businessQuestion: string,
-  openRecommendationCount: number,
-): string {
-  if (score === null) return businessQuestion;
-  if (openRecommendationCount > 0) {
-    return `${openRecommendationCount} open ${openRecommendationCount === 1 ? "priority" : "priorities"} may affect this area. ${businessQuestion}`;
-  }
-  if (score >= 80) return "Performing well against business expectations.";
-  if (score >= 65) return "Stable, with room to strengthen resilience and consistency.";
-  return "Elevated business exposure — review recommended actions.";
-}
-
-function trendFromDelta(delta: number | null): "up" | "down" | "neutral" {
-  if (delta === null || delta === 0) return "neutral";
-  return delta > 0 ? "up" : "down";
-}
-
-/** Customer home — Executive Briefing (formerly Assessment Dashboard). */
-export function CustomerExecutiveDashboard({
-  detail,
-  companyName,
-}: CustomerExecutiveDashboardProps) {
-  const {
-    profile,
-    client,
-    pillarInsights,
-    openRecommendations,
-    journey,
-    draftAssessmentId,
-    scoreTrend,
-  } = detail;
-
-  const score = profile.overallStackScore;
-  const maturityLabel = score !== null ? getCustomerMaturityLabel(score) : null;
-  const hasCompletedAssessment = journey.assessmentsCompleted > 0;
-  const assessmentInProgress = Boolean(draftAssessmentId);
+/**
+ * SS-UX-004 — Premium customer Overview dashboard.
+ * Data is pre-assembled in `getCustomerOverview` — no scoring or catalog math here.
+ */
+export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashboardProps) {
   const bookingUrl = getBookingUrl();
-  const nextAction = deriveCustomerNextAction(detail);
+  const recommendationsHref = clientRecommendationsPath(overview.clientId);
 
-  const topStrengths = [...pillarInsights]
-    .filter((p) => p.percentScore !== null)
-    .sort((a, b) => (b.percentScore ?? 0) - (a.percentScore ?? 0))
-    .slice(0, 3);
-
-  const topRisks = [...pillarInsights]
-    .filter((p) => p.percentScore !== null)
-    .sort((a, b) => (a.percentScore ?? 0) - (b.percentScore ?? 0))
-    .slice(0, 3);
-
-  const priorities = takeTopRecommendations(openRecommendations, 5);
-  const hasRecommendations = openRecommendations.length > 0;
-  const recommendationsHref = `/clients/${profile.clientId}/recommendations`;
-
-  const reportHref = profile.currentAssessmentId
-    ? `/assessments/${profile.currentAssessmentId}/report`
-    : null;
-
-  const welcomeName = client.primaryContactName?.split(" ")[0] ?? "there";
-  const historicalAssessments = scoreTrend.filter((point) => point.assessmentId);
-  const scoreSparkline = scoreTrend
-    .map((point) => point.overallScore)
-    .filter((value): value is number => typeof value === "number");
-
-  const briefing = buildExecutiveBriefing(detail, companyName, welcomeName);
   const workspaceLinks: WorkspaceHubLink[] = [
     {
-      href: clientExplorePath(profile.clientId),
+      href: clientExplorePath(overview.clientId),
       title: "Explore pillars",
       description: "Eight technology maturity domains",
     },
     {
-      href: `/clients/${profile.clientId}/roadmap`,
+      href: overview.roadmap.href,
       title: "Roadmap",
       description: "Living execution plan and progress",
     },
     {
-      href: `/clients/${profile.clientId}/recommendations`,
+      href: recommendationsHref,
       title: "Improvement opportunities",
       description: "Prioritized assessment recommendations",
     },
     {
-      href: `/clients/${profile.clientId}/executive-reports`,
+      href: `/clients/${overview.clientId}/executive-reports`,
       title: "Reports",
       description: "Assessment report, PDF, and reviews",
     },
+    ...(overview.vcio.show
+      ? [
+          {
+            href: overview.vcio.href,
+            title: "vCIO Dashboard",
+            description: "Strategic advisory workspace",
+          } satisfies WorkspaceHubLink,
+        ]
+      : []),
     {
-      href: `/clients/${profile.clientId}/vcio`,
-      title: "vCIO Dashboard",
-      description: "Strategic advisory workspace",
-    },
-    {
-      href: `/clients/${profile.clientId}/lifecycle`,
+      href: `/clients/${overview.clientId}/lifecycle`,
       title: "Technology Lifecycle",
       description: "Lifecycle status and planning context",
     },
@@ -158,52 +73,30 @@ export function CustomerExecutiveDashboard({
 
   return (
     <ClientPageShell>
-      <ExecutiveBriefingPanel briefing={briefing} />
-
-      {!hasCompletedAssessment && !assessmentInProgress ? (
+      {!overview.hasCompletedAssessment && !overview.assessmentInProgress ? (
         <ClientEmptyState
           icon={ClipboardList}
-          title="Your executive briefing begins with an assessment"
+          title="Your executive overview begins with an assessment"
           description="Complete the Technology Maturity Assessment to receive your StackScore, executive report, and strategic priorities — translated into business language you can act on."
           nextStep="Begin the assessment when you are ready."
           action={
             <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
               Start Assessment
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
             </Link>
           }
         />
       ) : null}
 
-      {assessmentInProgress ? (
+      {overview.assessmentInProgress ? (
         <ClientNextActionCard
-          eyebrow="Assessment in progress"
-          title="Continue your Technology Maturity Assessment"
-          description="Your answers are saved automatically. Resume when you are ready to finish."
-          actions={
-            <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
-              Resume Assessment
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          }
-        />
-      ) : null}
-
-      {hasCompletedAssessment && nextAction ? (
-        <ClientNextActionCard
-          eyebrow="Recommended next step"
-          title={nextAction.label}
-          description={nextAction.description}
-          meta={
-            profile.lastAssessedAt
-              ? `Completed ${formatDisplayDate(profile.lastAssessedAt)}`
-              : undefined
-          }
+          title="Assessment in progress"
+          description="Your answers are saved automatically. Resume when ready to finish and unlock your official StackScore."
           actions={
             <>
-              <Link href={nextAction.href} className={buttonClassName({})}>
-                <FileText className="mr-2 h-4 w-4" />
-                {nextAction.label}
+              <Link href="/assessment/start" className={buttonClassName({})}>
+                Resume Assessment
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>
               {bookingUrl ? (
                 <BookingButton
@@ -217,287 +110,61 @@ export function CustomerExecutiveDashboard({
         />
       ) : null}
 
-      {hasCompletedAssessment ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ExecutiveKpiCard
-            label={CUSTOMER_TERM_STACKSCORE}
-            value={score ?? "—"}
-            sublabel={maturityLabel ?? "Complete your assessment"}
-            description="Official technology maturity from your latest completed assessment."
-            trend={trendFromDelta(detail.scoreDeltaSincePrevious)}
-            trendLabel={
-              detail.scoreDeltaSincePrevious !== null && detail.scoreDeltaSincePrevious !== 0
-                ? `${detail.scoreDeltaSincePrevious > 0 ? "+" : ""}${detail.scoreDeltaSincePrevious} pts`
-                : undefined
-            }
-            confidence={confidenceFromScore(score)}
-            riskLevel={executiveRiskLabel(score)}
-            sparkline={scoreSparkline}
-            emphasizeClassName={score !== null ? getScoreTextColorClass(score) : undefined}
-          />
-          <ExecutiveKpiCard
-            label={CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES}
-            value={profile.openRecommendationCount}
-            sublabel={
-              profile.criticalExposureCount > 0
-                ? `${profile.criticalExposureCount} critical exposure${
-                    profile.criticalExposureCount === 1 ? "" : "s"
-                  }`
-                : "Active recommended actions"
-            }
-            description="Actionable recommendations still open, accepted, or in progress. Outcomes are confirmed through reassessment."
-          />
-          <ExecutiveKpiCard
-            label="Business Risk"
-            value={executiveRiskLabel(score)}
-            sublabel={
-              profile.criticalExposureCount > 0
-                ? `${profile.criticalExposureCount} critical exposure${profile.criticalExposureCount === 1 ? "" : "s"}`
-                : "Exposure under review"
-            }
-            description="Estimated operational and security exposure based on current maturity."
-          />
-          <ExecutiveKpiCard
-            label={CUSTOMER_TERM_ROADMAP_PROGRESS}
-            value={`${journey.progressPercent}%`}
-            sublabel={
-              profile.lastAssessedAt
-                ? `Assessed ${formatDisplayDate(profile.lastAssessedAt)}`
-                : undefined
-            }
-            description={customerRoadmapProgressFootnote()}
-          />
-        </div>
-      ) : null}
+      {overview.hasCompletedAssessment ? (
+        <>
+          <OverviewMaturityHero overview={overview} />
 
-      {topStrengths.length > 0 ? (
-        <section className="space-y-4">
-          <ClientSectionHeader
-            title="Strengths"
-            description="Areas where your organization demonstrates strong business readiness."
-          />
-          <div className="grid gap-4 sm:grid-cols-3">
-            {topStrengths.map((pillar) => (
-              <ExecutiveKpiCard
-                key={pillar.pillarCode}
-                label={executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
-                value={pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
-                sublabel={pillar.maturityTier ?? "Strong performance"}
-                description={pillarIntelligenceDescription(
-                  pillar.percentScore,
-                  pillar.businessQuestion,
-                  pillar.openRecommendationCount,
-                )}
-                trend={trendFromDelta(pillar.trendDelta)}
-                trendLabel={
-                  pillar.trendDelta !== null && pillar.trendDelta !== 0
-                    ? `${pillar.trendDelta > 0 ? "+" : ""}${pillar.trendDelta}%`
-                    : undefined
-                }
-                confidence={confidenceFromScore(pillar.percentScore)}
-                riskLevel={executiveRiskLabel(pillar.percentScore)}
-                emphasizeClassName={
-                  pillar.percentScore !== null
-                    ? getScoreTextColorClass(pillar.percentScore)
-                    : undefined
-                }
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
+          <OverviewVcioStrip vcio={overview.vcio} />
 
-      {topRisks.length > 0 ? (
-        <section className="space-y-4">
-          <ClientSectionHeader
-            title="Areas Requiring Attention"
-            description="Domains that may expose the business to operational or continuity risk."
-          />
-          <div className="grid gap-4 sm:grid-cols-3">
-            {topRisks.map((pillar) => (
-              <ExecutiveKpiCard
-                key={pillar.pillarCode}
-                label={executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
-                value={pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
-                sublabel={pillar.maturityTier ?? "Needs attention"}
-                description={pillarIntelligenceDescription(
-                  pillar.percentScore,
-                  pillar.businessQuestion,
-                  pillar.openRecommendationCount,
-                )}
-                trend={trendFromDelta(pillar.trendDelta)}
-                confidence={confidenceFromScore(pillar.percentScore)}
-                riskLevel={executiveRiskLabel(pillar.percentScore)}
-                emphasizeClassName={
-                  pillar.percentScore !== null
-                    ? getScoreTextColorClass(pillar.percentScore)
-                    : undefined
-                }
-                className="border-warning/20"
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="space-y-4">
-        <ClientSectionHeader
-          title="Strategic Priorities"
-          description="The highest-impact opportunities identified for your business."
-          actions={
-            hasRecommendations ? (
-              <Link
-                href={recommendationsHref}
-                className={buttonClassName({ variant: "outline", size: "sm" })}
-              >
-                View All Recommendations
-              </Link>
-            ) : null
-          }
-        />
-        {!hasCompletedAssessment ? (
-          <ClientEmptyState
-            icon={TrendingUp}
-            title="Strategic priorities appear after your assessment"
-            description="Finish your Technology Maturity Assessment to receive personalized, business-focused recommendations."
-            nextStep="Resume or start the Technology Maturity Assessment."
-          />
-        ) : priorities.length === 0 ? (
-          <ClientEmptyState
-            icon={TrendingUp}
-            title="No open priorities at this time"
-            description="Your current assessment did not surface active recommendations — a sign of stable technology posture."
-            positive
-          />
-        ) : (
-          <div className="space-y-3">
-            {priorities.map((item) => (
-              <div key={item.id} className={EXECUTIVE_OS_PRIORITY_ROW}>
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium">{conciseFocusTitle(item.title)}</p>
-                    <Badge variant={PRIORITY_BADGE[item.priority]} className="text-xs">
-                      {PRIORITY_LABELS[item.priority]}
-                    </Badge>
-                  </div>
-                  <p className="line-clamp-2 text-sm text-muted-foreground">
-                    {item.businessImpact || item.description}
-                  </p>
-                  <p className="text-xs font-medium text-foreground">
-                    Estimated business impact: +{item.estimatedImpactPoints} StackScore points
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {historicalAssessments.length > 1 ? (
-        <section className="space-y-4">
-          <ClientSectionHeader
-            title="Maturity History"
-            description="Previous assessments that shaped your current technology health."
-          />
-          <div className="space-y-3">
-            {historicalAssessments.map((entry) => (
-              <div
-                key={`${entry.assessmentId}-${entry.date}`}
-                className={cn(EXECUTIVE_OS_PILLAR_ROW, "px-4 py-3")}
-              >
-                <div className="flex items-start gap-3">
-                  <History className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">
-                      {entry.assessmentName ?? "Technology Maturity Assessment"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">{entry.dateLabel}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p
-                    className={cn(
-                      "text-lg font-semibold tabular-nums",
-                      getScoreTextColorClass(entry.overallScore),
-                    )}
-                  >
-                    {entry.overallScore}
-                  </p>
-                  {entry.assessmentId === profile.currentAssessmentId && reportHref ? (
+          {overview.nextAction && !overview.assessmentInProgress ? (
+            <ClientNextActionCard
+              title={overview.nextAction.label}
+              description={overview.nextAction.description}
+              actions={
+                <>
+                  <Link href={overview.nextAction.href} className={buttonClassName({})}>
+                    {overview.nextAction.label}
+                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                  </Link>
+                  {overview.reportHref && overview.nextAction.href !== overview.reportHref ? (
                     <Link
-                      href={reportHref}
-                      className="text-xs font-medium text-primary hover:underline"
+                      href={overview.reportHref}
+                      className={buttonClassName({ variant: "outline" })}
                     >
-                      View executive report
+                      <FileText className="mr-2 h-4 w-4" aria-hidden />
+                      Assessment report
                     </Link>
                   ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
+                </>
+              }
+            />
+          ) : null}
 
-      {score !== null && profile.openRecommendationCount > 0 ? (
-        <Card className={CLIENT_SURFACE_CARD_INDUSTRIAL}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              Recommended Next Focus
-            </CardTitle>
-            <CardDescription>
-              Your official {CUSTOMER_TERM_STACKSCORE} is {score} ({maturityLabel}).{" "}
-              {profile.openRecommendationCount} improvement{" "}
-              {profile.openRecommendationCount === 1 ? "opportunity is" : "opportunities are"}{" "}
-              active. Address priority recommendations with BobKat IT; roadmap progress does not
-              replace reassessment for official maturity.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      ) : null}
+          <OverviewPillarGrid pillars={overview.pillars} />
 
-      {pillarInsights.length > 0 ? (
-        <section className="space-y-4">
-          <ClientSectionHeader
-            title="Technology Pillars"
-            description="How each technology pillar contributes to overall maturity — with context, not just scores."
+          <OverviewPriorityOpportunities
+            priorities={overview.priorities}
+            activeOpportunityCount={overview.activeOpportunityCount}
+            recommendationsHref={recommendationsHref}
           />
-          <div className="grid gap-3 sm:grid-cols-2">
-            {pillarInsights.map((pillar) => (
-              <div key={pillar.pillarCode} className={EXECUTIVE_OS_PILLAR_ROW}>
-                <div className="min-w-0 pr-4">
-                  <p className="font-medium">
-                    {executiveKpiLabel(pillar.pillarCode, pillar.pillarName)}
-                  </p>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {pillarIntelligenceDescription(
-                      pillar.percentScore,
-                      pillar.businessQuestion,
-                      pillar.openRecommendationCount,
-                    )}
-                  </p>
-                </div>
-                <p
-                  className={cn(
-                    "shrink-0 text-lg font-semibold tabular-nums",
-                    pillar.percentScore !== null
-                      ? getScoreTextColorClass(pillar.percentScore)
-                      : undefined,
-                  )}
-                >
-                  {pillar.percentScore !== null ? `${pillar.percentScore}%` : "—"}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+
+          <OverviewStrengthsExposure
+            demonstratedStrengths={overview.demonstratedStrengths}
+            comparativeStrengths={overview.comparativeStrengths}
+            pillars={overview.pillars}
+          />
+
+          <OverviewRoadmapProgress
+            roadmap={overview.roadmap}
+            stackScore={overview.stackScore}
+          />
+        </>
       ) : null}
 
       <section className="space-y-3">
         <ClientSectionHeader
           title="Workspace"
-          description="Continue into Explore, Roadmap, Reports, and related customer tools."
+          description="Continue to Explore, Roadmap, Reports, and related tools."
         />
         <WorkspaceHubLinks links={workspaceLinks} />
       </section>
@@ -505,5 +172,5 @@ export function CustomerExecutiveDashboard({
   );
 }
 
-/** Preferred name for the Executive Technology OS home view. */
-export const ExecutiveBriefingView = CustomerExecutiveDashboard;
+/** @deprecated Prefer CustomerExecutiveDashboard — alias retained for imports. */
+export { CustomerExecutiveDashboard as ExecutiveBriefingView };

@@ -45,6 +45,14 @@ export function clientExplorePath(clientId: string) {
   return `/clients/${clientId}/explore`;
 }
 
+/**
+ * Explore deep link for a canonical pillar (SS-UX-004).
+ * Uses a stable query param until pillar drilldown routes ship.
+ */
+export function clientExplorePillarPath(clientId: string, pillarCode: string) {
+  return `${clientExplorePath(clientId)}?pillar=${encodeURIComponent(pillarCode)}`;
+}
+
 /** Customer Overview landing (alias of technology-profile). */
 export function customerOverviewPath(clientId: string) {
   return customerAssessmentDashboardPath(clientId);

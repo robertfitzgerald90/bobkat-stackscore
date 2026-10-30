@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { ClientAdminActions } from "@/components/admin/client-admin-actions";
 import { CustomerExecutiveDashboard } from "@/components/customer-portal/customer-executive-dashboard";
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
+import { getCustomerOverview } from "@/lib/customer-portal/overview";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
@@ -23,24 +24,25 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
     if (clientUser?.clientId !== id) notFound();
   }
 
-  const [detail, client] = await Promise.all([
-    getTechnologyProfileDetail(id, session.user.role),
-    prisma.client.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        companyName: true,
-        status: true,
-      },
-    }),
-  ]);
-
-  if (!detail || !client) notFound();
+  const client = await prisma.client.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      companyName: true,
+      status: true,
+    },
+  });
+  if (!client) notFound();
 
   // SS-UX-002: Overview is the unified customer landing — do not redirect to vCIO.
   if (isCustomerMode(session.user.role)) {
-    return <CustomerExecutiveDashboard detail={detail} companyName={client.companyName} />;
+    const overview = await getCustomerOverview(id, session.user.role, client.companyName);
+    if (!overview) notFound();
+    return <CustomerExecutiveDashboard overview={overview} />;
   }
+
+  const detail = await getTechnologyProfileDetail(id, session.user.role);
+  if (!detail) notFound();
 
   const { sections } = detail;
 
