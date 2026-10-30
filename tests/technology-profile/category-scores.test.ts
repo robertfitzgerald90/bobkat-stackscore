@@ -23,6 +23,7 @@ describe("parseStoredProfileCategoryScores", () => {
         pillarName: "Identity & Access",
         businessQuestion: "Question",
         percentScore: 75,
+        maturityLevelCode: "managed",
         maturityLevelLabel: "Managed",
         status: "complete",
         questionsAnswered: 10,

@@ -46,7 +46,7 @@ describe("SS-REL-015 customer trust helpers", () => {
 
   it("exposes catalog projected maturity for staff only", () => {
     expect(exposeCatalogProjectedMaturity("admin")).toBe(true);
-    expect(exposeCatalogProjectedMaturity("consultant")).toBe(true);
+    expect(exposeCatalogProjectedMaturity("technician")).toBe(true);
     expect(exposeCatalogProjectedMaturity("client")).toBe(false);
   });
 
@@ -107,6 +107,7 @@ describe("SS-REL-015 customer trust helpers", () => {
       overallScore: 39,
       hasCriticalExposure: true,
       criticalFindingsCount: 1,
+      storedExecutiveSummary: null,
       categoryScores: [
         {
           categoryId: "ia",

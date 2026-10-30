@@ -12,10 +12,19 @@ describe("environment validation", () => {
     process.env = ORIGINAL_ENV;
   });
 
+  function setNodeEnv(value: string) {
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value,
+      configurable: true,
+      writable: true,
+      enumerable: true,
+    });
+  }
+
   it("accepts valid development configuration", async () => {
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/db";
     process.env.AUTH_SECRET = "dev-secret-at-least-32-characters-long";
-    process.env.NODE_ENV = "development";
+    setNodeEnv("development");
 
     const { getEnv } = await import("@/lib/env");
     const env = getEnv();
@@ -27,7 +36,7 @@ describe("environment validation", () => {
   it("rejects missing DATABASE_URL", async () => {
     delete process.env.DATABASE_URL;
     process.env.AUTH_SECRET = "dev-secret-at-least-32-characters-long";
-    process.env.NODE_ENV = "development";
+    setNodeEnv("development");
 
     const { getEnv } = await import("@/lib/env");
     expect(() => getEnv()).toThrow(/DATABASE_URL/);
@@ -36,7 +45,7 @@ describe("environment validation", () => {
   it("rejects short AUTH_SECRET in production at runtime", async () => {
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/db";
     process.env.AUTH_SECRET = "too-short";
-    process.env.NODE_ENV = "production";
+    setNodeEnv("production");
     delete process.env.NEXT_PHASE;
 
     const { getEnv } = await import("@/lib/env");
@@ -46,10 +55,11 @@ describe("environment validation", () => {
   it("allows short AUTH_SECRET during next build phase", async () => {
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/db";
     process.env.AUTH_SECRET = "too-short";
-    process.env.NODE_ENV = "production";
+    setNodeEnv("production");
     process.env.NEXT_PHASE = "phase-production-build";
 
     const { getEnv } = await import("@/lib/env");
     expect(getEnv().AUTH_SECRET).toBe("too-short");
   });
 });
+

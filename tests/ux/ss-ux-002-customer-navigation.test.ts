@@ -23,6 +23,12 @@ function clientContext(overrides?: Partial<PageContext>): PageContext {
     userClientId: OWN,
     clientId: OWN,
     pathname: "/",
+    assessmentId: null,
+    technologySlug: null,
+    projectId: null,
+    campaignId: null,
+    prospectId: null,
+    templateKey: null,
     ...overrides,
   };
 }

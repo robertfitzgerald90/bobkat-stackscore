@@ -3,11 +3,18 @@ import { deriveCustomerNextAction } from "@/lib/customer-portal/next-action";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
 
 function buildDetail(
-  overrides: Partial<TechnologyProfileDetail> & {
+  overrides: Omit<Partial<TechnologyProfileDetail>, "profile" | "journey"> & {
     profile?: Partial<TechnologyProfileDetail["profile"]>;
     journey?: Partial<TechnologyProfileDetail["journey"]>;
   } = {},
 ): TechnologyProfileDetail {
+  const {
+    profile: profileOverrides,
+    journey: journeyOverrides,
+    openRecommendations,
+    ...rest
+  } = overrides;
+
   return {
     profile: {
       id: "profile-1",
@@ -32,7 +39,7 @@ function buildDetail(
       currentAssessmentId: "assessment-1",
       openRecommendationCount: 0,
       criticalExposureCount: 0,
-      ...overrides.profile,
+      ...profileOverrides,
     },
     client: {
       id: "client-1",
@@ -43,7 +50,7 @@ function buildDetail(
       status: "active",
     },
     scoreTrend: [],
-    openRecommendations: overrides.openRecommendations ?? [],
+    openRecommendations: openRecommendations ?? [],
     activeProjects: [],
     completedProjects: [],
     journey: {
@@ -55,28 +62,29 @@ function buildDetail(
       completedProjects: 0,
       scoreDelta: null,
       progressPercent: 50,
-      ...overrides.journey,
+      ...journeyOverrides,
     },
     audience: "client",
     capabilities: {
       canViewInternalDocuments: false,
-      canEditProfile: false,
-      canManageProjects: false,
-      canViewRecommendationCounts: false,
-      showRecommendationCounts: false,
-      showJourneyTimeline: false,
-      showRecommendationsLink: true,
+      canEditBusinessProfile: false,
+      canEditImprovementPlan: false,
+      canViewPricing: false,
     },
     businessSnapshot: {
       industry: null,
       employeeCount: null,
       numberOfLocations: null,
       primaryBusinessGoal: null,
+      primaryBusinessGoalLabel: "",
       technologyVision: null,
       itSupportModel: null,
+      itSupportModelLabel: "",
       environmentType: null,
+      environmentTypeLabel: "",
       complianceFramework: null,
-      complianceDetails: null,
+      complianceFrameworkLabel: "",
+      complianceStatus: null,
       primaryContactName: "Jane Doe",
       primaryContactTitle: null,
       primaryContactEmail: "jane@example.com",
@@ -106,11 +114,14 @@ function buildDetail(
       showAdminActions: false,
       showAssessmentForms: false,
       showAssessmentResultsLink: false,
-      showBusinessProfile: false,
-      showDocuments: false,
-      showImmediateFocus: true,
-      showJourney: false,
-      showProjects: false,
+      showBusinessSnapshot: false,
+      showBusinessSnapshotLimited: false,
+      showOpenOpportunities: true,
+      showRoadmapPreview: false,
+      showRecentProgress: false,
+      showActiveProjects: false,
+      showRoadmapBuilderLink: false,
+      showNextActionCta: true,
       showRecommendationCounts: false,
       showJourneyTimeline: false,
       showRecommendationsLink: true,
@@ -126,15 +137,17 @@ function buildDetail(
       },
       items: [],
     },
-    draftAssessmentId: overrides.draftAssessmentId ?? null,
-    ...overrides,
+    draftAssessmentId: null,
+    ...rest,
   };
 }
 
 describe("deriveCustomerNextAction", () => {
-  it("returns resume assessment when a draft exists", () => {
+  it("prioritizes resume assessment when a draft exists", () => {
     const action = deriveCustomerNextAction(
-      buildDetail({ draftAssessmentId: "draft-1" }),
+      buildDetail({
+        draftAssessmentId: "draft-1",
+      }),
     );
 
     expect(action).toEqual({

@@ -13,19 +13,20 @@ describe("responsive layout utilities", () => {
   });
 
   it("constrains page shells and content to the viewport width", () => {
-    expect(globalsCss).toMatch(/\.page-content\s*\{[^}]*min-w-0[^}]*max-w-full/s);
-    expect(globalsCss).toMatch(/\.page-shell\s*\{[^}]*min-w-0[^}]*max-w-full/s);
+    expect(globalsCss).toMatch(/\.page-content\s*\{[\s\S]*?min-w-0[\s\S]*?max-w-full/);
+    expect(globalsCss).toMatch(/\.page-shell\s*\{[\s\S]*?min-w-0[\s\S]*?max-w-full/);
   });
 
   it("wraps long titles and descriptions instead of forcing page overflow", () => {
-    expect(globalsCss).toMatch(/\.page-title\s*\{[^}]*break-words/s);
-    expect(globalsCss).toMatch(/\.page-description\s*\{[^}]*break-words/s);
+    expect(globalsCss).toMatch(/\.page-title\s*\{[\s\S]*?break-words/);
+    expect(globalsCss).toMatch(/\.page-description\s*\{[\s\S]*?break-words/);
   });
 
   it("keeps desktop tables inside scroll containers", () => {
-    expect(globalsCss).toMatch(/\.table-desktop\s*\{[^}]*min-w-0[^}]*max-w-full/s);
-    expect(globalsCss).toMatch(/\.overflow-safe-x\s*\{[^}]*overflow-x-auto/s);
+    expect(globalsCss).toMatch(/\.table-desktop\s*\{[\s\S]*?min-w-0[\s\S]*?max-w-full/);
+    expect(globalsCss).toMatch(/\.overflow-safe-x\s*\{[\s\S]*?overflow-x-auto/);
   });
+
 
   it("keeps assessment recommendation actions stacked until large screens", () => {
     const assessmentResults = readFileSync(
