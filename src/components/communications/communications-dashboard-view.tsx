@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, Eye, LayoutTemplate, Send } from "lucide-react";
+import { BarChart3, LayoutTemplate, Megaphone } from "lucide-react";
 import {
   CommunicationsEmptyState,
   CommunicationsMetricsGrid,
@@ -75,28 +75,55 @@ export function CommunicationsDashboardView({
     { label: "Pending Drafts", value: stats.draftVersions },
   ];
 
+  const pulse = [
+    {
+      label: "Active Campaigns",
+      value: outreachStats.activeCampaigns,
+      href: "/admin/communications/campaigns",
+    },
+    {
+      label: "Messages Sent",
+      value: stats.messagesSent,
+      href: "/admin/communications/history",
+    },
+    {
+      label: "Failed Deliveries",
+      value: stats.failedDeliveries,
+      href: "/admin/communications/analytics",
+    },
+    {
+      label: "Delivery Rate",
+      value: stats.deliveryRate === null ? "—" : `${stats.deliveryRate}%`,
+      href: "/admin/communications/analytics",
+    },
+  ];
+
   return (
     <div className="page-shell space-y-8">
-      <OutreachDashboardSection stats={outreachStats} />
-
       <CommunicationsPageHeader
         title="Communications"
-        description="Author, preview, and validate production email templates without triggering customer workflows."
+        description="Prospects → Campaigns → Customer communications → History → Automation. Operational overview of outreach and delivery."
         actions={
           <>
             <Link
-              href="/admin/communications/templates/EMAIL-001"
+              href="/admin/communications/campaigns/new"
+              className={buttonClassName({ variant: "default", size: "sm" })}
+            >
+              <Megaphone className="size-4" />
+              New Campaign
+            </Link>
+            <Link
+              href="/admin/communications/prospects"
               className={buttonClassName({ variant: "outline", size: "sm" })}
             >
-              <Eye className="size-4" />
-              Preview Account Activation
+              Prospects
             </Link>
             <Link
               href="/admin/communications/templates"
               className={buttonClassName({ variant: "outline", size: "sm" })}
             >
               <LayoutTemplate className="size-4" />
-              Browse Templates
+              Templates
             </Link>
             <Link
               href="/admin/communications/history"
@@ -111,16 +138,31 @@ export function CommunicationsDashboardView({
               <BarChart3 className="size-4" />
               Analytics
             </Link>
-            <Link
-              href="/admin/communications/templates/EMAIL-001"
-              className={buttonClassName({ variant: "default", size: "sm" })}
-            >
-              <Send className="size-4" />
-              Send Test Email
-            </Link>
           </>
         }
       />
+
+      <section aria-labelledby="communications-pulse-heading" className="space-y-2">
+        <h2 id="communications-pulse-heading" className="text-sm font-semibold tracking-tight">
+          Communications Pulse
+        </h2>
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          {pulse.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="min-w-0 rounded-lg border border-border/60 bg-card px-3 py-2.5 transition-colors hover:border-primary/40 hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {item.label}
+              </p>
+              <p className="mt-0.5 text-xl font-bold tabular-nums">{item.value}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <OutreachDashboardSection stats={outreachStats} />
 
       <CommunicationsMetricsGrid metrics={metrics} columns={4} />
 

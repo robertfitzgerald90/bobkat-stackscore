@@ -13,6 +13,20 @@ export {
   getRecentTemplateActivity,
   getRecentTestSends,
 } from "./dashboard";
+export {
+  COMMUNICATIONS_GROUP_IDS,
+  COMMUNICATIONS_GROUP_LABELS,
+  COMMUNICATIONS_GROUPS,
+  getVisibleCommunicationsGroups,
+  isCommunicationsNavChildActive,
+  resolveActiveCommunicationsGroup,
+  resolveCommunicationsGroupHref,
+} from "./nav";
+export type {
+  CommunicationsGroupId,
+  CommunicationsNavChild,
+  CommunicationsNavGroup,
+} from "./nav";
 export { renderCommunicationTemplate } from "./render-template";
 export { sendCommunicationTestEmail } from "./send-test-email";
 export {
