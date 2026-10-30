@@ -11,7 +11,11 @@ export const CLIENT_INTERACTIVE_CARD =
   "rounded-xl border border-border bg-card transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export const CLIENT_INTERACTIVE_TILE =
-  "rounded-xl border border-border bg-background transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-primary hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "flex h-full min-h-[9.5rem] flex-col rounded-sm border border-border bg-background p-4 transition-colors duration-150 ease-out motion-reduce:transition-none hover:border-primary hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
+/** Equal-height pillar / KPI grids — stretch children via CSS Grid. */
+export const CLIENT_EQUAL_CARD_GRID =
+  "grid auto-rows-fr gap-3 sm:grid-cols-2 xl:grid-cols-4";
 
 export const CLIENT_SURFACE_CARD = "border-border";
 

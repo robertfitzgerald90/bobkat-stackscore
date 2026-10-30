@@ -306,7 +306,8 @@ describe("SS-UX-004 premium executive overview", () => {
     expect(page).toContain("getCustomerOverview");
     expect(page).not.toContain("CustomerExecutiveDashboard detail=");
     expect(explore).toContain("searchParams");
-    expect(explore).toContain("pillar=");
+    expect(explore).toContain("query.pillar");
+    expect(explore).toContain("getCustomerExplore");
     expect(dashboard).toContain("OverviewPillarGrid");
     expect(dashboard).not.toContain("northstarDemoDashboard");
     expect(dashboard).not.toContain("useProductOverview");
