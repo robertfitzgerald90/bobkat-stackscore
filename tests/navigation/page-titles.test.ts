@@ -9,18 +9,19 @@ describe("getPageTitle", () => {
     expect(getPageTitle("/snapshot-leads")).toBe("Snapshot Leads");
   });
 
-  it("returns Executive Briefing for the technology-profile overview", () => {
-    expect(getPageTitle("/clients/client-1/technology-profile")).toBe("Executive Briefing");
+  it("returns Overview for the technology-profile customer landing", () => {
+    expect(getPageTitle("/clients/client-1/technology-profile")).toBe("Overview");
+    expect(getPageTitle("/clients/client-1/explore")).toBe("Explore");
     expect(getPageTitle("/clients/client-1")).toBe("Client Workspace");
   });
 
   it("returns DOC-201 section titles for workspace routes", () => {
     expect(getPageTitle("/clients/client-1/journey")).toBe("Technology Journey");
     expect(getPageTitle("/clients/client-1/vcio")).toBe("vCIO Dashboard");
-    expect(getPageTitle("/clients/client-1/roadmap")).toBe("Living Execution Plan");
+    expect(getPageTitle("/clients/client-1/roadmap")).toBe("Roadmap");
     expect(getPageTitle("/clients/client-1/quarterly-reviews")).toBe("Business Reviews");
     expect(getPageTitle("/clients/client-1/recommendations")).toBe("Recommendations");
-    expect(getPageTitle("/clients/client-1/executive-reports")).toBe("Executive Reports");
+    expect(getPageTitle("/clients/client-1/executive-reports")).toBe("Reports");
   });
 
   it("returns specific titles for nested client routes", () => {

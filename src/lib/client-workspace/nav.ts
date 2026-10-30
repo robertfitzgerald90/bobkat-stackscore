@@ -5,6 +5,7 @@
 
 export const CLIENT_WORKSPACE_SECTIONS = [
   "overview",
+  "explore",
   "360",
   "lifecycle",
   "vcio",
@@ -35,6 +36,7 @@ export type ClientWorkspaceNavItem = {
 /** DOC-201 navigation order and labels. */
 export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "overview", label: "Overview", isOverview: true },
+  { section: "explore", label: "Explore" },
   { section: "360", label: "Customer 360" },
   { section: "lifecycle", label: "Technology Lifecycle" },
   { section: "vcio", label: "vCIO Dashboard" },
@@ -53,9 +55,14 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "activity", label: "Activity" },
 ] as const;
 
-/** Sections reachable by customer portal users (matches sidebar). */
+/**
+ * Sections reachable by customer portal users.
+ * Primary IA (SS-UX-002): overview, explore, roadmap, executive-reports.
+ * Legacy surfaces remain reachable via contextual links (not removed).
+ */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
+  "explore",
   "lifecycle",
   "vcio",
   "roadmap",
@@ -85,6 +92,8 @@ export function resolveClientWorkspaceNavHref(
   switch (section) {
     case "overview":
       return `/clients/${clientId}/technology-profile`;
+    case "explore":
+      return `/clients/${clientId}/explore`;
     case "360":
       return `/clients/${clientId}/360`;
     case "lifecycle":
@@ -122,6 +131,7 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   if (rest.startsWith("/technology-profile") || rest.startsWith("/overview")) {
     return "overview";
   }
+  if (rest.startsWith("/explore")) return "explore";
   if (rest.startsWith("/360")) return "360";
   if (rest.startsWith("/lifecycle")) return "lifecycle";
   if (rest.startsWith("/journey")) return "journey";

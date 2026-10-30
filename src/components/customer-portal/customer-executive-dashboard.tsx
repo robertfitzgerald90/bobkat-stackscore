@@ -16,6 +16,10 @@ import {
   ClientPageShell,
   ClientSectionHeader,
 } from "@/components/client-ui";
+import {
+  WorkspaceHubLinks,
+  type WorkspaceHubLink,
+} from "@/components/client-workspace/workspace-hub-links";
 import { ExecutiveBriefingPanel } from "@/components/executive-os/executive-briefing-panel";
 import { ExecutiveKpiCard } from "@/components/executive-os/executive-kpi-card";
 import { BookingButton } from "@/components/support/booking-button";
@@ -40,6 +44,7 @@ import {
   getCustomerMaturityLabel,
   customerRoadmapProgressFootnote,
 } from "@/lib/assessments/customer-reporting";
+import { clientExplorePath } from "@/lib/clients/paths";
 import { getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { getBookingUrl } from "@/lib/support/config";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
@@ -118,6 +123,38 @@ export function CustomerExecutiveDashboard({
     .filter((value): value is number => typeof value === "number");
 
   const briefing = buildExecutiveBriefing(detail, companyName, welcomeName);
+  const workspaceLinks: WorkspaceHubLink[] = [
+    {
+      href: clientExplorePath(profile.clientId),
+      title: "Explore pillars",
+      description: "Eight technology maturity domains",
+    },
+    {
+      href: `/clients/${profile.clientId}/roadmap`,
+      title: "Roadmap",
+      description: "Living execution plan and progress",
+    },
+    {
+      href: `/clients/${profile.clientId}/recommendations`,
+      title: "Improvement opportunities",
+      description: "Prioritized assessment recommendations",
+    },
+    {
+      href: `/clients/${profile.clientId}/executive-reports`,
+      title: "Reports",
+      description: "Assessment report, PDF, and reviews",
+    },
+    {
+      href: `/clients/${profile.clientId}/vcio`,
+      title: "vCIO Dashboard",
+      description: "Strategic advisory workspace",
+    },
+    {
+      href: `/clients/${profile.clientId}/lifecycle`,
+      title: "Technology Lifecycle",
+      description: "Lifecycle status and planning context",
+    },
+  ];
 
   return (
     <ClientPageShell>
@@ -456,6 +493,14 @@ export function CustomerExecutiveDashboard({
           </div>
         </section>
       ) : null}
+
+      <section className="space-y-3">
+        <ClientSectionHeader
+          title="Workspace"
+          description="Continue into Explore, Roadmap, Reports, and related customer tools."
+        />
+        <WorkspaceHubLinks links={workspaceLinks} />
+      </section>
     </ClientPageShell>
   );
 }

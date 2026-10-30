@@ -1,10 +1,13 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   ArrowRight,
   BookOpen,
   Building2,
+  CalendarDays,
   Camera,
   ClipboardList,
+  Compass,
   Eye,
   FileText,
   FolderKanban,
@@ -12,6 +15,7 @@ import {
   LayoutDashboard,
   LayoutGrid,
   Library,
+  LifeBuoy,
   Lightbulb,
   Mail,
   Map,
@@ -27,14 +31,18 @@ import {
   UserCircle,
   UserPlus,
   Users,
+  WalletCards,
 } from "lucide-react";
 
 export const COMMAND_ICON_MAP: Record<string, LucideIcon> = {
+  Activity,
   ArrowRight,
   BookOpen,
   Building2,
+  CalendarDays,
   Camera,
   ClipboardList,
+  Compass,
   Eye,
   FileText,
   FolderKanban,
@@ -42,6 +50,7 @@ export const COMMAND_ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard,
   LayoutGrid,
   Library,
+  LifeBuoy,
   Lightbulb,
   Mail,
   Map,
@@ -57,6 +66,7 @@ export const COMMAND_ICON_MAP: Record<string, LucideIcon> = {
   UserCircle,
   UserPlus,
   Users,
+  WalletCards,
 };
 
 export function resolveCommandIcon(name?: string): LucideIcon {

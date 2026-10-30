@@ -4,8 +4,8 @@ import {
   BarChart3,
   BookOpen,
   Briefcase,
-  CalendarDays,
   ClipboardList,
+  Compass,
   FileText,
   FolderKanban,
   LayoutDashboard,
@@ -21,10 +21,14 @@ import {
   Library,
   WalletCards,
   Globe,
+  LifeBuoy,
 } from "lucide-react";
 import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
-import { customerAssessmentDashboardPath } from "@/lib/clients/paths";
+import {
+  clientExplorePath,
+  customerAssessmentDashboardPath,
+} from "@/lib/clients/paths";
 
 export type SidebarNavItem = {
   href: string;
@@ -36,6 +40,11 @@ export type SidebarNavItem = {
   staffOnly?: boolean;
   portfolioOnly?: boolean;
   badgeCount?: number;
+  /**
+   * Additional path prefixes that keep this item active (SS-UX-002).
+   * Used so Roadmap stays highlighted on recommendations/projects, etc.
+   */
+  activePathPrefixes?: string[];
 };
 
 function customerHref(clientId: string | null, path: string): string {
@@ -43,55 +52,58 @@ function customerHref(clientId: string | null, path: string): string {
   return `/clients/${clientId}/${path}`;
 }
 
+/**
+ * SS-UX-002 primary customer navigation — Overview, Explore, Roadmap, Reports.
+ * Billing, Account, and Support live in secondary (account menu).
+ */
 export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[] {
+  const roadmapHref = customerHref(clientId, "roadmap");
+  const reportsHref = customerHref(clientId, "executive-reports");
+
   return [
     {
       href: clientId ? customerAssessmentDashboardPath(clientId) : "/dashboard",
-      label: "Executive Briefing",
+      label: "Overview",
       icon: LayoutDashboard,
     },
     {
-      href: customerHref(clientId, "recommendations"),
-      label: "Recommendations",
-      icon: Lightbulb,
+      href: clientId ? clientExplorePath(clientId) : "/dashboard",
+      label: "Explore",
+      icon: Compass,
       requiresClient: true,
     },
     {
-      href: customerHref(clientId, "lifecycle"),
-      label: "Technology Lifecycle",
-      icon: Activity,
-      requiresClient: true,
-    },
-    {
-      href: customerHref(clientId, "vcio"),
-      label: "vCIO Dashboard",
-      icon: LayoutGrid,
-      requiresClient: true,
-    },
-    {
-      href: customerHref(clientId, "roadmap"),
-      label: "Living Execution Plan",
+      href: roadmapHref,
+      label: "Roadmap",
       icon: Map,
       requiresClient: true,
+      activePathPrefixes: clientId
+        ? [
+            `/clients/${clientId}/recommendations`,
+            `/clients/${clientId}/projects`,
+            `/clients/${clientId}/roadmap`,
+          ]
+        : undefined,
     },
     {
-      href: customerHref(clientId, "quarterly-reviews"),
-      label: "Business Reviews",
-      icon: CalendarDays,
-      requiresClient: true,
-    },
-    {
-      href: customerHref(clientId, "projects"),
-      label: "Projects",
-      icon: FolderKanban,
-      requiresClient: true,
-    },
-    {
-      href: customerHref(clientId, "executive-reports"),
+      href: reportsHref,
       label: "Reports",
       icon: FileText,
       requiresClient: true,
+      activePathPrefixes: clientId
+        ? [
+            `/clients/${clientId}/executive-reports`,
+            `/clients/${clientId}/quarterly-reviews`,
+            `/clients/${clientId}/quarterly-review`,
+          ]
+        : undefined,
     },
+  ];
+}
+
+/** Secondary customer destinations — account menu / command palette (not primary sidebar). */
+export function getCustomerSecondaryNav(clientId: string | null): SidebarNavItem[] {
+  return [
     {
       href: customerHref(clientId, "billing"),
       label: "Subscription & Billing",
@@ -99,7 +111,8 @@ export function getCustomerSidebarNav(clientId: string | null): SidebarNavItem[]
       requiresClient: true,
     },
     { href: "/account", label: "Account", icon: UserCircle },
-  ];
+    { href: "/support", label: "Support", icon: LifeBuoy },
+  ].filter((item) => !item.requiresClient || Boolean(clientId));
 }
 
 export function getConsultantSidebarNav(
@@ -189,4 +202,23 @@ export function resolveClientIdFromPathname(pathname: string): string | null {
   const match = pathname.match(/^\/clients\/([^/]+)/);
   if (!match || match[1] === "new") return null;
   return match[1];
+}
+
+/** Whether a sidebar item should show as active for the current pathname. */
+export function isSidebarNavItemActive(pathname: string, item: SidebarNavItem): boolean {
+  if (pathname === item.href) return true;
+  if (item.activePathPrefixes?.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
+    return true;
+  }
+  if (
+    item.href !== "/dashboard" &&
+    item.href !== "/clients" &&
+    pathname.startsWith(`${item.href}/`)
+  ) {
+    return true;
+  }
+  if (item.href === "/clients" && pathname.startsWith("/clients/")) {
+    return true;
+  }
+  return false;
 }

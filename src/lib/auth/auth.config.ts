@@ -16,6 +16,21 @@ export const authConfig = {
   providers: [],
   secret: process.env.AUTH_SECRET,
   callbacks: {
+    /**
+     * Edge-safe session projection for middleware (no Prisma).
+     * Node runtime jwt/session in config.ts refresh id/role/clientId from DB.
+     */
+    async jwt({ token }) {
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        if (token.id) session.user.id = token.id as string;
+        if (token.role) session.user.role = token.role as typeof session.user.role;
+        session.user.clientId = (token.clientId as string | null | undefined) ?? null;
+      }
+      return session;
+    },
     authorized({ auth, request }) {
       const isLoggedIn = Boolean(auth?.user?.id || auth?.user?.email);
       const userRole = auth?.user?.role;
@@ -90,10 +105,22 @@ export const authConfig = {
 
         const clientMatch = pathname.match(/^\/clients\/([^/]+)/);
         if (clientMatch && clientMatch[1] !== "new") {
+          const routeClientId = clientMatch[1];
+          // SS-UX-002: defense-in-depth tenant ownership when JWT carries clientId.
+          const sessionClientId = (auth?.user as { clientId?: string | null } | undefined)
+            ?.clientId;
+          if (sessionClientId && sessionClientId !== routeClientId) {
+            return Response.redirect(
+              new URL(clientTechnologyProfilePath(sessionClientId), request.nextUrl),
+            );
+          }
           const section = resolveActiveWorkspaceSection(pathname);
           if (!isClientVisibleWorkspaceSection(section)) {
             return Response.redirect(
-              new URL(clientTechnologyProfilePath(clientMatch[1]), request.nextUrl),
+              new URL(
+                clientTechnologyProfilePath(sessionClientId ?? routeClientId),
+                request.nextUrl,
+              ),
             );
           }
           return true;

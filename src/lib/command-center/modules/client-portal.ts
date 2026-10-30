@@ -1,7 +1,9 @@
 import { registerCommands } from "@/lib/command-center/registry";
 import {
+  clientExplorePath,
   clientRecommendationsPath,
   clientWorkspaceExecutiveReportsPath,
+  clientWorkspaceRoadmapPath,
   customerAssessmentDashboardPath,
 } from "@/lib/clients/paths";
 import type { PageContext } from "@/lib/command-center/types";
@@ -15,10 +17,10 @@ export function registerClientPortalCommands(): void {
     {
       id: "nav:customer:assessment-dashboard",
       category: "navigation",
-      title: "Executive Briefing",
-      subtitle: "Your personalized technology intelligence briefing",
+      title: "Overview",
+      subtitle: "Your technology maturity summary",
       icon: "LayoutDashboard",
-      keywords: ["dashboard", "briefing", "executive", "home"],
+      keywords: ["dashboard", "briefing", "executive", "home", "overview"],
       permissions: { roles: ["client"], requiresClient: true },
       favoriteKey: "nav:customer:assessment-dashboard",
       resolveHrefFromContext: (context) => {
@@ -27,12 +29,40 @@ export function registerClientPortalCommands(): void {
       },
     },
     {
+      id: "nav:customer:explore",
+      category: "navigation",
+      title: "Explore",
+      subtitle: "Technology maturity pillars",
+      icon: "Compass",
+      keywords: ["explore", "pillars", "maturity"],
+      permissions: { roles: ["client"], requiresClient: true },
+      favoriteKey: "nav:customer:explore",
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? clientExplorePath(clientId) : null;
+      },
+    },
+    {
+      id: "nav:customer:roadmap",
+      category: "navigation",
+      title: "Roadmap",
+      subtitle: "Living execution plan and priorities",
+      icon: "Map",
+      keywords: ["roadmap", "plan", "strategy", "execution"],
+      permissions: { roles: ["client"], requiresClient: true },
+      favoriteKey: "nav:customer:roadmap",
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? clientWorkspaceRoadmapPath(clientId) : null;
+      },
+    },
+    {
       id: "nav:customer:recommendations",
       category: "deliverables",
       title: "Recommendations",
       subtitle: "Prioritized improvement opportunities",
       icon: "Lightbulb",
-      keywords: ["recommendations", "priorities"],
+      keywords: ["recommendations", "priorities", "opportunities"],
       permissions: { roles: ["client"], requiresClient: true },
       when: (context) => Boolean(context.clientPortal?.hasRecommendations),
       resolveHrefFromContext: (context) => {
@@ -55,16 +85,29 @@ export function registerClientPortalCommands(): void {
       },
     },
     {
-      id: "nav:customer:roadmap",
+      id: "nav:customer:lifecycle",
       category: "navigation",
-      title: "Living Execution Plan",
-      subtitle: "Living execution plan and planning",
-      icon: "Map",
-      keywords: ["roadmap", "plan", "strategy"],
+      title: "Technology Lifecycle",
+      subtitle: "Lifecycle progress and status",
+      icon: "Activity",
+      keywords: ["lifecycle", "maturity"],
       permissions: { roles: ["client"], requiresClient: true },
       resolveHrefFromContext: (context) => {
         const clientId = clientIdFrom(context);
-        return clientId ? `/clients/${clientId}/roadmap` : null;
+        return clientId ? `/clients/${clientId}/lifecycle` : null;
+      },
+    },
+    {
+      id: "nav:customer:projects",
+      category: "navigation",
+      title: "Projects",
+      subtitle: "Implementation projects",
+      icon: "FolderKanban",
+      keywords: ["projects", "implementation"],
+      permissions: { roles: ["client"], requiresClient: true },
+      resolveHrefFromContext: (context) => {
+        const clientId = clientIdFrom(context);
+        return clientId ? `/clients/${clientId}/projects` : null;
       },
     },
     {
@@ -117,6 +160,16 @@ export function registerClientPortalCommands(): void {
       keywords: ["account", "profile", "settings"],
       permissions: { roles: ["client"] },
       favoriteKey: "nav:customer:account",
+    },
+    {
+      id: "nav:customer:support",
+      category: "account",
+      title: "Support",
+      subtitle: "Help and booking",
+      href: "/support",
+      icon: "LifeBuoy",
+      keywords: ["support", "help", "booking"],
+      permissions: { roles: ["client"] },
     },
     {
       id: "client:resume-assessment",

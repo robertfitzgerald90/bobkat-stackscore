@@ -76,6 +76,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: user.name,
             email: user.email,
             role: user.role,
+            clientId: user.clientId,
           };
         } catch (error) {
           if (error instanceof RateLimitedSignin) throw error;
@@ -95,15 +96,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = user.role;
         token.email = user.email;
+        token.clientId = user.clientId ?? null;
       }
       if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: String(token.email).toLowerCase() },
-          select: { id: true, role: true, isActive: true },
+          select: { id: true, role: true, isActive: true, clientId: true },
         });
         if (dbUser?.isActive) {
           token.id = dbUser.id;
           token.role = dbUser.role;
+          token.clientId = dbUser.clientId;
         } else {
           token.invalid = true;
         }
@@ -117,6 +120,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as typeof session.user.role;
+        session.user.clientId = (token.clientId as string | null | undefined) ?? null;
       }
       return session;
     },

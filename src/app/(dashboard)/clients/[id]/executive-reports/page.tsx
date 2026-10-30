@@ -77,6 +77,12 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
                 <FileText className="mr-2 h-4 w-4" />
                 Review Assessment Report
               </Link>
+              <Link
+                href={`/api/v1/assessments/${client.technologyProfile?.currentAssessmentId}/export/pdf`}
+                className={buttonClassName({ variant: "outline" })}
+              >
+                Download PDF
+              </Link>
               {bookingUrl ? (
                 <BookingButton
                   label="primary"
@@ -102,12 +108,27 @@ export default async function ClientWorkspaceExecutiveReportsPage({ params }: Pa
                   href={customerAssessmentDashboardPath(id)}
                   className={buttonClassName({ variant: "outline" })}
                 >
-                  Back to Executive Briefing
+                  Back to Overview
                 </Link>
               )
             }
           />
         )}
+
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Related deliverables
+          </h2>
+          <WorkspaceHubLinks
+            links={[
+              {
+                href: `/clients/${id}/quarterly-reviews`,
+                title: "Business Reviews",
+                description: "vCIO quarterly and strategic review history",
+              },
+            ]}
+          />
+        </section>
       </ClientPageShell>
     );
   }

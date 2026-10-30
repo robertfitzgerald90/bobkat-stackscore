@@ -4,11 +4,7 @@ import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { prisma } from "@/lib/db";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
-import { clientTechnologyProfilePath } from "@/lib/clients/paths";
-import {
-  canUseOngoingVcioFeatures,
-  getClientVcioEntitlement,
-} from "@/lib/vcio/entitlements";
+import { customerOverviewPath } from "@/lib/clients/paths";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -20,12 +16,9 @@ export default async function DashboardPage() {
     if (!user?.onboardingCompletedAt) {
       redirect("/onboarding");
     }
+    // SS-UX-002: all onboarded customers land on Overview (not vCIO).
     if (user.clientId) {
-      const entitlement = await getClientVcioEntitlement(user.clientId);
-      if (canUseOngoingVcioFeatures(entitlement.accessState)) {
-        redirect(`/clients/${user.clientId}/vcio`);
-      }
-      redirect(clientTechnologyProfilePath(user.clientId));
+      redirect(customerOverviewPath(user.clientId));
     }
     redirect("/onboarding");
   }

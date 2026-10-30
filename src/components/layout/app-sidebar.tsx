@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { canAccessPortfolio } from "@/lib/navigation/default-landing";
 import {
   getSidebarNavForRole,
+  isSidebarNavItemActive,
   resolveClientIdFromPathname,
 } from "@/lib/navigation/sidebar-nav";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
@@ -87,12 +88,7 @@ function SidebarNav({
       >
         {navItems.map((item) => {
           const Icon = item.icon;
-          const active =
-            pathname === item.href ||
-            (item.href !== "/dashboard" &&
-              item.href !== "/clients" &&
-              pathname.startsWith(`${item.href}/`)) ||
-            (item.href === "/clients" && pathname.startsWith("/clients/"));
+          const active = isSidebarNavItemActive(pathname, item);
 
           const link = (
             <Link

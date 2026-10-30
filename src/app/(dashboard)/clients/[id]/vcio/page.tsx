@@ -361,11 +361,12 @@ export default async function ClientVcioDashboardPage({ params }: PageProps) {
             description: "Review your roadmap so priorities and timing stay aligned.",
             href: `/clients/${clientId}/roadmap`,
           }
-        : !hasBudget
+          : !hasBudget
           ? {
+              // SS-UX-002: /assets is not client-visible — route customers to lifecycle.
               label: "Complete Budget Planning",
-              description: "Add budget details to technology lifecycle and vendor records.",
-              href: `/clients/${clientId}/assets`,
+              description: "Review technology lifecycle and planning context with BobKat IT.",
+              href: `/clients/${clientId}/lifecycle`,
             }
           : previousGeneratedReview
             ? {

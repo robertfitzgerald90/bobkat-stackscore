@@ -156,6 +156,7 @@ describe("client workspace access", () => {
   it("limits client-portal nav to customer-safe vCIO and deliverable sections", () => {
     expect(CLIENT_VISIBLE_WORKSPACE_SECTIONS).toEqual([
       "overview",
+      "explore",
       "lifecycle",
       "vcio",
       "roadmap",
@@ -166,6 +167,7 @@ describe("client workspace access", () => {
       "billing",
     ]);
     expect(isClientVisibleWorkspaceSection("overview")).toBe(true);
+    expect(isClientVisibleWorkspaceSection("explore")).toBe(true);
     expect(isClientVisibleWorkspaceSection("lifecycle")).toBe(true);
     expect(isClientVisibleWorkspaceSection("vcio")).toBe(true);
     expect(isClientVisibleWorkspaceSection("quarterly-reviews")).toBe(true);
@@ -179,6 +181,7 @@ describe("client workspace access", () => {
     ).map((item) => item.label);
     expect(labels).toEqual([
       "Overview",
+      "Explore",
       "Technology Lifecycle",
       "vCIO Dashboard",
       "Living Execution Plan",

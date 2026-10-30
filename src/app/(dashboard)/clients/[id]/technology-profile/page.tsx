@@ -6,10 +6,6 @@ import { CustomerExecutiveDashboard } from "@/components/customer-portal/custome
 import { TechnologyProfileDetailView } from "@/components/technology-profile/technology-profile-detail";
 import { getTechnologyProfileDetail } from "@/lib/technology-profile";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
-import {
-  canUseOngoingVcioFeatures,
-  getClientVcioEntitlement,
-} from "@/lib/vcio/entitlements";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -17,6 +13,15 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  // SS-UX-002: page-level tenant ownership (defense-in-depth with middleware JWT check).
+  if (isCustomerMode(session.user.role)) {
+    const clientUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { clientId: true },
+    });
+    if (clientUser?.clientId !== id) notFound();
+  }
 
   const [detail, client] = await Promise.all([
     getTechnologyProfileDetail(id, session.user.role),
@@ -32,11 +37,8 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
 
   if (!detail || !client) notFound();
 
+  // SS-UX-002: Overview is the unified customer landing — do not redirect to vCIO.
   if (isCustomerMode(session.user.role)) {
-    const entitlement = await getClientVcioEntitlement(id);
-    if (canUseOngoingVcioFeatures(entitlement.accessState)) {
-      redirect(`/clients/${id}/vcio`);
-    }
     return <CustomerExecutiveDashboard detail={detail} companyName={client.companyName} />;
   }
 

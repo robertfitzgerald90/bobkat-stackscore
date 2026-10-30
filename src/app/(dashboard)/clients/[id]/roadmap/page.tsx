@@ -1,6 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { ClientPageHeader, ClientPageShell } from "@/components/client-ui";
+import {
+  WorkspaceHubLinks,
+  type WorkspaceHubLink,
+} from "@/components/client-workspace/workspace-hub-links";
 import { WorkspaceSectionHeader } from "@/components/client-workspace/workspace-section-header";
 import {
   RoadmapDashboard,
@@ -36,18 +40,36 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
     if (clientUser?.clientId !== id) notFound();
 
     const dashboard = await getClientRoadmapDashboard(id, session.user.role);
+    const relatedLinks: WorkspaceHubLink[] = [
+      {
+        href: `/clients/${id}/recommendations`,
+        title: "Improvement Opportunities",
+        description: "Prioritized recommendations from your assessment",
+      },
+      {
+        href: `/clients/${id}/projects`,
+        title: "Projects",
+        description: "Implementation projects tied to your roadmap",
+      },
+    ];
 
     return (
       <ClientPageShell>
         <ClientPageHeader
           eyebrow="Implementation Journey"
-          title="Living Execution Plan"
-          description="Track your phased technology journey, approve the next implementation window, and measure StackScore progress over time."
+          title="Roadmap"
+          description="Track your phased technology journey, approve the next implementation window, and measure progress over time."
         />
         <RoadmapDashboard
           dashboard={dashboard}
           emptyFallback={<RoadmapEmptyState clientId={id} />}
         />
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Related
+          </h2>
+          <WorkspaceHubLinks links={relatedLinks} />
+        </section>
       </ClientPageShell>
     );
   }

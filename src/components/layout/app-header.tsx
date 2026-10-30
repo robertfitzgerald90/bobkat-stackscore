@@ -1,11 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { CommandPaletteTrigger } from "@/components/command-palette/command-palette-trigger";
 import { formatUserRole } from "@/lib/display";
+import { isCustomerMode } from "@/lib/navigation/portal-mode";
+import { getCustomerSecondaryNav } from "@/lib/navigation/sidebar-nav";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,13 +29,14 @@ export function AppHeader({
   onSidebarToggle,
   variant = "default",
 }: {
-  user: { name: string; email: string; role: string };
+  user: { name: string; email: string; role: string; clientId?: string | null };
   pageTitle: string;
   onMenuClick: () => void;
   sidebarCollapsed?: boolean;
   onSidebarToggle?: () => void;
   variant?: "default" | "workspaceShell";
 }) {
+  const router = useRouter();
   const initials = user.name
     .split(" ")
     .map((part) => part[0])
@@ -41,6 +45,9 @@ export function AppHeader({
     .toUpperCase();
   const isWorkspaceShell = variant === "workspaceShell";
   const Root = isWorkspaceShell ? "div" : "header";
+  const secondaryNav = isCustomerMode(user.role)
+    ? getCustomerSecondaryNav(user.clientId ?? null)
+    : [];
 
   return (
     <Root
@@ -169,7 +176,7 @@ export function AppHeader({
               </p>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
               <DropdownMenuLabel className="md:hidden">
                 <p className="text-sm font-medium">{user.name}</p>
@@ -178,6 +185,25 @@ export function AppHeader({
                 </p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="md:hidden" />
+              {secondaryNav.length > 0 ? (
+                <>
+                  {secondaryNav.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={item.href}
+                        onClick={() => {
+                          router.push(item.href);
+                        }}
+                      >
+                        <Icon className="mr-2 h-4 w-4" />
+                        {item.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                  <DropdownMenuSeparator />
+                </>
+              ) : null}
               <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
                 Sign out
               </DropdownMenuItem>

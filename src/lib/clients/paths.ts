@@ -34,10 +34,20 @@ export function clientTechnologyProfilePath(clientId: string) {
 }
 
 /**
- * Canonical customer assessment workspace route.
+ * Canonical customer assessment workspace route (Overview / SS-UX-002).
  */
 export function customerAssessmentDashboardPath(clientId: string) {
   return clientTechnologyProfilePath(clientId);
+}
+
+/** Customer Explore — eight technology pillars entry (SS-UX-002 foundation). */
+export function clientExplorePath(clientId: string) {
+  return `/clients/${clientId}/explore`;
+}
+
+/** Customer Overview landing (alias of technology-profile). */
+export function customerOverviewPath(clientId: string) {
+  return customerAssessmentDashboardPath(clientId);
 }
 
 
