@@ -208,47 +208,63 @@
   outline-offset: 2px;
 }
 
-/* Watermark — decorative only; never captures pointer events */
+/**
+ * Watermark — decorative only; never captures pointer events.
+ *
+ * SS-UX-003-FIX: Centered in the customer content column (not full browser /
+ * sidebar width). Absolute layer covers the content-area host so the full logo
+ * stays visible with object-fit: contain — no corner anchoring / vw sizing that
+ * previously cropped the mark.
+ */
 .customer-portal-watermark {
   position: absolute;
+  inset: 0;
   z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
   user-select: none;
-  inset: auto 4% 6% auto;
-  width: min(42vw, 420px);
-  max-width: 480px;
-  opacity: 0.045;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
   mix-blend-mode: luminosity;
 }
 
 .customer-portal-watermark img {
-  width: 100%;
-  height: auto;
   display: block;
+  width: min(52%, 26rem);
+  max-width: min(26rem, 72%);
+  height: auto;
+  max-height: min(70%, 22rem);
   object-fit: contain;
+  object-position: center;
+  opacity: 0.05;
 }
 
 @media (max-width: 768px) {
-  .customer-portal-watermark {
-    width: min(55vw, 220px);
-    opacity: 0.03;
-    inset: auto 2% 4% auto;
+  .customer-portal-watermark img {
+    width: min(58%, 14rem);
+    max-width: min(14rem, 70%);
+    max-height: min(55%, 12rem);
+    opacity: 0.035;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .customer-portal-watermark {
     mix-blend-mode: normal;
-    opacity: 0.035;
+  }
+
+  .customer-portal-watermark img {
+    opacity: 0.04;
   }
 }
 
-/* Content sits above watermark */
-.customer-portal-main > * {
+/* Scrolling page content sits above the decorative watermark layer */
+.customer-portal-main > .page-content,
+.customer-portal-main > .customer-portal-content {
   position: relative;
   z-index: 1;
-}
-
-.customer-portal-main > .customer-portal-watermark {
-  z-index: 0;
 }

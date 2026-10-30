@@ -9,10 +9,12 @@ type CustomerPortalWatermarkProps = {
 /**
  * Decorative Bobkat IT logo watermark for the customer portal shell.
  * Uses the authentic rebrand asset (`new-bobkat-it-logo.png`).
- * `aria-hidden` + empty alt — purely decorative; does not capture pointer events.
+ *
+ * SS-UX-003-FIX: Absolutely positioned, flex-centered layer inside the customer
+ * content column — full logo visible via object-fit: contain; no flow impact.
  */
 export function CustomerPortalWatermark({ className }: CustomerPortalWatermarkProps) {
-  const { width, height } = bobkatLogoDimensionsForHeight(320);
+  const { width, height } = bobkatLogoDimensionsForHeight(420);
 
   return (
     <div className={cn("customer-portal-watermark", className)} aria-hidden="true">
@@ -21,8 +23,8 @@ export function CustomerPortalWatermark({ className }: CustomerPortalWatermarkPr
         alt=""
         width={width}
         height={height}
-        className="h-auto w-full max-w-full object-contain"
-        sizes="(max-width: 768px) 220px, 420px"
+        className="object-contain object-center"
+        sizes="(max-width: 768px) 224px, 416px"
         priority={false}
       />
     </div>

@@ -70,12 +70,19 @@ describe("SS-UX-003 customer portal visual foundation", () => {
     expect(themeCss).toContain(".customer-portal");
     expect(themeCss).toContain(".customer-portal-watermark");
     expect(themeCss).toContain("--phosphor");
+    expect(themeCss).toContain("justify-content: center");
+    expect(themeCss).toContain("align-items: center");
+    expect(themeCss).toContain("inset: 0");
+    expect(themeCss).toContain("object-fit: contain");
     expect(themeCss).toMatch(/opacity:\s*0\.0[3-6]/);
+    expect(themeCss).not.toContain("inset: auto 4% 6% auto");
     expect(shell).toContain("CUSTOMER_PORTAL_THEME_CLASS");
     expect(shell).toContain("CustomerPortalWatermark");
+    expect(shell).toContain("customer-portal-content");
     expect(watermark).toContain("bobkatLogoSrc");
     expect(watermark).toContain('aria-hidden="true"');
     expect(watermark).toContain('alt=""');
+    expect(watermark).toContain("object-contain");
   });
 
   it("does not apply customer theme class to staff shell paths", () => {

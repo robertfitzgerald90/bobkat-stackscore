@@ -84,20 +84,32 @@ export function DashboardShell({ user, navBadges = {}, children }: DashboardShel
               onSidebarToggle={toggleCollapsed}
             />
           ) : null}
-          <main
+          {/*
+            SS-UX-003-FIX: watermark lives in a non-scrolling content-column host
+            so it centers in the visible customer area (excluding sidebar) and is
+            not cropped by main overflow while pages scroll above it.
+          */}
+          <div
             className={cn(
-              "page-content min-w-0 flex-1 overflow-y-auto overflow-x-clip",
+              "relative min-h-0 min-w-0 flex-1",
               customerPortal && CUSTOMER_PORTAL_MAIN_CLASS,
-              usesUnifiedClientChrome
-                ? "bg-muted/30 dark:bg-surface-elevated/20"
-                : customerMode
-                  ? "p-4 sm:p-6 lg:p-8"
-                  : "bg-muted/30 p-4 dark:bg-surface-elevated/20 sm:p-6 lg:p-8",
             )}
           >
             {customerPortal ? <CustomerPortalWatermark /> : null}
-            {children}
-          </main>
+            <main
+              className={cn(
+                "page-content relative z-[1] h-full min-w-0 overflow-y-auto overflow-x-clip",
+                customerPortal && "customer-portal-content",
+                usesUnifiedClientChrome
+                  ? "bg-muted/30 dark:bg-surface-elevated/20"
+                  : customerMode
+                    ? "p-4 sm:p-6 lg:p-8"
+                    : "bg-muted/30 p-4 dark:bg-surface-elevated/20 sm:p-6 lg:p-8",
+              )}
+            >
+              {children}
+            </main>
+          </div>
         </div>
         {staffQuickInviteEnabled ? <FloatingQuickInviteButton /> : null}
       </div>
