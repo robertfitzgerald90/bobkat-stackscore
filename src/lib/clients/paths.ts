@@ -84,8 +84,26 @@ export function clientRecommendationsPath(clientId: string) {
   return clientWorkspaceSectionPath(clientId, "recommendations");
 }
 
-export function clientRecommendationDetailPath(clientId: string, recommendationId: string) {
-  return `${clientRecommendationsPath(clientId)}?selected=${recommendationId}`;
+/**
+ * Improvement opportunity deep link (SS-UX-006).
+ * Optional pillar keeps Explore → Opportunities filters aligned.
+ */
+export function clientRecommendationDetailPath(
+  clientId: string,
+  recommendationId: string,
+  options?: { pillarCode?: string },
+) {
+  const params = new URLSearchParams();
+  params.set("selected", recommendationId);
+  if (options?.pillarCode) {
+    params.set("pillar", options.pillarCode);
+  }
+  return `${clientRecommendationsPath(clientId)}?${params.toString()}`;
+}
+
+/** Roadmap phase workspace deep link (existing phase detail route). */
+export function clientRoadmapPhasePath(clientId: string, phaseId: string) {
+  return `/clients/${clientId}/roadmap/phases/${phaseId}`;
 }
 
 /**

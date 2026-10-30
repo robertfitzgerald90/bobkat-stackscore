@@ -5,6 +5,13 @@ import { ClientRecommendationsView } from "@/components/clients/client-recommend
 import { CustomerRecommendationsView } from "@/components/customer-portal/customer-recommendations-view";
 import type { ClientRecommendationFilters } from "@/lib/recommendations/client-list";
 import { getClientRecommendations } from "@/lib/recommendations/client-list";
+import {
+  getCustomerOpportunities,
+  type CustomerOpportunityFilters,
+} from "@/lib/customer-portal/opportunities";
+import {
+  normalizeCustomerOpportunityStatusFilter,
+} from "@/lib/customer-portal/opportunities-dto";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import type { Priority, RecommendationStatus } from "@/generated/prisma/client";
 
@@ -13,7 +20,7 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function parseFilters(
+function parseStaffFilters(
   searchParams: Record<string, string | string[] | undefined>,
 ): ClientRecommendationFilters {
   const pillar = searchParams.pillar;
@@ -31,6 +38,28 @@ function parseFilters(
   };
 }
 
+function parseCustomerFilters(
+  searchParams: Record<string, string | string[] | undefined>,
+): CustomerOpportunityFilters {
+  const pillar = searchParams.pillar;
+  const priority = searchParams.priority;
+  const statusRaw = typeof searchParams.status === "string" ? searchParams.status : undefined;
+
+  return {
+    pillarCode: typeof pillar === "string" && pillar ? pillar : undefined,
+    priority:
+      typeof priority === "string" && priority ? (priority as Priority) : undefined,
+    status: normalizeCustomerOpportunityStatusFilter(statusRaw) ?? "active",
+  };
+}
+
+function parseSelected(
+  searchParams: Record<string, string | string[] | undefined>,
+): string | null {
+  const selected = searchParams.selected;
+  return typeof selected === "string" && selected ? selected : null;
+}
+
 export default async function ClientRecommendationsPage({ params, searchParams }: PageProps) {
   const { id: clientId } = await params;
   const session = await auth();
@@ -45,7 +74,6 @@ export default async function ClientRecommendationsPage({ params, searchParams }
   }
 
   const resolvedSearchParams = await searchParams;
-  const filters = parseFilters(resolvedSearchParams);
 
   const client = await prisma.client.findUnique({
     where: { id: clientId },
@@ -54,15 +82,32 @@ export default async function ClientRecommendationsPage({ params, searchParams }
 
   if (!client) notFound();
 
+  if (isCustomerMode(session.user.role)) {
+    const filters = parseCustomerFilters(resolvedSearchParams);
+    const selectedId = parseSelected(resolvedSearchParams);
+    const dto = await getCustomerOpportunities(
+      clientId,
+      filters,
+      session.user.role,
+      selectedId,
+    );
+
+    return (
+      <CustomerRecommendationsView
+        clientId={clientId}
+        dto={dto}
+        filters={filters}
+        selectedId={selectedId}
+      />
+    );
+  }
+
+  const filters = parseStaffFilters(resolvedSearchParams);
   const recommendations = await getClientRecommendations(
     clientId,
     filters,
     session.user.role,
   );
-
-  if (isCustomerMode(session.user.role)) {
-    return <CustomerRecommendationsView recommendations={recommendations} />;
-  }
 
   return (
     <ClientRecommendationsView

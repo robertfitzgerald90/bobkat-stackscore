@@ -147,6 +147,7 @@ function maturitySummary(score: number | null, label: string | null, pillarName:
 function toOpportunity(
   clientId: string,
   row: PillarRecommendationInput,
+  pillarCode: string,
 ): CustomerPillarOpportunity {
   return {
     id: row.id,
@@ -155,7 +156,7 @@ function toOpportunity(
     priorityLabel: PRIORITY_LABELS[row.priority],
     status: row.status,
     statusLabel: STATUS_LABELS[row.status] ?? row.status,
-    href: clientRecommendationDetailPath(clientId, row.id),
+    href: clientRecommendationDetailPath(clientId, row.id, { pillarCode }),
     complexity: resolveCustomerOpportunityComplexity(row.suggestedService),
   };
 }
@@ -299,7 +300,9 @@ export function buildCustomerPillarDetail(input: {
     active.length > 0 ? active : input.recommendations,
     PILLAR_OPPORTUNITY_DISPLAY_LIMIT,
   );
-  const opportunities = ranked.map((row) => toOpportunity(input.clientId, row));
+  const opportunities = ranked.map((row) =>
+    toOpportunity(input.clientId, row, definition.code),
+  );
   const nextActions = opportunities.slice(0, PILLAR_NEXT_ACTION_LIMIT);
 
   return {

@@ -13,6 +13,7 @@ import {
   clientProjectsPath,
   clientRecommendationDetailPath,
   clientRecommendationsPath,
+  clientRoadmapPhasePath,
   clientTechnologyProfilePath,
   clientWorkspacePath,
   clientWorkspaceProjectsPath,
@@ -99,6 +100,12 @@ describe("client workspace paths", () => {
     );
     expect(clientRecommendationDetailPath(clientId, "r1")).toBe(
       "/clients/client-1/recommendations?selected=r1",
+    );
+    expect(clientRecommendationDetailPath(clientId, "r1", { pillarCode: "identity_access" })).toBe(
+      "/clients/client-1/recommendations?selected=r1&pillar=identity_access",
+    );
+    expect(clientRoadmapPhasePath(clientId, "phase-1")).toBe(
+      "/clients/client-1/roadmap/phases/phase-1",
     );
   });
 

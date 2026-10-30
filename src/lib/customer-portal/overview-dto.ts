@@ -159,7 +159,9 @@ function buildPriorities(detail: TechnologyProfileDetail): CustomerOverviewOppor
     title: conciseFocusTitle(row.title),
     priority: row.priority,
     priorityLabel: PRIORITY_LABELS[row.priority],
-    href: clientRecommendationDetailPath(detail.profile.clientId, row.id),
+    href: clientRecommendationDetailPath(detail.profile.clientId, row.id, {
+      pillarCode: row.categoryCode,
+    }),
   }));
 }
 

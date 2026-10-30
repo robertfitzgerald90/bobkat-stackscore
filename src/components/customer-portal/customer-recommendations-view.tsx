@@ -1,152 +1,163 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Lightbulb } from "lucide-react";
 import {
   ClientEmptyState,
   ClientPageHeader,
   ClientPageShell,
 } from "@/components/client-ui";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PRIORITY_BADGE } from "@/components/technology-profile/tp-constants";
-import { CLIENT_INTERACTIVE_CARD, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
-import { conciseFocusTitle } from "@/lib/client-workspace";
-import { PRIORITY_LABELS } from "@/lib/display";
-import { sortRecommendationsByPriority } from "@/lib/recommendations/sort";
-import { getPillarDisplayForCategoryCode } from "@/lib/technology-maturity/pillars";
-import type { ClientRecommendationRow } from "@/lib/recommendations/client-list";
-import type { Priority } from "@/generated/prisma/client";
-import { cn } from "@/lib/utils";
+import { OpportunityFilters } from "@/components/customer-portal/opportunities/opportunity-filters";
+import { OpportunityRow } from "@/components/customer-portal/opportunities/opportunity-row";
+import { OpportunitySummary } from "@/components/customer-portal/opportunities/opportunity-summary";
+import {
+  CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES,
+} from "@/lib/assessments/customer-reporting";
+import { clientRecommendationsPath } from "@/lib/clients/paths";
+import type {
+  CustomerOpportunitiesDto,
+  CustomerOpportunityFilters,
+} from "@/lib/customer-portal/opportunities-dto";
 
 type CustomerRecommendationsViewProps = {
-  recommendations: ClientRecommendationRow[];
+  clientId: string;
+  dto: CustomerOpportunitiesDto;
+  filters: CustomerOpportunityFilters;
+  selectedId: string | null;
 };
 
-const PRIORITY_ACCENT: Record<Priority, string> = {
-  critical: "border-l-destructive bg-destructive/[0.04]",
-  high: "border-l-amber-500 bg-amber-500/[0.05]",
-  medium: "border-l-primary/60 bg-primary/[0.03]",
-  low: "border-l-border bg-muted/20",
-};
-
-function RecommendationCard({ recommendation }: { recommendation: ClientRecommendationRow }) {
-  const pillar = getPillarDisplayForCategoryCode(recommendation.categoryCode);
-
-  return (
-    <article
-      className={cn(
-        CLIENT_INTERACTIVE_CARD,
-        "overflow-hidden border-l-4 shadow-sm",
-        PRIORITY_ACCENT[recommendation.priority],
-      )}
-    >
-      <div className="space-y-6 p-5 sm:p-6">
-        <header className="space-y-3">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <h2 className="min-w-0 flex-1 text-lg font-semibold leading-snug tracking-tight sm:text-xl">
-              {conciseFocusTitle(recommendation.title)}
-            </h2>
-            <Badge
-              variant={PRIORITY_BADGE[recommendation.priority]}
-              className="shrink-0 text-xs uppercase tracking-wide"
-            >
-              {PRIORITY_LABELS[recommendation.priority]}
-            </Badge>
-          </div>
-
-          {pillar ? (
-            <div className="space-y-1.5 rounded-lg border border-border/50 bg-background/80 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Technology Pillar
-              </p>
-              <p className="text-sm font-medium">{pillar.pillarName}</p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {pillar.businessQuestion}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-1.5 rounded-lg border border-border/50 bg-background/80 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Technology Pillar
-              </p>
-              <p className="text-sm font-medium">{recommendation.categoryName}</p>
-            </div>
-          )}
-        </header>
-
-        <section className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-            Why this matters
-          </p>
-          {recommendation.businessImpact ? (
-            <p className="text-base leading-relaxed text-foreground/90">
-              {recommendation.businessImpact}
-            </p>
-          ) : (
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Addressing this area will strengthen your technology environment and reduce
-              operational risk.
-            </p>
-          )}
-        </section>
-
-        <footer className="border-t border-border/60 pt-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Estimated StackScore improvement
-          </p>
-          <p className="mt-1 text-lg font-bold tabular-nums text-primary">
-            +{recommendation.estimatedImpactPoints} points
-          </p>
-        </footer>
-      </div>
-    </article>
-  );
+function buildQuery(filters: CustomerOpportunityFilters, selected: string | null): string {
+  const params = new URLSearchParams();
+  if (filters.pillarCode) params.set("pillar", filters.pillarCode);
+  if (filters.priority) params.set("priority", filters.priority);
+  if (filters.status && filters.status !== "active") {
+    params.set("status", filters.status);
+  }
+  if (selected) params.set("selected", selected);
+  const query = params.toString();
+  return query ? `?${query}` : "";
 }
 
 export function CustomerRecommendationsView({
-  recommendations,
+  clientId,
+  dto,
+  filters,
+  selectedId,
 }: CustomerRecommendationsViewProps) {
-  const visibleRecommendations = sortRecommendationsByPriority(
-    recommendations.filter(
-      (r) => r.status === "open" || r.status === "accepted" || r.status === "in_progress",
-    ),
-  );
+  const router = useRouter();
+  const basePath = clientRecommendationsPath(clientId);
 
-  const totalOpportunities = visibleRecommendations.length;
+  const expandedId = useMemo(() => {
+    if (selectedId && dto.selectedFound) return selectedId;
+    return null;
+  }, [selectedId, dto.selectedFound]);
+
+  useEffect(() => {
+    if (!expandedId) return;
+    const target = document.getElementById(`rec-${expandedId}`);
+    if (!target) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [expandedId, dto.opportunities]);
+
+  function pushState(nextFilters: CustomerOpportunityFilters, selected: string | null) {
+    router.push(`${basePath}${buildQuery(nextFilters, selected)}`, { scroll: false });
+  }
+
+  function updateFilter(key: "pillar" | "priority" | "status", value: string) {
+    const next: CustomerOpportunityFilters = { ...filters };
+    if (key === "pillar") {
+      next.pillarCode = value || undefined;
+    } else if (key === "priority") {
+      next.priority = value
+        ? (value as NonNullable<CustomerOpportunityFilters["priority"]>)
+        : undefined;
+    } else {
+      next.status = value
+        ? (value as NonNullable<CustomerOpportunityFilters["status"]>)
+        : "active";
+    }
+    // Changing filters clears selection so history stays intuitive.
+    pushState(next, null);
+  }
+
+  function toggleOpportunity(id: string) {
+    const nextSelected = expandedId === id ? null : id;
+    pushState(filters, nextSelected);
+  }
+
+  const hasAnyVisible = dto.summary.identified > 0;
+  const matchingLabel =
+    dto.summary.matching === 1
+      ? "Showing 1 opportunity for the current filters."
+      : `Showing ${dto.summary.matching} opportunities for the current filters.`;
 
   return (
-    <ClientPageShell className="max-w-3xl space-y-10">
+    <ClientPageShell className="max-w-4xl space-y-8">
       <ClientPageHeader
-        eyebrow="Improvement Priorities"
-        title="Recommendations"
-        description="What to improve, why it matters for your business, and how much maturity improvement you can expect from each priority."
+        eyebrow={CUSTOMER_TERM_IMPROVEMENT_OPPORTUNITIES}
+        title="Improvement Opportunities"
+        description="Prioritized recommendations from your assessment — explore by pillar, priority, and status, then open a row for approved finding and action detail."
       />
 
-      {visibleRecommendations.length === 0 ? (
+      {!hasAnyVisible ? (
         <ClientEmptyState
           icon={Lightbulb}
-          title="No recommendations yet"
+          title="No improvement opportunities yet"
           description="Recommendations appear after your technology assessment identifies the highest-impact improvements for your environment."
           nextStep="Complete or resume your assessment to receive personalized priorities."
         />
       ) : (
-        <div className="space-y-6">
-          {visibleRecommendations.map((recommendation) => (
-            <RecommendationCard key={recommendation.id} recommendation={recommendation} />
-          ))}
-        </div>
-      )}
+        <>
+          <OpportunitySummary summary={dto.summary} matchingLabel={matchingLabel} />
 
-      <Card className={cn(CLIENT_SURFACE_CARD, "border-primary/20 bg-muted/30")}>
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-base">Your complete roadmap</CardTitle>
-          <CardDescription className="text-sm leading-relaxed">
-            {totalOpportunities > 0
-              ? `We identified ${totalOpportunities} opportunit${totalOpportunities === 1 ? "y" : "ies"}. Your executive report contains the complete roadmap, which we will review together during your strategy session.`
-              : "Your executive report will contain the complete roadmap, which we will review together during your strategy session."}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+          <OpportunityFilters filters={filters} onChange={updateFilter} />
+
+          {selectedId && !dto.selectedFound ? (
+            <p
+              className="rounded-sm border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground"
+              role="status"
+            >
+              That opportunity is not available in your portal. It may be inaccessible or no
+              longer customer-visible.
+            </p>
+          ) : null}
+
+          {dto.selectedOutsideFilter && dto.selectedFound ? (
+            <p
+              className="rounded-sm border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-muted-foreground"
+              role="status"
+            >
+              The linked opportunity is outside the current filters. It is shown expanded below;
+              adjust filters to browse the full matching set.
+            </p>
+          ) : null}
+
+          {dto.opportunities.length === 0 ? (
+            <ClientEmptyState
+              icon={Lightbulb}
+              title="No matching opportunities"
+              description="Nothing matches the current pillar, priority, or status filters."
+              nextStep="Clear or broaden filters to see other customer-visible recommendations."
+            />
+          ) : (
+            <ul className="space-y-2">
+              {dto.opportunities.map((opportunity) => (
+                <li key={opportunity.id}>
+                  <OpportunityRow
+                    opportunity={opportunity}
+                    expanded={expandedId === opportunity.id}
+                    complexityFootnote={dto.complexityFootnote}
+                    onToggle={() => toggleOpportunity(opportunity.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
     </ClientPageShell>
   );
 }
