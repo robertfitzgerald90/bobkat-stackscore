@@ -120,7 +120,7 @@ describe("buildClientWorkspaceSnapshot titles", () => {
     expect(titles.every((title) => title !== "Improve Security Operations")).toBe(true);
 
     const withProject = snapshot.items.find((item) => item.id === "r1");
-    expect(withProject?.href).toBe("/projects?client=client-1&selected=p1");
+    expect(withProject?.href).toBe("/clients/client-1/projects/p1");
     expect(withProject?.pillarName).toBe("Security Operations");
     expect(withProject?.sourceLabel).toBe("From recommendation");
   });
@@ -174,7 +174,7 @@ describe("buildClientWorkspaceSnapshot titles", () => {
     const projectItem = snapshot.items.find((item) => item.kind === "project");
     expect(projectItem?.title).toBe("Are portable devices encrypted");
     expect(projectItem?.pillarName).toBe("Endpoint Management");
-    expect(projectItem?.href).toBe("/projects?client=client-1&selected=p1");
+    expect(projectItem?.href).toBe("/clients/client-1/projects/p1");
   });
 
   it("links recommendation-only items to the recommendations list", () => {

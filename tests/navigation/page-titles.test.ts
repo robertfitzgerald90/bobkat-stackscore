@@ -36,6 +36,6 @@ describe("getPageTitle", () => {
   it("maps legacy routes to their workspace section titles", () => {
     expect(getPageTitle("/clients/client-1/improvement-plan")).toBe("Living Execution Plan");
     expect(getPageTitle("/clients/client-1/business-profile")).toBe("Contacts");
-    expect(getPageTitle("/clients/client-1/quarterly-review")).toBe("Executive Reports");
+    expect(getPageTitle("/clients/client-1/quarterly-review")).toBe("Business Reviews");
   });
 });

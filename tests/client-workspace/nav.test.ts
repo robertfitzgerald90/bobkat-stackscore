@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  getStaffWorkspaceGroups,
   getVisibleWorkspaceNav,
+  resolveActiveWorkspaceGroup,
   resolveActiveWorkspaceSection,
   resolveClientWorkspaceNavHref,
 } from "@/lib/client-workspace";
@@ -30,6 +32,9 @@ describe("resolveClientWorkspaceNavHref", () => {
     expect(resolveClientWorkspaceNavHref("c1", "contacts")).toBe("/clients/c1/contacts");
     expect(resolveClientWorkspaceNavHref("c1", "executive-reports")).toBe(
       "/clients/c1/executive-reports",
+    );
+    expect(resolveClientWorkspaceNavHref("c1", "communications")).toBe(
+      "/clients/c1/communications",
     );
   });
 
@@ -68,7 +73,7 @@ describe("resolveActiveWorkspaceSection", () => {
       "executive-reports",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/quarterly-review")).toBe(
-      "executive-reports",
+      "quarterly-reviews",
     );
     expect(resolveActiveWorkspaceSection("/clients/c1/assessments")).toBe(
       "assessments",
@@ -80,14 +85,18 @@ describe("resolveActiveWorkspaceSection", () => {
     expect(resolveActiveWorkspaceSection("/clients/c1/documents")).toBe("documents");
     expect(resolveActiveWorkspaceSection("/clients/c1/journey")).toBe("journey");
     expect(resolveActiveWorkspaceSection("/clients/c1/assets")).toBe("assets");
+    expect(resolveActiveWorkspaceSection("/clients/c1/communications")).toBe(
+      "communications",
+    );
   });
 });
 
-describe("getVisibleWorkspaceNav", () => {
+describe("getVisibleWorkspaceNav / staff groups", () => {
   it("limits client-portal users to overview-oriented sections", () => {
     const sections = getVisibleWorkspaceNav("client").map((item) => item.section);
     expect(sections).toEqual([
       "overview",
+      "explore",
       "lifecycle",
       "vcio",
       "roadmap",
@@ -99,10 +108,11 @@ describe("getVisibleWorkspaceNav", () => {
     ]);
   });
 
-  it("shows the full DOC-201 nav for internal roles", () => {
-    expect(getVisibleWorkspaceNav("admin")).toHaveLength(17);
-    expect(getVisibleWorkspaceNav("admin")[0]?.section).toBe("overview");
-    expect(getVisibleWorkspaceNav("admin")[1]?.section).toBe("360");
-    expect(getVisibleWorkspaceNav("admin")[2]?.section).toBe("lifecycle");
+  it("exposes staff destinations without Risks via five groups", () => {
+    const staffSections = getVisibleWorkspaceNav("admin").map((item) => item.section);
+    expect(staffSections).not.toContain("risks");
+    expect(staffSections).toContain("communications");
+    expect(getStaffWorkspaceGroups()).toHaveLength(5);
+    expect(resolveActiveWorkspaceGroup("/clients/c1/projects/p1")).toBe("execution");
   });
 });

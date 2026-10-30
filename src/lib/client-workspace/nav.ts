@@ -1,5 +1,6 @@
 /**
- * Client Workspace primary navigation (DOC-201, DEV-002 Phase 1).
+ * Client Workspace navigation.
+ * Section registry preserves DOC-201 routes; SS-ADMIN-003 staff chrome uses five groups.
  * Immediate Focus is an Overview component — not a nav item (DOC-161 / DOC-163).
  */
 
@@ -22,6 +23,7 @@ export const CLIENT_WORKSPACE_SECTIONS = [
   "executive-reports",
   "risks",
   "activity",
+  "communications",
 ] as const;
 
 export type ClientWorkspaceSection = (typeof CLIENT_WORKSPACE_SECTIONS)[number];
@@ -33,7 +35,7 @@ export type ClientWorkspaceNavItem = {
   isOverview?: boolean;
 };
 
-/** DOC-201 navigation order and labels. */
+/** Section registry + page-title labels (routes preserved). */
 export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "overview", label: "Overview", isOverview: true },
   { section: "explore", label: "Explore" },
@@ -53,13 +55,113 @@ export const CLIENT_WORKSPACE_NAV: readonly ClientWorkspaceNavItem[] = [
   { section: "executive-reports", label: "Executive Reports" },
   { section: "risks", label: "Risks" },
   { section: "activity", label: "Activity" },
+  { section: "communications", label: "Communications" },
 ] as const;
 
+/** SS-ADMIN-003 staff workspace groups. */
+export const CLIENT_WORKSPACE_GROUP_IDS = [
+  "overview",
+  "assessment",
+  "strategy",
+  "execution",
+  "relationship",
+] as const;
+
+export type ClientWorkspaceGroupId = (typeof CLIENT_WORKSPACE_GROUP_IDS)[number];
+
+export type ClientWorkspaceGroupChild = {
+  section: ClientWorkspaceSection;
+  label: string;
+};
+
+export type ClientWorkspaceGroup = {
+  id: ClientWorkspaceGroupId;
+  label: string;
+  defaultSection: ClientWorkspaceSection;
+  children: readonly ClientWorkspaceGroupChild[];
+};
+
 /**
- * Sections reachable by customer portal users.
- * Primary IA (SS-UX-002): overview, explore, roadmap, executive-reports.
- * Legacy surfaces remain reachable via contextual links (not removed).
+ * Staff two-level navigation (SS-ADMIN-003).
+ * Risks omitted from visible children; route `/clients/{id}/risks` remains.
  */
+export const CLIENT_WORKSPACE_GROUPS: readonly ClientWorkspaceGroup[] = [
+  {
+    id: "overview",
+    label: "Overview",
+    defaultSection: "overview",
+    children: [
+      { section: "overview", label: "Client Overview" },
+      { section: "360", label: "Customer 360" },
+      { section: "journey", label: "Technology Journey" },
+    ],
+  },
+  {
+    id: "assessment",
+    label: "Assessment",
+    defaultSection: "assessments",
+    children: [
+      { section: "assessments", label: "Assessments" },
+      { section: "explore", label: "Explore" },
+      { section: "assets", label: "Technology Stack" },
+    ],
+  },
+  {
+    id: "strategy",
+    label: "Strategy",
+    defaultSection: "recommendations",
+    children: [
+      { section: "recommendations", label: "Recommendations" },
+      { section: "roadmap", label: "Roadmap" },
+      { section: "documents", label: "Documents" },
+      { section: "executive-reports", label: "Executive Reports" },
+    ],
+  },
+  {
+    id: "execution",
+    label: "Execution",
+    defaultSection: "projects",
+    children: [{ section: "projects", label: "Projects" }],
+  },
+  {
+    id: "relationship",
+    label: "Relationship",
+    defaultSection: "contacts",
+    children: [
+      { section: "contacts", label: "Contacts" },
+      { section: "lifecycle", label: "Technology Lifecycle" },
+      { section: "vcio", label: "vCIO" },
+      { section: "quarterly-reviews", label: "Business Reviews" },
+      { section: "billing", label: "Billing" },
+      { section: "activity", label: "Activity" },
+      { section: "communications", label: "Communications" },
+    ],
+  },
+] as const;
+
+const SECTION_TO_GROUP: Record<ClientWorkspaceSection, ClientWorkspaceGroupId> = {
+  overview: "overview",
+  "360": "overview",
+  journey: "overview",
+  risks: "overview",
+  assessments: "assessment",
+  explore: "assessment",
+  assets: "assessment",
+  recommendations: "strategy",
+  roadmap: "strategy",
+  documents: "strategy",
+  "executive-reports": "strategy",
+  projects: "execution",
+  contacts: "relationship",
+  lifecycle: "relationship",
+  vcio: "relationship",
+  "quarterly-reviews": "relationship",
+  billing: "relationship",
+  activity: "relationship",
+  communications: "relationship",
+};
+
+/** Sections reachable by customer portal users (SS-UX-002 allowlist for deep links). */
 export const CLIENT_VISIBLE_WORKSPACE_SECTIONS: readonly ClientWorkspaceSection[] = [
   "overview",
   "explore",
@@ -79,6 +181,10 @@ export function isClientVisibleWorkspaceSection(section: ClientWorkspaceSection)
 
 export function isClientWorkspaceSection(value: string): value is ClientWorkspaceSection {
   return (CLIENT_WORKSPACE_SECTIONS as readonly string[]).includes(value);
+}
+
+export function isClientWorkspaceGroupId(value: string): value is ClientWorkspaceGroupId {
+  return (CLIENT_WORKSPACE_GROUP_IDS as readonly string[]).includes(value);
 }
 
 /**
@@ -114,10 +220,18 @@ export function resolveClientWorkspaceNavHref(
     case "executive-reports":
     case "risks":
     case "activity":
+    case "communications":
       return `/clients/${clientId}/${section}`;
     default:
       return null;
   }
+}
+
+export function resolveClientWorkspaceGroupHref(
+  clientId: string,
+  group: ClientWorkspaceGroup,
+): string | null {
+  return resolveClientWorkspaceNavHref(clientId, group.defaultSection);
 }
 
 /** Resolves which DOC-201 section is active for the current pathname. */
@@ -136,7 +250,9 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   if (rest.startsWith("/lifecycle")) return "lifecycle";
   if (rest.startsWith("/journey")) return "journey";
   if (rest.startsWith("/vcio")) return "vcio";
-  if (rest.startsWith("/quarterly-reviews")) return "quarterly-reviews";
+  if (rest.startsWith("/quarterly-reviews") || rest.startsWith("/quarterly-review")) {
+    return "quarterly-reviews";
+  }
   if (rest.startsWith("/recommendations")) return "recommendations";
   if (rest.startsWith("/roadmap") || rest.startsWith("/improvement-plan")) {
     return "roadmap";
@@ -146,15 +262,15 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   }
   if (
     rest.startsWith("/executive-reports") ||
-    rest.startsWith("/quarterly-review") ||
     rest.startsWith("/progress-report") ||
-    rest.startsWith("/improvement")
+    (rest.startsWith("/improvement") && !rest.startsWith("/improvement-plan"))
   ) {
     return "executive-reports";
   }
   if (rest.startsWith("/assessments")) return "assessments";
   if (rest.startsWith("/projects")) return "projects";
   if (rest.startsWith("/documents")) return "documents";
+  if (rest.startsWith("/communications")) return "communications";
 
   for (const section of CLIENT_WORKSPACE_SECTIONS) {
     if (section === "overview") continue;
@@ -166,12 +282,45 @@ export function resolveActiveWorkspaceSection(pathname: string): ClientWorkspace
   return "overview";
 }
 
-/** Nav items visible for the given role. */
+/** Exactly one staff workspace group for recognized client routes. */
+export function resolveActiveWorkspaceGroup(pathname: string): ClientWorkspaceGroupId {
+  const section = resolveActiveWorkspaceSection(pathname);
+  return SECTION_TO_GROUP[section];
+}
+
+export function getWorkspaceGroupById(
+  groupId: ClientWorkspaceGroupId,
+): ClientWorkspaceGroup | undefined {
+  return CLIENT_WORKSPACE_GROUPS.find((group) => group.id === groupId);
+}
+
+/** Staff five-group navigation (Risks never included). */
+export function getStaffWorkspaceGroups(): readonly ClientWorkspaceGroup[] {
+  return CLIENT_WORKSPACE_GROUPS;
+}
+
+/**
+ * Flat nav items visible for the given role.
+ * Staff: grouped chrome uses `getStaffWorkspaceGroups`; this excludes Risks.
+ * Client: DOC-201 allowlist for deep-link helpers (customer chrome uses AppSidebar).
+ */
 export function getVisibleWorkspaceNav(role: string): ClientWorkspaceNavItem[] {
   if (role === "client") {
     return CLIENT_WORKSPACE_NAV.filter((item) =>
       isClientVisibleWorkspaceSection(item.section),
     );
   }
-  return [...CLIENT_WORKSPACE_NAV];
+
+  const visibleSections = new Set(
+    CLIENT_WORKSPACE_GROUPS.flatMap((group) => group.children.map((child) => child.section)),
+  );
+  return CLIENT_WORKSPACE_NAV.filter((item) => visibleSections.has(item.section));
+}
+
+/** Whether a secondary destination should show as active for the pathname. */
+export function isWorkspaceNavChildActive(
+  pathname: string,
+  section: ClientWorkspaceSection,
+): boolean {
+  return resolveActiveWorkspaceSection(pathname) === section;
 }

@@ -109,11 +109,11 @@ describe("client workspace paths", () => {
     );
   });
 
-  it("defines workspace projects path while live project links use the register", () => {
+  it("defines workspace projects paths for client-scoped delivery", () => {
     expect(clientWorkspaceProjectsPath(clientId)).toBe("/clients/client-1/projects");
     expect(clientProjectsPath(clientId)).toBe("/projects?client=client-1");
     expect(clientProjectDetailPath(clientId, "p1")).toBe(
-      "/projects?client=client-1&selected=p1",
+      "/clients/client-1/projects/p1",
     );
   });
 
@@ -155,6 +155,9 @@ describe("resolveClientWorkspaceNavHref", () => {
     );
     expect(resolveClientWorkspaceNavHref(clientId, "activity")).toBe(
       "/clients/client-1/activity",
+    );
+    expect(resolveClientWorkspaceNavHref(clientId, "communications")).toBe(
+      "/clients/client-1/communications",
     );
   });
 });

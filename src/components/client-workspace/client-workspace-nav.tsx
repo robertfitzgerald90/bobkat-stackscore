@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  getVisibleWorkspaceNav,
-  resolveActiveWorkspaceSection,
+  getStaffWorkspaceGroups,
+  isWorkspaceNavChildActive,
+  resolveActiveWorkspaceGroup,
+  resolveClientWorkspaceGroupHref,
   resolveClientWorkspaceNavHref,
-  type ClientWorkspaceNavItem,
-  type ClientWorkspaceSection,
+  type ClientWorkspaceGroup,
+  type ClientWorkspaceGroupChild,
 } from "@/lib/client-workspace/nav";
 import {
   Select,
@@ -24,6 +26,10 @@ type ClientWorkspaceNavProps = {
   variant?: "default" | "workspaceShell";
 };
 
+/**
+ * SS-ADMIN-003 staff client workspace navigation — five groups + contextual secondary destinations.
+ * Customer users do not render this chrome (see ClientWorkspaceShell).
+ */
 export function ClientWorkspaceNav({
   clientId,
   role,
@@ -31,32 +37,34 @@ export function ClientWorkspaceNav({
 }: ClientWorkspaceNavProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const activeSection = resolveActiveWorkspaceSection(pathname);
-  const items = getVisibleWorkspaceNav(role);
+  const groups = getStaffWorkspaceGroups();
+  const activeGroupId = resolveActiveWorkspaceGroup(pathname);
+  const activeGroup =
+    groups.find((group) => group.id === activeGroupId) ?? groups[0]!;
   const isWorkspaceShell = variant === "workspaceShell";
 
+  // Role retained for API compatibility; shell already gates to staff.
+  void role;
+
   return (
-    <div className="min-w-0 bg-sidebar">
-      <div className="md:hidden">
-        <label htmlFor="workspace-section-nav" className="sr-only">
-          Client workspace section
+    <div className="min-w-0 space-y-2">
+      <div className="md:hidden space-y-2">
+        <label htmlFor="workspace-group-nav" className="sr-only">
+          Client workspace group
         </label>
         <Select
-          value={activeSection}
-          items={Object.fromEntries(
-            items.map((item) => [item.section, item.label]),
-          )}
+          value={activeGroup.id}
+          items={Object.fromEntries(groups.map((group) => [group.id, group.label]))}
           onValueChange={(value) => {
             if (!value) return;
-            const href = resolveClientWorkspaceNavHref(
-              clientId,
-              value as ClientWorkspaceSection,
-            );
+            const group = groups.find((item) => item.id === value);
+            if (!group) return;
+            const href = resolveClientWorkspaceGroupHref(clientId, group);
             if (href) router.push(href);
           }}
         >
           <SelectTrigger
-            id="workspace-section-nav"
+            id="workspace-group-nav"
             className={cn(
               "w-full min-w-0 max-w-full",
               isWorkspaceShell &&
@@ -66,51 +74,76 @@ export function ClientWorkspaceNav({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {items.map((item) => (
-              <SelectItem key={item.section} value={item.section}>
-                {item.label}
+            {groups.map((group) => (
+              <SelectItem key={group.id} value={group.id}>
+                {group.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
+        <nav
+          aria-label={`${activeGroup.label} destinations`}
+          className="flex flex-wrap gap-1"
+        >
+          {activeGroup.children.map((child) => (
+            <SecondaryNavLink
+              key={child.section}
+              clientId={clientId}
+              child={child}
+              active={isWorkspaceNavChildActive(pathname, child.section)}
+              variant={variant}
+              compact
+            />
+          ))}
+        </nav>
       </div>
 
-      <nav
-        aria-label="Client workspace"
-        className={cn(
-          "hidden gap-1 overflow-x-auto pb-px [-ms-overflow-style:none] [scrollbar-width:none] md:flex md:snap-x md:snap-mandatory md:touch-pan-x [&::-webkit-scrollbar]:hidden",
-          isWorkspaceShell ? "border-b border-sidebar-border/70" : "border-b border-border/60",
-        )}
-      >
-        {items.map((item) => (
-          <WorkspaceNavLink
-            key={item.section}
-            clientId={clientId}
-            item={item}
-            active={item.section === activeSection}
-            variant={variant}
-          />
-        ))}
-      </nav>
+      <div className="hidden md:block space-y-2">
+        <nav
+          aria-label="Client workspace groups"
+          className={cn(
+            "flex flex-wrap gap-1 border-b pb-px",
+            isWorkspaceShell ? "border-sidebar-border/70" : "border-border/60",
+          )}
+        >
+          {groups.map((group) => (
+            <GroupNavLink
+              key={group.id}
+              clientId={clientId}
+              group={group}
+              active={group.id === activeGroupId}
+              variant={variant}
+            />
+          ))}
+        </nav>
+
+        <SecondaryNavRow
+          clientId={clientId}
+          group={activeGroup}
+          pathname={pathname}
+          variant={variant}
+        />
+      </div>
     </div>
   );
 }
 
-function WorkspaceNavLink({
+function GroupNavLink({
   clientId,
-  item,
+  group,
   active,
-  variant = "default",
+  variant,
 }: {
   clientId: string;
-  item: ClientWorkspaceNavItem;
+  group: ClientWorkspaceGroup;
   active: boolean;
-  variant?: "default" | "workspaceShell";
+  variant: "default" | "workspaceShell";
 }) {
-  const href = resolveClientWorkspaceNavHref(clientId, item.section);
+  const href = resolveClientWorkspaceGroupHref(clientId, group);
   const isWorkspaceShell = variant === "workspaceShell";
   const className = cn(
-    "shrink-0 snap-start rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+    "shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
     isWorkspaceShell
       ? active
         ? "bg-sidebar-accent text-sidebar-accent-foreground"
@@ -118,23 +151,96 @@ function WorkspaceNavLink({
       : active
         ? "bg-primary/10 text-primary"
         : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
-    !href &&
-      (isWorkspaceShell
-        ? "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-sidebar-foreground/80"
-        : "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-muted-foreground"),
+  );
+
+  if (!href) {
+    return <span className={className}>{group.label}</span>;
+  }
+
+  return (
+    <Link
+      href={href}
+      className={className}
+      aria-current={active ? "page" : undefined}
+      data-workspace-group={group.id}
+    >
+      {group.label}
+    </Link>
+  );
+}
+
+function SecondaryNavRow({
+  clientId,
+  group,
+  pathname,
+  variant,
+}: {
+  clientId: string;
+  group: ClientWorkspaceGroup;
+  pathname: string;
+  variant: "default" | "workspaceShell";
+}) {
+  return (
+    <nav
+      aria-label={`${group.label} destinations`}
+      className={cn(
+        "flex flex-wrap gap-1",
+        group.id === "relationship" && "gap-1.5",
+      )}
+    >
+      {group.children.map((child) => (
+        <SecondaryNavLink
+          key={child.section}
+          clientId={clientId}
+          child={child}
+          active={isWorkspaceNavChildActive(pathname, child.section)}
+          variant={variant}
+          compact={group.id === "relationship"}
+        />
+      ))}
+    </nav>
+  );
+}
+
+function SecondaryNavLink({
+  clientId,
+  child,
+  active,
+  variant,
+  compact = false,
+}: {
+  clientId: string;
+  child: ClientWorkspaceGroupChild;
+  active: boolean;
+  variant: "default" | "workspaceShell";
+  compact?: boolean;
+}) {
+  const href = resolveClientWorkspaceNavHref(clientId, child.section);
+  const isWorkspaceShell = variant === "workspaceShell";
+  const className = cn(
+    "rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    compact ? "px-2 py-1 text-xs sm:text-sm" : "px-2.5 py-1 text-sm",
+    isWorkspaceShell
+      ? active
+        ? "bg-sidebar-primary/15 text-sidebar-foreground ring-1 ring-sidebar-border"
+        : "text-sidebar-foreground/75 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+      : active
+        ? "bg-muted text-foreground ring-1 ring-border"
+        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+    !href && "cursor-not-allowed opacity-50",
   );
 
   if (!href) {
     return (
       <span className={className} title="Available in a later update">
-        {item.label}
+        {child.label}
       </span>
     );
   }
 
   return (
     <Link href={href} className={className} aria-current={active ? "page" : undefined}>
-      {item.label}
+      {child.label}
     </Link>
   );
 }
