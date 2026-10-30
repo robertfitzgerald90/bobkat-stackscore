@@ -11,7 +11,7 @@ import {
 import type { Customer360Dashboard } from "@/lib/commercial-intelligence/types";
 import { getReportLibrary } from "@/lib/commercial-intelligence/reporting-library";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatDisplayDate } from "@/lib/display";
 import { buttonClassName } from "@/components/ui/button";
@@ -73,7 +73,15 @@ export function Customer360View({ dashboard }: { dashboard: Customer360Dashboard
           value={dashboard.overallClientHealthScore}
           score
         />
-        <Metric label="Current StackScore" value={dashboard.currentStackScore} score />
+        <Metric
+          label="Current StackScore"
+          value={
+            dashboard.currentStackScore == null
+              ? null
+              : formatMaturityScore(dashboard.currentStackScore)
+          }
+          scoreValue={dashboard.currentStackScore}
+        />
         <Metric label="Roadmap Progress" value={`${dashboard.roadmapProgressPercent}%`} />
         <Metric
           label="Monthly Recurring Revenue"
@@ -234,11 +242,22 @@ function Metric({
   label,
   value,
   score,
+  scoreValue,
 }: {
   label: string;
   value: string | number | null;
+  /** When true, colorize using numeric `value` (non-maturity composites). */
   score?: boolean;
+  /** Prefer for maturity StackScore — colors from raw precision, label already formatted. */
+  scoreValue?: number | null;
 }) {
+  const colorScore =
+    scoreValue !== undefined && scoreValue !== null
+      ? scoreValue
+      : score && typeof value === "number"
+        ? value
+        : null;
+
   return (
     <div className={cn("rounded-xl border bg-card p-4 shadow-sm", CLIENT_SURFACE_CARD)}>
       <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
@@ -247,7 +266,7 @@ function Metric({
       <p
         className={cn(
           "mt-2 text-2xl font-bold tracking-tight text-foreground",
-          score && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
+          colorScore !== null ? getScoreTextColorClass(colorScore) : undefined,
         )}
       >
         {value ?? "—"}

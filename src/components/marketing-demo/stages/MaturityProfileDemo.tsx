@@ -7,7 +7,11 @@ import {
   DemoCardTitle,
 } from "../ui/demo-primitives";
 import { cn } from "../utils/cn";
-import { getScoreBarColorClass, getScoreTextColorClass } from "../utils/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "../utils/score-display";
 
 type MaturityProfileDemoProps = {
   data: ClientImprovementPlanDemoData;
@@ -26,8 +30,8 @@ export function MaturityProfileDemo({ data }: MaturityProfileDemoProps) {
         </DemoCardHeader>
         <DemoCardContent>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Metric label="Current score" value={data.currentScore} emphasizeScore />
-            <Metric label="Projected score" value={data.projectedScore} emphasizeScore />
+            <Metric label="Current score" value={formatMaturityScore(data.currentScore)} emphasizeScore score={data.currentScore} />
+            <Metric label="Projected score" value={formatMaturityScore(data.projectedScore)} emphasizeScore score={data.projectedScore} />
             <Metric label="Expected improvement" value={`+${data.expectedImprovement}`} />
             <Metric label="Maturity level" value={data.maturityLevel} />
           </div>
@@ -46,13 +50,13 @@ export function MaturityProfileDemo({ data }: MaturityProfileDemoProps) {
                 <div>
                   <p className="text-xs text-muted-foreground">Today</p>
                   <p className={cn("text-2xl font-semibold tabular-nums", getScoreTextColorClass(pillar.currentScore))}>
-                    {pillar.currentScore}
+                    {formatMaturityScore(pillar.currentScore)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground">Projected</p>
                   <p className={cn("text-2xl font-semibold tabular-nums", getScoreTextColorClass(pillar.projectedScore))}>
-                    {pillar.projectedScore}
+                    {formatMaturityScore(pillar.projectedScore)}
                   </p>
                 </div>
               </div>
@@ -82,10 +86,12 @@ function Metric({
   label,
   value,
   emphasizeScore = false,
+  score,
 }: {
   label: string;
   value: string | number;
   emphasizeScore?: boolean;
+  score?: number;
 }) {
   return (
     <div className="rounded-lg border bg-background p-3">
@@ -93,7 +99,7 @@ function Metric({
       <p
         className={cn(
           "mt-1 text-lg font-semibold tabular-nums",
-          emphasizeScore && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
+          emphasizeScore && score !== undefined ? getScoreTextColorClass(score) : undefined,
         )}
       >
         {value}

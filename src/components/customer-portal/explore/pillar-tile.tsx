@@ -3,7 +3,7 @@
 import { ChevronRight } from "lucide-react";
 import { ClientStatusBadge } from "@/components/client-ui";
 import { CLIENT_INTERACTIVE_TILE, CLIENT_METRIC_VALUE } from "@/lib/client-ui/tokens";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { CustomerPillarTile } from "@/lib/customer-portal/pillar-detail-dto";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +45,7 @@ export function PillarTile({
               incomplete ? "text-muted-foreground" : getScoreTextColorClass(pillar.score!),
             )}
           >
-            {incomplete ? "—" : pillar.score}
+            {formatMaturityScore(pillar.score)}
           </p>
         </div>
         <ChevronRight
@@ -81,7 +81,7 @@ export function PillarTile({
         className={className}
         aria-pressed={selected}
         aria-current={selected ? "true" : undefined}
-        aria-label={`${pillar.name}: ${pillar.score ?? "not scored"}${
+        aria-label={`${pillar.name}: ${pillar.score === null ? "not scored" : formatMaturityScore(pillar.score)}${
           pillar.maturityLabel ? `, ${pillar.maturityLabel}` : ""
         }. ${selected ? "Selected" : "Select pillar"}`}
         onClick={() => onSelect(pillar.code)}
@@ -96,7 +96,7 @@ export function PillarTile({
       href={pillar.href}
       className={className}
       aria-current={selected ? "true" : undefined}
-      aria-label={`${pillar.name}: ${pillar.score ?? "not scored"}${
+      aria-label={`${pillar.name}: ${pillar.score === null ? "not scored" : formatMaturityScore(pillar.score)}${
         pillar.maturityLabel ? `, ${pillar.maturityLabel}` : ""
       }. Open in Explore.`}
     >

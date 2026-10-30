@@ -1,4 +1,9 @@
-/** Presentation-only score color helpers (mirrors StackScore scoring thresholds). */
+/** Presentation-only score helpers (mirrors StackScore scoring thresholds). */
+
+export {
+  formatMaturityScore,
+  MATURITY_SCORE_UNAVAILABLE,
+} from "@/lib/scoring/score-display";
 
 export function getScoreBarColorClass(score: number): string {
   if (score < 60) return "bg-destructive";

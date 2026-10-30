@@ -3,6 +3,7 @@
 import { AlertTriangle, ArrowUpRight, Focus, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { demoOrganization, pillars } from "./demo-data";
 import { Eyebrow, IconLabel, Metric, ProgressBar, VisualFrame } from "./visual-primitives";
 
@@ -51,7 +52,9 @@ export function ExecutiveTechnologyProfile() {
               >
                 <div className="flex items-center justify-between gap-3 text-xs">
                   <span className="font-medium text-foreground">{pillar.name}</span>
-                  <span className="instrument-mono text-muted-foreground">{pillar.score}</span>
+                  <span className="instrument-mono text-muted-foreground">
+                    {formatMaturityScore(pillar.score)}
+                  </span>
                 </div>
                 <div className="mt-2"><ProgressBar value={pillar.score} risk={pillar.score < 60} /></div>
               </button>

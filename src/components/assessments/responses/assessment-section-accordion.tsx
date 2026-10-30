@@ -6,6 +6,7 @@ import { buildResponseSectionMeta } from "@/lib/assessments/response-view";
 import type { CategoryScoreSummary } from "@/lib/assessments/results-summary";
 import type { PillarScoreSnapshot } from "@/lib/scoring/v2";
 import { AssessmentResponseItem } from "@/components/assessments/responses/assessment-response-item";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type AssessmentSectionAccordionProps = {
@@ -47,7 +48,7 @@ export function AssessmentSectionAccordion({
           <p className="text-sm font-semibold text-foreground">{category.name}</p>
           <p className="text-xs text-muted-foreground">
             {meta.answeredCount} of {meta.totalCount} answered
-            {meta.percentScore !== null ? ` · ${meta.percentScore}%` : ""}
+            {meta.percentScore !== null ? ` · ${formatMaturityScore(meta.percentScore)}%` : ""}
             {meta.maturityLabel ? ` · ${meta.maturityLabel}` : ""}
             {meta.flaggedCount > 0
               ? ` · ${meta.flaggedCount} finding${meta.flaggedCount === 1 ? "" : "s"}`

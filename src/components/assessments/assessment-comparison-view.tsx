@@ -30,7 +30,7 @@ import {
 } from "@/lib/technology-maturity/labels";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { RECOMMENDATION_STATUS_LABELS } from "@/lib/assessments/results-summary";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type AssessmentComparisonViewProps = {
@@ -70,12 +70,12 @@ export function AssessmentComparisonView({
       <ReportMetricGrid columns={4}>
         <ReportMetricCard
           label="Previous StackScore"
-          value={String(comparison.previous.overallScore)}
+          value={formatMaturityScore(comparison.previous.overallScore)}
           subtitle={formatAssessmentCompletionDate(comparison.previous.completedAt)}
         />
         <ReportMetricCard
           label="Current StackScore"
-          value={String(comparison.current.overallScore)}
+          value={formatMaturityScore(comparison.current.overallScore)}
           subtitle={formatAssessmentCompletionDate(comparison.current.completedAt)}
           highlight
         />
@@ -310,7 +310,7 @@ function AssessmentDetailCard({
         Completed {formatAssessmentCompletionDate(completedAt)}
       </p>
       <p className={cn("mt-2 text-3xl font-bold tabular-nums", getScoreTextColorClass(score))}>
-        {score}
+        {formatMaturityScore(score)}
       </p>
       <Badge variant="outline" className="mt-2">
         {maturity}

@@ -1,7 +1,7 @@
 import { CheckCircle2, ClipboardList, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { MaturityTimelineEvent } from "@/lib/analytics/types";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type MaturityTimelineProps = {
@@ -65,7 +65,7 @@ export function MaturityTimeline({ events }: MaturityTimelineProps) {
                   <p className="text-sm font-medium">{event.dateLabel}</p>
                   {event.score !== undefined ? (
                     <p className={cn("text-lg font-bold tabular-nums", getScoreTextColorClass(event.score))}>
-                      {event.score}
+                      {formatMaturityScore(event.score)}
                     </p>
                   ) : null}
                 </div>

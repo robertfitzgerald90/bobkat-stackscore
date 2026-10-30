@@ -8,7 +8,11 @@ import {
   DemoCardTitle,
 } from "../ui/demo-primitives";
 import { cn } from "../utils/cn";
-import { getScoreBarColorClass, getScoreTextColorClass } from "../utils/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "../utils/score-display";
 
 type ExecutiveReportDemoProps = {
   data: ClientImprovementPlanDemoData;
@@ -32,8 +36,8 @@ export function ExecutiveReportDemo({ data }: ExecutiveReportDemoProps) {
         </DemoCardHeader>
         <DemoCardContent>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Metric label="Current score" value={data.currentScore} score />
-            <Metric label="Projected score" value={data.projectedScore} score />
+            <Metric label="Current score" value={formatMaturityScore(data.currentScore)} score={data.currentScore} />
+            <Metric label="Projected score" value={formatMaturityScore(data.projectedScore)} score={data.projectedScore} />
             <Metric label="Expected improvement" value={`+${data.expectedImprovement}`} />
             <Metric label="Estimated timeline" value={data.estimatedTimeline} />
             <Metric label="Technology maturity level" value={data.maturityLevel} />
@@ -113,11 +117,11 @@ export function ExecutiveReportDemo({ data }: ExecutiveReportDemoProps) {
 function Metric({
   label,
   value,
-  score = false,
+  score,
 }: {
   label: string;
   value: string | number;
-  score?: boolean;
+  score?: number;
 }) {
   return (
     <div className="rounded-lg border bg-background p-3">
@@ -125,7 +129,7 @@ function Metric({
       <p
         className={cn(
           "mt-1 text-lg font-semibold tabular-nums",
-          score && typeof value === "number" ? getScoreTextColorClass(value) : undefined,
+          score !== undefined ? getScoreTextColorClass(score) : undefined,
         )}
       >
         {value}
@@ -148,7 +152,7 @@ function ScorePanel({ label, score }: { label: string; score: number }) {
     <div className="rounded-lg border bg-background p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className={cn("mt-1 text-3xl font-semibold tabular-nums", getScoreTextColorClass(score))}>
-        {score}
+        {formatMaturityScore(score)}
       </p>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
         <div

@@ -8,7 +8,11 @@ import { clientWorkspaceAssessmentsPath } from "@/lib/clients/paths";
 import { BACK_TO_ASSESSMENTS } from "@/lib/technology-maturity/labels";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
 import { getRating } from "@/lib/scoring";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type ImprovementSummaryViewProps = {
@@ -55,7 +59,7 @@ export function ImprovementSummaryView({
         <MetricCard
           title="StackScore Change"
           value={`${summary.scoreChange > 0 ? "+" : ""}${summary.scoreChange}`}
-          subtitle={`${summary.previousOverallScore} → ${summary.currentOverallScore}`}
+          subtitle={`${formatMaturityScore(summary.previousOverallScore)} → ${formatMaturityScore(summary.currentOverallScore)}`}
           tone={
             summary.scoreChange > 0 ? "positive" : summary.scoreChange < 0 ? "negative" : "neutral"
           }
@@ -95,7 +99,7 @@ export function ImprovementSummaryView({
                     getScoreTextColorClass(summary.previousOverallScore),
                   )}
                 >
-                  {summary.previousOverallScore}
+                  {formatMaturityScore(summary.previousOverallScore)}
                 </p>
                 <Badge variant="outline" className="mt-2">
                   {RATING_DISPLAY_LABELS[previousRating]}
@@ -109,7 +113,7 @@ export function ImprovementSummaryView({
                     getScoreTextColorClass(summary.currentOverallScore),
                   )}
                 >
-                  {summary.currentOverallScore}
+                  {formatMaturityScore(summary.currentOverallScore)}
                 </p>
                 <Badge variant="outline" className="mt-2">
                   {RATING_DISPLAY_LABELS[currentRating]}
@@ -131,10 +135,12 @@ export function ImprovementSummaryView({
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <span className="font-medium">{category.categoryName}</span>
                   <div className="flex items-center gap-3 tabular-nums">
-                    <span className="text-muted-foreground">{category.previousScore}</span>
+                    <span className="text-muted-foreground">
+                      {formatMaturityScore(category.previousScore)}
+                    </span>
                     <span>→</span>
                     <span className={getScoreTextColorClass(category.currentScore)}>
-                      {category.currentScore}
+                      {formatMaturityScore(category.currentScore)}
                     </span>
                     <ChangeIndicator change={category.change} compact />
                   </div>

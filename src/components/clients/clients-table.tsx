@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { formatClientStatus } from "@/lib/display";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import {
   Table,
@@ -99,7 +100,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
                       </Badge>
                     </div>
                     <MobileDataRow label="Latest Score">
-                      {client.latestScore ?? "—"}
+                      {formatMaturityScore(client.latestScore)}
                     </MobileDataRow>
                     <MobileDataRow label="Trend">
                       <TrendIndicator delta={client.scoreDelta} />
@@ -140,7 +141,7 @@ export function ClientsTable({ clients, isAdmin }: ClientsTableProps) {
                             {formatClientStatus(client.status)}
                           </Badge>
                         </TableCell>
-                        <TableCell>{client.latestScore ?? "—"}</TableCell>
+                        <TableCell>{formatMaturityScore(client.latestScore)}</TableCell>
                         <TableCell>
                           <TrendIndicator delta={client.scoreDelta} />
                         </TableCell>

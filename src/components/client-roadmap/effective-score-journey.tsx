@@ -1,7 +1,7 @@
 import { ArrowDown } from "lucide-react";
 import type { EffectiveScoreJourney } from "@/lib/client-roadmap/types";
 import { CLIENT_METRIC_WELL, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 export function EffectiveScoreJourneyView({
@@ -52,7 +52,9 @@ export function EffectiveScoreJourneyView({
                     : "text-foreground",
                 )}
               >
-                {step.value}
+                {typeof step.value === "number" && step.emphasize
+                  ? formatMaturityScore(step.value)
+                  : step.value}
               </p>
             </div>
             {index < steps.length - 1 ? (

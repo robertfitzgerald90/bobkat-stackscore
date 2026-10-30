@@ -23,7 +23,11 @@ import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { getTechnologyProfile } from "@/lib/technology-profile";
 import { RATING_LABELS } from "@/lib/scoring";
 import { getRating } from "@/lib/scoring";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "@/lib/scoring/score-display";
 import { formatDisplayDate } from "@/lib/display";
 import { cn } from "@/lib/utils";
 import type { Rating } from "@/generated/prisma/client";
@@ -202,7 +206,7 @@ export async function TechnologyProfilePanel({ clientId }: TechnologyProfilePane
                         <Badge variant="outline" className="text-[10px]">
                           {snapshot.maturityLevelLabel ?? RATING_LABELS[rating]}
                         </Badge>
-                        <span className="font-medium tabular-nums">{Math.round(score)}</span>
+                        <span className="font-medium tabular-nums">{formatMaturityScore(score)}</span>
                       </div>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-muted">

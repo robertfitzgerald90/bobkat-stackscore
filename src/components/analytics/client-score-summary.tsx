@@ -8,7 +8,7 @@ import { TrendIndicator } from "@/components/analytics/trend-indicator";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type ClientScoreSummaryProps = {
@@ -114,7 +114,7 @@ function SummaryStat({
           getScoreTextColorClass(value),
         )}
       >
-        {value ?? "—"}
+        {formatMaturityScore(value)}
       </p>
     </div>
   );

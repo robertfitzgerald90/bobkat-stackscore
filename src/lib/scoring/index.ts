@@ -102,5 +102,10 @@ export function calculateProjectedScore(
 }
 
 export { getMaturityTier, getMaturityTierLabel, MATURITY_TIER_LABELS } from "./maturity";
-export { getScoreBarColorClass, getScoreTextColorClass } from "./score-display";
+export {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+  MATURITY_SCORE_UNAVAILABLE,
+} from "./score-display";
 export { RATING_DISPLAY_LABELS, RATING_BADGE_VARIANT, MATURITY_CATEGORY_ORDER } from "./rating-display";

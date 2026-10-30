@@ -41,6 +41,7 @@ import {
   type AssessmentReportData,
 } from "@/lib/pdf/types";
 import { RATING_LABELS } from "@/lib/scoring";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import type { Priority, Rating } from "@/generated/prisma/client";
 
 registerPdfFonts();
@@ -573,10 +574,10 @@ function CategoryScoreCard({
   rating: Rating;
   useDoc119Maturity?: boolean;
 }) {
-  const roundedScore = Math.round(percentScore);
-  const fillWidth = `${Math.max(0, Math.min(100, roundedScore))}%`;
+  const displayScore = formatMaturityScore(percentScore);
+  const fillWidth = `${Math.max(0, Math.min(100, percentScore))}%`;
   const classificationLabel = useDoc119Maturity
-    ? getCustomerMaturityLabel(roundedScore)
+    ? getCustomerMaturityLabel(percentScore)
     : RATING_LABELS[rating];
 
   return (
@@ -584,7 +585,7 @@ function CategoryScoreCard({
       <View wrap={false} style={styles.categoryCard}>
         <View style={styles.categoryTitleRow}>
           <Text style={styles.categoryName}>{categoryName}</Text>
-          <Text style={styles.categoryPercent}>{roundedScore}%</Text>
+          <Text style={styles.categoryPercent}>{displayScore}%</Text>
         </View>
 
         <View style={styles.categoryProgressWrap}>

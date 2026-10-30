@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatAssessmentCompletionDate } from "@/lib/assessments/display";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { RATING_BADGE_VARIANT } from "@/lib/scoring/rating-display";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type BaselineAssessmentDetailsProps = {
@@ -21,7 +21,7 @@ export function BaselineAssessmentDetails({
       <DetailRow label="Assessment Date" value={formatAssessmentCompletionDate(completedAt)} />
       <DetailRow
         label="Assessment Score"
-        value={overallScore !== null ? String(overallScore) : "—"}
+        value={formatMaturityScore(overallScore)}
         valueClassName={cn("font-semibold tabular-nums", getScoreTextColorClass(overallScore))}
       />
       <div className="flex items-center justify-between gap-3 text-sm">

@@ -1,5 +1,6 @@
 import { BRAND } from "@/lib/branding";
 import { getReportScoreTextClass } from "@/lib/reports/document-score-display";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type AssessmentReportHeroProps = {
@@ -53,7 +54,7 @@ export function AssessmentReportHero({
         <div className="report-cover-meta-item">
           <p className="report-cover-meta-label">Overall StackScore</p>
           <p className={cn("report-cover-score", getReportScoreTextClass(overallScore))}>
-            {overallScore}
+            {formatMaturityScore(overallScore)}
           </p>
           <p className="report-cover-meta-note">{overallMaturityLabel}</p>
         </div>
@@ -62,7 +63,7 @@ export function AssessmentReportHero({
           <p className="report-cover-meta-value">{overallMaturityLabel}</p>
           <p className="report-cover-meta-note">
             {showProjected
-              ? `Projected ${projectedScore} with recommended actions`
+              ? `Projected ${formatMaturityScore(projectedScore)} with recommended actions`
               : improvementOpportunityCount !== undefined
                 ? `${improvementOpportunityCount} improvement ${
                     improvementOpportunityCount === 1 ? "opportunity" : "opportunities"

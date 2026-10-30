@@ -1,7 +1,7 @@
 import { ClientSectionHeader, ClientStatusBadge } from "@/components/client-ui";
 import { CLIENT_METRIC_VALUE, CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type {
   CustomerOverviewPillar,
   CustomerOverviewStrength,
@@ -51,7 +51,7 @@ export function OverviewStrengthsExposure({
                 <span className="font-medium text-foreground">{item.name}</span>
                 <span className="flex items-center gap-2">
                   <span className={cn(CLIENT_METRIC_VALUE, getScoreTextColorClass(item.score))}>
-                    {item.score}
+                    {formatMaturityScore(item.score)}
                   </span>
                   <ClientStatusBadge tone="success">Demonstrated</ClientStatusBadge>
                 </span>
@@ -68,7 +68,7 @@ export function OverviewStrengthsExposure({
                 <span className="font-medium text-foreground">{item.name}</span>
                 <span className="flex items-center gap-2">
                   <span className={cn(CLIENT_METRIC_VALUE, "text-muted-foreground")}>
-                    {item.score}
+                    {formatMaturityScore(item.score)}
                   </span>
                   <ClientStatusBadge tone="muted">Relative</ClientStatusBadge>
                 </span>
@@ -109,7 +109,7 @@ export function OverviewStrengthsExposure({
                   ) : null}
                 </div>
                 <span className={cn(CLIENT_METRIC_VALUE, getScoreTextColorClass(pillar.score))}>
-                  {pillar.score}
+                  {formatMaturityScore(pillar.score)}
                 </span>
               </li>
             ))}

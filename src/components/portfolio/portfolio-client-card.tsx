@@ -5,7 +5,7 @@ import { PortfolioSparkline } from "@/components/portfolio/portfolio-sparkline";
 import { clientImmediateFocusPath } from "@/lib/clients/paths";
 import { formatRelativeDisplayDate } from "@/lib/display";
 import type { PortfolioClientCard } from "@/lib/portfolio/types";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type PortfolioClientCardProps = {
@@ -66,13 +66,13 @@ export function PortfolioClientCardView({ card }: PortfolioClientCardProps) {
               getScoreTextColorClass(card.currentStackScore),
             )}
           >
-            {card.currentStackScore ?? "—"}
+            {formatMaturityScore(card.currentStackScore)}
           </p>
           {card.projectedStackScore !== null && card.currentStackScore !== null ? (
             <p className="mt-1 text-[11px] text-muted-foreground">
               Projected{" "}
               <span className="font-semibold tabular-nums text-foreground">
-                {card.projectedStackScore}
+                {formatMaturityScore(card.projectedStackScore)}
               </span>
             </p>
           ) : (

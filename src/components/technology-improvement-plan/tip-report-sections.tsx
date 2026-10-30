@@ -5,6 +5,7 @@ import { BRAND } from "@/lib/branding";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
 import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/document-score-display";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import {
   buildApprovalIntro,
   buildPhaseCompletionOutcomes,
@@ -102,7 +103,7 @@ export function TipMaturityHero({
         <div className="tip-maturity-card">
           <p className="tip-maturity-card-label">Today</p>
           <p className={cn("tip-maturity-card-score", getReportScoreTextClass(currentScore))}>
-            {currentScore}
+            {formatMaturityScore(currentScore)}
           </p>
           <p className="tip-maturity-card-rating">{RATING_LABELS[currentRating]}</p>
           <div className="tip-maturity-bar-track">
@@ -122,7 +123,7 @@ export function TipMaturityHero({
         <div className="tip-maturity-card tip-maturity-card-projected">
           <p className="tip-maturity-card-label">Projected</p>
           <p className={cn("tip-maturity-card-score", getReportScoreTextClass(projectedScore))}>
-            {projectedScore}
+            {formatMaturityScore(projectedScore)}
           </p>
           <p className="tip-maturity-card-rating">{RATING_LABELS[projectedRating]}</p>
           <div className="tip-maturity-bar-track">
@@ -233,7 +234,7 @@ export function TipCurrentMaturitySection({ data }: { data: TipReportData }) {
                     getReportScoreTextClass(category.score),
                   )}
                 >
-                  {category.score}
+                  {formatMaturityScore(category.score)}
                 </p>
               </div>
               <p className="tip-pillar-scorecard-rating">{category.ratingLabel}</p>
@@ -735,7 +736,9 @@ function TipMaturityScoreMini({
   return (
     <div className={cn("tip-maturity-card", projected && "tip-maturity-card-projected")}>
       <p className="tip-maturity-card-label">{label}</p>
-      <p className={cn("tip-maturity-card-score", getReportScoreTextClass(score))}>{score}</p>
+      <p className={cn("tip-maturity-card-score", getReportScoreTextClass(score))}>
+        {formatMaturityScore(score)}
+      </p>
       <p className="tip-maturity-card-rating">{ratingLabel}</p>
       <div className="tip-maturity-bar-track">
         <div

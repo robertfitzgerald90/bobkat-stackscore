@@ -5,7 +5,11 @@ import { Separator } from "@/components/ui/separator";
 import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import { PRIORITY_LABELS } from "@/lib/display";
 import { RATING_LABELS } from "@/lib/scoring";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "@/lib/scoring/score-display";
 import type { AssessmentPreview } from "@/types/assessment-preview";
 import type { Rating } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
@@ -78,7 +82,7 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
               getScoreTextColorClass(preview.overallScore),
             )}
           >
-            {preview.overallScore !== null ? preview.overallScore : "—"}
+            {formatMaturityScore(preview.overallScore)}
           </p>
           {overallRating ? (
             <Badge variant={RATING_VARIANT[overallRating]} className="mt-2">
@@ -106,7 +110,7 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
               <span className="text-muted-foreground">Projected if addressed</span>
             </div>
             <span className="text-lg font-bold tabular-nums text-primary">
-              {preview.projectedScore}
+              {formatMaturityScore(preview.projectedScore)}
             </span>
           </div>
         ) : null}
@@ -162,7 +166,7 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
                     </Badge>
                   ) : null}
                   <span className="font-medium tabular-nums">
-                    {category.percentScore !== null ? Math.round(category.percentScore) : "—"}
+                    {formatMaturityScore(category.percentScore)}
                   </span>
                 </div>
               </div>
@@ -208,7 +212,7 @@ export function AssessmentScorePanel({ preview, saving, compact }: AssessmentSco
                         {RATING_LABELS[risk.rating]}
                       </Badge>
                       <span className="font-medium tabular-nums">
-                        {Math.round(risk.percentScore)}
+                        {formatMaturityScore(risk.percentScore)}
                       </span>
                     </div>
                   </li>

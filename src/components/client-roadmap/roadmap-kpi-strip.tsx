@@ -1,7 +1,7 @@
 import type { ClientRoadmapDashboard } from "@/lib/client-roadmap/types";
 import { CLIENT_SURFACE_CARD } from "@/lib/client-ui/tokens";
 import { formatCurrency } from "@/lib/technology-improvement-plan/pricing";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboard }) {
@@ -99,7 +99,9 @@ export function RoadmapKpiStrip({ dashboard }: { dashboard: ClientRoadmapDashboa
                 : "text-foreground",
             )}
           >
-            {item.value}
+            {item.score && typeof item.value === "number"
+              ? formatMaturityScore(item.value)
+              : item.value}
           </p>
           {item.hint ? (
             <p className="mt-1 text-xs text-muted-foreground">{item.hint}</p>

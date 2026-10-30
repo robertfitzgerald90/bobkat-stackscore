@@ -22,7 +22,7 @@ import {
   type JourneyTimelineEventType,
   type JourneyTimelineFilter,
 } from "@/lib/technology-profile/timeline";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 const FILTERS: JourneyTimelineFilter[] = [
@@ -205,7 +205,7 @@ function TimelineEventRow({
                 getScoreTextColorClass(event.score),
               )}
             >
-              {event.score}
+              {formatMaturityScore(event.score)}
             </p>
           ) : null}
         </div>

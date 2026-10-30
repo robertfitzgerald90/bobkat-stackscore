@@ -5,6 +5,7 @@ import {
   clientSurfaceCardClass,
   type ClientVisualVariant,
 } from "@/lib/client-ui/tokens";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type ClientScoreHeroProps = {
@@ -37,8 +38,8 @@ export function ClientScoreHero({
       <CardContent className="flex flex-wrap items-end gap-4">
         <div>
           <p className={cn("text-5xl font-semibold text-foreground", CLIENT_METRIC_VALUE, scoreClassName)}>
-            {score ?? "—"}
-            {score !== null ? (
+            {formatMaturityScore(score)}
+            {score !== null && score !== undefined && Number.isFinite(score) ? (
               <span className="text-2xl font-normal text-muted-foreground"> / {maxScore}</span>
             ) : null}
           </p>

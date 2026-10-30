@@ -38,6 +38,7 @@ import {
 import { presentRecommendationDescription } from "@/lib/customer-portal/recommendation-content";
 import { formatDisplayDate, PRIORITY_LABELS } from "@/lib/display";
 import { conciseFocusTitle } from "@/lib/client-workspace";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { PROJECT_STATUS_LABELS } from "@/lib/projects";
 import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import {
@@ -217,19 +218,20 @@ function maturitySummary(score: number | null, label: string | null, pillarName:
   if (score === null || !label) {
     return `${pillarName} does not yet have an official maturity score. Complete an assessment to measure this domain.`;
   }
+  const displayScore = formatMaturityScore(score);
   if (score >= 85) {
-    return `${pillarName} is at ${label} maturity (${score}/100). Practices in this domain are largely consistent and support the business with manageable risk.`;
+    return `${pillarName} is at ${label} maturity (${displayScore}/100). Practices in this domain are largely consistent and support the business with manageable risk.`;
   }
   if (score >= 70) {
-    return `${pillarName} is at ${label} maturity (${score}/100). Core practices are in place, with clear opportunities to strengthen consistency and resilience.`;
+    return `${pillarName} is at ${label} maturity (${displayScore}/100). Core practices are in place, with clear opportunities to strengthen consistency and resilience.`;
   }
   if (score >= 55) {
-    return `${pillarName} is at ${label} maturity (${score}/100). Foundational capabilities exist, but important gaps may still create operational or security exposure.`;
+    return `${pillarName} is at ${label} maturity (${displayScore}/100). Foundational capabilities exist, but important gaps may still create operational or security exposure.`;
   }
   if (score >= 40) {
-    return `${pillarName} is at ${label} maturity (${score}/100). Several foundational controls are incomplete — prioritizing remediation will reduce business risk.`;
+    return `${pillarName} is at ${label} maturity (${displayScore}/100). Several foundational controls are incomplete — prioritizing remediation will reduce business risk.`;
   }
-  return `${pillarName} is at ${label} maturity (${score}/100). Technology readiness in this domain is early-stage. Focused improvement opportunities can raise resilience after reassessment confirms progress.`;
+  return `${pillarName} is at ${label} maturity (${displayScore}/100). Technology readiness in this domain is early-stage. Focused improvement opportunities can raise resilience after reassessment confirms progress.`;
 }
 
 function toDateLabel(value: Date | string | null | undefined): string | null {

@@ -1,7 +1,7 @@
 import { Route } from "lucide-react";
 import { TpEmptyState } from "@/components/technology-profile/tp-empty-state";
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 export type JourneyProgressSummaryProps = {
@@ -48,7 +48,7 @@ function ScoreLadderStep({ label, score, highlight }: LadderStep) {
           getScoreTextColorClass(score),
         )}
       >
-        {score !== null ? score : "—"}
+        {formatMaturityScore(score)}
       </p>
     </div>
   );

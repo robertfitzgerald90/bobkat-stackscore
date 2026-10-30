@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { useIsClient } from "@/hooks/use-is-client";
 import type { ScoreTrendPoint } from "@/lib/analytics/types";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 
 type ScoreTrendChartProps = {
   data: ScoreTrendPoint[];
@@ -59,7 +59,7 @@ export function ScoreTrendChart({ data }: ScoreTrendChartProps) {
                   <p className="font-medium">{item.name}</p>
                   <p className="text-muted-foreground">{item.label}</p>
                   <p className={getScoreTextColorClass(item.score)}>
-                    StackScore: <span className="font-semibold">{item.score}</span>
+                    StackScore: <span className="font-semibold">{formatMaturityScore(item.score)}</span>
                   </p>
                 </div>
               );

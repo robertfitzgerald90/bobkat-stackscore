@@ -3,7 +3,7 @@ import {
   CLIENT_METRIC_VALUE,
   CLIENT_SURFACE_CARD_INDUSTRIAL,
 } from "@/lib/client-ui/tokens";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { CustomerPillarDetailDto } from "@/lib/customer-portal/pillar-detail-dto";
 import { cn } from "@/lib/utils";
 
@@ -48,11 +48,11 @@ export function PillarOverview({ detail }: PillarOverviewProps) {
           >
             {detail.score !== null ? (
               <>
-                {detail.score}
+                {formatMaturityScore(detail.score)}
                 <span className="text-base font-medium text-muted-foreground"> / 100</span>
               </>
             ) : (
-              "—"
+              formatMaturityScore(null)
             )}
           </p>
           {detail.maturityLabel ? (

@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View } from "@react-pdf/renderer";
 import { getRating } from "@/lib/scoring";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { PDF_RATING_BAR, PDF_SCORE_BAR } from "@/lib/pdf/shared/colors";
 import { PdfCornerBrackets } from "@/lib/pdf/shared/components/corner-brackets";
 import { PDF_TARGET_SCORE } from "@/lib/pdf/shared/constants";
@@ -41,7 +42,7 @@ export function PdfScoreGauge({
     <View wrap={false} style={variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard}>
       <Text style={styles.gaugeLabel}>{label}</Text>
       <View style={styles.gaugeScoreBlock}>
-        <Text style={styles.gaugeValue}>{score}</Text>
+        <Text style={styles.gaugeValue}>{formatMaturityScore(score)}</Text>
         <Text style={styles.gaugeRating}>{ratingLabel}</Text>
       </View>
       <View style={styles.gaugeTrack}>

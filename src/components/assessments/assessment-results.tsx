@@ -40,7 +40,11 @@ import {
   groupRecommendationsByPriority,
 } from "@/lib/recommendations/display";
 import { calculateProjectedScore, getRating, RATING_LABELS } from "@/lib/scoring";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "@/lib/scoring/score-display";
 import type { Priority, Rating, RecommendationStatus } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 import { sanitizeFilename } from "@/lib/pdf/types";
@@ -331,7 +335,7 @@ export function AssessmentResults({
                 getScoreTextColorClass(summary.overallScore),
               )}
             >
-              {summary.overallScore}
+              {formatMaturityScore(summary.overallScore)}
             </p>
             <Badge variant={RATING_VARIANT[summary.overallRating]} className="mt-2">
               {summary.overallRatingLabel}
@@ -354,7 +358,7 @@ export function AssessmentResults({
                 getScoreTextColorClass(summary.projectedScore),
               )}
             >
-              {summary.projectedScore}
+              {formatMaturityScore(summary.projectedScore)}
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               If open recommendations are completed
@@ -430,7 +434,7 @@ export function AssessmentResults({
                     {RATING_LABELS[category.rating]}
                   </Badge>
                   <span className="font-semibold tabular-nums">
-                    {Math.round(category.percentScore)}
+                    {formatMaturityScore(category.percentScore)}
                   </span>
                 </div>
               </div>
@@ -457,7 +461,7 @@ export function AssessmentResults({
                     {RATING_LABELS[category.rating]}
                   </Badge>
                   <span className="font-semibold tabular-nums">
-                    {Math.round(category.percentScore)}
+                    {formatMaturityScore(category.percentScore)}
                   </span>
                 </div>
               </div>
@@ -524,7 +528,7 @@ export function AssessmentResults({
                         getScoreTextColorClass(score),
                       )}
                     >
-                      {Math.round(score)}
+                      {formatMaturityScore(score)}
                     </p>
                     <div className="h-2 overflow-hidden rounded-full bg-muted">
                       <div

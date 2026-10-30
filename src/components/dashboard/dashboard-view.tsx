@@ -19,7 +19,7 @@ import type { CommandCenterSummary } from "@/lib/dashboard/command-center-types"
 import type { ProjectStatus } from "@/generated/prisma/client";
 import { formatProjectStatus } from "@/lib/projects";
 import { RATING_DISPLAY_LABELS } from "@/lib/scoring/rating-display";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { Rating } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
@@ -239,7 +239,7 @@ export function DashboardView({ summary }: DashboardViewProps) {
                           getScoreTextColorClass(client.currentStackScore),
                         )}
                       >
-                        {client.currentStackScore ?? "—"}
+                        {formatMaturityScore(client.currentStackScore)}
                       </span>
                       <TrendIndicator delta={client.scoreChange} showLabel={false} />
                     </span>

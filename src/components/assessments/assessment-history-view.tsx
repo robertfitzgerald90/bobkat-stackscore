@@ -21,7 +21,7 @@ import {
   formatAssessmentStatus,
   formatAssessmentType,
 } from "@/lib/assessments/display";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import { MobileDataCard, MobileDataRow } from "@/components/ui/mobile-data-card";
 import { cn } from "@/lib/utils";
 
@@ -102,7 +102,7 @@ export function AssessmentHistoryView({
                           getScoreTextColorClass(entry.overallScore),
                         )}
                       >
-                        {entry.overallScore !== null ? entry.overallScore : "—"}
+                        {formatMaturityScore(entry.overallScore)}
                       </span>
                     </MobileDataRow>
                     <MobileDataRow label="Completed">
@@ -184,7 +184,7 @@ export function AssessmentHistoryView({
                           getScoreTextColorClass(entry.overallScore),
                         )}
                       >
-                        {entry.overallScore !== null ? entry.overallScore : "—"}
+                        {formatMaturityScore(entry.overallScore)}
                       </span>
                     </TableCell>
                     <TableCell className="text-muted-foreground">

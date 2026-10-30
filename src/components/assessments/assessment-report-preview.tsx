@@ -30,6 +30,7 @@ import { getReportScoreBarClass, getReportScoreTextClass } from "@/lib/reports/d
 import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
 import { presentRecommendationDescription } from "@/lib/customer-portal/recommendation-content";
 import { getRating, RATING_LABELS } from "@/lib/scoring";
+import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type AssessmentReportPreviewProps = {
@@ -283,7 +284,7 @@ export function AssessmentReportPreview({
                 <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
                   <p className="report-highlight-label">Overall maturity</p>
                   <p className="report-highlight-value">
-                    {data.summary.overallScore} — {displayMaturityLabel}
+                    {formatMaturityScore(data.summary.overallScore)} — {displayMaturityLabel}
                   </p>
                 </ReportHighlightCard>
                 <ReportHighlightCard documentTheme={DOCUMENT_THEME}>
@@ -315,7 +316,7 @@ export function AssessmentReportPreview({
             <div className="report-snapshot-grid">
               <SnapshotCard
                 label="Overall StackScore"
-                value={data.summary.overallScore}
+                value={formatMaturityScore(data.summary.overallScore)}
                 subtitle={displayMaturityLabel}
                 emphasize
               />
@@ -332,7 +333,7 @@ export function AssessmentReportPreview({
               ) : (
                 <SnapshotCard
                   label="Projected Improvement"
-                  value={data.summary.projectedScore}
+                  value={formatMaturityScore(data.summary.projectedScore)}
                   subtitle={`+${sections.estimatedImprovement} points potential`}
                   emphasize
                 />
@@ -361,7 +362,7 @@ export function AssessmentReportPreview({
           >
             <div className="report-pillar-grid">
               {pillarInsights.map((pillar, index) => {
-                const score = pillar.percentScore !== null ? Math.round(pillar.percentScore) : null;
+                const score = pillar.percentScore;
                 const card = (
                   <div key={pillar.pillarCode} className="report-pillar-card">
                     <div className="report-pillar-header">
@@ -372,7 +373,7 @@ export function AssessmentReportPreview({
                           score !== null ? getReportScoreTextClass(score) : undefined,
                         )}
                       >
-                        {score ?? "—"}
+                        {formatMaturityScore(score)}
                       </p>
                     </div>
                     <div className="report-pillar-bar-track">
@@ -413,7 +414,7 @@ export function AssessmentReportPreview({
                       <div key={pillar.pillarCode} className="report-insight-card">
                         <p className="report-insight-title">{pillar.pillarName}</p>
                         <p className="report-insight-body">
-                          Scoring {Math.round(pillar.percentScore ?? 0)}% —{" "}
+                          Scoring {formatMaturityScore(pillar.percentScore)}% —{" "}
                           {pillar.maturityTier ?? "strong relative performance"}.
                         </p>
                       </div>
@@ -441,7 +442,7 @@ export function AssessmentReportPreview({
                       <div key={pillar.pillarCode} className="report-insight-card report-insight-card-risk">
                         <p className="report-insight-title">{pillar.pillarName}</p>
                         <p className="report-insight-body">
-                          Scoring {Math.round(pillar.percentScore ?? 0)}% — an opportunity to reduce
+                          Scoring {formatMaturityScore(pillar.percentScore)}% — an opportunity to reduce
                           operational and security exposure.
                         </p>
                       </div>

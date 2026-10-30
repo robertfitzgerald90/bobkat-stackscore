@@ -4,7 +4,7 @@ import { ClientStatusBadge } from "@/components/client-ui";
 import { buttonClassName } from "@/components/ui/button";
 import { CLIENT_METRIC_VALUE, CLIENT_SURFACE_CARD_INDUSTRIAL } from "@/lib/client-ui/tokens";
 import { CUSTOMER_TERM_STACKSCORE } from "@/lib/assessments/customer-reporting";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { CustomerOverviewDto } from "@/lib/customer-portal/overview";
 import { cn } from "@/lib/utils";
 
@@ -87,7 +87,7 @@ export function OverviewMaturityHero({ overview }: OverviewMaturityHeroProps) {
               stackScore !== null ? getScoreTextColorClass(stackScore) : "text-foreground",
             )}
           >
-            {stackScore ?? "—"}
+            {formatMaturityScore(stackScore)}
             {stackScore !== null ? (
               <span className="text-2xl font-normal text-muted-foreground"> / 100</span>
             ) : null}

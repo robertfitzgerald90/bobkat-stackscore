@@ -2,7 +2,7 @@
 
 import { ClientStatusBadge } from "@/components/client-ui";
 import { CLIENT_METRIC_VALUE } from "@/lib/client-ui/tokens";
-import { getScoreTextColorClass } from "@/lib/scoring/score-display";
+import { formatMaturityScore, getScoreTextColorClass } from "@/lib/scoring/score-display";
 import type { CustomerPillarTile } from "@/lib/customer-portal/pillar-detail-dto";
 import type { TechnologyPillarCode } from "@/lib/technology-maturity/pillars";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export function PillarSelector({ pillars, selected, onSelect }: PillarSelectorPr
               onClick={() => onSelect(pillar.code)}
               aria-pressed={isSelected}
               aria-current={isSelected ? "true" : undefined}
-              aria-label={`${pillar.name}: ${pillar.score ?? "not scored"}${
+              aria-label={`${pillar.name}: ${pillar.score === null ? "not scored" : formatMaturityScore(pillar.score)}${
                 pillar.maturityLabel ? `, ${pillar.maturityLabel}` : ""
               }. ${isSelected ? "Selected" : "Select pillar"}`}
               className={cn(
@@ -57,7 +57,7 @@ export function PillarSelector({ pillars, selected, onSelect }: PillarSelectorPr
                     : getScoreTextColorClass(pillar.score!),
                 )}
               >
-                {incomplete ? "—" : pillar.score}
+                {formatMaturityScore(pillar.score)}
               </p>
               {pillar.maturityLabel ? (
                 <ClientStatusBadge tone={isSelected ? "success" : "muted"}>

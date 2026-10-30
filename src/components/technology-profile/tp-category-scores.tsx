@@ -5,7 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { clientTechnologyProfilePath } from "@/lib/clients/paths";
 import { TECHNOLOGY_PILLARS_LABEL } from "@/lib/technology-maturity/labels";
 import { ASSESSMENT_INCOMPLETE_LABEL, hasAnyPillarScore, type PillarScoreInsight } from "@/lib/technology-maturity/pillars";
-import { getScoreBarColorClass, getScoreTextColorClass } from "@/lib/scoring/score-display";
+import {
+  formatMaturityScore,
+  getScoreBarColorClass,
+  getScoreTextColorClass,
+} from "@/lib/scoring/score-display";
 import { cn } from "@/lib/utils";
 
 type TpCategoryScoresProps = {
@@ -98,7 +102,7 @@ export function TpCategoryScores({
                           getScoreTextColorClass(score),
                         )}
                       >
-                        {Math.round(score)}
+                        {formatMaturityScore(score)}
                       </p>
                       {insight.maturityTier ? (
                         <Badge variant="outline" className="w-fit text-[10px]">
