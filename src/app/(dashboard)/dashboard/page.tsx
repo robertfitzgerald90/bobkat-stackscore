@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { DashboardView } from "@/components/dashboard/dashboard-view";
-import { getDashboardSummary } from "@/lib/dashboard";
+import { getCommandCenterSummary } from "@/lib/dashboard/command-center";
 import { prisma } from "@/lib/db";
 import { isCustomerMode } from "@/lib/navigation/portal-mode";
 import { customerOverviewPath } from "@/lib/clients/paths";
@@ -23,7 +23,8 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const summary = await getDashboardSummary();
+  const role = session?.user?.role ?? "technician";
+  const summary = await getCommandCenterSummary(role);
 
   return <DashboardView summary={summary} />;
 }
