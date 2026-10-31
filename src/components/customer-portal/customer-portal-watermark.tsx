@@ -8,7 +8,7 @@ type CustomerPortalWatermarkProps = {
 
 /**
  * Decorative Bobkat IT logo watermark for the customer portal shell.
- * Uses the authentic rebrand asset (`new-bobkat-it-logo.png`).
+ * Uses the authentic transparent Bobkat IT emblem (`bkit-logo.png`).
  *
  * SS-UX-003-FIX: Absolutely positioned, flex-centered layer inside the customer
  * content column — full logo visible via object-fit: contain; no flow impact.

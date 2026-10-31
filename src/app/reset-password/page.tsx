@@ -25,7 +25,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
             </div>
             <ResetPasswordForm token={token} />
             <p className="text-center text-sm text-muted-foreground">
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href="/login" className="text-link hover:text-link-hover hover:underline">
                 Back to sign in
               </Link>
             </p>

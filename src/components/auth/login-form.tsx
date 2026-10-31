@@ -61,7 +61,7 @@ export function LoginForm() {
   return (
     <div className="w-full">
       <div className="mb-8 text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-brand sm:text-[1.75rem]">
+        <h2 className="text-2xl font-semibold tracking-tight text-primary sm:text-[1.75rem]">
           Sign In
         </h2>
       </div>
@@ -106,17 +106,17 @@ export function LoginForm() {
 
       <nav
         aria-label="Account help"
-        className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
+        className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm"
       >
         <Link
           href="/forgot-password"
-          className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          className="text-link underline-offset-4 transition-colors hover:text-link-hover hover:underline"
         >
           Forgot Password
         </Link>
         <Link
           href="/activate-account"
-          className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          className="text-link underline-offset-4 transition-colors hover:text-link-hover hover:underline"
         >
           Activate Account
         </Link>

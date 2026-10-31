@@ -92,26 +92,28 @@
   color: var(--brand-primary-hover, #c084fc);
 }
 
-/* Primary CTAs — gradient (heroes); forms stay Level 0 chrome below */
+/* Primary CTAs — AA-safe gradient; forms stay Level 0 chrome below */
+.public-marketing.funnel-instrument [data-slot="button"][data-variant="default"],
 .public-marketing.funnel-instrument [data-slot="button"].bg-primary,
 .public-marketing.funnel-instrument a.bg-primary {
   border-radius: 2px;
   border-color: transparent;
   color: #ffffff;
-  background: linear-gradient(135deg, #9333ea 0%, #a855f7 42%, #168bff 100%);
+  background: linear-gradient(135deg, #7e22ce 0%, #6d28d9 48%, #1d4ed8 100%);
   box-shadow:
-    0 4px 12px rgba(147, 51, 234, 0.24),
-    0 0 12px rgba(22, 139, 255, 0.1);
+    0 4px 12px rgba(109, 40, 217, 0.24),
+    0 0 12px rgba(29, 78, 216, 0.12);
   transition: filter 150ms ease-out, box-shadow 150ms ease-out;
 }
 
+.public-marketing.funnel-instrument [data-slot="button"][data-variant="default"]:hover,
 .public-marketing.funnel-instrument [data-slot="button"].bg-primary:hover,
 .public-marketing.funnel-instrument a.bg-primary:hover {
   transform: none;
   filter: brightness(1.06);
   box-shadow:
-    0 6px 16px rgba(147, 51, 234, 0.3),
-    0 0 16px rgba(22, 139, 255, 0.14);
+    0 6px 16px rgba(109, 40, 217, 0.3),
+    0 0 16px rgba(29, 78, 216, 0.16);
 }
 
 .public-marketing.funnel-instrument [data-slot="button"].border-border.bg-background,

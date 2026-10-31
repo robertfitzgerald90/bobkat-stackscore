@@ -119,7 +119,7 @@ export function ActivateAccountForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle className="text-brand">Activate your account</CardTitle>
+        <CardTitle className="text-primary">Activate your account</CardTitle>
         <CardDescription>
           {email ? `Set a password for ${email}` : "Complete your account setup"}
         </CardDescription>

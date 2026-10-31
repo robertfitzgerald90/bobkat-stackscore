@@ -1,9 +1,13 @@
 /** Bump when public branding or marketing images change to invalidate CDN/browser caches. */
-export const BRAND_ASSET_VERSION = "2026-07";
+export const BRAND_ASSET_VERSION = "2026-10-brand-004";
 
+/**
+ * Authentic Bobkat IT wolf emblem with transparent canvas (SS-BRAND-004).
+ * Prefer over `new-bobkat-it-logo.png`, which embeds an opaque black rectangle.
+ */
 export const BOBKAT_IT_LOGO = {
-  src: "/branding/new-bobkat-it-logo.png",
-  fileName: "new-bobkat-it-logo.png",
+  src: "/branding/bkit-logo.png",
+  fileName: "bkit-logo.png",
   naturalWidth: 4800,
   naturalHeight: 3300,
   aspectRatio: 4800 / 3300,

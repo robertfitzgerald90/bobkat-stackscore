@@ -16,9 +16,9 @@ import {
 import { getCustomerSidebarNav } from "@/lib/navigation/sidebar-nav";
 
 describe("SS-UX-003 customer portal visual foundation", () => {
-  it("uses the authentic Bobkat IT rebrand logo asset", () => {
-    expect(BOBKAT_IT_LOGO.src).toBe("/branding/new-bobkat-it-logo.png");
-    expect(bobkatLogoSrc()).toContain("/branding/new-bobkat-it-logo.png");
+  it("uses the authentic transparent Bobkat IT emblem asset", () => {
+    expect(BOBKAT_IT_LOGO.src).toBe("/branding/bkit-logo.png");
+    expect(bobkatLogoSrc()).toContain("/branding/bkit-logo.png");
     expect(existsSync(join(process.cwd(), "public", "branding", BOBKAT_IT_LOGO.fileName))).toBe(
       true,
     );

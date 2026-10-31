@@ -10,15 +10,15 @@ import { EMAIL_BRAND_ASSETS } from "@/emails/assets";
 import { REPORT_TOKENS } from "@/lib/reports/tokens";
 
 describe("Bobkat IT branding assets", () => {
-  it("uses the official new Bobkat IT logo everywhere", () => {
-    expect(BOBKAT_IT_LOGO.src).toBe("/branding/new-bobkat-it-logo.png");
-    expect(bobkatLogoSrc()).toContain("/branding/new-bobkat-it-logo.png");
-    expect(REPORT_TOKENS.logoPath).toContain("/branding/new-bobkat-it-logo.png");
-    expect(EMAIL_BRAND_ASSETS.bobkatItLogo).toContain("/branding/new-bobkat-it-logo.png");
+  it("uses the authentic transparent Bobkat IT emblem everywhere", () => {
+    expect(BOBKAT_IT_LOGO.src).toBe("/branding/bkit-logo.png");
+    expect(bobkatLogoSrc()).toContain("/branding/bkit-logo.png");
+    expect(REPORT_TOKENS.logoPath).toContain("/branding/bkit-logo.png");
+    expect(EMAIL_BRAND_ASSETS.bobkatItLogo).toContain("/branding/bkit-logo.png");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo.startsWith("https://")).toBe(true);
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo).not.toContain("staging.stackscore.tech");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogoAlt).toBe("Bobkat IT logo");
-    expect(getPdfLogoPath()).toContain("new-bobkat-it-logo.png");
+    expect(getPdfLogoPath()).toContain("bkit-logo.png");
   });
 
   it("preserves logo aspect ratio when sizing", () => {

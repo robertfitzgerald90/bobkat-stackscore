@@ -64,6 +64,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      data-variant={variant ?? "default"}
       className={(state) =>
         cn(
           buttonVariants({ variant, size }),

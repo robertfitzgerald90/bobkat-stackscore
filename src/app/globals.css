@@ -158,22 +158,16 @@
   --card-foreground: #f1f2f4;
   --popover: #12141a;
   --popover-foreground: #f1f2f4;
-  --primary: #3ecf7a;
-  --primary-foreground: #08090c;
-  --link: #3ecf7a;
-  --link-hover: #56dd8d;
   --secondary: #16181f;
   --secondary-foreground: #8b92a0;
   --muted: #16181f;
   --muted-foreground: #8b92a0;
-  --accent: rgba(62, 207, 122, 0.12);
   --accent-foreground: #f1f2f4;
   --destructive: #b23a3a;
   --success: #3ecf7a;
   --warning: #c9a227;
   --border: rgba(139, 146, 160, 0.2);
   --input: rgba(139, 146, 160, 0.2);
-  --ring: #3ecf7a;
   --chart-1: #3ecf7a;
   --chart-2: #8b92a0;
   --chart-3: #56dd8d;
@@ -182,14 +176,30 @@
   --radius: 2px;
   --sidebar: var(--surface-sidebar);
   --sidebar-foreground: #f1f2f4;
+  --sidebar-border: rgba(139, 146, 160, 0.16);
+  --font-sans: var(--font-instrument-body, var(--font-sans));
+  --font-heading: var(--font-instrument-display, var(--font-heading));
+}
+
+/**
+ * Legacy phosphor interactive defaults for dark/midnight shells that are NOT
+ * public-marketing (SS-BRAND-004). `.public-marketing` keeps surfaces above
+ * but receives purple interactive tokens from brand-tokens.css without this
+ * same-element override clobbering them.
+ */
+.midnight:not(.public-marketing),
+.dark {
+  --primary: #3ecf7a;
+  --primary-foreground: #08090c;
+  --link: #3ecf7a;
+  --link-hover: #56dd8d;
+  --accent: rgba(62, 207, 122, 0.12);
+  --ring: #3ecf7a;
   --sidebar-primary: #3ecf7a;
   --sidebar-primary-foreground: #08090c;
   --sidebar-accent: rgba(62, 207, 122, 0.14);
   --sidebar-accent-foreground: #f1f2f4;
-  --sidebar-border: rgba(139, 146, 160, 0.16);
   --sidebar-ring: #3ecf7a;
-  --font-sans: var(--font-instrument-body, var(--font-sans));
-  --font-heading: var(--font-instrument-display, var(--font-heading));
 }
 
 .midnight .instrument-mono,
@@ -259,11 +269,11 @@
     box-shadow: var(--shadow-glow);
   }
   .text-brand {
-    @apply text-primary;
+    color: var(--brand-primary-hover, var(--primary));
   }
   .dark .text-brand,
   .midnight .text-brand {
-    color: var(--link);
+    color: var(--brand-primary-hover, var(--link));
   }
   .text-secondary-token {
     color: var(--text-secondary);

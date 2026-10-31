@@ -15,11 +15,11 @@ describe("email brand assets", () => {
       "@/emails/assets"
     );
     expect(getEmailAssetBaseUrl()).toBe(CANONICAL_APP_ORIGIN);
-    expect(getEmailAssetUrl("/branding/new-bobkat-it-logo.png")).toBe(
-      `${CANONICAL_APP_ORIGIN}/branding/new-bobkat-it-logo.png`,
+    expect(getEmailAssetUrl("/branding/bkit-logo.png")).toBe(
+      `${CANONICAL_APP_ORIGIN}/branding/bkit-logo.png`,
     );
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo.startsWith("https://")).toBe(true);
-    expect(EMAIL_BRAND_ASSETS.bobkatItLogo).toContain("/branding/new-bobkat-it-logo.png");
+    expect(EMAIL_BRAND_ASSETS.bobkatItLogo).toContain("/branding/bkit-logo.png");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo).not.toContain("staging.stackscore.tech");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogoAlt).toBe("Bobkat IT logo");
   });
@@ -34,17 +34,17 @@ describe("email brand assets", () => {
   it("rewrites protected or relative logo URLs to a public absolute HTTPS URL", async () => {
     vi.stubEnv("EMAIL_ASSET_BASE_URL", "");
     const { resolvePublicEmailLogoUrl } = await import("@/emails/assets");
-    expect(resolvePublicEmailLogoUrl("/branding/new-bobkat-it-logo.png?v=2026-07")).toBe(
-      `${CANONICAL_APP_ORIGIN}/branding/new-bobkat-it-logo.png?v=2026-07`,
+    expect(resolvePublicEmailLogoUrl("/branding/bkit-logo.png?v=2026-10-brand-004")).toBe(
+      `${CANONICAL_APP_ORIGIN}/branding/bkit-logo.png?v=2026-10-brand-004`,
     );
     expect(
       resolvePublicEmailLogoUrl(
-        "https://staging.stackscore.tech/branding/new-bobkat-it-logo.png?v=2026-07",
+        "https://staging.stackscore.tech/branding/bkit-logo.png?v=2026-10-brand-004",
       ),
-    ).toBe(`${CANONICAL_APP_ORIGIN}/branding/new-bobkat-it-logo.png?v=2026-07`);
-    expect(
-      resolvePublicEmailLogoUrl("https://stackscore.tech/branding/new-bobkat-it-logo.png"),
-    ).toBe("https://stackscore.tech/branding/new-bobkat-it-logo.png");
+    ).toBe(`${CANONICAL_APP_ORIGIN}/branding/bkit-logo.png?v=2026-10-brand-004`);
+    expect(resolvePublicEmailLogoUrl("https://stackscore.tech/branding/bkit-logo.png")).toBe(
+      "https://stackscore.tech/branding/bkit-logo.png",
+    );
   });
 
   it("normalizes legacy footer taglines to BUILD | IMPROVE | ADVISE", async () => {

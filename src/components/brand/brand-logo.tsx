@@ -39,6 +39,8 @@ export function BrandLogo({
   const { width: logoWidth, height: displayHeight } = bobkatLogoDimensionsForHeight(logoHeight);
   const displayText = showText && !collapsed;
 
+  const isAuthPlacement = placement === "auth";
+
   const content = (
     <div
       className={cn(
@@ -48,15 +50,23 @@ export function BrandLogo({
         className,
       )}
     >
-      <Image
-        src={bobkatLogoSrc()}
-        alt={BOBKAT_IT_LOGO.alt}
-        width={logoWidth}
-        height={displayHeight}
-        className="h-auto w-auto max-w-full shrink-0 object-contain"
-        style={{ maxHeight: logoHeight }}
-        priority={priority || placement === "header" || placement === "auth"}
-      />
+      <span
+        className={cn(
+          "relative inline-flex shrink-0 items-center justify-center",
+          isAuthPlacement &&
+            "rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.18)_0%,transparent_68%)] p-2",
+        )}
+      >
+        <Image
+          src={bobkatLogoSrc()}
+          alt={BOBKAT_IT_LOGO.alt}
+          width={logoWidth}
+          height={displayHeight}
+          className="h-auto w-auto max-w-full shrink-0 object-contain"
+          style={{ maxHeight: logoHeight }}
+          priority={priority || placement === "header" || placement === "auth"}
+        />
+      </span>
       {displayText ? (
         <div className={cn("min-w-0", isStacked && "space-y-0.5")}>
           <p
