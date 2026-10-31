@@ -1798,10 +1798,20 @@ model TechnologySnapshotLead {
   totalScore            Int
   classification        String
   lowestPillars         Json
+  /// snap-1.0 (legacy 8Q) or snap-2.0 (14Q categories). Additive for SS-SNAP-003.
+  catalogVersion        String                       @default("snap-1.0")
+  /// Deterministic findings payload from Snapshot 2.0 engine (null for legacy rows).
+  findingsJson          Json?
+  /// Denormalized category scores/bands for admin filters (null for legacy rows).
+  categoryScores        Json?
   status                TechnologySnapshotLeadStatus @default(new)
   prospectId            String?                      @unique
   clientId              String?
   contactConsentAt      DateTime?
+  /// Affirmative marketing consent only (separate from contactConsentAt).
+  marketingConsentAt    DateTime?
+  campaignId            String?
+  sourcePath            String?
   contactedAt           DateTime?
   assessmentInvitedAt   DateTime?
   convertedAt           DateTime?
@@ -1818,6 +1828,7 @@ model TechnologySnapshotLead {
   @@index([email])
   @@index([clientId])
   @@index([classification])
+  @@index([catalogVersion])
 }
 
 model TechnologySnapshotLeadNote {

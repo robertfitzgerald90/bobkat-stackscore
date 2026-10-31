@@ -1,7 +1,8 @@
-import type { SnapshotItManagementModel } from "./types";
 import type { TechnologySnapshotLeadStatus } from "@/generated/prisma/client";
+import { SNAPSHOT_V2_MAX_SCORE } from "./catalog-v2";
+import { SNAPSHOT_POSTURE_LABELS, type SnapshotPostureBand } from "./engine";
 import { getClassificationLabel } from "./scoring";
-import type { SnapshotClassification } from "./types";
+import type { SnapshotClassification, SnapshotItManagementModel } from "./types";
 
 export const IT_MANAGEMENT_LABELS: Record<SnapshotItManagementModel, string> = {
   in_house: "In-house IT team",
@@ -35,14 +36,19 @@ export const ALL_SNAPSHOT_LEAD_STATUSES: TechnologySnapshotLeadStatus[] = [
   "archived",
 ];
 
+/** Legacy snap-1.0 max (8 questions × 3). */
 export const SNAPSHOT_MAX_SCORE = 24;
+export { SNAPSHOT_V2_MAX_SCORE };
 
 export function formatSnapshotClassification(classification: string): string {
+  if (classification in SNAPSHOT_POSTURE_LABELS) {
+    return SNAPSHOT_POSTURE_LABELS[classification as SnapshotPostureBand];
+  }
   return getClassificationLabel(classification as SnapshotClassification);
 }
 
 export const FULL_ASSESSMENT_BENEFITS = [
-  "Complete Technology Maturity Score",
+  "Official StackScore from a completed assessment",
   "Eight Technology Pillar analysis",
   "Executive Summary",
   "Full recommendations",
@@ -53,5 +59,16 @@ export const FULL_ASSESSMENT_BENEFITS = [
   "Executive-ready report",
 ] as const;
 
-export const SNAPSHOT_CONSENT_TEXT =
-  "By submitting this snapshot, you agree that Bobkat IT may contact you about your results and related technology services.";
+/** Contact consent for optional Save / Request a Copy (not marketing). */
+export const SNAPSHOT_CONTACT_CONSENT_TEXT =
+  "Bobkat IT may contact me about my Technology Snapshot results and related technology services.";
+
+/** Optional marketing consent — must be affirmatively checked; never implied. */
+export const SNAPSHOT_MARKETING_CONSENT_TEXT =
+  "I also want occasional tips and updates from Bobkat IT (optional).";
+
+/** @deprecated Prefer SNAPSHOT_CONTACT_CONSENT_TEXT */
+export const SNAPSHOT_CONSENT_TEXT = SNAPSHOT_CONTACT_CONSENT_TEXT;
+
+export const SNAPSHOT_OFFICIAL_DISCLAIMER =
+  "Indicative Technology Snapshot posture — not an Official StackScore. Official StackScore requires a completed Technology Maturity Assessment.";

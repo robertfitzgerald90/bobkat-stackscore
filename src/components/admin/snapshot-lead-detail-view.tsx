@@ -46,6 +46,12 @@ import {
   SNAPSHOT_LEAD_STATUS_LABELS,
   SNAPSHOT_MAX_SCORE,
 } from "@/lib/technology-snapshot/display";
+import {
+  SNAPSHOT_ANSWER_OPTIONS_V2,
+  SNAPSHOT_CATALOG_VERSION_V2,
+  SNAPSHOT_QUESTIONS_V2,
+} from "@/lib/technology-snapshot/catalog-v2";
+import type { SnapshotFindingsV2 } from "@/lib/technology-snapshot/engine";
 import { SNAPSHOT_ANSWER_OPTIONS, SNAPSHOT_QUESTIONS } from "@/lib/technology-snapshot/questions";
 import type { SnapshotAnswers, SnapshotItManagementModel } from "@/lib/technology-snapshot/types";
 import { toast } from "sonner";
@@ -61,13 +67,18 @@ type SnapshotLeadDetail = {
   industry: string;
   companySize: string | null;
   itManagementModel: SnapshotItManagementModel;
-  answers: SnapshotAnswers;
+  answers: SnapshotAnswers | Record<string, string>;
   totalScore: number;
   classification: string;
+  catalogVersion?: string;
+  findings?: SnapshotFindingsV2 | null;
   status: TechnologySnapshotLeadStatus;
   prospectId: string | null;
   clientId: string | null;
   contactConsentAt: string | null;
+  marketingConsentAt?: string | null;
+  campaignId?: string | null;
+  sourcePath?: string | null;
   contactedAt: string | null;
   assessmentInvitedAt: string | null;
   convertedAt: string | null;
@@ -129,17 +140,29 @@ export function SnapshotLeadDetailView({ initialLead }: { initialLead: SnapshotL
   const mailtoUrl = buildSnapshotLeadMailtoUrl(lead);
   const phoneHref = lead.phone ? `tel:${normalizePhoneForTel(lead.phone)}` : null;
 
-  const answerRows = useMemo(
-    () =>
-      SNAPSHOT_QUESTIONS.map((question) => ({
-        pillar: question.pillarName,
-        question: question.question,
-        answer:
-          SNAPSHOT_ANSWER_OPTIONS.find((option) => option.value === lead.answers[question.pillarCode])
-            ?.label ?? lead.answers[question.pillarCode],
-      })),
-    [lead.answers],
-  );
+  const isV2 = lead.catalogVersion === SNAPSHOT_CATALOG_VERSION_V2;
+
+  const answerRows = useMemo(() => {
+    if (isV2) {
+      return SNAPSHOT_QUESTIONS_V2.map((question) => {
+        const raw = (lead.answers as Record<string, string>)[question.id];
+        return {
+          pillar: question.id,
+          question: question.question,
+          answer:
+            SNAPSHOT_ANSWER_OPTIONS_V2.find((option) => option.value === raw)?.label ?? raw,
+        };
+      });
+    }
+    return SNAPSHOT_QUESTIONS.map((question) => ({
+      pillar: question.pillarName,
+      question: question.question,
+      answer:
+        SNAPSHOT_ANSWER_OPTIONS.find(
+          (option) => option.value === (lead.answers as SnapshotAnswers)[question.pillarCode],
+        )?.label ?? (lead.answers as SnapshotAnswers)[question.pillarCode],
+    }));
+  }, [isV2, lead.answers]);
 
   useEffect(() => {
     if (searchParams.get("convert") === "1") {
@@ -347,8 +370,16 @@ export function SnapshotLeadDetailView({ initialLead }: { initialLead: SnapshotL
                 <dd>{NOT_PROVIDED_LABEL}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">Consent recorded</dt>
+                <dt className="text-muted-foreground">Contact consent</dt>
                 <dd>{formatDateTime(lead.contactConsentAt)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Marketing consent</dt>
+                <dd>{formatDateTime(lead.marketingConsentAt)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Source</dt>
+                <dd>{lead.sourcePath ?? NOT_PROVIDED_LABEL}</dd>
               </div>
             </dl>
           </CardContent>
@@ -357,29 +388,77 @@ export function SnapshotLeadDetailView({ initialLead }: { initialLead: SnapshotL
         <Card>
           <CardHeader>
             <CardTitle>Snapshot Summary</CardTitle>
-            <CardDescription>Submitted {formatDateTime(lead.createdAt)}</CardDescription>
+            <CardDescription>
+              Submitted {formatDateTime(lead.createdAt)}
+              {lead.catalogVersion ? ` · Catalog ${lead.catalogVersion}` : null}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-end gap-2">
-              <p className="text-4xl font-bold tabular-nums text-primary">{lead.totalScore}</p>
-              <p className="pb-1 text-sm text-muted-foreground">out of {lead.maxScore ?? SNAPSHOT_MAX_SCORE}</p>
-            </div>
-            <Badge variant="outline">{formatSnapshotClassification(lead.classification)}</Badge>
             <div>
-              <p className="mb-2 text-sm font-medium">Key observations</p>
-              {lead.observations.length > 0 ? (
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {lead.observations.map((observation) => (
-                    <li key={observation} className="flex gap-2">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      <span>{observation}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">No critical observations recorded.</p>
-              )}
+              <p className="text-sm text-muted-foreground">Indicative posture</p>
+              <Badge variant="outline" className="mt-1">
+                {formatSnapshotClassification(lead.classification)}
+              </Badge>
             </div>
+            <div className="flex items-end gap-2">
+              <p className="text-3xl font-bold tabular-nums text-primary">{lead.totalScore}</p>
+              <p className="pb-1 text-sm text-muted-foreground">
+                internal points / {lead.maxScore ?? SNAPSHOT_MAX_SCORE} (admin only — not Official
+                StackScore)
+              </p>
+            </div>
+            {lead.findings ? (
+              <div className="space-y-3">
+                <div>
+                  <p className="mb-2 text-sm font-medium">Categories</p>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    {lead.findings.categories.map((c) => (
+                      <li key={c.id}>
+                        {c.name}: {c.classificationLabel} ({c.percent}%)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-medium">Prioritized opportunities</p>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    {lead.findings.keyFindings.opportunities.map((o) => (
+                      <li key={o.questionId}>
+                        {o.title} ({o.questionId})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {lead.findings.criticalRisks.length > 0 ? (
+                  <div>
+                    <p className="mb-2 text-sm font-medium">Critical risk flags</p>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      {lead.findings.criticalRisks.map((r) => (
+                        <li key={r.id}>
+                          {r.title} ({r.questionId}/{r.answer})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div>
+                <p className="mb-2 text-sm font-medium">Key observations</p>
+                {lead.observations.length > 0 ? (
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {lead.observations.map((observation) => (
+                      <li key={observation} className="flex gap-2">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <span>{observation}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No critical observations recorded.</p>
+                )}
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">IT management model</p>
               <p className="text-sm">{IT_MANAGEMENT_LABELS[lead.itManagementModel]}</p>
