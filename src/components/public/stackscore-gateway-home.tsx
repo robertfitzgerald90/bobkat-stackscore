@@ -21,7 +21,14 @@ export function StackScoreGatewayHome() {
         <header className="relative z-[1] px-4 pt-5 sm:px-6 sm:pt-6">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
             <Link href="/" className="min-w-0 transition-opacity hover:opacity-90">
-              <BrandLogo size={36} showText placement="header" priority className="gap-2" />
+              <BrandLogo
+                presentation="navigation"
+                size={36}
+                showText
+                placement="header"
+                priority
+                className="gap-2"
+              />
             </Link>
             <Link
               href={STACKSCORE_PUBLIC_ROUTES.login}
@@ -37,7 +44,9 @@ export function StackScoreGatewayHome() {
 
         <main className="relative z-[1] flex flex-1 flex-col items-center justify-center px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-primary sm:text-xs">
+            <BrandLogo presentation="hero" priority />
+
+            <p className="mt-6 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-primary sm:mt-7 sm:text-xs">
               {BRAND.productName}
             </p>
             <p className="mt-2 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground sm:text-[0.7rem]">
