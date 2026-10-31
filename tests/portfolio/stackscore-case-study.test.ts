@@ -12,11 +12,11 @@ describe("StackScore portfolio visual system", () => {
     expect(exports).toHaveLength(10);
   });
 
-  it("keeps the preview isolated, non-indexed, and explicit about demo data", () => {
+  it("retires the public /demo case-study preview to the customer-parity demo", () => {
     const preview = fs.readFileSync(previewPath, "utf8");
-    expect(preview).toContain("index: false");
-    expect(preview).toContain("Demo data only");
-    expect(preview).toContain("fictional");
+    expect(preview).toContain("permanentRedirect");
+    expect(preview).toContain("RETIRED_PUBLIC_DEMO_REDIRECTS");
+    expect(preview).not.toContain("ExecutiveTechnologyProfile");
   });
 
   it("describes deterministic scoring without presenting runtime generative AI", () => {
@@ -27,4 +27,3 @@ describe("StackScore portfolio visual system", () => {
     expect(source.toLowerCase()).not.toContain("generative ai");
   });
 });
-

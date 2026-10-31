@@ -35,7 +35,7 @@ export const API_ROUTE_REGISTRY: readonly ApiRouteRegistration[] = [
   { path: "checkout/vcio/route.ts", classification: "mixed", notes: "Optional session; anon Checkout allowed; IP rate limited" },
   { path: "cron/communications/route.ts", classification: "internal", notes: "CRON_SECRET bearer" },
   { path: "integrations/website-leads/route.ts", classification: "internal", notes: "WEBSITE_LEADS_API_SECRET + durable IP rate limit" },
-  { path: "product-overview/pdf/route.ts", classification: "public", notes: "Demo PDF; IP rate limited + short cache" },
+  { path: "product-overview/pdf/route.ts", classification: "public", notes: "SS-WEB-003-R2: retired (HTTP 410); no PDF generation" },
   { path: "v1/admin/assessment-library/categories/[id]/route.ts", classification: "admin", notes: "requireAdmin" },
   { path: "v1/admin/assessment-library/questions/[id]/route.ts", classification: "admin", notes: "requireAdmin" },
   { path: "v1/admin/assessment-library/route.ts", classification: "admin", notes: "requireAdmin" },

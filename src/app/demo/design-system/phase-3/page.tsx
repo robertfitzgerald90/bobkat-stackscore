@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { InstrumentPhase3Client } from "@/components/design-system/instrument/instrument-phase-3-client";
+import { permanentRedirect } from "next/navigation";
+import { RETIRED_PUBLIC_DEMO_REDIRECTS } from "@/lib/public-demo/legacy-routes";
 
 export const metadata: Metadata = {
-  title: "StackScore Instrument Design System — Phase 3",
-  robots: { index: false, follow: false },
+  title: "StackScore Interactive Demo",
+  robots: { index: false, follow: true },
 };
 
-export default function InstrumentPhase3Page() {
-  return <InstrumentPhase3Client />;
+/** SS-WEB-003-R2 — Public design-system preview retired. */
+export default function DemoDesignSystemPhase3RetiredPage() {
+  permanentRedirect(RETIRED_PUBLIC_DEMO_REDIRECTS["/demo/design-system/phase-3"]);
 }

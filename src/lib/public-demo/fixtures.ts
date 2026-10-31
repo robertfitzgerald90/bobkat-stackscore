@@ -196,11 +196,11 @@ export const DEMO_OPPORTUNITIES: DemoOpportunityFixture[] = [
     finding:
       "Technology priorities exist but lack a recurring executive review cadence.",
     recommendedAction:
-      "Stand up a quarterly steering agenda linking StackScore priorities to budget decisions.",
+      "Stand up a quarterly steering agenda linking StackScore priorities to business decisions.",
     expectedOutcome:
-      "Clearer investment sequencing and accountable ownership.",
+      "Clearer improvement sequencing and accountable ownership.",
     businessImpact:
-      "Keeps technology spend aligned to manufacturing growth goals.",
+      "Keeps technology priorities aligned to manufacturing growth goals.",
     complexity: "Easy",
   },
 ];
@@ -756,7 +756,7 @@ export const DEMO_PILLAR_CONTROLS: Record<TechnologyPillarCode, DemoControlFixtu
     },
     {
       questionCode: "TS-03",
-      questionText: "Are technology investments tied to business outcomes?",
+      questionText: "Are technology priorities tied to business outcomes?",
       answerText: "Partially",
       ...RESULT.partial,
       isCritical: false,

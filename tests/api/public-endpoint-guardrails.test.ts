@@ -124,11 +124,12 @@ describe("SS-SEC-007 public endpoint guardrails", () => {
   });
 
   describe("route wiring — PDF / checkout / website-leads", () => {
-    it("rate-limits product-overview PDF and sets short Cache-Control (M02)", () => {
+    it("retires product-overview PDF with HTTP 410 (SS-WEB-003-R2)", () => {
       const pdf = source("src/app/api/product-overview/pdf/route.ts");
-      expect(pdf).toContain("enforceProductOverviewPdfLimits");
-      expect(pdf).toContain("temporarilyUnavailableResponse");
-      expect(pdf).toContain('Cache-Control": "public, max-age=300');
+      expect(pdf).toContain("status: 410");
+      expect(pdf).toContain("/demo/overview");
+      expect(pdf).not.toContain("generateProductOverviewPdf");
+      expect(pdf).not.toContain("enforceProductOverviewPdfLimits");
     });
 
     it("rate-limits assessment checkout create-session (M03)", () => {
