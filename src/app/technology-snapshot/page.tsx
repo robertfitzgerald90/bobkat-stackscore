@@ -4,26 +4,25 @@ import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { PublicPageShell } from "@/components/public/public-page-shell";
 import { TechnologySnapshotWizard } from "@/components/technology-snapshot/technology-snapshot-wizard";
 import { BRAND } from "@/lib/branding";
-import { MARKETING_SECTION_COMPACT } from "@/lib/marketing/tokens";
 
 export const metadata: Metadata = {
-  title: `Technology Snapshot | ${BRAND.companyName}`,
+  title: `Free Technology Snapshot | ${BRAND.companyName}`,
   description:
-    "Take a quick technology health snapshot across eight pillars and get immediate guidance from Bobkat IT.",
+    "Get an indicative technology posture in about five minutes — no account required. See how your organization differs from a full StackScore assessment.",
 };
 
 export default function TechnologySnapshotPage() {
   return (
     <PublicPageShell className="funnel-instrument">
       <PublicMarketingNav active="assessment" />
-      <main className={MARKETING_SECTION_COMPACT}>
-        <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-2xl flex-col justify-center sm:min-h-[calc(100dvh-5rem)]">
-          <Suspense
-            fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}
-          >
-            <TechnologySnapshotWizard />
-          </Suspense>
-        </div>
+      <main className="relative px-0 py-0 sm:py-0">
+        <Suspense
+          fallback={
+            <div className="p-8 text-center text-muted-foreground">Loading Snapshot…</div>
+          }
+        >
+          <TechnologySnapshotWizard />
+        </Suspense>
       </main>
     </PublicPageShell>
   );

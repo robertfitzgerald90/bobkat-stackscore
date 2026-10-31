@@ -9,6 +9,7 @@ export type SnapshotItManagementModel =
   | "none"
   | "unsure";
 
+/** Legacy snap-1.0 classification keys (8-question / 0–24 engine). */
 export type SnapshotClassification =
   | "healthy"
   | "needs_attention"
@@ -30,3 +31,9 @@ export type SnapshotResult = {
   lowestPillars: SnapshotLowestPillar[];
   observations: string[];
 };
+
+export type {
+  SnapshotAnswersV2,
+  SnapshotFindingsV2,
+  SnapshotPostureBand,
+} from "./engine/types";

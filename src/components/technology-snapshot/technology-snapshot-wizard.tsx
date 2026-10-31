@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Shield } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { SnapshotProgress } from "@/components/technology-snapshot/snapshot-progress";
+import { SnapshotResultsDashboard } from "@/components/technology-snapshot/snapshot-results-dashboard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,69 +27,50 @@ import { MARKETING_PANEL } from "@/lib/marketing/tokens";
 import {
   COMPANY_SIZE_OPTIONS,
   IT_MANAGEMENT_OPTIONS,
-  SNAPSHOT_ANSWER_OPTIONS,
-  SNAPSHOT_ESTIMATED_MINUTES,
-  SNAPSHOT_QUESTIONS,
 } from "@/lib/technology-snapshot/questions";
-import { SNAPSHOT_CONSENT_TEXT } from "@/lib/technology-snapshot/display";
-import type { SnapshotAnswerValue, SnapshotAnswers, SnapshotItManagementModel } from "@/lib/technology-snapshot/types";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { SnapshotProgress } from "./snapshot-progress";
 import {
-  SnapshotResultsView,
-  type SnapshotResultsPayload,
-} from "./snapshot-results-view";
+  SNAPSHOT_ANSWER_OPTIONS_V2,
+  SNAPSHOT_CATEGORIES_V2,
+  SNAPSHOT_QUESTIONS_V2,
+  SNAPSHOT_V2_ESTIMATED_MINUTES,
+  getSnapshotCategoryV2,
+} from "@/lib/technology-snapshot/catalog-v2";
+import { SNAPSHOT_OFFICIAL_DISCLAIMER } from "@/lib/technology-snapshot/display";
+import {
+  buildSnapshotFindingsV2,
+  type SnapshotAnswersV2,
+  type SnapshotFindingsV2,
+} from "@/lib/technology-snapshot/engine";
+import {
+  clearSnapshotSession,
+  createEmptySessionState,
+  loadSnapshotSession,
+  saveSnapshotSession,
+  type SnapshotBusinessContext,
+  type SnapshotSessionState,
+} from "@/lib/technology-snapshot/session-state";
+import type { SnapshotAnswerValue, SnapshotItManagementModel } from "@/lib/technology-snapshot/types";
+import { cn } from "@/lib/utils";
 
-type IntakeForm = {
-  firstName: string;
-  lastName: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  industry: string;
-  companySize: string;
-};
-
-const EMPTY_INTAKE: IntakeForm = {
-  firstName: "",
-  lastName: "",
-  companyName: "",
-  email: "",
-  phone: "",
-  industry: "",
-  companySize: "",
-};
-
-type WizardPhase = "intro" | "intake" | "qualifier" | "pillar" | "results";
-
-type StepActionsProps = {
-  showBack?: boolean;
-  onBack: () => void;
-  onNext: () => void;
-  nextLabel: React.ReactNode;
-  submitting?: boolean;
-  nextDisabled?: boolean;
-};
+type WizardPhase = SnapshotSessionState["phase"];
 
 function StepActions({
   showBack = true,
   onBack,
   onNext,
   nextLabel,
-  submitting = false,
   nextDisabled = false,
-}: StepActionsProps) {
+}: {
+  showBack?: boolean;
+  onBack: () => void;
+  onNext: () => void;
+  nextLabel: React.ReactNode;
+  nextDisabled?: boolean;
+}) {
   return (
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
       {showBack ? (
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full sm:w-auto"
-          onClick={onBack}
-          disabled={submitting}
-        >
+        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -97,16 +79,12 @@ function StepActions({
         type="button"
         className={cn("w-full sm:w-auto", !showBack && "sm:ml-auto")}
         onClick={onNext}
-        disabled={submitting || nextDisabled}
+        disabled={nextDisabled}
       >
         {nextLabel}
       </Button>
     </div>
   );
-}
-
-function StepSection({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-5">{children}</div>;
 }
 
 export function TechnologySnapshotWizard() {
@@ -115,457 +93,352 @@ export function TechnologySnapshotWizard() {
   const campaignId = searchParams.get("campaignId") ?? undefined;
   const invitationFlow = Boolean(prospectId || campaignId);
 
-  const [phase, setPhase] = useState<WizardPhase>("intro");
-  const [pillarIndex, setPillarIndex] = useState(0);
-  const [intake, setIntake] = useState<IntakeForm>(EMPTY_INTAKE);
-  const [itManagementModel, setItManagementModel] = useState<SnapshotItManagementModel | "">("");
-  const [answers, setAnswers] = useState<Partial<SnapshotAnswers>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<SnapshotResultsPayload | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [phase, setPhase] = useState<WizardPhase>("welcome");
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [context, setContext] = useState<SnapshotBusinessContext>({
+    companyName: "",
+    industry: "",
+    companySize: "",
+    itManagementModel: "",
+  });
+  const [answers, setAnswers] = useState<Partial<SnapshotAnswersV2>>({});
+  const [findings, setFindings] = useState<SnapshotFindingsV2 | null>(null);
   const startedRef = useRef(false);
 
   useEffect(() => {
     trackViewTechnologySnapshot("/technology-snapshot");
+    const saved = loadSnapshotSession();
+    if (saved) {
+      setPhase(saved.phase === "results" ? "questions" : saved.phase);
+      // Do not auto-restore into results without recomputing from answers.
+      setQuestionIndex(saved.questionIndex);
+      setContext(saved.context);
+      setAnswers(saved.answers);
+      if (saved.phase === "results" && Object.keys(saved.answers).length === SNAPSHOT_QUESTIONS_V2.length) {
+        try {
+          const rebuilt = buildSnapshotFindingsV2(saved.answers as SnapshotAnswersV2);
+          setFindings(rebuilt);
+          setPhase("results");
+        } catch {
+          setPhase("questions");
+        }
+      }
+    }
+    setHydrated(true);
   }, []);
 
-  const totalSteps = 1 + 1 + SNAPSHOT_QUESTIONS.length;
-  const currentStep = useMemo(() => {
-    if (phase === "intro") return 0;
-    if (phase === "intake") return 1;
-    if (phase === "qualifier") return 2;
-    if (phase === "pillar") return 3 + pillarIndex;
-    return totalSteps;
-  }, [phase, pillarIndex, totalSteps]);
+  useEffect(() => {
+    if (!hydrated) return;
+    saveSnapshotSession({
+      version: 2,
+      phase,
+      questionIndex,
+      context,
+      answers,
+      completedAt: findings?.scoredAt,
+    });
+  }, [hydrated, phase, questionIndex, context, answers, findings]);
 
-  const activeQuestion = phase === "pillar" ? SNAPSHOT_QUESTIONS[pillarIndex] : null;
-  const activeAnswer = activeQuestion ? answers[activeQuestion.pillarCode] : undefined;
+  const totalQuestionSteps = SNAPSHOT_QUESTIONS_V2.length;
+  const progressStep = useMemo(() => {
+    if (phase === "welcome") return 0;
+    if (phase === "context") return 1;
+    if (phase === "questions") return 2 + questionIndex;
+    return 2 + totalQuestionSteps;
+  }, [phase, questionIndex, totalQuestionSteps]);
+  const progressTotal = 2 + totalQuestionSteps;
 
-  function restart() {
-    setPhase("intro");
-    setPillarIndex(0);
-    setIntake(EMPTY_INTAKE);
-    setItManagementModel("");
-    setAnswers({});
-    setResult(null);
-  }
+  const activeQuestion = phase === "questions" ? SNAPSHOT_QUESTIONS_V2[questionIndex] : null;
+  const activeCategory = activeQuestion
+    ? getSnapshotCategoryV2(activeQuestion.categoryId)
+    : null;
+  const activeAnswer = activeQuestion ? answers[activeQuestion.id] : undefined;
 
-  function validateIntake(): boolean {
-    if (!intake.firstName.trim()) {
-      toast.error("First name is required");
-      return false;
-    }
-    if (!intake.companyName.trim()) {
-      toast.error("Company name is required");
-      return false;
-    }
-    if (!intake.email.trim()) {
-      toast.error("Email is required");
-      return false;
-    }
-    if (!intake.industry.trim()) {
-      toast.error("Industry is required");
-      return false;
-    }
-    return true;
-  }
-
-  async function submitSnapshot(finalAnswers: SnapshotAnswers) {
-    setSubmitting(true);
-    try {
-      const response = await fetch("/api/v1/public/technology-snapshot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: intake.firstName,
-          lastName: intake.lastName || undefined,
-          companyName: intake.companyName,
-          email: intake.email,
-          phone: intake.phone || undefined,
-          industry: intake.industry,
-          companySize: intake.companySize || undefined,
-          itManagementModel,
-          answers: finalAnswers,
-          prospectId,
-          contactConsent: true,
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        toast.error(data.error ?? "Unable to submit snapshot");
-        return;
-      }
-
-      setResult(data as SnapshotResultsPayload);
-      setPhase("results");
-      trackCompleteTechnologySnapshot("/technology-snapshot");
-    } catch {
-      toast.error("Unable to submit snapshot");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  function markSnapshotStarted(startMethod: "start_button" | "first_response") {
+  function markStarted() {
     if (startedRef.current) return;
     startedRef.current = true;
-    trackStartTechnologySnapshot({
-      startMethod,
-      pagePath: "/technology-snapshot",
+    trackStartTechnologySnapshot({ startMethod: "start_button" });
+    trackSnapshotStart({
+      trigger: "wizard_begin",
+      placement: "technology_snapshot_welcome",
+      hasInvitationFlow: invitationFlow,
     });
   }
 
-  function handleNext() {
-    if (phase === "intro") {
-      trackSnapshotStart({
-        trigger: "wizard_begin",
-        hasInvitationFlow: invitationFlow,
-      });
-      markSnapshotStarted("start_button");
-      setPhase("intake");
-      return;
-    }
-
-    if (phase === "intake") {
-      if (!validateIntake()) return;
-      setPhase("qualifier");
-      return;
-    }
-
-    if (phase === "qualifier") {
-      if (!itManagementModel) {
-        toast.error("Please select how technology is managed");
-        return;
-      }
-      setPillarIndex(0);
-      setPhase("pillar");
-      return;
-    }
-
-    if (phase === "pillar" && activeQuestion) {
-      if (!activeAnswer) {
-        toast.error("Please select an answer");
-        return;
-      }
-
-      if (pillarIndex < SNAPSHOT_QUESTIONS.length - 1) {
-        setPillarIndex((index) => index + 1);
-        return;
-      }
-
-      void submitSnapshot(answers as SnapshotAnswers);
-    }
+  function restart() {
+    clearSnapshotSession();
+    setPhase("welcome");
+    setQuestionIndex(0);
+    setContext(createEmptySessionState().context);
+    setAnswers({});
+    setFindings(null);
+    startedRef.current = false;
   }
 
-  function handleBack() {
-    if (phase === "intake") {
-      setPhase("intro");
-      return;
-    }
-    if (phase === "qualifier") {
-      setPhase("intake");
-      return;
-    }
-    if (phase === "pillar") {
-      if (pillarIndex > 0) {
-        setPillarIndex((index) => index - 1);
-      } else {
-        setPhase("qualifier");
-      }
-    }
+  function finishQuestionnaire() {
+    const complete = SNAPSHOT_QUESTIONS_V2.every((q) => answers[q.id]);
+    if (!complete) return;
+    const result = buildSnapshotFindingsV2(answers as SnapshotAnswersV2);
+    setFindings(result);
+    setPhase("results");
+    trackCompleteTechnologySnapshot("/technology-snapshot");
   }
 
-  function selectAnswer(value: SnapshotAnswerValue) {
-    if (!activeQuestion) return;
-    setAnswers((prev) => ({
-      ...prev,
-      [activeQuestion.pillarCode]: value,
-    }));
+  if (!hydrated) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center text-sm text-muted-foreground">
+        Loading Snapshot…
+      </div>
+    );
   }
 
-  const showProgress = phase !== "intro" && phase !== "results";
-
-  const nextLabel = submitting ? (
-    <>
-      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      Calculating results…
-    </>
-  ) : phase === "intro" ? (
-    <>
-      Get started
-      <ArrowRight className="ml-2 h-4 w-4" />
-    </>
-  ) : phase === "pillar" && pillarIndex === SNAPSHOT_QUESTIONS.length - 1 ? (
-    "View my results"
-  ) : (
-    <>
-      Continue
-      <ArrowRight className="ml-2 h-4 w-4" />
-    </>
-  );
+  if (phase === "results" && findings) {
+    return (
+      <div className="px-4 py-10 sm:px-6 sm:py-14">
+        <SnapshotResultsDashboard
+          findings={findings}
+          context={context}
+          answers={answers as SnapshotAnswersV2}
+          prospectId={prospectId}
+          campaignId={campaignId}
+          invitationFlow={invitationFlow}
+          onRestart={restart}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className={cn("w-full max-w-2xl", MARKETING_PANEL, "p-6 sm:p-8")}>
-      <header className="mb-6 flex flex-col items-center gap-3 text-center">
-        <BrandLogo size={48} variant="stacked" placement="auth" />
-        <div className="min-w-0 space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-            Technology Snapshot
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            A quick health check from {BRAND.companyName}
-          </p>
-        </div>
-      </header>
+    <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
+      <div className="mb-8 flex flex-col items-center text-center">
+        <BrandLogo size={40} variant="stacked" placement="auth" className="mb-4" />
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+          Free Technology Snapshot
+        </p>
+      </div>
 
-      {showProgress ? (
+      {phase !== "welcome" ? (
         <SnapshotProgress
-          currentStep={currentStep}
-          totalSteps={totalSteps}
+          currentStep={Math.max(1, progressStep)}
+          totalSteps={progressTotal}
           className="mb-6"
         />
       ) : null}
 
-      <div className="min-w-0">
-        {phase === "intro" ? (
-          <StepSection>
-            <Card>
-              <CardHeader className="text-center">
-                <CardTitle>See where your technology stands</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Answer a few guided questions across eight technology pillars and receive an
-                  immediate snapshot of your business technology health.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 shrink-0" />
-                  <span>Estimated completion: under {SNAPSHOT_ESTIMATED_MINUTES} minutes</span>
-                </div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• One focused question at a time</li>
-                  <li>• No login required</li>
-                  <li>• Instant results with next-step guidance</li>
-                </ul>
-              </CardContent>
-            </Card>
+      <div className={cn(MARKETING_PANEL, "p-5 sm:p-8")}>
+        {phase === "welcome" ? (
+          <div className="space-y-5">
+            <h1 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
+              See where your technology stands — in about {SNAPSHOT_V2_ESTIMATED_MINUTES} minutes
+            </h1>
+            <p className="text-pretty text-muted-foreground">
+              Answer {SNAPSHOT_QUESTIONS_V2.length} practical questions about security, devices,
+              backups, and planning. You’ll get an indicative posture dashboard immediately — no
+              email, phone, or account required.
+            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex gap-2">
+                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                About {SNAPSHOT_V2_ESTIMATED_MINUTES} minutes · one question at a time
+              </li>
+              <li className="flex gap-2">
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                Anonymous until you choose to save or request follow-up
+              </li>
+            </ul>
+            <div className="rounded-lg border border-border/60 bg-background/40 p-3 text-xs text-muted-foreground">
+              {SNAPSHOT_OFFICIAL_DISCLAIMER} The full {BRAND.productName} assessment is a separate,
+              deeper evaluation.
+            </div>
+            <div className="rounded-lg border border-border/40 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Categories covered
+              </p>
+              <ul className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
+                {SNAPSHOT_CATEGORIES_V2.map((c) => (
+                  <li key={c.id}>{c.name}</li>
+                ))}
+              </ul>
+            </div>
             <StepActions
               showBack={false}
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={nextLabel}
+              onBack={() => undefined}
+              onNext={() => {
+                markStarted();
+                setPhase("context");
+              }}
+              nextLabel={
+                <>
+                  Start Free Snapshot
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              }
             />
-          </StepSection>
+          </div>
         ) : null}
 
-        {phase === "intake" ? (
-          <StepSection>
-            <Card>
-            <CardHeader>
-              <CardTitle>Tell us about your business</CardTitle>
-              <CardDescription>
-                We&apos;ll use this information to follow up with your snapshot results.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First name</Label>
-                  <Input
-                    id="firstName"
-                    required
-                    autoComplete="given-name"
-                    value={intake.firstName}
-                    onChange={(event) =>
-                      setIntake((prev) => ({ ...prev, firstName: event.target.value }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last name (optional)</Label>
-                  <Input
-                    id="lastName"
-                    autoComplete="family-name"
-                    value={intake.lastName}
-                    onChange={(event) =>
-                      setIntake((prev) => ({ ...prev, lastName: event.target.value }))
-                    }
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company name</Label>
+        {phase === "context" ? (
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-xl font-semibold">Business context</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Optional details help frame your results. Nothing here identifies you personally.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="ctx-company">Company name (optional)</Label>
                 <Input
-                  id="companyName"
-                  required
+                  id="ctx-company"
+                  value={context.companyName}
+                  onChange={(e) => setContext((c) => ({ ...c, companyName: e.target.value }))}
                   autoComplete="organization"
-                  value={intake.companyName}
-                  onChange={(event) =>
-                    setIntake((prev) => ({ ...prev, companyName: event.target.value }))
-                  }
                 />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={intake.email}
-                    onChange={(event) =>
-                      setIntake((prev) => ({ ...prev, email: event.target.value }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    value={intake.phone}
-                    onChange={(event) =>
-                      setIntake((prev) => ({ ...prev, phone: event.target.value }))
-                    }
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ctx-industry">Industry (optional)</Label>
+                <Input
+                  id="ctx-industry"
+                  value={context.industry}
+                  onChange={(e) => setContext((c) => ({ ...c, industry: e.target.value }))}
+                />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="industry">Industry</Label>
-                  <Input
-                    id="industry"
-                    required
-                    value={intake.industry}
-                    onChange={(event) =>
-                      setIntake((prev) => ({ ...prev, industry: event.target.value }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="companySize">Company size (optional)</Label>
-                  <Select
-                    value={intake.companySize || null}
-                    onValueChange={(value) =>
-                      setIntake((prev) => ({ ...prev, companySize: value ?? "" }))
-                    }
-                  >
-                    <SelectTrigger id="companySize" className="!w-full min-w-0">
-                      <SelectValue placeholder="Select range" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COMPANY_SIZE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-1.5">
+                <Label>Approximate company size (optional)</Label>
+                <Select
+                  value={context.companySize || undefined}
+                  onValueChange={(value) =>
+                    setContext((c) => ({ ...c, companySize: value ?? "" }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COMPANY_SIZE_OPTIONS.map((size) => (
+                      <SelectItem key={size} value={size}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">{SNAPSHOT_CONSENT_TEXT}</p>
-            </CardContent>
-            </Card>
+              <div className="space-y-1.5">
+                <Label>How is IT managed? (optional)</Label>
+                <Select
+                  value={context.itManagementModel || undefined}
+                  onValueChange={(value) =>
+                    setContext((c) => ({
+                      ...c,
+                      itManagementModel: (value ?? "") as SnapshotItManagementModel | "",
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {IT_MANAGEMENT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <StepActions
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={nextLabel}
-              submitting={submitting}
+              onBack={() => setPhase("welcome")}
+              onNext={() => {
+                setQuestionIndex(0);
+                setPhase("questions");
+              }}
+              nextLabel={
+                <>
+                  Continue to questions
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              }
             />
-          </StepSection>
+          </div>
         ) : null}
 
-        {phase === "qualifier" ? (
-          <StepSection>
-            <Card>
-            <CardHeader>
-              <CardTitle>How is technology managed?</CardTitle>
-              <CardDescription>
-                How is technology currently managed for your business?
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {IT_MANAGEMENT_OPTIONS.map((option) => {
-                const selected = itManagementModel === option.value;
-                return (
-                  <Button
-                    key={option.value}
-                    type="button"
-                    variant={selected ? "default" : "outline"}
-                    className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
-                    onClick={() => setItManagementModel(option.value)}
-                  >
-                    {option.label}
-                  </Button>
-                );
-              })}
-            </CardContent>
-            </Card>
-            <StepActions
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={nextLabel}
-              submitting={submitting}
-            />
-          </StepSection>
-        ) : null}
-
-        {phase === "pillar" && activeQuestion ? (
-          <StepSection>
-            <Card>
-            <CardHeader className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-primary">
-                {activeQuestion.pillarName}
+        {phase === "questions" && activeQuestion && activeCategory ? (
+          <div className="space-y-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                {activeCategory.name}
               </p>
-              <CardTitle className="break-words text-lg leading-snug sm:text-xl">
+              <p className="mt-1 text-xs text-muted-foreground">{activeCategory.description}</p>
+              <h2 className="mt-3 text-balance text-xl font-semibold leading-snug sm:text-2xl">
                 {activeQuestion.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {SNAPSHOT_ANSWER_OPTIONS.map((option) => {
+              </h2>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Question {questionIndex + 1} of {totalQuestionSteps}
+              </p>
+            </div>
+            <div className="grid gap-2" role="radiogroup" aria-label="Answer">
+              {SNAPSHOT_ANSWER_OPTIONS_V2.map((option) => {
                 const selected = activeAnswer === option.value;
                 return (
-                  <Button
+                  <button
                     key={option.value}
                     type="button"
-                    variant={selected ? "default" : "outline"}
+                    role="radio"
+                    aria-checked={selected}
                     className={cn(
-                      "h-auto justify-start whitespace-normal px-4 py-3 text-left",
-                      submitting && "pointer-events-none opacity-60",
+                      "rounded-xl border px-4 py-3 text-left text-sm transition",
+                      selected
+                        ? "border-primary bg-primary/15 text-foreground"
+                        : "border-border/70 bg-background/30 text-muted-foreground hover:border-primary/40 hover:text-foreground",
                     )}
-                    onClick={() => selectAnswer(option.value)}
-                    disabled={submitting}
+                    onClick={() =>
+                      setAnswers((prev) => ({
+                        ...prev,
+                        [activeQuestion.id]: option.value as SnapshotAnswerValue,
+                      }))
+                    }
                   >
                     {option.label}
-                  </Button>
+                  </button>
                 );
               })}
-            </CardContent>
-            </Card>
+            </div>
             <StepActions
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={nextLabel}
-              submitting={submitting}
+              onBack={() => {
+                if (questionIndex === 0) {
+                  setPhase("context");
+                  return;
+                }
+                setQuestionIndex((i) => i - 1);
+              }}
+              onNext={() => {
+                if (!activeAnswer) return;
+                if (questionIndex >= totalQuestionSteps - 1) {
+                  finishQuestionnaire();
+                  return;
+                }
+                setQuestionIndex((i) => i + 1);
+              }}
+              nextDisabled={!activeAnswer}
+              nextLabel={
+                questionIndex >= totalQuestionSteps - 1 ? (
+                  <>
+                    See my results
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )
+              }
             />
-          </StepSection>
-        ) : null}
-
-        {phase === "results" && result ? (
-          <SnapshotResultsView
-            companyName={intake.companyName}
-            result={result}
-            onRestart={restart}
-            invitationFlow={invitationFlow}
-          />
+          </div>
         ) : null}
       </div>
-
-      <footer className="mt-8 text-center text-xs text-muted-foreground">
-        Powered by {BRAND.companyName} · {BRAND.productName}
-      </footer>
     </div>
   );
 }

@@ -19,6 +19,15 @@ import {
   getSnapshotLeadDeletionBlockReason,
   SNAPSHOT_LEAD_CONVERTED_DELETE_BLOCKED_MESSAGE,
 } from "@/lib/technology-snapshot/lead-deletion";
+import {
+  SNAPSHOT_CATALOG_VERSION_V2,
+  SNAPSHOT_V2_MAX_SCORE,
+} from "@/lib/technology-snapshot/catalog-v2";
+import {
+  buildSnapshotFindingsV2,
+  type SnapshotAnswersV2,
+  type SnapshotFindingsV2,
+} from "@/lib/technology-snapshot/engine";
 import { buildSnapshotResult } from "@/lib/technology-snapshot/scoring";
 import type { SnapshotAnswers } from "@/lib/technology-snapshot/types";
 
@@ -623,13 +632,33 @@ export async function convertSnapshotLeadToClient(input: {
 }
 
 export function buildSnapshotLeadDetailPayload(lead: NonNullable<Awaited<ReturnType<typeof getTechnologySnapshotLeadById>>>) {
+  const catalogVersion = lead.catalogVersion ?? "snap-1.0";
+
+  if (catalogVersion === SNAPSHOT_CATALOG_VERSION_V2) {
+    const stored = lead.findingsJson as SnapshotFindingsV2 | null;
+    const findings =
+      stored?.catalogVersion === SNAPSHOT_CATALOG_VERSION_V2
+        ? stored
+        : buildSnapshotFindingsV2(lead.answers as SnapshotAnswersV2);
+
+    return {
+      ...lead,
+      observations: findings.criticalRisks.map((r) => r.summary),
+      findings,
+      maxScore: SNAPSHOT_V2_MAX_SCORE,
+      catalogVersion,
+    };
+  }
+
   const answers = lead.answers as SnapshotAnswers;
   const result = buildSnapshotResult(answers);
 
   return {
     ...lead,
     observations: result.observations,
+    findings: null,
     maxScore: 24,
+    catalogVersion,
   };
 }
 
