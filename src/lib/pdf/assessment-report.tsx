@@ -1086,7 +1086,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
                   wrap
                   style={[
                     styles.executiveParagraph,
-                    index === narrativeParagraphs.length - 1 ? { marginBottom: 0 } : null,
+                    index === narrativeParagraphs.length - 1 ? { marginBottom: 0 } : {},
                   ]}
                 >
                   {paragraph}

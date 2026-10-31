@@ -148,13 +148,21 @@ describe("SS-REL-016 maturity and reporting consistency", () => {
   });
 
   it("wires customer dashboard away from Technology Health + Rating labels", () => {
-    const source = readFileSync(
+    const dashboard = readFileSync(
       join(process.cwd(), "src/components/customer-portal/customer-executive-dashboard.tsx"),
       "utf8",
     );
-    expect(source).toContain("CUSTOMER_TERM_STACKSCORE");
-    expect(source).toContain("getCustomerMaturityLabel");
-    expect(source).not.toContain('label="Technology Health"');
-    expect(source).not.toContain("RATING_LABELS[rating]");
+    const hero = readFileSync(
+      join(process.cwd(), "src/components/customer-portal/overview/overview-maturity-hero.tsx"),
+      "utf8",
+    );
+    // Maturity hero owns StackScore customer terminology after SS-UX-004 decomposition.
+    expect(hero).toContain("CUSTOMER_TERM_STACKSCORE");
+    expect(hero).toContain("maturityLabel");
+    expect(dashboard).toContain("OverviewMaturityHero");
+    expect(dashboard).not.toContain('label="Technology Health"');
+    expect(dashboard).not.toContain("RATING_LABELS[rating]");
+    expect(hero).not.toContain('label="Technology Health"');
+    expect(hero).not.toContain("RATING_LABELS[rating]");
   });
 });
