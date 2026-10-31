@@ -5,8 +5,9 @@ import { InvitationHero } from "./invitation-hero";
 import { InvitationNav } from "./invitation-nav";
 import { InvitationWhySection } from "./invitation-why-section";
 import { OfferFooter } from "@/components/assessment-offer/offer-footer";
-import { PublicPageShell } from "@/components/public/public-page-shell";
 import { OfferTimeline } from "@/components/assessment-offer/offer-timeline";
+import { StackScoreAppShowcase } from "@/components/marketing/stackscore-app-showcase";
+import { PublicPageShell } from "@/components/public/public-page-shell";
 import {
   INVITATION_TIMELINE,
   type AssessmentInvitationContext,
@@ -29,6 +30,8 @@ export function AssessmentInvitationLanding({
         <InvitationHero personalization={personalization} invitationContext={invitationContext} />
 
         <InvitationDiscoverSection />
+
+        <StackScoreAppShowcase id="stackscore-in-action" />
 
         <OfferTimeline
           steps={INVITATION_TIMELINE}
