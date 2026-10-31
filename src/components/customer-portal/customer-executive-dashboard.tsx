@@ -26,19 +26,22 @@ import {
 import type { CustomerOverviewDto } from "@/lib/customer-portal/overview";
 import { getBookingUrl } from "@/lib/support/config";
 
-type CustomerExecutiveDashboardProps = {
+export type CustomerExecutiveDashboardProps = {
   overview: CustomerOverviewDto;
+  /**
+   * Optional workspace hub links (SS-WEB-003-R1 public demo adapter).
+   * When omitted, authenticated client paths are used.
+   */
+  workspaceLinks?: WorkspaceHubLink[];
+  /** Optional override for priority-opportunities “View all” href. */
+  recommendationsHref?: string;
+  /** Hide booking CTAs — public demo / read-only shells. Default true. */
+  showBookingCta?: boolean;
 };
 
-/**
- * SS-UX-004 — Premium customer Overview dashboard.
- * Data is pre-assembled in `getCustomerOverview` — no scoring or catalog math here.
- */
-export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashboardProps) {
-  const bookingUrl = getBookingUrl();
+function defaultWorkspaceLinks(overview: CustomerOverviewDto): WorkspaceHubLink[] {
   const recommendationsHref = clientRecommendationsPath(overview.clientId);
-
-  const workspaceLinks: WorkspaceHubLink[] = [
+  return [
     {
       href: clientExplorePath(overview.clientId),
       title: "Explore pillars",
@@ -79,6 +82,23 @@ export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashbo
       description: "Lifecycle status and planning context",
     },
   ];
+}
+
+/**
+ * SS-UX-004 — Premium customer Overview dashboard.
+ * Data is pre-assembled in `getCustomerOverview` — no scoring or catalog math here.
+ * SS-WEB-003-R1: optional href adapters for public demo; composition unchanged.
+ */
+export function CustomerExecutiveDashboard({
+  overview,
+  workspaceLinks,
+  recommendationsHref,
+  showBookingCta = true,
+}: CustomerExecutiveDashboardProps) {
+  const bookingUrl = showBookingCta ? getBookingUrl() : null;
+  const resolvedRecommendationsHref =
+    recommendationsHref ?? clientRecommendationsPath(overview.clientId);
+  const resolvedWorkspaceLinks = workspaceLinks ?? defaultWorkspaceLinks(overview);
 
   return (
     <ClientPageShell>
@@ -154,7 +174,7 @@ export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashbo
           <OverviewPriorityOpportunities
             priorities={overview.priorities}
             activeOpportunityCount={overview.activeOpportunityCount}
-            recommendationsHref={recommendationsHref}
+            recommendationsHref={resolvedRecommendationsHref}
           />
 
           <OverviewStrengthsExposure
@@ -176,7 +196,7 @@ export function CustomerExecutiveDashboard({ overview }: CustomerExecutiveDashbo
           title="Workspace"
           description="Continue to Explore, Roadmap, Reports, and related tools."
         />
-        <WorkspaceHubLinks links={workspaceLinks} />
+        <WorkspaceHubLinks links={resolvedWorkspaceLinks} />
       </section>
     </ClientPageShell>
   );

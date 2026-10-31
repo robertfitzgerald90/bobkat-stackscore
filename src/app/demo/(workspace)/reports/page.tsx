@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { DemoReportsExperience } from "@/components/public-demo/demo-reports-experience";
+import { CustomerReportsExperience } from "@/components/customer-portal/reports/customer-reports-experience";
 import { PUBLIC_DEMO_COMPANY_NAME } from "@/lib/public-demo/constants";
+import { PUBLIC_DEMO_OVERVIEW_HREF } from "@/lib/public-demo/presentation";
 import { getPublicDemoReports } from "@/lib/public-demo/provider";
 
 export const metadata: Metadata = {
@@ -11,6 +12,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/**
+ * SS-WEB-003-R1 — Mounts the shared customer Reports composition.
+ */
 export default function PublicDemoReportsPage() {
-  return <DemoReportsExperience experience={getPublicDemoReports()} />;
+  return (
+    <CustomerReportsExperience
+      experience={getPublicDemoReports()}
+      overviewHref={PUBLIC_DEMO_OVERVIEW_HREF}
+      showBookingCta={false}
+    />
+  );
 }

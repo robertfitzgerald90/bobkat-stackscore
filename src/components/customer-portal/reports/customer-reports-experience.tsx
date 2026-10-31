@@ -24,16 +24,31 @@ import { cn } from "@/lib/utils";
 
 type CustomerReportsExperienceProps = {
   experience: CustomerReportsExperienceDto;
+  /** Override Overview empty-state link (SS-WEB-003-R1 public demo). */
+  overviewHref?: string;
+  /** Hide booking CTA for read-only public demo. Default true. */
+  showBookingCta?: boolean;
 };
 
-export function CustomerReportsExperience({ experience }: CustomerReportsExperienceProps) {
+export function CustomerReportsExperience({
+  experience,
+  overviewHref,
+  showBookingCta = true,
+}: CustomerReportsExperienceProps) {
+  const resolvedOverviewHref =
+    overviewHref ?? customerOverviewPath(experience.clientId);
+
   return (
     <ClientPageShell className="max-w-5xl space-y-10">
       <ClientPageHeader
         eyebrow="Executive deliverables"
         title="Reports"
         description="Assessment reports, executive progress, and published business reviews for your organization."
-        actions={<BookingButton label="primary" variant="outline" />}
+        actions={
+          showBookingCta ? (
+            <BookingButton label="primary" variant="outline" />
+          ) : undefined
+        }
       />
 
       <ReportGuide items={experience.guide} />
@@ -61,7 +76,7 @@ export function CustomerReportsExperience({ experience }: CustomerReportsExperie
                 </Link>
               ) : (
                 <Link
-                  href={customerOverviewPath(experience.clientId)}
+                  href={resolvedOverviewHref}
                   className={buttonClassName({ variant: "outline" })}
                 >
                   Back to Overview

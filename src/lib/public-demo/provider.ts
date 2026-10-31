@@ -32,6 +32,13 @@ import type {
   CustomerReportCard,
   CustomerReportsExperienceDto,
 } from "@/lib/customer-portal/reports-dto";
+import {
+  buildCustomerOpportunitiesDto,
+  type CustomerOpportunitiesDto,
+  type CustomerOpportunityFilters,
+  type CustomerOpportunityItem,
+  type OpportunityRowInput,
+} from "@/lib/customer-portal/opportunities-dto";
 import { PRIORITY_LABELS, formatDisplayDate } from "@/lib/display";
 import { PROJECT_STATUS_LABELS } from "@/lib/projects";
 import { computeProjectProgress } from "@/lib/projects/progress";
@@ -641,6 +648,64 @@ export function getPublicDemoOpportunity(id: string): DemoOpportunityFixture | n
 
 export function getPublicDemoOpportunities(): DemoOpportunityFixture[] {
   return DEMO_OPPORTUNITIES;
+}
+
+function demoOpportunityRows(): OpportunityRowInput[] {
+  return DEMO_OPPORTUNITIES.map((row) => {
+    const related = DEMO_INITIATIVES.filter((init) => init.opportunityId === row.id);
+    return {
+      id: row.id,
+      title: row.title,
+      description: [
+        `Finding: ${row.finding}`,
+        `Recommended action: ${row.recommendedAction}`,
+        `Expected outcome: ${row.expectedOutcome}`,
+      ].join("\n\n"),
+      businessImpact: row.businessImpact,
+      suggestedService: null,
+      priority: row.priority,
+      status: row.status,
+      estimatedImpactPoints: row.priority === "critical" ? 8 : row.priority === "high" ? 5 : 3,
+      categoryCode: row.pillarCode,
+      categoryName: pillarName(row.pillarCode),
+      roadmapInitiatives: related.map((init) => ({
+        id: init.id,
+        title: init.title,
+        phaseId: init.phaseId,
+        phaseName: init.phaseName,
+      })),
+    };
+  });
+}
+
+function remapDemoOpportunityItem(item: CustomerOpportunityItem): CustomerOpportunityItem {
+  return {
+    ...item,
+    pillarHref: publicDemoExplorePillarPath(item.pillarCode),
+    roadmap: item.roadmap
+      ? {
+          ...item.roadmap,
+          href: publicDemoRoadmapPhasePath(item.roadmap.phaseId),
+        }
+      : null,
+  };
+}
+
+/** Shared customer Opportunities DTO for the public demo list experience. */
+export function getPublicDemoOpportunitiesDto(input?: {
+  filters?: CustomerOpportunityFilters;
+  selectedId?: string | null;
+}): CustomerOpportunitiesDto {
+  const dto = buildCustomerOpportunitiesDto({
+    clientId: PUBLIC_DEMO_WORKSPACE_ID,
+    rows: demoOpportunityRows(),
+    filters: input?.filters ?? { status: "active" },
+    selectedId: input?.selectedId ?? null,
+  });
+  return {
+    ...dto,
+    opportunities: dto.opportunities.map(remapDemoOpportunityItem),
+  };
 }
 
 export function getPublicDemoReports(): CustomerReportsExperienceDto {

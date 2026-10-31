@@ -25,6 +25,8 @@ type CustomerRecommendationsViewProps = {
   dto: CustomerOpportunitiesDto;
   filters: CustomerOpportunityFilters;
   selectedId: string | null;
+  /** Override list path for public demo (SS-WEB-003-R1). */
+  basePath?: string;
 };
 
 function buildQuery(filters: CustomerOpportunityFilters, selected: string | null): string {
@@ -44,9 +46,10 @@ export function CustomerRecommendationsView({
   dto,
   filters,
   selectedId,
+  basePath: basePathProp,
 }: CustomerRecommendationsViewProps) {
   const router = useRouter();
-  const basePath = clientRecommendationsPath(clientId);
+  const basePath = basePathProp ?? clientRecommendationsPath(clientId);
 
   const expandedId = useMemo(() => {
     if (selectedId && dto.selectedFound) return selectedId;
