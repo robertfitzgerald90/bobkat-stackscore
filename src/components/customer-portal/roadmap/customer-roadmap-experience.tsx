@@ -19,12 +19,20 @@ import { cn } from "@/lib/utils";
 type CustomerRoadmapExperienceProps = {
   clientId: string;
   experience: CustomerRoadmapExperienceDto | null;
+  /** Override reports link (public demo / alternate shells). */
+  reportsHref?: string;
+  /** Hide booking CTA — required for public read-only demo. */
+  showBookingCta?: boolean;
 };
 
 export function CustomerRoadmapExperience({
   clientId,
   experience,
+  reportsHref,
+  showBookingCta = true,
 }: CustomerRoadmapExperienceProps) {
+  const reportsPath = reportsHref ?? `/clients/${clientId}/executive-reports`;
+
   if (!experience) {
     return (
       <ClientPageShell className="max-w-5xl space-y-8">
@@ -41,13 +49,15 @@ export function CustomerRoadmapExperience({
           action={
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link
-                href={`/clients/${clientId}/executive-reports`}
+                href={reportsPath}
                 className={buttonClassName({ variant: "outline" })}
               >
                 <FileText className="mr-2 h-4 w-4" aria-hidden />
                 Executive reports
               </Link>
-              <BookingButton label="primary" icon={<Map className="mr-2 h-4 w-4" />} />
+              {showBookingCta ? (
+                <BookingButton label="primary" icon={<Map className="mr-2 h-4 w-4" />} />
+              ) : null}
             </div>
           }
         />

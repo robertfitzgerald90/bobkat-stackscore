@@ -1,47 +1,79 @@
 /**
  * Canonical Interactive Demo routes and deep-link section mapping.
+ * SS-WEB-003: deep links resolve to customer-parity public demo destinations.
  */
 
 import { BOBKAT_IT_URLS } from "@/lib/marketing/bobkat-website";
+import {
+  PUBLIC_DEMO_EXPLORE_PATH,
+  PUBLIC_DEMO_OPPORTUNITIES_PATH,
+  PUBLIC_DEMO_OVERVIEW_PATH,
+  PUBLIC_DEMO_PROJECTS_PATH,
+  PUBLIC_DEMO_REPORTS_PATH,
+  PUBLIC_DEMO_ROADMAP_PATH,
+} from "@/lib/public-demo/routes";
 
 export const INTERACTIVE_DEMO_PATH = "/demo";
 export const ASSESSMENT_OFFER_PATH = "/assessment-offer";
 /** Demo exit links back to Bobkat IT solutions marketing (StackScore no longer hosts /solutions). */
 export const SOLUTIONS_HOME_PATH = BOBKAT_IT_URLS.solutions;
 
-/** Short path segments → in-page section IDs */
+/** Short path segments → customer-parity demo destinations (SS-WEB-003). */
 export const DEMO_DEEP_LINK_SECTIONS = {
   dashboard: {
-    sectionId: "product-overview-dashboard",
-    label: "Executive Dashboard",
+    sectionId: "demo-overview",
+    label: "Overview",
+    href: PUBLIC_DEMO_OVERVIEW_PATH,
   },
   scores: {
-    sectionId: "product-overview-assessment",
+    sectionId: "demo-overview",
     label: "Technology Scores",
+    href: PUBLIC_DEMO_OVERVIEW_PATH,
+  },
+  overview: {
+    sectionId: "demo-overview",
+    label: "Overview",
+    href: PUBLIC_DEMO_OVERVIEW_PATH,
+  },
+  explore: {
+    sectionId: "demo-explore",
+    label: "Explore",
+    href: PUBLIC_DEMO_EXPLORE_PATH,
   },
   recommendations: {
-    sectionId: "product-overview-recommendations",
+    sectionId: "demo-opportunities",
     label: "Recommendations",
+    href: PUBLIC_DEMO_OPPORTUNITIES_PATH,
   },
   roadmap: {
-    sectionId: "product-overview-roadmap",
-    label: "Living Execution Plan",
+    sectionId: "demo-roadmap",
+    label: "Roadmap",
+    href: PUBLIC_DEMO_ROADMAP_PATH,
   },
   "improvement-plan": {
-    sectionId: "product-overview-phase-proposal",
+    sectionId: "demo-roadmap",
     label: "Improvement Plan",
+    href: PUBLIC_DEMO_ROADMAP_PATH,
   },
   projects: {
-    sectionId: "product-overview-projects",
+    sectionId: "demo-projects",
     label: "Projects",
+    href: PUBLIC_DEMO_PROJECTS_PATH,
   },
   investment: {
-    sectionId: "product-overview-budget",
+    sectionId: "demo-reports",
     label: "Investment Planning",
+    href: PUBLIC_DEMO_REPORTS_PATH,
   },
   "quarterly-review": {
-    sectionId: "product-overview-quarterly-review",
+    sectionId: "demo-reports",
     label: "Business Review",
+    href: PUBLIC_DEMO_REPORTS_PATH,
+  },
+  reports: {
+    sectionId: "demo-reports",
+    label: "Reports",
+    href: PUBLIC_DEMO_REPORTS_PATH,
   },
 } as const;
 
@@ -70,7 +102,9 @@ export function buildDemoHref(options: DemoHrefOptions = {}): string {
   if (source) params.set("source", source);
 
   const query = params.toString();
-  const base = section ? `${INTERACTIVE_DEMO_PATH}/${section}` : INTERACTIVE_DEMO_PATH;
+  const base = section
+    ? DEMO_DEEP_LINK_SECTIONS[section].href
+    : INTERACTIVE_DEMO_PATH;
   return query ? `${base}?${query}` : base;
 }
 

@@ -1,11 +1,10 @@
 ﻿import type { Metadata } from "next";
-import { permanentRedirect } from "next/navigation";
-import { ProductOverviewExperience } from "@/components/product-overview/product-overview-experience";
+import { permanentRedirect, redirect } from "next/navigation";
 import {
-  DEMO_DEEP_LINK_SECTIONS,
   INTERACTIVE_DEMO_PATH,
   isDemoDeepLinkSection,
 } from "@/lib/interactive-demo/routes";
+import { resolveLegacyDemoSectionRedirect } from "@/lib/public-demo/routes";
 
 type DemoSectionPageProps = {
   params: Promise<{ section: string }>;
@@ -13,22 +12,28 @@ type DemoSectionPageProps = {
 
 export async function generateMetadata({ params }: DemoSectionPageProps): Promise<Metadata> {
   const { section } = await params;
-  if (!isDemoDeepLinkSection(section)) {
-    return { title: "StackScore Interactive Demo" };
-  }
-  const label = DEMO_DEEP_LINK_SECTIONS[section].label;
+  const target = resolveLegacyDemoSectionRedirect(section);
   return {
-    title: `${label} | StackScore Interactive Demo`,
-    alternates: { canonical: `${INTERACTIVE_DEMO_PATH}/${section}` },
+    title: "StackScore Interactive Demo",
+    alternates: target
+      ? { canonical: target }
+      : { canonical: INTERACTIVE_DEMO_PATH },
   };
 }
 
+/**
+ * SS-WEB-003 — Legacy marketing deep links redirect into customer-parity demo routes.
+ */
 export default async function DemoDeepLinkPage({ params }: DemoSectionPageProps) {
   const { section } = await params;
+  const target = resolveLegacyDemoSectionRedirect(section);
+  if (target) {
+    redirect(target);
+  }
 
-  if (!isDemoDeepLinkSection(section)) {
+  if (isDemoDeepLinkSection(section)) {
     permanentRedirect(INTERACTIVE_DEMO_PATH);
   }
 
-  return <ProductOverviewExperience initialSection={section} />;
+  permanentRedirect(INTERACTIVE_DEMO_PATH);
 }

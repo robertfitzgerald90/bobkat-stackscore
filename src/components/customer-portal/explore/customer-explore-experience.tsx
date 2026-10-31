@@ -23,6 +23,8 @@ import type { TechnologyPillarCode } from "@/lib/technology-maturity/pillars";
 
 type CustomerExploreExperienceProps = {
   explore: CustomerExploreDto;
+  /** Override Overview link (public demo / alternate shells). */
+  overviewHref?: string;
 };
 
 /**
@@ -30,7 +32,11 @@ type CustomerExploreExperienceProps = {
  * Full-width stack: compact selector → overview → strengths/attention → tabs.
  * Reuses SS-UX-016 DTO; no left-grid/right-detail panel.
  */
-export function CustomerExploreExperience({ explore }: CustomerExploreExperienceProps) {
+export function CustomerExploreExperience({
+  explore,
+  overviewHref,
+}: CustomerExploreExperienceProps) {
+  const overviewPath = overviewHref ?? customerOverviewPath(explore.clientId);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -73,10 +79,7 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
           description="Complete a technology maturity assessment to explore pillar-level insights for your organization."
           nextStep="Return to Overview to continue your assessment journey."
           action={
-            <Link
-              href={customerOverviewPath(explore.clientId)}
-              className={buttonClassName({})}
-            >
+            <Link href={overviewPath} className={buttonClassName({})}>
               Go to Overview
             </Link>
           }
@@ -94,7 +97,7 @@ export function CustomerExploreExperience({ explore }: CustomerExploreExperience
           description="Technology Intelligence Center — select a pillar to review maturity, what is working, what needs attention, and related improvement work."
           actions={
             <Link
-              href={customerOverviewPath(explore.clientId)}
+              href={overviewPath}
               className={buttonClassName({ variant: "outline", size: "sm" })}
             >
               <ArrowLeft className="mr-1.5 h-3.5 w-3.5" aria-hidden />
