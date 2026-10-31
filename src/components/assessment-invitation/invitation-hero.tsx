@@ -2,16 +2,18 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-background";
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
-import { ClientDashboardPreview } from "@/components/marketing/client-dashboard-preview";
+import { AppShowcaseFrame } from "@/components/marketing/app-showcase-frame";
 import { buttonVariants } from "@/components/ui/button";
-import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
 import type {
   AssessmentInvitationContext,
   AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
 import { BRAND } from "@/lib/branding";
+import { STACKSCORE_APP_SHOWCASE_SECTIONS } from "@/lib/marketing/app-showcase";
 import { MARKETING_HERO_TITLE } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
+
+const overviewShot = STACKSCORE_APP_SHOWCASE_SECTIONS[0].image;
 
 type InvitationHeroProps = {
   personalization?: AssessmentInvitationPersonalization;
@@ -97,13 +99,12 @@ export function InvitationHero({ personalization, invitationContext }: Invitatio
           </a>
         </OfferReveal>
 
-        <div className="mt-10 w-full sm:mt-12 md:mt-14 lg:mt-16">
+        <div className="mt-10 w-full max-w-5xl sm:mt-12 md:mt-14 lg:mt-16">
           <OfferReveal delayMs={240} variant="image">
-            <CornerBrackets corners="four">
-              <ClientDashboardPreview />
-            </CornerBrackets>
+            <AppShowcaseFrame image={overviewShot} priority />
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Executive dashboard included with every StackScore assessment.
+              StackScore Overview from the interactive demo — fictional sample data. Official
+              StackScore updates only after reassessment.
             </p>
           </OfferReveal>
         </div>

@@ -24,9 +24,9 @@ export type AssessmentInvitationContext = {
 export const INVITATION_DISCOVER_FEATURES: OfferFeature[] = [
   {
     icon: Activity,
-    title: "Technology Health",
+    title: "Technology Maturity",
     description:
-      "Understand how your organization performs across the key areas of modern IT.",
+      "Understand how your organization performs across the key areas of modern IT — with an official StackScore from a completed assessment.",
   },
   {
     icon: ShieldAlert,
@@ -41,7 +41,8 @@ export const INVITATION_DISCOVER_FEATURES: OfferFeature[] = [
   {
     icon: Map,
     title: "Roadmap",
-    description: "See how improvements can be implemented over time.",
+    description:
+      "See how improvements can be sequenced over time. Roadmap progress does not automatically change your official StackScore.",
   },
 ];
 

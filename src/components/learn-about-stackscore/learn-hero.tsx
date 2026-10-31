@@ -4,16 +4,17 @@ import { OfferHeroBackground } from "@/components/assessment-offer/offer-hero-ba
 import { OfferReveal } from "@/components/assessment-offer/offer-reveal";
 import { TechnologySnapshotLink } from "@/components/assessment-offer/technology-snapshot-link";
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { CornerBrackets } from "@/components/design-system/instrument/corner-brackets";
-import { AssessmentExecutiveOverviewPreview } from "@/components/product-previews/assessment-executive-overview-preview";
+import { AppShowcaseFrame } from "@/components/marketing/app-showcase-frame";
 import { AssessmentPurchaseButton } from "@/components/purchase/assessment-purchase-button";
 import { buttonVariants } from "@/components/ui/button";
 import type { AssessmentOfferAttribution } from "@/lib/assessment-offer/attribution";
-import { assessmentExecutiveOverviewDemoData } from "@/lib/demo-data/assessment-executive-overview";
 import { LEARN_PAGE_HERO } from "@/lib/learn-about-stackscore/content";
+import { STACKSCORE_APP_SHOWCASE_SECTIONS } from "@/lib/marketing/app-showcase";
 import { SERVICES_CTA_DESTINATIONS } from "@/lib/services/cta";
 import { MARKETING_HERO_TITLE } from "@/lib/marketing/tokens";
 import { cn } from "@/lib/utils";
+
+const overviewShot = STACKSCORE_APP_SHOWCASE_SECTIONS[0].image;
 
 type LearnHeroProps = {
   attribution?: AssessmentOfferAttribution;
@@ -85,13 +86,12 @@ export function LearnHero({ attribution }: LearnHeroProps) {
           </Link>
         </OfferReveal>
 
-        <div className="mt-10 w-full max-w-4xl sm:mt-12">
+        <div className="mt-10 w-full max-w-5xl sm:mt-12">
           <OfferReveal delayMs={240} variant="image">
-            <CornerBrackets corners="four">
-              <AssessmentExecutiveOverviewPreview data={assessmentExecutiveOverviewDemoData} />
-            </CornerBrackets>
+            <AppShowcaseFrame image={overviewShot} priority />
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Sample executive view — demonstration data only, not a real customer.
+              Live StackScore Overview from the interactive demo — fictional sample data, not a real
+              customer.
             </p>
           </OfferReveal>
         </div>
