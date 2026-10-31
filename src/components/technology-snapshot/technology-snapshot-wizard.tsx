@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Clock, Shield } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Clock, Shield } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { SnapshotProgress } from "@/components/technology-snapshot/snapshot-progress";
 import { SnapshotResultsDashboard } from "@/components/technology-snapshot/snapshot-results-dashboard";
@@ -35,7 +35,10 @@ import {
   SNAPSHOT_V2_ESTIMATED_MINUTES,
   getSnapshotCategoryV2,
 } from "@/lib/technology-snapshot/catalog-v2";
-import { SNAPSHOT_OFFICIAL_DISCLAIMER } from "@/lib/technology-snapshot/display";
+import {
+  IT_MANAGEMENT_LABELS,
+  SNAPSHOT_OFFICIAL_DISCLAIMER,
+} from "@/lib/technology-snapshot/display";
 import {
   buildSnapshotFindingsV2,
   type SnapshotAnswersV2,
@@ -305,17 +308,18 @@ export function TechnologySnapshotWizard() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Approximate company size (optional)</Label>
+                <Label htmlFor="ctx-size">Approximate company size (optional)</Label>
                 <Select
                   value={context.companySize || undefined}
+                  items={Object.fromEntries(COMPANY_SIZE_OPTIONS.map((size) => [size, size]))}
                   onValueChange={(value) =>
                     setContext((c) => ({ ...c, companySize: value ?? "" }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="ctx-size" className="h-10 w-full min-w-0">
                     <SelectValue placeholder="Select size" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent alignItemWithTrigger className="min-w-(--anchor-width)">
                     {COMPANY_SIZE_OPTIONS.map((size) => (
                       <SelectItem key={size} value={size}>
                         {size}
@@ -325,9 +329,10 @@ export function TechnologySnapshotWizard() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>How is IT managed? (optional)</Label>
+                <Label htmlFor="ctx-it">How is IT managed? (optional)</Label>
                 <Select
                   value={context.itManagementModel || undefined}
+                  items={IT_MANAGEMENT_LABELS}
                   onValueChange={(value) =>
                     setContext((c) => ({
                       ...c,
@@ -335,12 +340,19 @@ export function TechnologySnapshotWizard() {
                     }))
                   }
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a model" />
+                  <SelectTrigger
+                    id="ctx-it"
+                    className="h-auto min-h-10 w-full min-w-0 py-2.5 whitespace-normal"
+                  >
+                    <SelectValue placeholder="Select how IT is managed" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent
+                    align="start"
+                    alignItemWithTrigger
+                    className="min-w-(--anchor-width) max-w-[min(100vw-2rem,28rem)]"
+                  >
                     {IT_MANAGEMENT_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
+                      <SelectItem key={opt.value} value={opt.value} multiline>
                         {opt.label}
                       </SelectItem>
                     ))}
@@ -365,20 +377,27 @@ export function TechnologySnapshotWizard() {
         ) : null}
 
         {phase === "questions" && activeQuestion && activeCategory ? (
-          <div className="space-y-5">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                {activeCategory.name}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">{activeCategory.description}</p>
-              <h2 className="mt-3 text-balance text-xl font-semibold leading-snug sm:text-2xl">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+                  {activeCategory.name}
+                </p>
+                <p className="text-xs tabular-nums text-muted-foreground">
+                  Question {questionIndex + 1} of {totalQuestionSteps}
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground">{activeCategory.description}</p>
+              <h2 className="text-balance text-xl font-semibold leading-snug tracking-tight text-foreground sm:text-2xl">
                 {activeQuestion.question}
               </h2>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Question {questionIndex + 1} of {totalQuestionSteps}
-              </p>
+              {activeQuestion.helpText ? (
+                <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+                  {activeQuestion.helpText}
+                </p>
+              ) : null}
             </div>
-            <div className="grid gap-2" role="radiogroup" aria-label="Answer">
+            <div className="grid gap-2.5" role="radiogroup" aria-label="Answer">
               {SNAPSHOT_ANSWER_OPTIONS_V2.map((option) => {
                 const selected = activeAnswer === option.value;
                 return (
@@ -388,10 +407,10 @@ export function TechnologySnapshotWizard() {
                     role="radio"
                     aria-checked={selected}
                     className={cn(
-                      "rounded-xl border px-4 py-3 text-left text-sm transition",
+                      "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition",
                       selected
-                        ? "border-primary bg-primary/15 text-foreground"
-                        : "border-border/70 bg-background/30 text-muted-foreground hover:border-primary/40 hover:text-foreground",
+                        ? "border-primary bg-primary/20 text-foreground shadow-[inset_0_0_0_1px_rgba(168,85,247,0.35)]"
+                        : "border-border/70 bg-background/40 text-muted-foreground hover:border-primary/45 hover:bg-primary/5 hover:text-foreground",
                     )}
                     onClick={() =>
                       setAnswers((prev) => ({
@@ -400,7 +419,15 @@ export function TechnologySnapshotWizard() {
                       }))
                     }
                   >
-                    {option.label}
+                    <span>{option.label}</span>
+                    {selected ? (
+                      <Check className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                    ) : (
+                      <span
+                        className="h-4 w-4 shrink-0 rounded-full border border-border/80"
+                        aria-hidden
+                      />
+                    )}
                   </button>
                 );
               })}

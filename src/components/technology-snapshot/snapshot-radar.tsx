@@ -75,14 +75,14 @@ export function SnapshotRadar({ categories, className }: SnapshotRadarProps) {
         .map((c) => `${c.name}: ${c.percent}%`)
         .join(". ")}. Strongest: ${strongest?.name ?? "n/a"}. Weakest: ${weakest?.name ?? "n/a"}.`}
     >
-      <div className="h-72 w-full min-w-0 sm:h-80 md:h-[22rem]">
+      <div className="mx-auto h-80 w-full max-w-xl min-w-0 sm:h-[22rem] md:h-[26rem] md:max-w-2xl">
         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <RadarChart
             data={data}
             cx="50%"
             cy="50%"
-            outerRadius="68%"
-            margin={{ top: 24, right: 20, left: 20, bottom: 24 }}
+            outerRadius="78%"
+            margin={{ top: 16, right: 12, left: 12, bottom: 16 }}
           >
             <PolarGrid
               stroke={GRID_STROKE}
