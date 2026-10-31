@@ -4,13 +4,24 @@ import { SNAPSHOT_POSTURE_LABELS, type SnapshotPostureBand } from "./engine";
 import { getClassificationLabel } from "./scoring";
 import type { SnapshotClassification, SnapshotItManagementModel } from "./types";
 
+/** Customer-facing labels — never show raw enum keys (`in_house`, etc.). */
 export const IT_MANAGEMENT_LABELS: Record<SnapshotItManagementModel, string> = {
-  in_house: "In-house IT team",
-  outsourced: "Outsourced IT provider",
-  part_time_internal: "Internal employee handles IT part-time",
-  none: "No formal IT management",
+  in_house: "In-House IT Team",
+  outsourced: "Outsourced IT Provider",
+  part_time_internal: "Internal Employee Handling IT",
+  none: "No Formal IT Management",
   unsure: "Unsure",
 };
+
+export function formatItManagementLabel(
+  value: SnapshotItManagementModel | string | null | undefined,
+): string {
+  if (!value) return "—";
+  if (value in IT_MANAGEMENT_LABELS) {
+    return IT_MANAGEMENT_LABELS[value as SnapshotItManagementModel];
+  }
+  return String(value);
+}
 
 export const SNAPSHOT_LEAD_STATUS_LABELS: Record<TechnologySnapshotLeadStatus, string> = {
   new: "New",

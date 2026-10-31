@@ -24,6 +24,8 @@ describe("technology snapshot public layout (SS-SNAP-003)", () => {
     expect(wizard).toContain("Start Free Snapshot");
     expect(wizard).toContain("saveSnapshotSession");
     expect(wizard).toContain("buildSnapshotFindingsV2");
+    expect(wizard).toContain("items={IT_MANAGEMENT_LABELS}");
+    expect(wizard).toContain("activeQuestion.helpText");
     expect(wizard).not.toContain("AssessmentExecutiveOverviewPreview");
   });
 
@@ -55,6 +57,7 @@ describe("technology snapshot public layout (SS-SNAP-003)", () => {
     expect(radar).toContain("strokeWidth={2.75}");
     expect(radar).toContain("fillOpacity={0.38}");
     expect(radar).toContain("SnapshotRadarVertex");
+    expect(radar).toContain('outerRadius="78%"');
   });
 
   it("restricts snapshot leads page to admins", () => {

@@ -18,14 +18,15 @@ export const SNAPSHOT_ANSWER_OPTIONS: Array<{
   { value: "no", label: "No", points: 0 },
 ];
 
+/** Keep labels in sync with `IT_MANAGEMENT_LABELS` in display.ts (avoid circular imports). */
 export const IT_MANAGEMENT_OPTIONS: Array<{
   value: SnapshotItManagementModel;
   label: string;
 }> = [
-  { value: "in_house", label: "In-house IT team" },
-  { value: "outsourced", label: "Outsourced IT provider" },
-  { value: "part_time_internal", label: "Internal employee handles IT part-time" },
-  { value: "none", label: "No formal IT management" },
+  { value: "in_house", label: "In-House IT Team" },
+  { value: "outsourced", label: "Outsourced IT Provider" },
+  { value: "part_time_internal", label: "Internal Employee Handling IT" },
+  { value: "none", label: "No Formal IT Management" },
   { value: "unsure", label: "Unsure" },
 ];
 

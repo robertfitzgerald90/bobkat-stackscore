@@ -16,6 +16,8 @@ export type SnapshotQuestionV2 = {
   question: string;
   /** Short label used in strength/concern citations */
   shortLabel: string;
+  /** Optional clarifying copy shown under the question heading */
+  helpText?: string;
 };
 
 export type SnapshotCategoryDef = {
@@ -53,7 +55,9 @@ export const SNAPSHOT_QUESTIONS_V2: SnapshotQuestionV2[] = [
     categoryId: "security_access",
     shortLabel: "Multi-factor authentication",
     question:
-      "Do people use an extra login step (like a code on their phone) when signing into important company systems?",
+      "Does your organization use multifactor authentication (MFA) to protect access to business systems and applications?",
+    helpText:
+      "Multifactor authentication requires an additional verification method beyond a password.",
   },
   {
     id: "A2",
@@ -66,7 +70,7 @@ export const SNAPSHOT_QUESTIONS_V2: SnapshotQuestionV2[] = [
     categoryId: "security_access",
     shortLabel: "Security alert review",
     question:
-      "Does anyone regularly look at security alerts or “something looks wrong” notices for your systems?",
+      "Does your organization regularly monitor security alerts and anomalies across its technology environment?",
   },
   {
     id: "A4",
@@ -141,7 +145,9 @@ export const SNAPSHOT_QUESTIONS_V2: SnapshotQuestionV2[] = [
     categoryId: "technology_planning",
     shortLabel: "Change-driven review",
     question:
-      "Do you review technology needs when the business changes (new location, new software, growth)?",
+      "Is technology formally considered as part of your organization's business change management process?",
+    helpText:
+      "For example, when introducing new processes, expanding operations, or implementing organizational changes.",
   },
 ];
 

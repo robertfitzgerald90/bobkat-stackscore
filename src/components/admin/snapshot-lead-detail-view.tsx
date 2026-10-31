@@ -42,7 +42,7 @@ import {
 import {
   ALL_SNAPSHOT_LEAD_STATUSES,
   formatSnapshotClassification,
-  IT_MANAGEMENT_LABELS,
+  formatItManagementLabel,
   SNAPSHOT_LEAD_STATUS_LABELS,
   SNAPSHOT_MAX_SCORE,
 } from "@/lib/technology-snapshot/display";
@@ -461,7 +461,7 @@ export function SnapshotLeadDetailView({ initialLead }: { initialLead: SnapshotL
             )}
             <div>
               <p className="text-sm text-muted-foreground">IT management model</p>
-              <p className="text-sm">{IT_MANAGEMENT_LABELS[lead.itManagementModel]}</p>
+              <p className="text-sm">{formatItManagementLabel(lead.itManagementModel)}</p>
             </div>
           </CardContent>
         </Card>
