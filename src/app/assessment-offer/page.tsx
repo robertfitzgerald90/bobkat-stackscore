@@ -1,23 +1,18 @@
-import type { Metadata } from "next";
 import { AssessmentOfferLanding } from "@/components/assessment-offer/assessment-offer-landing";
 import { readAssessmentOfferAttribution } from "@/lib/assessment-offer/attribution";
 import { BRAND } from "@/lib/branding";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 
-export const metadata: Metadata = {
-  title: `Learn About StackScore | Technology Maturity Assessment | ${BRAND.companyName}`,
-  description: `Understand your technology. Know what to improve. Learn how ${BRAND.productName} assesses technology maturity, prioritizes recommendations, and delivers executive-ready results from ${BRAND.companyName}.`,
-  alternates: {
-    canonical: "/assessment-offer",
-  },
+export const metadata = {
+  ...buildSocialPageMetadata({
+    title: `Learn About StackScore | Technology Maturity Assessment | ${BRAND.companyName}`,
+    description: `Understand your technology. Know what to improve. Learn how ${BRAND.productName} assesses technology maturity, prioritizes recommendations, and delivers executive-ready results from ${BRAND.companyName}.`,
+    path: "/assessment-offer",
+    image: "stackscoreDemo",
+  }),
   robots: {
     index: true,
     follow: true,
-  },
-  openGraph: {
-    title: `Learn About StackScore | Technology Maturity Assessment | ${BRAND.companyName}`,
-    description: `Understand your technology. Know what to improve. Learn how ${BRAND.productName} assesses technology maturity, prioritizes recommendations, and delivers executive-ready results from ${BRAND.companyName}.`,
-    url: "/assessment-offer",
-    type: "website",
   },
 };
 

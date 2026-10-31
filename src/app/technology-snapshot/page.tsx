@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PublicMarketingNav } from "@/components/public/public-marketing-nav";
 import { PublicPageShell } from "@/components/public/public-page-shell";
 import { TechnologySnapshotWizard } from "@/components/technology-snapshot/technology-snapshot-wizard";
-import { BRAND } from "@/lib/branding";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 
-export const metadata: Metadata = {
-  title: `Free Technology Snapshot | ${BRAND.companyName}`,
+export const metadata = buildSocialPageMetadata({
+  title: "Free Technology Snapshot | Bobkat IT",
   description:
-    "Get an indicative technology posture in about five minutes — no account required. See how your organization differs from a full StackScore assessment.",
-};
+    "Discover your business's technology strengths, identify potential risks, and uncover opportunities for improvement. Free, 14 questions, no account required.",
+  path: "/technology-snapshot",
+  image: "snapshot",
+});
 
 export default function TechnologySnapshotPage() {
   return (
