@@ -1,6 +1,6 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
+import { getPdfLogoSource } from "@/lib/pdf/shared/logo-source";
 import { COLORS } from "@/lib/pdf/shared/colors";
 import { TIP_PDF_SPACING } from "@/lib/pdf/tip/tokens";
 
@@ -39,7 +39,7 @@ export function PdfTipReportHeader({
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image src={getPdfLogoPath()} style={{ width: 29, height: 20, objectFit: "contain" }} />
+        <Image src={getPdfLogoSource()} style={{ width: 42, height: 29, objectFit: "contain" }} />
         <View>
           <Text
             style={{

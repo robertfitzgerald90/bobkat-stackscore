@@ -3,7 +3,6 @@ import { Text, View } from "@react-pdf/renderer";
 import { getRating } from "@/lib/scoring";
 import { formatMaturityScore } from "@/lib/scoring/score-display";
 import { PDF_RATING_BAR, PDF_SCORE_BAR } from "@/lib/pdf/shared/colors";
-import { PdfCornerBrackets } from "@/lib/pdf/shared/components/corner-brackets";
 import { PDF_TARGET_SCORE } from "@/lib/pdf/shared/constants";
 import { REPORT_COLORS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
 import { pdfComponentStyles as styles } from "@/lib/pdf/shared/styles/components";
@@ -14,9 +13,9 @@ type PdfScoreGaugeProps = {
   ratingLabel: string;
   variant?: "default" | "accent";
   showTarget?: boolean;
-  /** Use rating-based colors only for risk indicators; default uses forest current score. */
+  /** Use rating-based colors only for risk indicators; default uses brand current score. */
   barVariant?: "current" | "rating" | "improvement";
-  /** Four corners on the primary overall maturity score; two elsewhere. */
+  /** Retained for call-site compatibility; brackets removed to prevent score clip (SS-REL-017-R3). */
   bracketCorners?: "two" | "four";
 };
 
@@ -27,8 +26,9 @@ export function PdfScoreGauge({
   variant = "default",
   showTarget = true,
   barVariant = "current",
-  bracketCorners = "two",
+  bracketCorners: _bracketCorners = "two",
 }: PdfScoreGaugeProps) {
+  void _bracketCorners;
   const rating = getRating(score);
   const width = `${Math.max(0, Math.min(100, Math.round(score)))}%`;
   const fillColor =
@@ -38,13 +38,19 @@ export function PdfScoreGauge({
         ? PDF_SCORE_BAR.improvement
         : PDF_SCORE_BAR.current;
 
-  const card = (
-    <View wrap={false} style={variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard}>
+  // SS-REL-017-R3 — no corner brackets; no flex-grow that expands a single gauge
+  // to fill remaining page height (that forced blank pages before wrap={false} rows).
+  return (
+    <View
+      wrap={false}
+      style={[
+        variant === "accent" ? styles.gaugeCardAccent : styles.gaugeCard,
+        { flexGrow: 1, flexShrink: 1, flexBasis: 0, minHeight: 118, maxHeight: 150 },
+      ]}
+    >
       <Text style={styles.gaugeLabel}>{label}</Text>
-      <View style={styles.gaugeScoreBlock}>
-        <Text style={styles.gaugeValue}>{formatMaturityScore(score)}</Text>
-        <Text style={styles.gaugeRating}>{ratingLabel}</Text>
-      </View>
+      <Text style={styles.gaugeValue}>{formatMaturityScore(score)}</Text>
+      <Text style={styles.gaugeRating}>{ratingLabel}</Text>
       <View style={styles.gaugeTrack}>
         <View style={[styles.gaugeFill, { width, backgroundColor: fillColor }]} />
         {showTarget ? (
@@ -55,16 +61,6 @@ export function PdfScoreGauge({
         <Text style={styles.targetCaption}>Target: {PDF_TARGET_SCORE}+</Text>
       ) : null}
     </View>
-  );
-
-  return (
-    <PdfCornerBrackets
-      corners={bracketCorners}
-      tone={rating === "critical" || rating === "at_risk" ? "ink" : "forest"}
-      style={{ flex: 1 }}
-    >
-      {card}
-    </PdfCornerBrackets>
   );
 }
 

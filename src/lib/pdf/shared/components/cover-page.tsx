@@ -1,6 +1,6 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
+import { getPdfLogoSource } from "@/lib/pdf/shared/logo-source";
 import { pdfComponentStyles as styles } from "@/lib/pdf/shared/styles/components";
 
 export type PdfCoverMetaItem = {
@@ -47,7 +47,7 @@ export function PdfCoverPage({
 
         <View style={styles.coverBrandRow}>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={getPdfLogoPath()} style={styles.coverBrandLogo} />
+          <Image src={getPdfLogoSource()} style={styles.coverBrandLogo} />
           <View>
             <Text style={styles.coverPreparedBy}>Prepared by {BRAND.companyName}</Text>
             <Text style={styles.coverFinePrint}>

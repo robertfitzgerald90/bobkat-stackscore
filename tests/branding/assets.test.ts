@@ -18,7 +18,8 @@ describe("Bobkat IT branding assets", () => {
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo.startsWith("https://")).toBe(true);
     expect(EMAIL_BRAND_ASSETS.bobkatItLogo).not.toContain("staging.stackscore.tech");
     expect(EMAIL_BRAND_ASSETS.bobkatItLogoAlt).toBe("Bobkat IT logo");
-    expect(getPdfLogoPath()).toContain("bkit-logo.png");
+    // Paper PDFs use the black-plate emblem for contrast on white pages (SS-REL-017-R3).
+    expect(getPdfLogoPath()).toContain("new-bobkat-it-logo.png");
   });
 
   it("preserves logo aspect ratio when sizing", () => {

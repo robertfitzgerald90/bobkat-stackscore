@@ -1,41 +1,48 @@
 /**
  * StackScore PDF report design tokens — paper-safe print palette.
+ * SS-REL-017-R3: purple brand accent + charcoal ink (not legacy forest green).
  * Not a port of the on-screen Obsidian/phosphor theme.
  */
+
+/** Print-safe brand purple (aligned with `--brand-primary-fill` / AA solid). */
+const BRAND_PURPLE = "#6D28D9";
+const BRAND_PURPLE_SOFT = "#F3EEFF";
+const BRAND_PURPLE_BORDER = "#C4B5FD";
 
 export const REPORT_COLORS = {
   paper: "#FAFAF8",
   ink: "#1A1D22",
   inkSecondary: "#55595F",
   rule: "#D8DBDF",
-  forest: "#0B5A46",
+  /** Brand accent (historical key name `forest` retained for import stability) */
+  forest: BRAND_PURPLE,
   critical: "#9C2B2B",
 
-  /** @deprecated Prefer `forest` — kept so existing COLORS.navy imports remapped */
-  navy: "#0B5A46",
-  accent: "#0B5A46",
+  /** @deprecated Prefer `forest` / brand accent — remapped to purple */
+  navy: BRAND_PURPLE,
+  accent: BRAND_PURPLE,
   background: "#FAFAF8",
   sectionBackground: "#F3F3F0",
   border: "#D8DBDF",
   textPrimary: "#1A1D22",
   textSecondary: "#55595F",
-  /** Consolidated into forest — no separate success green */
-  success: "#0B5A46",
+  /** Positive maturity / success chrome — brand purple on paper */
+  success: BRAND_PURPLE,
   /** Caution for high/attention badges only — not a second brand accent */
   warning: "#8A6A1C",
-  scoreCurrent: "#0B5A46",
-  scoreImprovement: "#0B5A46",
+  scoreCurrent: BRAND_PURPLE,
+  scoreImprovement: BRAND_PURPLE,
   scoreDecline: "#9C2B2B",
   neutral: "#55595F",
   white: "#FFFFFF",
-  successBg: "#E8F2EE",
-  successBorder: "#B7D4C8",
+  successBg: BRAND_PURPLE_SOFT,
+  successBorder: BRAND_PURPLE_BORDER,
   warningBg: "#F5F0E8",
   warningBorder: "#D8DBDF",
   criticalBg: "#F8EDED",
   criticalBorder: "#E0B4B4",
-  accentBg: "#E8F2EE",
-  accentBorder: "#B7D4C8",
+  accentBg: BRAND_PURPLE_SOFT,
+  accentBorder: BRAND_PURPLE_BORDER,
 } as const;
 
 export const REPORT_SPACING = {

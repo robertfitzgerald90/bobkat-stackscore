@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   coverProduct: {
     fontSize: 26,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.forest,
+    color: REPORT_COLORS.ink,
     marginBottom: 4,
   },
   coverSubtitle: {
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   coverClientName: {
     fontSize: 24,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.forest,
+    color: REPORT_COLORS.ink,
     marginBottom: 22,
     lineHeight: 1.3,
   },
@@ -168,10 +168,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.navy,
+    color: REPORT_COLORS.ink,
     paddingBottom: 6,
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.navy,
+    borderBottomColor: REPORT_COLORS.accent,
   },
   sectionSubtitle: {
     fontSize: 9,
@@ -190,18 +190,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: REPORT_RADIUS.md,
-    padding: 16,
-    marginBottom: 14,
+    padding: 12,
+    marginBottom: 12,
   },
   panelTitle: {
     fontSize: 9,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 10,
+    marginBottom: 8,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
-  scoreRow: { flexDirection: "row", gap: 12, marginBottom: 10 },
+  scoreRow: { flexDirection: "row", gap: 12, marginBottom: 10, alignItems: "stretch" },
+  executiveNarrative: {
+    marginBottom: 8,
+  },
+  executiveParagraph: {
+    fontSize: 9,
+    lineHeight: 1.5,
+    color: COLORS.slate,
+    marginBottom: 6,
+  },
   gaugeCard: {
     flex: 1,
     backgroundColor: COLORS.paper,
@@ -279,7 +288,7 @@ const styles = StyleSheet.create({
   },
   summaryStatValue: {
     fontSize: 20,
-    fontFamily: REPORT_FONTS.monoBold,
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
     marginBottom: 3,
   },
@@ -348,18 +357,18 @@ const styles = StyleSheet.create({
   roadmapLabel: { flex: 1, fontSize: 10, fontFamily: REPORT_FONTS.bodyBold, color: COLORS.slate },
   roadmapScore: { fontSize: 18, fontFamily: REPORT_FONTS.monoBold, color: COLORS.navy, minWidth: 36 },
   roadmapBarWrap: { width: 120 },
-  bulletSection: { marginBottom: 14 },
+  bulletSection: { marginBottom: 10 },
   bulletHeading: {
     fontSize: 10,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 6,
+    marginBottom: 5,
   },
   bulletItem: {
     fontSize: 9,
-    lineHeight: 1.55,
+    lineHeight: 1.5,
     color: COLORS.slate,
-    marginBottom: 4,
+    marginBottom: 3,
     paddingLeft: 10,
   },
   categoryCard: {
@@ -426,22 +435,22 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   progressFill: { height: 10, borderRadius: REPORT_RADIUS.sm },
-  priorityGroup: { marginBottom: 18 },
+  priorityGroup: { marginBottom: 12 },
   priorityGroupTitle: {
     fontSize: 10,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    marginBottom: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
     backgroundColor: COLORS.surface,
     borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   recommendationCard: {
-    marginBottom: 12,
-    padding: 14,
+    marginBottom: 8,
+    padding: 10,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: REPORT_RADIUS.md,
@@ -452,38 +461,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 10,
-    marginBottom: 10,
+    marginBottom: 6,
   },
   recommendationTitle: {
     flex: 1,
-    fontSize: 11,
+    fontSize: 10.5,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    lineHeight: 1.45,
+    lineHeight: 1.4,
   },
   priorityBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 3,
+    paddingHorizontal: 7,
     borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
     fontSize: 7,
     fontFamily: REPORT_FONTS.bodyBold,
     letterSpacing: 0.5,
   },
-  recommendationField: { marginBottom: 8 },
+  recommendationField: { marginBottom: 5 },
   recommendationFieldLabel: {
     fontSize: 7,
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: 3,
+    marginBottom: 2,
   },
-  recommendationFieldValue: { fontSize: 9, lineHeight: 1.55, color: COLORS.slate },
+  recommendationFieldValue: { fontSize: 9, lineHeight: 1.45, color: COLORS.slate },
   recommendationImpact: {
     fontSize: 10,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    lineHeight: 1.45,
+    lineHeight: 1.35,
   },
   closingHero: {
     backgroundColor: REPORT_COLORS.accentBg,
@@ -492,40 +501,40 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: COLORS.forest,
     borderRadius: REPORT_RADIUS.lg,
-    padding: 20,
-    marginBottom: 18,
+    padding: 16,
+    marginBottom: 12,
   },
   closingHeroTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: REPORT_FONTS.displayBold,
     color: COLORS.forest,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   closingHeroSubtitle: {
     fontSize: 10,
     color: REPORT_COLORS.inkSecondary,
-    lineHeight: 1.5,
+    lineHeight: 1.45,
   },
   closingStatGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-    marginBottom: 18,
+    marginBottom: 12,
   },
   closingStat: {
     width: "48%",
-    minHeight: 54,
+    minHeight: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: REPORT_RADIUS.md,
-    padding: 14,
+    padding: 12,
     backgroundColor: COLORS.surface,
   },
   closingStatValue: {
-    fontSize: 22,
-    fontFamily: REPORT_FONTS.monoBold,
+    fontSize: 20,
+    fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   closingStatLabel: {
     fontSize: 8,
@@ -534,7 +543,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   ctaBox: {
-    padding: 18,
+    padding: 14,
     backgroundColor: REPORT_COLORS.accentBg,
     borderRadius: REPORT_RADIUS.md,
     borderWidth: 1,
@@ -544,15 +553,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.navy,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   warningBox: {
     backgroundColor: COLORS.criticalBg,
     borderWidth: 1,
     borderColor: COLORS.criticalBorder,
     borderRadius: REPORT_RADIUS.md,
-    padding: 12,
-    marginBottom: 12,
+    padding: 10,
+    marginBottom: 10,
   },
   warningTitle: {
     fontSize: 10,
@@ -580,30 +589,29 @@ function CategoryScoreCard({
     ? getCustomerMaturityLabel(percentScore)
     : RATING_LABELS[rating];
 
+  // No corner brackets — absolute overlays misplace when pillar cards paginate (SS-REL-017-R3).
   return (
-    <PdfCornerBrackets corners="two" tone="ink">
-      <View wrap={false} style={styles.categoryCard}>
-        <View style={styles.categoryTitleRow}>
-          <Text style={styles.categoryName}>{categoryName}</Text>
-          <Text style={styles.categoryPercent}>{displayScore}%</Text>
-        </View>
+    <View wrap={false} style={styles.categoryCard}>
+      <View style={styles.categoryTitleRow}>
+        <Text style={styles.categoryName}>{categoryName}</Text>
+        <Text style={styles.categoryPercent}>{displayScore}%</Text>
+      </View>
 
-        <View style={styles.categoryProgressWrap}>
-          <View style={styles.progressTrack}>
-            <View
-              style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
-            />
-          </View>
-        </View>
-
-        <View style={styles.categoryRatingRow}>
-          <Text style={styles.categoryRatingLabel}>
-            {useDoc119Maturity ? "Maturity:" : "Rating:"}
-          </Text>
-          <Text style={styles.categoryRatingValue}>{classificationLabel}</Text>
+      <View style={styles.categoryProgressWrap}>
+        <View style={styles.progressTrack}>
+          <View
+            style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
+          />
         </View>
       </View>
-    </PdfCornerBrackets>
+
+      <View style={styles.categoryRatingRow}>
+        <Text style={styles.categoryRatingLabel}>
+          {useDoc119Maturity ? "Maturity:" : "Rating:"}
+        </Text>
+        <Text style={styles.categoryRatingValue}>{classificationLabel}</Text>
+      </View>
+    </View>
   );
 }
 
@@ -630,8 +638,10 @@ function RecommendationCard({
           <PdfPriorityBadge priority={priority} />
         </View>
         <View style={styles.recommendationField}>
-          <Text style={styles.recommendationFieldLabel}>Estimated Priority Impact</Text>
-          <Text style={styles.recommendationImpact}>+{estimatedImpactPoints} pts</Text>
+          <Text style={styles.recommendationFieldLabel}>Priority-Impact Rating</Text>
+          <Text style={styles.recommendationImpact}>
+            {estimatedImpactPoints} (planning weight)
+          </Text>
         </View>
         {suggestedService ? (
           <View style={styles.recommendationField}>
@@ -681,7 +691,9 @@ function RecommendationIndex({
                   <View style={styles.summaryListItem}>
                     <Text style={styles.summaryListIndex}>{index}.</Text>
                     <Text style={styles.summaryListTitle}>{first.title}</Text>
-                    <Text style={styles.summaryListImpact}>+{first.estimatedImpactPoints}</Text>
+                    <Text style={styles.summaryListImpact}>
+                      {first.estimatedImpactPoints}
+                    </Text>
                   </View>
                 );
               })()}
@@ -693,7 +705,7 @@ function RecommendationIndex({
                   <Text style={styles.summaryListIndex}>{index}.</Text>
                   <Text style={styles.summaryListTitle}>{recommendation.title}</Text>
                   <Text style={styles.summaryListImpact}>
-                    +{recommendation.estimatedImpactPoints}
+                    {recommendation.estimatedImpactPoints}
                   </Text>
                 </View>
               );
@@ -786,6 +798,14 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
   const estimatedImprovement = summary.projectedScore - summary.overallScore;
   const criticalCount = countByPriority(summary.recommendations, "critical");
   const highCount = countByPriority(summary.recommendations, "high");
+  const totalRecommendationCount = clientRecommendations.length;
+
+  const executiveParagraphs = executiveSummary
+    ? executiveSummary
+        .split(/\n+/)
+        .map((line) => line.trim().replace(/\ba initial\b/gi, "an initial"))
+        .filter(Boolean)
+    : [];
 
   // Authoritative category-max impact (DOC-111A) — never the raw sum of recommendation points.
   const projectionImpact = summary.projectionImpact;
@@ -820,11 +840,11 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
     summary.immediateActions.length > 0
       ? summary.immediateActions.map(
           (action) =>
-            `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
+            `${action.title} (priority-impact rating ${action.estimatedImpactPoints})`,
         )
       : sortedRecommendations.slice(0, 3).map(
           (action) =>
-            `${action.title} (estimated priority impact +${action.estimatedImpactPoints} pts)`,
+            `${action.title} (priority-impact rating ${action.estimatedImpactPoints})`,
         );
 
   const improvementBullets = suppressCatalogProjectedMaturity
@@ -841,20 +861,17 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
         `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
       ];
 
-  const overviewBullets = executiveSummary
-    ? executiveSummary
-        .split(/\n+/)
-        .map((line) => line.trim())
-        .filter(Boolean)
-    : suppressCatalogProjectedMaturity
-      ? [
-          `${clientName} was assessed across core technology maturity categories.`,
-          `The current StackScore is ${summary.overallScore}. Prioritized recommendations identify improvement opportunities for follow-through.`,
-        ]
-      : [
-          `${clientName} was assessed across core technology maturity categories.`,
-          `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
-        ];
+  const overviewFallbackParagraphs = suppressCatalogProjectedMaturity
+    ? [
+        `${clientName} was assessed across core technology maturity categories.`,
+        `The current StackScore is ${summary.overallScore}. Prioritized recommendations identify improvement opportunities for follow-through.`,
+      ]
+    : [
+        `${clientName} was assessed across core technology maturity categories.`,
+        `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
+      ];
+  const narrativeParagraphs =
+    executiveParagraphs.length > 0 ? executiveParagraphs : overviewFallbackParagraphs;
 
   const roadmapMilestones: Array<{
     label: string;
@@ -908,7 +925,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           title="Recommendation Summary"
           subtitle={
             suppressCatalogProjectedMaturity
-              ? "Prioritized remediation opportunities and estimated priority impact"
+              ? "Prioritized remediation opportunities and priority-impact ratings"
               : "Prioritized remediation opportunities and projected StackScore impact"
           }
         >
@@ -962,8 +979,8 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
                 <Text style={styles.panelTitle}>Recommendation Index</Text>
                 <Text style={[styles.bodyText, { marginBottom: 0 }]}>
                   Sorted by priority (Critical → High → Medium → Low), then by highest
-                  estimated priority impact within each group. Impact points guide planning
-                  and are not a guaranteed StackScore increase.
+                  priority-impact rating within each group. Ratings are planning weights for
+                  sequencing—not guaranteed StackScore increases.
                 </Text>
               </View>
               <RecommendationIndex sortedRecommendations={sortedRecommendations} />
@@ -1029,7 +1046,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
 
         <PdfFlowSection
           title="Executive Summary"
-          subtitle="Skimmable assessment highlights for leadership review"
+          subtitle="Leadership briefing of assessment findings and next priorities"
         >
           <View wrap={false} style={styles.scoreRow}>
             <PdfScoreGauge
@@ -1061,6 +1078,21 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           ) : null}
 
           <View style={styles.panel}>
+            <View style={styles.executiveNarrative}>
+              <Text style={styles.panelTitle}>Assessment Overview</Text>
+              {narrativeParagraphs.map((paragraph, index) => (
+                <Text
+                  key={`exec-para-${index}`}
+                  wrap
+                  style={[
+                    styles.executiveParagraph,
+                    index === narrativeParagraphs.length - 1 ? { marginBottom: 0 } : null,
+                  ]}
+                >
+                  {paragraph}
+                </Text>
+              ))}
+            </View>
             <PdfBulletSection title="Overall Risk" items={overallRiskBullets} />
             {strengthBullets.length > 0 ? (
               <PdfBulletSection title="Top Strengths" items={strengthBullets} />
@@ -1075,7 +1107,6 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               }
               items={improvementBullets}
             />
-            <PdfBulletSection title="Assessment Overview" items={overviewBullets} />
           </View>
         </PdfFlowSection>
       </Page>
@@ -1111,9 +1142,9 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           subtitle="Prioritized remediation guidance with business impact and service alignment"
         >
           <Text style={styles.bodyText}>
-            Recommendations are organized by priority. Each card includes estimated priority
-            impact (planning guidance, not a guaranteed StackScore increase), recommended
-            service, and business impact to support project planning.
+            Recommendations are organized by priority. Each card includes a priority-impact
+            rating (planning weight for sequencing—not a guaranteed StackScore increase),
+            recommended service, and business impact to support project planning.
           </Text>
 
           {recommendationsByPriority.length === 0 ? (
@@ -1128,12 +1159,10 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             ))
           )}
         </PdfFlowSection>
-      </Page>
 
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <View>
+        {/* Closing stays on the recommendations Page as one unbreakable block so we do not
+            open a trailing empty page between sections (SS-REL-017-R3). */}
+        <View wrap={false} style={{ marginTop: 8 }}>
           <PdfClosingHero
             title="Technology Improvement Plan"
             subtitle={
@@ -1143,7 +1172,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
             }
           />
 
-          <View wrap={false} style={styles.scoreRow}>
+          <View style={styles.scoreRow}>
             <PdfScoreGauge
               score={summary.overallScore}
               label="Current Score"
@@ -1162,19 +1191,19 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
           </View>
 
           <View style={styles.closingStatGrid}>
-            <View wrap={false} style={styles.closingStat}>
+            <View style={styles.closingStat}>
               <Text style={styles.closingStatValue}>{criticalCount}</Text>
               <Text style={styles.closingStatLabel}>Critical Projects</Text>
             </View>
-            <View wrap={false} style={styles.closingStat}>
+            <View style={styles.closingStat}>
               <Text style={styles.closingStatValue}>{highCount}</Text>
               <Text style={styles.closingStatLabel}>High Priority Projects</Text>
             </View>
-            <View wrap={false} style={styles.closingStat}>
-              <Text style={styles.closingStatValue}>+{estimatedImprovement}</Text>
-              <Text style={styles.closingStatLabel}>Estimated Improvement</Text>
+            <View style={styles.closingStat}>
+              <Text style={styles.closingStatValue}>{totalRecommendationCount}</Text>
+              <Text style={styles.closingStatLabel}>Recommendations</Text>
             </View>
-            <View wrap={false} style={styles.closingStat}>
+            <View style={styles.closingStat}>
               <Text style={styles.closingStatValue}>{TARGET_SCORE}+</Text>
               <Text style={styles.closingStatLabel}>Maturity Target</Text>
             </View>
@@ -1187,7 +1216,7 @@ export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps
               can help you prioritize projects, implement remediation, and track StackScore progress
               over time.
             </Text>
-            <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 10, lineHeight: 1.5 }}>
+            <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 8, lineHeight: 1.5 }}>
               {BRAND.email}
               {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
             </Text>

@@ -12,7 +12,13 @@ export {
   REPORT_RADIUS,
   REPORT_TYPOGRAPHY,
 } from "./tokens";
-export { PDF_TARGET_SCORE, getPdfLogoPath } from "./constants";
+export {
+  PDF_TARGET_SCORE,
+  PDF_LOGO_FILE_NAME,
+  getPdfLogoPath,
+  getPdfLogoDisplaySize,
+} from "./constants";
+// getPdfLogoSource lives in logo-source.ts (Node fs) — import directly from there.
 export {
   PDF_LAYOUT,
   PDF_SPACING,

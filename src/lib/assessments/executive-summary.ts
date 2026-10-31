@@ -46,6 +46,11 @@ function subjectPhrase(clientName?: string): string {
   return "This organization";
 }
 
+/** English indefinite article before a maturity label ("an initial", "a basic"). */
+function indefiniteArticleFor(word: string): "a" | "an" {
+  return /^[aeiou]/i.test(word.trim()) ? "an" : "a";
+}
+
 /**
  * Normalize recommendation titles for executive prose.
  * Drops unfinished stub titles and strips mechanical "Improve {Pillar}:" prefixes.
@@ -81,7 +86,9 @@ function buildOpeningParagraph(input: BuildAssessmentExecutiveSummaryInput): str
   const maturityDescription = TECHNOLOGY_MATURITY_LEVEL_DESCRIPTIONS[level.code];
   const subject = subjectPhrase(input.clientName);
 
-  return `${subject} currently reflects a ${maturityLabel.toLowerCase()} level of technology maturity. ${maturityDescription} The overall StackScore of ${input.overallScore} establishes a clear baseline for improvement planning.`;
+  const maturityLower = maturityLabel.toLowerCase();
+  const article = indefiniteArticleFor(maturityLower);
+  return `${subject} currently reflects ${article} ${maturityLower} level of technology maturity. ${maturityDescription} The overall StackScore of ${input.overallScore} establishes a clear baseline for improvement planning.`;
 }
 
 function buildStrengthsParagraph(strengths: string[]): string {

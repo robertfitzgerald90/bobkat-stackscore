@@ -60,7 +60,7 @@ export const pdfComponentStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: REPORT_TYPOGRAPHY.sectionTitle,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.navy,
+    color: COLORS.ink,
     paddingBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
@@ -103,8 +103,8 @@ export const pdfComponentStyles = StyleSheet.create({
   kpiValue: {
     fontSize: REPORT_TYPOGRAPHY.kpiValue,
     fontFamily: REPORT_FONTS.monoBold,
-    color: COLORS.navy,
-    lineHeight: 1,
+    color: COLORS.ink,
+    lineHeight: 1.25,
     marginBottom: 4,
   },
   kpiCaption: {
@@ -113,7 +113,9 @@ export const pdfComponentStyles = StyleSheet.create({
     lineHeight: 1.4,
   },
   gaugeCard: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     backgroundColor: COLORS.paper,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -121,7 +123,9 @@ export const pdfComponentStyles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   gaugeCardAccent: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     backgroundColor: COLORS.surface,
     borderRadius: REPORT_RADIUS.md,
     padding: REPORT_SPACING.cardPadding,
@@ -133,25 +137,35 @@ export const pdfComponentStyles = StyleSheet.create({
     color: COLORS.muted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: 8,
-  },
-  gaugeScoreBlock: {
     marginBottom: 10,
   },
+  gaugeScoreBlock: {
+    flexDirection: "column",
+    marginBottom: 10,
+    paddingTop: 2,
+  },
   gaugeValue: {
-    fontSize: REPORT_TYPOGRAPHY.kpiValue,
-    fontFamily: REPORT_FONTS.monoBold,
-    color: COLORS.navy,
-    // Custom mono metrics need >1 lineHeight or the next Text overlaps the score.
-    lineHeight: 1.25,
-    marginBottom: 4,
+    // Body bold avoids JetBrains Mono vertical-metric overlap with the label above
+    // (SS-REL-017-R3). Whole-number presentation still via formatMaturityScore().
+    fontSize: 32,
+    fontFamily: REPORT_FONTS.bodyBold,
+    color: COLORS.ink,
+    lineHeight: 1.15,
+    marginBottom: 6,
   },
   gaugeRating: {
-    fontSize: REPORT_TYPOGRAPHY.bodySmall,
+    fontSize: 11,
     fontFamily: REPORT_FONTS.bodyBold,
     color: COLORS.accent,
-    lineHeight: 1.35,
-    marginBottom: 0,
+    marginBottom: 4,
+  },
+  coverBrandLogoPlate: {
+    backgroundColor: "#000000",
+    padding: 4,
+    borderRadius: REPORT_RADIUS.md,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "flex-start",
   },
   gaugeTrack: {
     height: 8,
@@ -345,11 +359,11 @@ export const pdfComponentStyles = StyleSheet.create({
     alignItems: "center",
   },
   pageHeaderLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  pageHeaderLogo: { width: 35, height: 24, objectFit: "contain" },
+  pageHeaderLogo: { width: 42, height: 29, objectFit: "contain" },
   pageHeaderBrand: {
     fontSize: 8,
     fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
+    color: COLORS.ink,
     letterSpacing: 0.3,
   },
   pageHeaderDoc: { fontSize: 7, color: COLORS.muted, marginTop: 2 },
@@ -395,7 +409,7 @@ export const pdfComponentStyles = StyleSheet.create({
   coverTitle: {
     fontSize: REPORT_TYPOGRAPHY.coverTitle,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.navy,
+    color: COLORS.ink,
     lineHeight: 1.2,
     marginBottom: 8,
   },
@@ -409,7 +423,7 @@ export const pdfComponentStyles = StyleSheet.create({
   coverClientName: {
     fontSize: REPORT_TYPOGRAPHY.coverClient,
     fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.navy,
+    color: COLORS.ink,
     marginBottom: 24,
     lineHeight: 1.25,
   },
@@ -444,7 +458,7 @@ export const pdfComponentStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
-  coverBrandLogo: { width: 64, height: 44, objectFit: "contain" },
+  coverBrandLogo: { width: 96, height: 66, objectFit: "contain" },
   coverPreparedBy: {
     fontSize: 10,
     fontFamily: REPORT_FONTS.bodyBold,

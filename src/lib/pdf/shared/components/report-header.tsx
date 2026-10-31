@@ -1,6 +1,6 @@
 import { Image, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
-import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
+import { getPdfLogoSource } from "@/lib/pdf/shared/logo-source";
 import { pdfComponentStyles as styles } from "@/lib/pdf/shared/styles/components";
 
 type PdfReportHeaderProps = {
@@ -22,7 +22,7 @@ export function PdfReportHeader({
     <View style={styles.pageHeader} fixed>
       <View style={styles.pageHeaderLeft}>
         {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image src={getPdfLogoPath()} style={styles.pageHeaderLogo} />
+        <Image src={getPdfLogoSource()} style={styles.pageHeaderLogo} />
         <View>
           <Text style={styles.pageHeaderBrand}>
             {BRAND.companyName} · {BRAND.productName}

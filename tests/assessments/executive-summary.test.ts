@@ -63,6 +63,20 @@ describe("buildAssessmentExecutiveSummary", () => {
     expect(summary).not.toContain("Acme Corp's organization");
   });
 
+  it("uses an indefinite article before vowel-initial maturity labels", () => {
+    const summary = buildAssessmentExecutiveSummary({
+      ...baseInput,
+      overallScore: 39,
+      overallRatingLabel: "Critical",
+      projectedScore: 59,
+    });
+
+    expect(summary).toContain(
+      "Acme Corp currently reflects an initial level of technology maturity",
+    );
+    expect(summary).not.toMatch(/\ba initial level\b/i);
+  });
+
   it("mentions strongest and highest-risk pillars in prose", () => {
     const summary = buildAssessmentExecutiveSummary(baseInput);
 

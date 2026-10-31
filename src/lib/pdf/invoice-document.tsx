@@ -20,7 +20,7 @@ import {
   type InvoicePdfSource,
 } from "@/lib/pdf/invoice-pdf-data";
 import { COLORS, registerPdfFonts } from "@/lib/pdf/shared";
-import { getPdfLogoPath } from "@/lib/pdf/shared/constants";
+import { getPdfLogoSource } from "@/lib/pdf/shared/logo-source";
 import type { InvoiceStatus } from "@/generated/prisma/client";
 
 registerPdfFonts();
@@ -602,7 +602,7 @@ export function InvoicePdfDocument({ data }: { data: InvoicePdfData }) {
           <View style={styles.headerLeft}>
             <View style={styles.headerBrandRow}>
               {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <Image src={getPdfLogoPath()} style={styles.logo} />
+              <Image src={getPdfLogoSource()} style={styles.logo} />
               <View style={styles.brandBlock}>
                 <Text style={styles.brandName}>{BRAND.companyName}</Text>
                 <Text style={styles.brandTagline}>{INVOICE_TAGLINE}</Text>
