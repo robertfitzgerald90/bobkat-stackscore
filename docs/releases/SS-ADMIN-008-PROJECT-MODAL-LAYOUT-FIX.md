@@ -70,8 +70,8 @@ Illustrative layout mocks (not production customer data):
 
 | Item | Value |
 | --- | --- |
-| Pre-fix tip | _(filled at deploy)_ |
-| Production commit SHA | _(filled at deploy)_ |
+| Pre-fix tip | `89f945b11fea6895f4023d51da7d505a23ec6484` |
+| Production commit SHA | `06420e1f10771f1c164a53456ace3943e99b6154` |
 | Deployment ID | _(filled at deploy)_ |
 | Deployment status | _(filled at deploy)_ |
 
