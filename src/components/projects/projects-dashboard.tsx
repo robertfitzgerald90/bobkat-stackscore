@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProjectAdminActions } from "@/components/admin/project-admin-actions";
+import { ProjectCustomerUpdatePanel } from "@/components/projects/project-customer-update-panel";
 import { ProjectDeliveryPanel } from "@/components/projects/project-delivery-panel";
 import { ExternalLink, FolderKanban, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -428,9 +429,14 @@ export function ProjectsDashboard({
                 </SheetDescription>
               </SheetHeader>
 
-              <SheetBody className="flex flex-col">
-                <div className="flex min-h-full flex-1 flex-col gap-4 pb-2">
-                  <div className="rounded-lg border border-border/60 bg-muted/15 p-3.5 text-sm">
+              <SheetBody>
+                {/*
+                  SS-ADMIN-008: normal document flow (no min-h-full / min-h-0 flex
+                  compression). Each block owns its layout space so Notes cannot
+                  paint over Customer Communications.
+                */}
+                <div className="flex flex-col gap-5 pb-2">
+                  <section className="rounded-lg border border-border/60 bg-muted/15 p-3.5 text-sm">
                     <div className="space-y-1">
                       <span className="text-xs text-muted-foreground">Source Recommendation</span>
                       <p className="break-words font-medium leading-snug">
@@ -455,9 +461,9 @@ export function ProjectsDashboard({
                         <p>{formatDisplayDate(selectedProject.completedAt)}</p>
                       </div>
                     </div>
-                  </div>
+                  </section>
 
-                  <div className="space-y-2">
+                  <section className="space-y-2">
                     <Label htmlFor="project-status">Status</Label>
                     <Select
                       value={editStatus}
@@ -482,28 +488,31 @@ export function ProjectsDashboard({
                         remove its points from projected score calculations.
                       </p>
                     ) : null}
-                  </div>
+                  </section>
 
-                  <div className="flex min-h-0 flex-col gap-2">
+                  <section className="space-y-2">
                     <Label htmlFor="project-notes">Notes</Label>
                     <textarea
                       id="project-notes"
                       value={editNotes}
                       onChange={(event) => setEditNotes(event.target.value)}
                       placeholder="Implementation notes, scheduling details, or client context..."
+                      rows={6}
                       className={cn(
-                        "flex min-h-[8rem] w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
+                        "block min-h-[8rem] max-h-60 w-full resize-y overflow-y-auto rounded-lg border border-input bg-background px-3 py-2.5 text-sm",
                         "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
                       )}
                     />
-                  </div>
+                  </section>
+
+                  <ProjectCustomerUpdatePanel projectId={selectedProject.id} />
 
                   <ProjectDeliveryPanel
                     projectId={selectedProject.id}
                     clientId={selectedProject.clientId}
                   />
 
-                  <div className="space-y-2">
+                  <section className="space-y-2">
                     <Button onClick={saveProject} disabled={saving} className="w-full">
                       <Save className="mr-2 h-4 w-4" />
                       {saving ? "Saving..." : "Save Changes"}
@@ -523,7 +532,7 @@ export function ProjectsDashboard({
                         View Client
                       </Link>
                     </div>
-                  </div>
+                  </section>
 
                   {isAdmin && selectedProject ? (
                     <ProjectAdminActions

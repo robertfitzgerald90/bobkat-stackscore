@@ -225,17 +225,23 @@ export function ProjectCustomerUpdatePanel({ projectId }: ProjectCustomerUpdateP
   const draft = active?.draft;
 
   return (
-    <section className="space-y-3 rounded-lg border border-border/60 bg-muted/10 p-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
+    <section className="relative space-y-3 rounded-lg border border-border/60 bg-muted/10 p-3.5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-1">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Customer communications
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Prepare a consolidated update from real project activity. Nothing sends automatically.
           </p>
         </div>
-        <Button type="button" size="sm" onClick={() => void prepare()} disabled={busy}>
+        <Button
+          type="button"
+          size="sm"
+          className="w-full shrink-0 sm:w-auto"
+          onClick={() => void prepare()}
+          disabled={busy}
+        >
           <Mail className="mr-1.5 h-3.5 w-3.5" />
           Prepare Customer Update
         </Button>

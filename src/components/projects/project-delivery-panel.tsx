@@ -12,7 +12,6 @@ import type {
   SerializedProjectTask,
 } from "@/lib/projects/delivery-service";
 import type { ProjectProgressResult } from "@/lib/projects/progress";
-import { ProjectCustomerUpdatePanel } from "@/components/projects/project-customer-update-panel";
 import { toast } from "sonner";
 
 type DeliveryBundle = {
@@ -302,17 +301,15 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
 
   return (
     <div className="space-y-5 rounded-lg border border-border/60 bg-muted/10 p-3.5">
-      <ProjectCustomerUpdatePanel projectId={projectId} />
-
-      <div>
+      <section className="space-y-1">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Delivery progress
         </p>
-        <p className="mt-1 text-sm font-medium">{progressLabel}</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-sm font-medium">{progressLabel}</p>
+        <p className="text-xs text-muted-foreground">
           Task completion does not auto-complete the project or change StackScore.
         </p>
-      </div>
+      </section>
 
       <section className="space-y-2">
         <div className="flex items-center justify-between gap-2">
