@@ -73,7 +73,7 @@ Illustrative layout mocks (not production customer data):
 | Pre-fix tip | `89f945b11fea6895f4023d51da7d505a23ec6484` |
 | Production commit SHA | `06420e1f10771f1c164a53456ace3943e99b6154` |
 | Deployment ID | `dpl_89A3XFofg8AhfBbwNMG9998ycRKj` |
-| Deployment status | **Ready** ? `https://stackscore.tech` (Commit `8a8cf64`) |
+| Deployment status | **Ready** on `https://stackscore.tech` (Commit `8a8cf64`) |
 
 ---
 
