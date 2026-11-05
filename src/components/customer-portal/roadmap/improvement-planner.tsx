@@ -407,6 +407,7 @@ export function ImprovementPlanner({
               </h3>
               {visible.map((task) => (
                 <article
+                  id={`task-${task.id}`}
                   key={task.id}
                   className="min-w-0 space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm"
                 >

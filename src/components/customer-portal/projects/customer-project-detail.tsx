@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -36,9 +37,10 @@ import { cn } from "@/lib/utils";
 
 type CustomerProjectDetailProps = {
   detail: CustomerProjectDetailDto;
+  management?: ReactNode;
 };
 
-export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
+export function CustomerProjectDetail({ detail, management }: CustomerProjectDetailProps) {
   const hasTasks = detail.tasks.length > 0;
   const hasMilestones = detail.milestones.length > 0;
   const progressLabel =
@@ -188,6 +190,8 @@ export function CustomerProjectDetail({ detail }: CustomerProjectDetailProps) {
           </div>
         ) : null}
       </section>
+
+      {management}
 
       <PublishedUpdatesFeed updates={detail.publishedUpdates} />
 

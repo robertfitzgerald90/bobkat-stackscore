@@ -1,3 +1,4 @@
+import { ProjectWorkspaceControls } from "@/components/projects/project-workspace-controls";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { CustomerProjectDetail } from "@/components/customer-portal/projects/customer-project-detail";
@@ -36,5 +37,28 @@ export default async function CustomerProjectDetailPage({ params }: PageProps) {
   );
   if (!detail) notFound();
 
-  return <CustomerProjectDetail detail={detail} />;
+  const management =
+    session.user.role !== "client"
+      ? await prisma.project.findFirst({
+          where: { id: projectId, clientId },
+          select: { status: true, description: true },
+        })
+      : null;
+  return (
+    <CustomerProjectDetail
+      detail={detail}
+      management={
+        management ? (
+          <ProjectWorkspaceControls
+            projectId={projectId}
+            clientId={clientId}
+            title={detail.title}
+            initialStatus={management.status}
+            initialNotes={management.description}
+            isAdmin={session.user.role === "admin"}
+          />
+        ) : undefined
+      }
+    />
+  );
 }

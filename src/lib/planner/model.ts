@@ -26,6 +26,7 @@ const pillarCode = z
   .nullable();
 export const plannerTaskSchema = z
   .object({
+    sourceRecommendationId: z.string().uuid().nullable().optional(),
     title: z.string().trim().min(1, "Give your task a title").max(200),
     description: z.string().trim().max(5000).default(""),
     owner: z.string().trim().max(200).default(""),

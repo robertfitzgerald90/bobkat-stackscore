@@ -10,6 +10,7 @@ export async function listPlannerTasks(
   });
   return tasks.map(
     ({
+      sourceRecommendationId,
       id,
       title,
       description,
@@ -20,6 +21,7 @@ export async function listPlannerTasks(
       dueDate,
       steps,
     }) => ({
+      sourceRecommendationId,
       id,
       title,
       description,

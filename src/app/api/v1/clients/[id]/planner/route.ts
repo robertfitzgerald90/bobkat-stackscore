@@ -1,3 +1,4 @@
+import { isClientDeliverableRecommendation } from "@/lib/recommendations/visibility";
 import { NextResponse } from "next/server";
 import {
   getSessionUserWithClient,
@@ -19,7 +20,7 @@ async function access(context: Context) {
     !(await prisma.client.findUnique({ where: { id }, select: { id: true } }))
   )
     return { response: notFound("Workspace not found") };
-  return { id };
+  return { id, role: user.role };
 }
 export async function GET(_request: Request, context: Context) {
   const result = await access(context);
@@ -34,6 +35,26 @@ export async function POST(request: Request, context: Context) {
   );
   if (!parsed.success)
     return badRequest(parsed.error.issues[0]?.message ?? "Invalid task");
+  if (parsed.data.sourceRecommendationId) {
+    const source = await prisma.assessmentRecommendation.findFirst({
+      where: { id: parsed.data.sourceRecommendationId, clientId: result.id! },
+      include: { recommendationTemplate: { select: { code: true } } },
+    });
+    if (!source || !isClientDeliverableRecommendation(source, result.role!))
+      return notFound("Recommendation not found");
+    const { sourceRecommendationId, ...values } = parsed.data;
+    const task = await prisma.plannerTask.upsert({
+      where: {
+        clientId_sourceRecommendationId: {
+          clientId: result.id!,
+          sourceRecommendationId,
+        },
+      },
+      create: { ...values, clientId: result.id!, sourceRecommendationId },
+      update: {},
+    });
+    return NextResponse.json({ task }, { status: 201 });
+  }
   const task = await prisma.plannerTask.create({
     data: { ...parsed.data, clientId: result.id! },
   });

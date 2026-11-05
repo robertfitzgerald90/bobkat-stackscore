@@ -15,7 +15,9 @@ const mocks = vi.hoisted(() => ({
     clientId: string | null;
   } | null,
   client: { findUnique: vi.fn() },
+  recommendation: { findFirst: vi.fn() },
   task: {
+    upsert: vi.fn(),
     findMany: vi.fn(),
     create: vi.fn(),
     updateMany: vi.fn(),
@@ -23,7 +25,11 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 vi.mock("@/lib/db", () => ({
-  prisma: { client: mocks.client, plannerTask: mocks.task },
+  prisma: {
+    client: mocks.client,
+    plannerTask: mocks.task,
+    assessmentRecommendation: mocks.recommendation,
+  },
 }));
 vi.mock("@/lib/api/access", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/api/access")>()),
@@ -55,6 +61,7 @@ beforeEach(() => {
   };
   mocks.client.findUnique.mockResolvedValue({ id: "client-a" });
   mocks.task.findMany.mockResolvedValue([]);
+  mocks.recommendation.findFirst.mockResolvedValue(null);
   mocks.task.create.mockImplementation(async ({ data }) => ({
     id: "task-1",
     ...data,
@@ -164,5 +171,49 @@ describe("planner API authorization and saving", () => {
     expect(
       (await GET(request("GET", undefined), context("missing"))).status,
     ).toBe(404);
+  });
+  it("links recommendations only within the workspace and reuses an existing task", async () => {
+    const sourceRecommendationId = "00000000-0000-4000-8000-000000000001";
+    const payload = {
+      title: "Test recovery",
+      sourceRecommendationId,
+      status: "in_progress",
+    };
+    expect((await POST(request("POST", payload), context())).status).toBe(404);
+    expect(mocks.recommendation.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: sourceRecommendationId, clientId: "client-a" },
+      }),
+    );
+    expect(mocks.task.upsert).not.toHaveBeenCalled();
+    mocks.recommendation.findFirst.mockResolvedValue({
+      id: sourceRecommendationId,
+      title: "Test recovery",
+      recommendationTemplate: { code: "REC-PUBLISHED" },
+    });
+    mocks.task.upsert.mockResolvedValue({
+      id: "existing-task",
+      status: "blocked",
+    });
+    const response = await POST(request("POST", payload), context());
+    expect(response.status).toBe(201);
+    expect((await response.json()).task.id).toBe("existing-task");
+    expect(mocks.task.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          clientId_sourceRecommendationId: {
+            clientId: "client-a",
+            sourceRecommendationId,
+          },
+        },
+        update: {},
+      }),
+    );
+    expect(mocks.task.create).not.toHaveBeenCalled();
+    mocks.recommendation.findFirst.mockResolvedValue({
+      title: "Improve unpublished stub",
+      recommendationTemplate: { code: "REC-TEST-STUB-X" },
+    });
+    expect((await POST(request("POST", payload), context())).status).toBe(404);
   });
 });

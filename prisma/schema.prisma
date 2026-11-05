@@ -2824,6 +2824,7 @@ model StripeWebhookEvent {
 
 /// Client-owned improvement actions, separate from scored assessment recommendations.
 model PlannerTask {
+  sourceRecommendationId String?
   id          String   @id @default(uuid())
   clientId    String
   title       String
@@ -2839,4 +2840,5 @@ model PlannerTask {
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, createdAt])
+  @@unique([clientId, sourceRecommendationId])
 }

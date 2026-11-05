@@ -168,7 +168,7 @@ export async function getCustomerProjectDetail(
   });
 
   if (!project) return null;
-  if (project.status === "cancelled") return null;
+  if (project.status === "cancelled" && role === "client") return null;
 
   const row = mapProjectRow(project);
   const recommendationVisible = Boolean(
