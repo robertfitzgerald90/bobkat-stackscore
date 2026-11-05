@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -109,13 +108,6 @@ export function ImprovementPlanner({
   }
   return (
     <section
-      style={
-        {
-          "--primary": "#4f8051",
-          "--brand-primary-fill": "#315e3d",
-          "--primary-foreground": "#ffffff",
-        } as CSSProperties
-      }
       className="space-y-5"
       aria-labelledby="planner-heading"
     >
