@@ -140,7 +140,11 @@ export function OverviewNextMoves({
                 {item.priorityLabel} priority
               </span>
               <span className="text-xs text-muted-foreground">
-                {STATUSES[taskFor(item.id)?.status ?? item.actionStatus ?? "planned"]}
+                {
+                  STATUSES[
+                    taskFor(item.id)?.status ?? item.actionStatus ?? "planned"
+                  ]
+                }
               </span>
               <button
                 onClick={() => {
@@ -185,13 +189,23 @@ export function OverviewNextMoves({
         >
           {active && (
             <>
-              <DialogHeader className="relative border-border px-6 pb-4 pt-7">
+              <DialogHeader className="relative shrink-0 border-border px-6 pb-4 pt-7">
                 <p className="pr-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                   {active.pillarName ?? "Improvement action"}
                 </p>
                 <DialogTitle className="pr-8 text-xl text-foreground">
                   {active.title}
                 </DialogTitle>
+
+                <DialogClose
+                  disabled={pending}
+                  className="absolute right-5 top-5 rounded p-1 text-muted-foreground"
+                  aria-label="Close action"
+                >
+                  ✕
+                </DialogClose>
+              </DialogHeader>
+              <div className="min-h-0 space-y-6 overflow-y-auto px-6 py-5">
                 <DialogDescription className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                   {content.finding ??
                     content.leadingText ??
@@ -201,15 +215,6 @@ export function OverviewNextMoves({
                     active.businessImpact ??
                     "Review this recommendation and record your next implementation step."}
                 </DialogDescription>
-                <DialogClose
-                  disabled={pending}
-                  className="absolute right-5 top-5 rounded p-1 text-muted-foreground"
-                  aria-label="Close action"
-                >
-                  ✕
-                </DialogClose>
-              </DialogHeader>
-              <div className="space-y-6 overflow-y-auto px-6 py-5">
                 <div className="flex flex-wrap gap-2 text-xs">
                   <span className="rounded bg-primary/10 px-2 py-1 text-primary">
                     {active.priorityLabel} priority
@@ -272,7 +277,7 @@ export function OverviewNextMoves({
                   {pending ? "Saving…" : notice}
                 </p>
               </div>
-              <div className="space-y-3 border-t border-border px-6 py-5">
+              <div className="shrink-0 space-y-3 border-t border-border px-6 py-5">
                 <div className="flex flex-wrap items-end justify-between gap-4">
                   <label className="space-y-1 text-xs">
                     <span className="block uppercase text-muted-foreground">
@@ -281,7 +286,9 @@ export function OverviewNextMoves({
                     <select
                       aria-label="Action status"
                       disabled={pending || readOnly}
-                      value={activeTask?.status ?? active.actionStatus ?? "planned"}
+                      value={
+                        activeTask?.status ?? active.actionStatus ?? "planned"
+                      }
                       onChange={(e) =>
                         updateStatus(
                           e.target.value as PlannerTaskInput["status"],
@@ -305,7 +312,12 @@ export function OverviewNextMoves({
                     <button
                       disabled={pending}
                       onClick={() =>
-                        updateStatus(activeTask?.status ?? active.actionStatus ?? "planned", true)
+                        updateStatus(
+                          activeTask?.status ??
+                            active.actionStatus ??
+                            "planned",
+                          true,
+                        )
                       }
                       className={buttonClassName({})}
                     >
