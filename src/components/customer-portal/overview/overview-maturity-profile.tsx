@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -47,7 +46,6 @@ export function OverviewMaturityProfile({
   if (!pillars.length) return null;
   return (
     <section
-      style={{ "--primary": "#4f8051" } as CSSProperties}
       aria-labelledby="maturity-profile-heading"
       className="space-y-4"
     >
@@ -73,7 +71,7 @@ export function OverviewMaturityProfile({
             viewBox="0 0 360 305"
             className="mx-auto w-full max-w-md"
             role="img"
-            aria-label="Technology maturity radar. Solid green shows assessment scores. Blue dots show action completion percentages, not maturity scores. Exact values are listed below."
+            aria-label="Technology maturity radar. Solid purple shows assessment scores. Blue dots show action completion percentages, not maturity scores. Exact values are listed below."
           >
             {[25, 50, 75, 100].map((n) => (
               <polygon
