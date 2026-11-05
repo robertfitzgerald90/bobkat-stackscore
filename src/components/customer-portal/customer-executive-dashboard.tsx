@@ -1,3 +1,4 @@
+import { OverviewMaturityProfile } from "@/components/customer-portal/overview/overview-maturity-profile";
 import Link from "next/link";
 import { ArrowRight, Calendar, ClipboardList, FileText } from "lucide-react";
 import {
@@ -39,7 +40,9 @@ export type CustomerExecutiveDashboardProps = {
   showBookingCta?: boolean;
 };
 
-function defaultWorkspaceLinks(overview: CustomerOverviewDto): WorkspaceHubLink[] {
+function defaultWorkspaceLinks(
+  overview: CustomerOverviewDto,
+): WorkspaceHubLink[] {
   const recommendationsHref = clientRecommendationsPath(overview.clientId);
   return [
     {
@@ -98,7 +101,8 @@ export function CustomerExecutiveDashboard({
   const bookingUrl = showBookingCta ? getBookingUrl() : null;
   const resolvedRecommendationsHref =
     recommendationsHref ?? clientRecommendationsPath(overview.clientId);
-  const resolvedWorkspaceLinks = workspaceLinks ?? defaultWorkspaceLinks(overview);
+  const resolvedWorkspaceLinks =
+    workspaceLinks ?? defaultWorkspaceLinks(overview);
 
   return (
     <ClientPageShell>
@@ -109,7 +113,10 @@ export function CustomerExecutiveDashboard({
           description="Complete the Technology Maturity Assessment to receive your StackScore, executive report, and strategic priorities — translated into business language you can act on."
           nextStep="Begin the assessment when you are ready."
           action={
-            <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
+            <Link
+              href="/assessment/start"
+              className={buttonClassName({ size: "lg" })}
+            >
               Start Assessment
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
             </Link>
@@ -151,11 +158,15 @@ export function CustomerExecutiveDashboard({
               description={overview.nextAction.description}
               actions={
                 <>
-                  <Link href={overview.nextAction.href} className={buttonClassName({})}>
+                  <Link
+                    href={overview.nextAction.href}
+                    className={buttonClassName({})}
+                  >
                     {overview.nextAction.label}
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
                   </Link>
-                  {overview.reportHref && overview.nextAction.href !== overview.reportHref ? (
+                  {overview.reportHref &&
+                  overview.nextAction.href !== overview.reportHref ? (
                     <Link
                       href={overview.reportHref}
                       className={buttonClassName({ variant: "outline" })}
@@ -169,7 +180,16 @@ export function CustomerExecutiveDashboard({
             />
           ) : null}
 
-          <OverviewPillarGrid pillars={overview.pillars} />
+          {overview.plannerTasks ? (
+            <OverviewMaturityProfile
+              pillars={overview.pillars}
+              tasks={overview.plannerTasks}
+              clientId={overview.clientId}
+              assessedAtLabel={overview.assessedAtLabel}
+            />
+          ) : (
+            <OverviewPillarGrid pillars={overview.pillars} />
+          )}
 
           <OverviewPriorityOpportunities
             priorities={overview.priorities}

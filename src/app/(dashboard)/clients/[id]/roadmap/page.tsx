@@ -1,3 +1,6 @@
+import { ImprovementPlanner } from "@/components/customer-portal/roadmap/improvement-planner";
+import { listPlannerTasks } from "@/lib/planner/service";
+import { PLANNER_PILLARS } from "@/lib/planner/model";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import {
@@ -16,7 +19,9 @@ import { getVcioFeatureAccess } from "@/lib/vcio/feature-unlocks";
 
 type PageProps = { params: Promise<{ id: string }> };
 
-export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) {
+export default async function ClientWorkspaceRoadmapPage({
+  params,
+}: PageProps) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -36,14 +41,37 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
     });
     if (clientUser?.clientId !== id) notFound();
 
-    const experience = await getCustomerRoadmapExperience(id, session.user.role);
-    return <CustomerRoadmapExperience clientId={id} experience={experience} />;
+    const experience = await getCustomerRoadmapExperience(
+      id,
+      session.user.role,
+    );
+    const tasks = await listPlannerTasks(id);
+    const suggestions =
+      experience?.initiatives.map((item) => ({
+        title: item.title,
+        description: item.implementationNotes ?? item.businessImpact ?? "",
+        pillarCode:
+          PLANNER_PILLARS.find((p) => p.name === item.pillarName)?.code ?? null,
+      })) ?? [];
+    return (
+      <div className="mx-auto max-w-7xl space-y-10">
+        <ImprovementPlanner
+          clientId={id}
+          initialTasks={tasks}
+          suggestions={suggestions}
+        />
+        {experience ? (
+          <CustomerRoadmapExperience clientId={id} experience={experience} />
+        ) : null}
+      </div>
+    );
   }
 
-  const [dashboard, plans, roadmapAccess] = await Promise.all([
+  const [dashboard, plans, roadmapAccess, tasks] = await Promise.all([
     getClientRoadmapDashboard(id, session.user.role),
     listTipPlans(id),
     getVcioFeatureAccess(id, "roadmap_collaboration"),
+    listPlannerTasks(id),
   ]);
 
   return (
@@ -53,6 +81,8 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
         description="Living execution plan and technology investment planning for this client."
       />
 
+      <ImprovementPlanner clientId={id} initialTasks={tasks} />
+
       <RoadmapDashboard
         dashboard={dashboard}
         emptyFallback={<RoadmapEmptyState clientId={id} />}
@@ -60,10 +90,12 @@ export default async function ClientWorkspaceRoadmapPage({ params }: PageProps) 
 
       <div className="space-y-4 border-t pt-8">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">Planning Tools</h2>
+          <h2 className="text-lg font-semibold tracking-tight">
+            Planning Tools
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Technology Improvement Plans refine phase sequencing before promoting the active
-            roadmap.
+            Technology Improvement Plans refine phase sequencing before
+            promoting the active roadmap.
           </p>
         </div>
         <TipPlanList

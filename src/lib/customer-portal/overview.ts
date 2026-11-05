@@ -1,3 +1,4 @@
+import { listPlannerTasks } from "@/lib/planner/service";
 /**
  * SS-UX-004 — Customer Overview service (authorized data assembly).
  * SS-UX-010 — Roadmap Progress uses initiative completion only (no journey substitute).
@@ -27,9 +28,10 @@ export async function getCustomerOverview(
   const detail = await getTechnologyProfileDetail(clientId, role);
   if (!detail) return null;
 
-  const [roadmap, entitlement] = await Promise.all([
+  const [roadmap, entitlement, plannerTasks] = await Promise.all([
     getClientRoadmapDashboard(clientId, role),
     getClientVcioEntitlement(clientId),
+    listPlannerTasks(clientId),
   ]);
 
   const hasRoadmap = Boolean(roadmap);
@@ -48,7 +50,7 @@ export async function getCustomerOverview(
     journeyPhaseLabel: detail.journey.phaseLabel,
   });
 
-  return buildCustomerOverviewFromDetail({
+  const overview = buildCustomerOverviewFromDetail({
     detail,
     companyName,
     hasRoadmap,
@@ -60,4 +62,5 @@ export async function getCustomerOverview(
     journeyPhaseLabel: resolved.journeyPhaseLabel,
     vcioAccessState: entitlement.accessState,
   });
+  return { ...overview, plannerTasks };
 }

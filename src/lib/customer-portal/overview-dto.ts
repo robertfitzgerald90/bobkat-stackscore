@@ -135,6 +135,7 @@ export type CustomerOverviewVcioSummary = {
 };
 
 export type CustomerOverviewDto = {
+  plannerTasks?: import("@/lib/planner/model").PlannerTaskView[];
   clientId: string;
   companyName: string;
   welcomeName: string;
