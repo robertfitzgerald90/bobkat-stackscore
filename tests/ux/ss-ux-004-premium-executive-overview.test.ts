@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   buildCustomerOverviewFromDetail,
+  buildPriorities,
   CUSTOMER_OVERVIEW_PRIORITY_LIMIT,
 } from "@/lib/customer-portal/overview-dto";
 import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
@@ -82,9 +83,24 @@ function minimalDetail(
     },
     scoreTrend: [],
     openRecommendations: [
-      recommendation({ id: "r1", title: "Critical Control Gap", priority: "critical", impact: 10 }),
-      recommendation({ id: "r2", title: "High Priority Fix", priority: "high", impact: 8 }),
-      recommendation({ id: "r3", title: "Medium Item", priority: "medium", impact: 3 }),
+      recommendation({
+        id: "r1",
+        title: "Critical Control Gap",
+        priority: "critical",
+        impact: 10,
+      }),
+      recommendation({
+        id: "r2",
+        title: "High Priority Fix",
+        priority: "high",
+        impact: 8,
+      }),
+      recommendation({
+        id: "r3",
+        title: "Medium Item",
+        priority: "medium",
+        impact: 3,
+      }),
     ],
     activeProjects: [],
     completedProjects: [],
@@ -196,12 +212,16 @@ describe("SS-UX-004 premium executive overview", () => {
     });
 
     expect(overview.pillars).toHaveLength(8);
-    expect(overview.pillars.map((p) => p.code)).toEqual(TECHNOLOGY_PILLARS.map((p) => p.code));
+    expect(overview.pillars.map((p) => p.code)).toEqual(
+      TECHNOLOGY_PILLARS.map((p) => p.code),
+    );
     expect(overview.stackScore).toBe(39);
     expect(overview.maturityLabel).toBe("Initial");
     expect(overview.maturityExplanation).toContain("Initial");
     for (const pillar of overview.pillars) {
-      expect(pillar.href).toBe(clientExplorePillarPath("client-abc", pillar.code));
+      expect(pillar.href).toBe(
+        clientExplorePillarPath("client-abc", pillar.code),
+      );
       expect(pillar.maturityLabel).toBeTruthy();
     }
   });
@@ -220,7 +240,9 @@ describe("SS-UX-004 premium executive overview", () => {
       companyName: "ABC LLC",
     });
 
-    expect(overview.priorities.length).toBeLessThanOrEqual(CUSTOMER_OVERVIEW_PRIORITY_LIMIT);
+    expect(overview.priorities.length).toBeLessThanOrEqual(
+      CUSTOMER_OVERVIEW_PRIORITY_LIMIT,
+    );
     expect(overview.priorities[0]?.priority).toBe("critical");
     expect(overview.priorities.some((p) => p.priority === "high")).toBe(true);
   });
@@ -232,7 +254,9 @@ describe("SS-UX-004 premium executive overview", () => {
     });
 
     expect(MEANINGFUL_STRENGTH_MIN_PERCENT).toBe(55);
-    expect(overview.demonstratedStrengths.every((s) => s.score >= 55)).toBe(true);
+    expect(overview.demonstratedStrengths.every((s) => s.score >= 55)).toBe(
+      true,
+    );
     expect(overview.demonstratedStrengths.map((s) => s.name)).toEqual([
       "Data Protection & Recovery",
       "Identity & Access",
@@ -260,7 +284,9 @@ describe("SS-UX-004 premium executive overview", () => {
 
     expect(overview.demonstratedStrengths).toEqual([]);
     expect(overview.comparativeStrengths.length).toBeGreaterThan(0);
-    expect(overview.comparativeStrengths.every((s) => s.kind === "comparative")).toBe(true);
+    expect(
+      overview.comparativeStrengths.every((s) => s.kind === "comparative"),
+    ).toBe(true);
     expect(overview.comparativeStrengths.every((s) => s.score < 55)).toBe(true);
   });
 
@@ -295,7 +321,10 @@ describe("SS-UX-004 premium executive overview", () => {
 
   it("wires page to getCustomerOverview and Explore pillar query", () => {
     const page = readFileSync(
-      join(process.cwd(), "src/app/(dashboard)/clients/[id]/technology-profile/page.tsx"),
+      join(
+        process.cwd(),
+        "src/app/(dashboard)/clients/[id]/technology-profile/page.tsx",
+      ),
       "utf8",
     );
     const explore = readFileSync(
@@ -303,7 +332,10 @@ describe("SS-UX-004 premium executive overview", () => {
       "utf8",
     );
     const dashboard = readFileSync(
-      join(process.cwd(), "src/components/customer-portal/customer-executive-dashboard.tsx"),
+      join(
+        process.cwd(),
+        "src/components/customer-portal/customer-executive-dashboard.tsx",
+      ),
       "utf8",
     );
 
@@ -315,5 +347,16 @@ describe("SS-UX-004 premium executive overview", () => {
     expect(dashboard).toContain("OverviewPillarGrid");
     expect(dashboard).not.toContain("northstarDemoDashboard");
     expect(dashboard).not.toContain("useProductOverview");
+  });
+  it("keeps exactly three ranked next moves and replaces actions completed in the planner", () => {
+    const detail = minimalDetail();
+    const original = buildPriorities(detail);
+    expect(original).toHaveLength(3);
+    const replacement = buildPriorities(detail, new Set([original[0].id]));
+    expect(replacement.some((row) => row.id === original[0].id)).toBe(false);
+    expect(replacement.length).toBeLessThanOrEqual(3);
+    expect(
+      replacement.every((row) => typeof row.description === "string"),
+    ).toBe(true);
   });
 });

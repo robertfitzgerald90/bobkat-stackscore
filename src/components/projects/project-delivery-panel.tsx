@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp, Check, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ const TASK_STATUS_LABEL: Record<SerializedProjectTask["status"], string> = {
 };
 
 export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPanelProps) {
+  const router = useRouter();
   const [bundle, setBundle] = useState<DeliveryBundle | null>(null);
   const [loading, setLoading] = useState(true);
   const [taskTitle, setTaskTitle] = useState("");
@@ -78,6 +80,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setTaskTitle("");
       toast.success("Task created");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -102,6 +105,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success(successMessage);
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -120,6 +124,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success("Task deleted");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -146,6 +151,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
         return;
       }
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -168,6 +174,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setMilestoneTitle("");
       toast.success("Milestone created");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -190,6 +197,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success(milestone.completedAt ? "Milestone reopened" : "Milestone completed");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -209,6 +217,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success("Milestone deleted");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -235,6 +244,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
         return;
       }
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -257,6 +267,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setLinkRecommendationId("");
       toast.success("Recommendation linked (status unchanged)");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -281,6 +292,7 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success("Recommendation unlinked");
       await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }

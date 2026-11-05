@@ -353,6 +353,7 @@ model Client {
   assessments                 Assessment[]
   recommendations             AssessmentRecommendation[]
   projects                    Project[]
+  plannerTasks                PlannerTask[]
   projectTasks                ProjectTask[]
   projectMilestones           ProjectMilestone[]
   projectRecommendations      ProjectRecommendation[]
@@ -2819,4 +2820,25 @@ model StripeWebhookEvent {
   payloadJson Json?
 
   @@index([eventType])
+}
+
+/// Client-owned improvement actions, separate from scored assessment recommendations.
+model PlannerTask {
+  sourceRecommendationId String?
+  id          String   @id @default(uuid())
+  clientId    String
+  title       String
+  description String   @default("") @db.Text
+  owner       String   @default("")
+  pillarCode  String?
+  horizon     String   @default("now")
+  status      String   @default("planned")
+  dueDate     String?
+  steps       String   @default("") @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, createdAt])
+  @@unique([clientId, sourceRecommendationId])
 }
