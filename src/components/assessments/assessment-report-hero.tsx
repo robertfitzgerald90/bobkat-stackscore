@@ -1,20 +1,18 @@
 import { BRAND } from "@/lib/branding";
-import { getReportScoreTextClass } from "@/lib/reports/document-score-display";
+import { getReportTypeMeta } from "@/lib/reports/meta";
 import { formatMaturityScore } from "@/lib/scoring/score-display";
-import { cn } from "@/lib/utils";
 
 type AssessmentReportHeroProps = {
   clientName: string;
   assessmentDate: string;
   overallScore: number;
-  /** Display maturity/rating label under StackScore (DOC-119 for customers). */
   overallMaturityLabel: string;
   projectedScore?: number | null;
-  /** Active improvement opportunities (open + accepted + in_progress) when known. */
   improvementOpportunityCount?: number;
   suppressCatalogProjectedMaturity?: boolean;
 };
 
+/** Compact document heading; score cards live in the report body, as in Progress. */
 export function AssessmentReportHero({
   clientName,
   assessmentDate,
@@ -24,56 +22,37 @@ export function AssessmentReportHero({
   improvementOpportunityCount,
   suppressCatalogProjectedMaturity = false,
 }: AssessmentReportHeroProps) {
-  const showProjected =
-    !suppressCatalogProjectedMaturity &&
-    projectedScore !== null &&
-    projectedScore !== undefined;
-
+  const meta = getReportTypeMeta("assessment");
   return (
-    <header className="report-cover">
-      <div className="report-cover-brand">
-        <p className="report-cover-product">{BRAND.productName.toUpperCase()}</p>
-        <p className="report-cover-powered">Powered by {BRAND.companyName}</p>
-      </div>
-
-      <h1 className="report-cover-title">Technology Maturity Assessment Report</h1>
-      <p className="report-cover-description">
-        A comprehensive evaluation of technology posture, technology maturity, and improvement
-        opportunities prepared for executive review.
+    <header className="border-b border-[color:var(--report-border-light)] px-6 py-8 sm:px-8">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+        Prepared by {BRAND.companyName}
       </p>
-
-      <div className="report-cover-meta">
-        <div className="report-cover-meta-item">
-          <p className="report-cover-meta-label">Prepared for</p>
-          <p className="report-cover-meta-value">{clientName}</p>
-        </div>
-        <div className="report-cover-meta-item">
-          <p className="report-cover-meta-label">Assessment date</p>
-          <p className="report-cover-meta-value">{assessmentDate}</p>
-        </div>
-        <div className="report-cover-meta-item">
-          <p className="report-cover-meta-label">Overall StackScore</p>
-          <p className={cn("report-cover-score", getReportScoreTextClass(overallScore))}>
-            {formatMaturityScore(overallScore)}
-          </p>
-          <p className="report-cover-meta-note">{overallMaturityLabel}</p>
-        </div>
-        <div className="report-cover-meta-item">
-          <p className="report-cover-meta-label">Technology maturity</p>
-          <p className="report-cover-meta-value">{overallMaturityLabel}</p>
-          <p className="report-cover-meta-note">
-            {showProjected
-              ? `Projected ${formatMaturityScore(projectedScore)} with recommended actions`
-              : improvementOpportunityCount !== undefined
-                ? `${improvementOpportunityCount} improvement ${
-                    improvementOpportunityCount === 1 ? "opportunity" : "opportunities"
-                  } identified`
-                : "Prioritized improvement opportunities identified"}
-          </p>
-        </div>
-      </div>
-
-      <p className="report-cover-attribution">Prepared by {BRAND.companyName}</p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">
+        {meta.title}
+      </h1>
+      <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+        {meta.subtitle}
+      </p>
+      <p className="mt-5 text-lg font-semibold text-foreground">{clientName}</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Assessment date: {assessmentDate}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        StackScore {formatMaturityScore(overallScore)} / 100 ·{" "}
+        {overallMaturityLabel}
+        {improvementOpportunityCount !== undefined
+          ? ` · ${improvementOpportunityCount} improvement opportunities`
+          : ""}
+      </p>
+      {!suppressCatalogProjectedMaturity &&
+      projectedScore !== null &&
+      projectedScore !== undefined ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          Internal planning estimate: {formatMaturityScore(projectedScore)} /
+          100. Score changes require reassessment.
+        </p>
+      ) : null}
     </header>
   );
 }

@@ -11,11 +11,11 @@
   --report-muted: #64748b;
   --report-border: #cbd5e1;
   --report-border-light: #e2e8f0;
-  --report-accent: #082f5b;
-  --report-accent-navy: #082f5b;
-  --report-highlight-bg: #082f5b;
-  --report-highlight-text: #ffffff;
-  --report-highlight-muted: rgba(255, 255, 255, 0.78);
+  --report-accent: #6d28d9;
+  --report-accent-navy: #6d28d9;
+  --report-highlight-bg: #f3eeff;
+  --report-highlight-text: #1a1d22;
+  --report-highlight-muted: #55595f;
   --report-status-critical: #dc2626;
   --report-status-at-risk: #d97706;
   --report-status-developing: #2563eb;
