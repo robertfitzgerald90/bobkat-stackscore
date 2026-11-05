@@ -21,25 +21,23 @@ import type {
 import { QbrPdfExecutiveDashboard } from "@/lib/pdf/qbr-executive-dashboard";
 import {
   COLORS,
-  PdfCoverPage,
-  PdfEmptyState,
   PdfPriorityBadge,
   PdfReportFooter,
   PdfReportHeader,
-  PdfSectionTitle,
   PDF_LAYOUT,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
+import { REPORT_FONTS, REPORT_COLORS } from "@/lib/pdf/shared/tokens";
 import { formatReportDate } from "@/lib/pdf/types";
 
 registerPdfFonts();
 
 const styles = StyleSheet.create({
   body: {
-    paddingTop: PDF_LAYOUT.headerReserve,
+    paddingTop: 88,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: 10,
     color: COLORS.slate,
     backgroundColor: COLORS.white,
@@ -48,7 +46,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: 0,
-    fontFamily: "Helvetica",
+    fontFamily: REPORT_FONTS.body,
     fontSize: 10,
     color: COLORS.slate,
     backgroundColor: COLORS.white,
@@ -62,15 +60,15 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 8,
+    borderRadius: 0,
     padding: 12,
     marginBottom: 8,
     backgroundColor: COLORS.white,
   },
   cardTitle: {
     fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
+    fontFamily: REPORT_FONTS.bodyBold,
+    color: REPORT_COLORS.ink,
     marginBottom: 4,
     lineHeight: 1.35,
   },
@@ -87,12 +85,12 @@ const styles = StyleSheet.create({
   },
   chip: {
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
+    fontFamily: REPORT_FONTS.bodyBold,
+    color: REPORT_COLORS.ink,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 4,
+    borderRadius: 0,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
@@ -122,8 +120,8 @@ const styles = StyleSheet.create({
   },
   budgetValue: {
     fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
+    fontFamily: REPORT_FONTS.bodyBold,
+    color: REPORT_COLORS.ink,
   },
   listItem: {
     fontSize: 10,
@@ -136,19 +134,76 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 8,
+    borderRadius: 0,
     padding: 12,
     marginBottom: 12,
   },
   panelTitle: {
     fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    color: COLORS.navy,
+    fontFamily: REPORT_FONTS.bodyBold,
+    color: REPORT_COLORS.ink,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 8,
   },
 });
+
+function PdfSectionTitle({
+  title,
+  subtitle,
+  keepWithNext = 65,
+}: {
+  title: string;
+  subtitle?: string;
+  keepWithNext?: number;
+}) {
+  return (
+    <View
+      wrap={false}
+      minPresenceAhead={keepWithNext}
+      style={{ marginTop: 12, marginBottom: 10 }}
+    >
+      <Text
+        style={{
+          fontFamily: REPORT_FONTS.displayBold,
+          fontSize: 15,
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: COLORS.border,
+        }}
+      >
+        {title}
+      </Text>
+      {subtitle ? (
+        <Text
+          style={{
+            fontSize: 9,
+            color: COLORS.muted,
+            lineHeight: 1.4,
+            marginTop: 5,
+          }}
+        >
+          {subtitle}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function PdfEmptyState({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <View style={{ marginBottom: 14 }} wrap={false}>
+      <Text style={styles.cardTitle}>{title}</Text>
+      <Text style={styles.cardBody}>{description}</Text>
+    </View>
+  );
+}
 
 function formatShortDate(iso: string | null | undefined): string {
   if (!iso) return "—";
@@ -160,14 +215,12 @@ function formatShortDate(iso: string | null | undefined): string {
 }
 
 function PageChrome({ data }: { data: QbrReportData }) {
-  const score = data.scoreAtPeriodEnd ?? data.currentStackScore ?? undefined;
   return (
     <>
       <PdfReportHeader
         clientName={data.clientName}
         generatedDate={data.generatedDateLabel}
         documentLabel={BUSINESS_REVIEW_LABEL}
-        technologyScore={score ?? undefined}
       />
       <PdfReportFooter
         generatedDate={data.generatedDateLabel}
@@ -202,8 +255,10 @@ function RecommendationCard({
   showResolvedDate?: boolean;
 }) {
   return (
-    <View wrap={false} style={styles.card}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
+    <View wrap={item.businessImpact.length > 900} style={styles.card}>
+      <Text style={styles.cardTitle} minPresenceAhead={45}>
+        {item.title}
+      </Text>
       <View style={styles.cardMeta}>
         <PdfPriorityBadge priority={item.priority} />
         <Text style={styles.chip}>{item.categoryName}</Text>
@@ -211,50 +266,66 @@ function RecommendationCard({
           {RECOMMENDATION_STATUS_LABELS[item.status] ?? item.status}
         </Text>
         {showResolvedDate && item.resolvedAt ? (
-          <Text style={styles.metaText}>Completed {formatShortDate(item.resolvedAt)}</Text>
+          <Text style={styles.metaText}>
+            Completed {formatShortDate(item.resolvedAt)}
+          </Text>
         ) : null}
       </View>
-      {item.businessImpact ? <Text style={styles.cardBody}>{item.businessImpact}</Text> : null}
+      {item.businessImpact ? (
+        <Text style={styles.cardBody}>{item.businessImpact}</Text>
+      ) : null}
     </View>
   );
 }
 
 function ProjectCard({ project }: { project: QbrProjectSummary }) {
   return (
-    <View wrap={false} style={styles.card}>
-      <Text style={styles.cardTitle}>{project.title}</Text>
+    <View wrap={(project.description?.length ?? 0) > 900} style={styles.card}>
+      <Text style={styles.cardTitle} minPresenceAhead={45}>
+        {project.title}
+      </Text>
       <View style={styles.cardMeta}>
         <Text style={styles.chip}>Completed</Text>
-        <Text style={styles.metaText}>{formatShortDate(project.completedAt)}</Text>
+        <Text style={styles.metaText}>
+          {formatShortDate(project.completedAt)}
+        </Text>
         {project.impactPoints != null ? (
           <Text style={styles.chip}>+{project.impactPoints} pts</Text>
         ) : null}
       </View>
-      {project.description ? <Text style={styles.cardBody}>{project.description}</Text> : null}
+      {project.description ? (
+        <Text style={styles.cardBody}>{project.description}</Text>
+      ) : null}
     </View>
   );
 }
 
 function RoadmapCard({ phase }: { phase: QbrRoadmapPhaseSummary }) {
   return (
-    <View wrap={false} style={styles.card}>
-      <Text style={styles.cardTitle}>{phase.phaseName}</Text>
+    <View wrap={(phase.summary?.length ?? 0) > 900} style={styles.card}>
+      <Text style={styles.cardTitle} minPresenceAhead={45}>
+        {phase.phaseName}
+      </Text>
       <View style={styles.cardMeta}>
         <Text style={styles.chip}>{roadmapPhaseLabel(phase.status)}</Text>
         <Text style={styles.metaText}>{phase.timeframe}</Text>
         <Text style={styles.metaText}>
-          {phase.initiativeCount} initiative{phase.initiativeCount === 1 ? "" : "s"}
+          {phase.initiativeCount} initiative
+          {phase.initiativeCount === 1 ? "" : "s"}
         </Text>
       </View>
-      {phase.summary ? <Text style={styles.cardBody}>{phase.summary}</Text> : null}
+      {phase.summary ? (
+        <Text style={styles.cardBody}>{phase.summary}</Text>
+      ) : null}
     </View>
   );
 }
 
 export function QbrReportDocument({ data }: { data: QbrReportData }) {
-  const opportunityGroups = groupOpportunitiesByPriority(data.remainingOpportunities);
+  const opportunityGroups = groupOpportunitiesByPriority(
+    data.remainingOpportunities,
+  );
   const budgetUtilization = getBudgetUtilizationPercent(data.budgetForecast);
-  const scoreEnd = data.scoreAtPeriodEnd ?? data.currentStackScore;
 
   return (
     <Document
@@ -263,45 +334,57 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
       subject={BUSINESS_REVIEW_LABEL}
       keywords="Business Review, StackScore, technology maturity"
     >
-      {/* Cover */}
-      <Page size="LETTER" style={styles.cover} wrap={false}>
-        <PdfReportFooter
-          generatedDate={data.generatedDateLabel}
-          clientName={data.clientName}
-          documentVersion="1.0"
-        />
-        <PdfCoverPage
-          eyebrow={`Prepared by ${BRAND.companyName} · ${BRAND.productName}`}
-          title={BUSINESS_REVIEW_LABEL}
-          subtitle="Review-period performance, outcomes, and upcoming priorities"
-          clientName={data.clientName}
-          meta={[
-            { label: "Review Period", value: data.reviewPeriodLabel },
-            { label: "Generated", value: data.generatedDateLabel },
-            { label: "Maturity Tier", value: data.currentMaturityLabel ?? "—" },
-            { label: "Document", value: data.title },
-            {
-              label: "Technology Score",
-              value: scoreEnd != null ? String(scoreEnd) : "—",
-            },
-            {
-              label: "Change vs Prior",
-              value: formatSignedPoints(data.scoreChange),
-            },
-          ]}
-          confidentialNotice={`Prepared exclusively for ${data.clientName}. Unauthorized distribution prohibited.`}
-        />
-      </Page>
-
-      {/* Executive dashboard */}
       <Page size="LETTER" style={styles.body} wrap>
         <PageChrome data={data} />
+        <View
+          wrap={false}
+          style={{
+            paddingBottom: 14,
+            marginBottom: 16,
+            borderBottomWidth: 2,
+            borderBottomColor: COLORS.accent,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 8,
+              color: COLORS.accent,
+              fontFamily: REPORT_FONTS.bodyBold,
+              letterSpacing: 1,
+              marginBottom: 7,
+            }}
+          >
+            PREPARED BY {BRAND.companyName.toUpperCase()}
+          </Text>
+          <Text
+            style={{
+              fontSize: 25,
+              fontFamily: REPORT_FONTS.displayBold,
+              lineHeight: 1.15,
+              marginBottom: 8,
+            }}
+          >
+            {BUSINESS_REVIEW_LABEL}
+          </Text>
+          <Text style={styles.cardBody}>
+            Review-period performance, outcomes, and upcoming priorities
+          </Text>
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: REPORT_FONTS.bodyBold,
+              marginTop: 10,
+              marginBottom: 4,
+            }}
+          >
+            {data.clientName}
+          </Text>
+          <Text style={styles.cardBody}>{data.title}</Text>
+          <Text style={styles.metaText}>
+            {data.reviewPeriodLabel} | Prepared {data.generatedDateLabel}
+          </Text>
+        </View>
         <QbrPdfExecutiveDashboard data={data} />
-      </Page>
-
-      {/* Executive summary */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
         <PdfSectionTitle
           title="Executive Summary"
           subtitle="Strategic narrative for leadership"
@@ -321,11 +404,6 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
             description="Generate or edit the Business Review to include a leadership summary."
           />
         ) : null}
-      </Page>
-
-      {/* Technology health */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
         <PdfSectionTitle
           title="Technology Health"
           subtitle="Category improvements across the review period"
@@ -342,16 +420,13 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
             ))}
           </View>
         )}
-      </Page>
-
-      {/* Completed work */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
         <PdfSectionTitle
           title="Completed Work"
           subtitle="Projects and recommendations closed during this review period"
         />
-        <Text style={[styles.panelTitle, { marginBottom: 8 }]}>Completed Projects</Text>
+        <Text style={[styles.panelTitle, { marginBottom: 8 }]}>
+          Completed Projects
+        </Text>
         {data.completedProjects.length === 0 ? (
           <PdfEmptyState
             title="No projects completed in this period"
@@ -377,13 +452,9 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
             <RecommendationCard key={item.id} item={item} showResolvedDate />
           ))
         )}
-      </Page>
-
-      {/* Opportunities + risks */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
         <PdfSectionTitle
           title="Remaining Opportunities"
+          keepWithNext={140}
           subtitle="Open recommendations prioritized for continued improvement"
         />
         {opportunityGroups.length === 0 ? (
@@ -394,7 +465,7 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
         ) : (
           opportunityGroups.map((group) => (
             <View key={group.priority} style={{ marginBottom: 12 }}>
-              <Text style={styles.panelTitle}>
+              <Text style={styles.panelTitle} minPresenceAhead={100}>
                 {group.label} Priority ({group.items.length})
               </Text>
               {group.items.map((item) => (
@@ -415,17 +486,16 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
           />
         ) : (
           data.technologyRisks.map((risk, index) => (
-            <View key={`risk-${index}`} wrap={false} style={styles.card}>
+            <View
+              key={`risk-${index}`}
+              wrap={risk.length > 900}
+              style={styles.card}
+            >
               <Text style={styles.cardTitle}>Risk {index + 1}</Text>
               <Text style={styles.cardBody}>{risk}</Text>
             </View>
           ))
         )}
-      </Page>
-
-      {/* Roadmap + investment */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
         <PdfSectionTitle
           title="Roadmap Progress"
           subtitle="Living execution plan phases tracked for this organization"
@@ -437,73 +507,84 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
           />
         ) : (
           data.roadmapPhases.map((phase) => (
-            <RoadmapCard key={`${phase.phaseName}-${phase.timeframe}`} phase={phase} />
+            <RoadmapCard
+              key={`${phase.phaseName}-${phase.timeframe}`}
+              phase={phase}
+            />
           ))
         )}
 
-        <PdfSectionTitle
-          title="Technology Investment Summary"
-          subtitle="Recorded spend and approved planning figures for the review horizon"
-        />
-        {!data.budgetForecast ? (
-          <PdfEmptyState
-            title="Investment quotations not included"
-            description="Implementation costs are scoped with Bobkat IT. This review focuses on technology improvement progress rather than speculative estimates."
+        <View wrap={false}>
+          <PdfSectionTitle
+            title="Technology Investment Summary"
+            subtitle="Recorded spend and approved planning figures for the review horizon"
           />
-        ) : (
-          <View style={styles.panel} wrap={false}>
-            {[
-              data.budgetForecast.completedInvestment > 0
-                ? {
-                    label: "Completed investment",
-                    value: formatQbrCurrency(data.budgetForecast.completedInvestment),
-                  }
-                : null,
-              data.budgetForecast.plannedInvestment > 0
-                ? {
-                    label: "Planned investment",
-                    value: formatQbrCurrency(data.budgetForecast.plannedInvestment),
-                  }
-                : null,
-              data.budgetForecast.deferredInvestment > 0
-                ? {
-                    label: "Deferred investment",
-                    value: formatQbrCurrency(data.budgetForecast.deferredInvestment),
-                  }
-                : null,
-              data.budgetForecast.monthlyServices > 0
-                ? {
-                    label: "Monthly services",
-                    value: `${formatQbrCurrency(data.budgetForecast.monthlyServices)}/mo`,
-                  }
-                : null,
-              data.budgetForecast.estimatedThreeYearInvestment > 0
-                ? {
-                    label: "Estimated three-year investment",
-                    value: formatQbrCurrency(data.budgetForecast.estimatedThreeYearInvestment),
-                  }
-                : null,
-              data.budgetForecast.plannedInvestment > 0 && budgetUtilization !== null
-                ? {
-                    label: "Budget utilization",
-                    value: `${budgetUtilization}%`,
-                  }
-                : null,
-            ]
-              .filter((row): row is { label: string; value: string } => row != null)
-              .map((row) => (
-                <View key={row.label} style={styles.budgetRow}>
-                  <Text style={styles.budgetLabel}>{row.label}</Text>
-                  <Text style={styles.budgetValue}>{row.value}</Text>
-                </View>
-              ))}
-          </View>
-        )}
-      </Page>
-
-      {/* Next priorities + closing */}
-      <Page size="LETTER" style={styles.body} wrap>
-        <PageChrome data={data} />
+          {!data.budgetForecast ? (
+            <PdfEmptyState
+              title="Investment quotations not included"
+              description="Implementation costs are scoped with Bobkat IT. This review focuses on technology improvement progress rather than speculative estimates."
+            />
+          ) : (
+            <View style={styles.panel} wrap={false}>
+              {[
+                data.budgetForecast.completedInvestment > 0
+                  ? {
+                      label: "Completed investment",
+                      value: formatQbrCurrency(
+                        data.budgetForecast.completedInvestment,
+                      ),
+                    }
+                  : null,
+                data.budgetForecast.plannedInvestment > 0
+                  ? {
+                      label: "Planned investment",
+                      value: formatQbrCurrency(
+                        data.budgetForecast.plannedInvestment,
+                      ),
+                    }
+                  : null,
+                data.budgetForecast.deferredInvestment > 0
+                  ? {
+                      label: "Deferred investment",
+                      value: formatQbrCurrency(
+                        data.budgetForecast.deferredInvestment,
+                      ),
+                    }
+                  : null,
+                data.budgetForecast.monthlyServices > 0
+                  ? {
+                      label: "Monthly services",
+                      value: `${formatQbrCurrency(data.budgetForecast.monthlyServices)}/mo`,
+                    }
+                  : null,
+                data.budgetForecast.estimatedThreeYearInvestment > 0
+                  ? {
+                      label: "Estimated three-year investment",
+                      value: formatQbrCurrency(
+                        data.budgetForecast.estimatedThreeYearInvestment,
+                      ),
+                    }
+                  : null,
+                data.budgetForecast.plannedInvestment > 0 &&
+                budgetUtilization !== null
+                  ? {
+                      label: "Budget utilization",
+                      value: `${budgetUtilization}%`,
+                    }
+                  : null,
+              ]
+                .filter(
+                  (row): row is { label: string; value: string } => row != null,
+                )
+                .map((row) => (
+                  <View key={row.label} style={styles.budgetRow}>
+                    <Text style={styles.budgetLabel}>{row.label}</Text>
+                    <Text style={styles.budgetValue}>{row.value}</Text>
+                  </View>
+                ))}
+            </View>
+          )}
+        </View>
         <PdfSectionTitle
           title="Next Review Priorities"
           subtitle="Recommended actions before the next Business Review"
@@ -535,15 +616,35 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
           </>
         ) : null}
 
-        <PdfSectionTitle title="Business Alignment" subtitle="Goals and technology vision progress" />
-        <View style={styles.panel} wrap={false}>
+        <PdfSectionTitle
+          title="Business Alignment"
+          subtitle="Goals and technology vision progress"
+        />
+        <View
+          style={styles.panel}
+          wrap={
+            (data.businessGoalLabel?.length ?? 0) +
+              data.businessGoalProgress.length >
+            900
+          }
+        >
           <Text style={styles.panelTitle}>Business Goal</Text>
-          <Text style={styles.bodyText}>{data.businessGoalLabel ?? "Not specified"}</Text>
+          <Text style={styles.bodyText}>
+            {data.businessGoalLabel ?? "Not specified"}
+          </Text>
           <Text style={styles.cardBody}>{data.businessGoalProgress}</Text>
         </View>
-        <View style={styles.panel} wrap={false}>
+        <View
+          style={styles.panel}
+          wrap={
+            (data.technologyVision?.length ?? 0) + data.visionProgress.length >
+            900
+          }
+        >
           <Text style={styles.panelTitle}>Technology Vision</Text>
-          <Text style={styles.bodyText}>{data.technologyVision ?? "Not specified"}</Text>
+          <Text style={styles.bodyText}>
+            {data.technologyVision ?? "Not specified"}
+          </Text>
           <Text style={styles.cardBody}>{data.visionProgress}</Text>
         </View>
 
@@ -574,8 +675,9 @@ export function QbrReportDocument({ data }: { data: QbrReportData }) {
           </View>
         </View>
         <Text style={[styles.cardBody, { marginTop: 8 }]}>
-          CONFIDENTIAL — This Business Review was prepared exclusively for {data.clientName}. It
-          may not be reproduced or distributed without written consent from {BRAND.companyName}.
+          CONFIDENTIAL — This Business Review was prepared exclusively for{" "}
+          {data.clientName}. It may not be reproduced or distributed without
+          written consent from {BRAND.companyName}.
         </Text>
       </Page>
     </Document>
