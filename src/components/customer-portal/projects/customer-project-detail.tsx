@@ -1,3 +1,4 @@
+import { ProjectNextStep } from "@/components/projects/project-next-step";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -40,7 +41,10 @@ type CustomerProjectDetailProps = {
   management?: ReactNode;
 };
 
-export function CustomerProjectDetail({ detail, management }: CustomerProjectDetailProps) {
+export function CustomerProjectDetail({
+  detail,
+  management,
+}: CustomerProjectDetailProps) {
   const hasTasks = detail.tasks.length > 0;
   const hasMilestones = detail.milestones.length > 0;
   const progressLabel =
@@ -65,13 +69,46 @@ export function CustomerProjectDetail({ detail, management }: CustomerProjectDet
         }
       />
 
+      <nav
+        aria-label="Project sections"
+        className="flex flex-wrap gap-2 text-sm"
+      >
+        <Link
+          href="#project-overview"
+          className="rounded-lg border border-border px-3 py-2 hover:border-primary/40"
+        >
+          Overview
+        </Link>
+        <Link
+          href="#project-delivery"
+          className="rounded-lg border border-border px-3 py-2 hover:border-primary/40"
+        >
+          Tasks &amp; milestones
+        </Link>
+        {detail.publishedUpdates.length > 0 ? (
+          <Link
+            href="#project-updates"
+            className="rounded-lg border border-border px-3 py-2 hover:border-primary/40"
+          >
+            Published updates
+          </Link>
+        ) : null}
+      </nav>
+
+      <ProjectNextStep detail={detail} />
+
       <section
         className={cn(CLIENT_SURFACE_CARD_INDUSTRIAL, "space-y-5 p-5 sm:p-6")}
+        id="project-overview"
         aria-labelledby="project-overview-heading"
       >
         <div className="flex flex-wrap items-center gap-2">
-          <ClientStatusBadge tone="muted">{detail.statusLabel}</ClientStatusBadge>
-          <ClientStatusBadge tone="default">{detail.priorityLabel}</ClientStatusBadge>
+          <ClientStatusBadge tone="muted">
+            {detail.statusLabel}
+          </ClientStatusBadge>
+          <ClientStatusBadge tone="default">
+            {detail.priorityLabel}
+          </ClientStatusBadge>
           {detail.pillarName ? (
             detail.pillarHref ? (
               <Link
@@ -81,13 +118,18 @@ export function CustomerProjectDetail({ detail, management }: CustomerProjectDet
                 {detail.pillarName}
               </Link>
             ) : (
-              <span className="text-xs text-muted-foreground">{detail.pillarName}</span>
+              <span className="text-xs text-muted-foreground">
+                {detail.pillarName}
+              </span>
             )
           ) : null}
         </div>
 
         <div>
-          <h2 id="project-overview-heading" className="text-xl font-bold text-foreground">
+          <h2
+            id="project-overview-heading"
+            className="text-xl font-bold text-foreground"
+          >
             Objective
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">
@@ -113,7 +155,9 @@ export function CustomerProjectDetail({ detail, management }: CustomerProjectDet
                 ? `${detail.tasksCompleted}/${detail.tasksTotal}`
                 : "—"
             }
-            hint={detail.tasksTotal > 0 ? "From delivery checklist" : "No tasks yet"}
+            hint={
+              detail.tasksTotal > 0 ? "From delivery checklist" : "No tasks yet"
+            }
           />
           <MetricWell
             label="Start"
@@ -145,12 +189,17 @@ export function CustomerProjectDetail({ detail, management }: CustomerProjectDet
 
         {detail.nextMilestone ? (
           <div className="flex flex-wrap items-start gap-3 rounded-sm border border-primary/25 bg-primary/5 px-3 py-3">
-            <Flag className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <Flag
+              className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+              aria-hidden
+            />
             <div className="min-w-0 space-y-1">
               <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-primary">
                 Next milestone
               </p>
-              <p className="text-sm font-medium text-foreground">{detail.nextMilestone.title}</p>
+              <p className="text-sm font-medium text-foreground">
+                {detail.nextMilestone.title}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {detail.nextMilestone.targetDateLabel
                   ? `Target ${detail.nextMilestone.targetDateLabel}`
@@ -191,15 +240,24 @@ export function CustomerProjectDetail({ detail, management }: CustomerProjectDet
         ) : null}
       </section>
 
-      {management}
+      <div id="project-delivery" className="scroll-mt-24 space-y-6">
+        {management ?? (
+          <>
+            <TaskBoard groups={detail.taskGroups} hasTasks={hasTasks} />
+            <MilestoneTimeline
+              milestones={detail.milestones}
+              hasMilestones={hasMilestones}
+            />
+          </>
+        )}
+      </div>
 
-      <PublishedUpdatesFeed updates={detail.publishedUpdates} />
+      <div id="project-updates" className="scroll-mt-24">
+        <PublishedUpdatesFeed updates={detail.publishedUpdates} />
+      </div>
 
-      <TaskBoard groups={detail.taskGroups} hasTasks={hasTasks} />
-
-      <MilestoneTimeline milestones={detail.milestones} hasMilestones={hasMilestones} />
-
-      {detail.recommendations.length > 0 || detail.roadmapInitiatives.length > 0 ? (
+      {detail.recommendations.length > 0 ||
+      detail.roadmapInitiatives.length > 0 ? (
         <RelatedImprovements
           recommendations={detail.recommendations}
           initiatives={detail.roadmapInitiatives}
@@ -227,10 +285,17 @@ function MetricWell({
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className={cn("mt-1 text-lg font-semibold text-foreground", CLIENT_METRIC_VALUE)}>
+      <p
+        className={cn(
+          "mt-1 text-lg font-semibold text-foreground",
+          CLIENT_METRIC_VALUE,
+        )}
+      >
         {value}
       </p>
-      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -259,7 +324,8 @@ function TaskBoard({
 
       {!hasTasks ? (
         <p className="rounded-sm border border-dashed border-border bg-muted/15 px-4 py-5 text-sm text-muted-foreground">
-          No tasks yet. Progress stays tied to project status until tasks are added.
+          No tasks yet. Progress stays tied to project status until tasks are
+          added.
         </p>
       ) : (
         <div className="space-y-5">
@@ -335,17 +401,23 @@ function TaskRow({ task }: { task: CustomerProjectTaskDto }) {
           <Icon
             className={cn(
               "mt-0.5 h-4 w-4 shrink-0",
-              task.status === "completed" ? "text-primary" : "text-muted-foreground",
+              task.status === "completed"
+                ? "text-primary"
+                : "text-muted-foreground",
             )}
             aria-hidden
           />
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-medium text-foreground">{task.title}</p>
-              <ClientStatusBadge tone="muted">{task.statusLabel}</ClientStatusBadge>
+              <ClientStatusBadge tone="muted">
+                {task.statusLabel}
+              </ClientStatusBadge>
             </div>
             {!hasDetails ? (
-              <p className="text-xs text-muted-foreground">No additional details</p>
+              <p className="text-xs text-muted-foreground">
+                No additional details
+              </p>
             ) : null}
           </div>
           {hasDetails ? (
@@ -358,7 +430,9 @@ function TaskRow({ task }: { task: CustomerProjectTaskDto }) {
         {hasDetails ? (
           <div className="space-y-2 border-t border-border/50 px-4 pb-4 pt-3 pl-11">
             {task.description ? (
-              <p className="text-sm text-muted-foreground">{task.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {task.description}
+              </p>
             ) : null}
             <dl className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
               {task.dueDateLabel ? (
@@ -432,7 +506,9 @@ function MilestoneTimeline({
                 )}
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium text-foreground">{milestone.title}</p>
+                  <p className="font-medium text-foreground">
+                    {milestone.title}
+                  </p>
                   <ClientStatusBadge
                     tone={
                       milestone.isComplete
@@ -511,7 +587,9 @@ function RelatedImprovements({
                     "flex flex-col gap-1 rounded-sm border bg-card p-4 transition-colors hover:border-primary",
                   )}
                 >
-                  <span className="font-medium text-foreground">{recommendation.title}</span>
+                  <span className="font-medium text-foreground">
+                    {recommendation.title}
+                  </span>
                   <span className="text-xs capitalize text-muted-foreground">
                     {recommendation.statusLabel}
                   </span>
@@ -538,7 +616,9 @@ function RelatedImprovements({
                     "flex flex-col gap-1 rounded-sm border bg-card p-4 transition-colors hover:border-primary",
                   )}
                 >
-                  <span className="font-medium text-foreground">{initiative.title}</span>
+                  <span className="font-medium text-foreground">
+                    {initiative.title}
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     Phase · {initiative.phaseName}
                   </span>
@@ -573,11 +653,16 @@ function PublishedUpdatesFeed({
         {updates.map((update) => (
           <li
             key={update.id}
-            className={cn(CLIENT_SURFACE_CARD, "space-y-3 rounded-sm border bg-card p-4")}
+            className={cn(
+              CLIENT_SURFACE_CARD,
+              "space-y-3 rounded-sm border bg-card p-4",
+            )}
           >
             <div className="flex flex-wrap items-center gap-2">
               <ClientStatusBadge tone="default">Published</ClientStatusBadge>
-              <p className="text-xs text-muted-foreground">{update.publishedAtLabel}</p>
+              <p className="text-xs text-muted-foreground">
+                {update.publishedAtLabel}
+              </p>
             </div>
             {update.subject ? (
               <p className="font-medium text-foreground">{update.subject}</p>
@@ -664,7 +749,10 @@ function UpdateList({
       </p>
       <ul className="space-y-1">
         {items.map((item, index) => (
-          <li key={`${item.title}-${index}`} className="text-sm text-foreground/90">
+          <li
+            key={`${item.title}-${index}`}
+            className="text-sm text-foreground/90"
+          >
             {item.title}
             {item.meta ? (
               <span className="text-muted-foreground"> · {item.meta}</span>
@@ -676,7 +764,11 @@ function UpdateList({
   );
 }
 
-function ActivityFeed({ activity }: { activity: CustomerProjectActivityDto[] }) {
+function ActivityFeed({
+  activity,
+}: {
+  activity: CustomerProjectActivityDto[];
+}) {
   return (
     <section className="space-y-3" aria-labelledby="project-activity-heading">
       <ClientSectionHeader
@@ -694,12 +786,18 @@ function ActivityFeed({ activity }: { activity: CustomerProjectActivityDto[] }) 
             className={cn(CLIENT_SURFACE_CARD, "rounded-sm border bg-card p-4")}
           >
             <div className="flex flex-wrap items-center gap-2">
-              <ClientStatusBadge tone="muted">{event.kindLabel}</ClientStatusBadge>
-              <p className="text-xs text-muted-foreground">{event.occurredAtLabel}</p>
+              <ClientStatusBadge tone="muted">
+                {event.kindLabel}
+              </ClientStatusBadge>
+              <p className="text-xs text-muted-foreground">
+                {event.occurredAtLabel}
+              </p>
             </div>
             <p className="mt-1.5 font-medium text-foreground">{event.title}</p>
             {event.description ? (
-              <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {event.description}
+              </p>
             ) : null}
           </li>
         ))}

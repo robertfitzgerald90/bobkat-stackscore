@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ProjectCustomerUpdatePanel } from "@/components/projects/project-customer-update-panel";
@@ -31,6 +31,39 @@ export function ProjectWorkspaceControls({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
+  const [section, setSection] = useState<
+    "delivery" | "details" | "updates" | "records"
+  >("delivery");
+  const [updatesOpened, setUpdatesOpened] = useState(false);
+  const [saved, setSaved] = useState({
+    status: initialStatus,
+    notes: initialNotes ?? "",
+  });
+  const dirty = status !== saved.status || notes !== saved.notes;
+  const sections: Array<{
+    id: "delivery" | "details" | "updates" | "records";
+    label: string;
+  }> = [
+    { id: "delivery", label: "Tasks & milestones" },
+    { id: "details", label: "Project details" },
+    { id: "updates", label: "Customer updates" },
+    ...(isAdmin
+      ? [{ id: "records" as const, label: "Record management" }]
+      : []),
+  ];
+  useEffect(() => {
+    function openDelivery(event: MouseEvent) {
+      if (
+        event.target instanceof Element &&
+        event.target.closest('a[href="#project-delivery"]')
+      ) {
+        setSection("delivery");
+      }
+    }
+    document.addEventListener("click", openDelivery);
+    return () => document.removeEventListener("click", openDelivery);
+  }, []);
+
   function save() {
     setError("");
     setMessage("");
@@ -45,6 +78,7 @@ export function ProjectWorkspaceControls({
           const body = await response.json();
           throw new Error(body.error ?? "Unable to save project");
         }
+        setSaved({ status, notes });
         setMessage("Project changes saved.");
         router.refresh();
       } catch (e) {
@@ -53,18 +87,56 @@ export function ProjectWorkspaceControls({
     });
   }
   return (
-    <details className="rounded-xl border border-border bg-card p-5">
-      <summary className="cursor-pointer text-sm font-semibold">
-        Manage project · status, tasks, milestones, and customer updates
-      </summary>
-      <div className="mt-5 space-y-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm">
-            <span className="block">Project status</span>
+    <section
+      className="rounded-xl border border-border bg-card p-4 sm:p-5"
+      aria-label="Staff project workspace"
+    >
+      <h2 className="text-base font-semibold">Manage delivery</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Work in the same project workspace your customer sees, with staff
+        controls available here.
+      </p>
+      <nav
+        className="mt-4 flex flex-wrap gap-2 border-b border-border pb-4"
+        aria-label="Project management sections"
+      >
+        {sections.map((item) => (
+          <button
+            key={item.id}
+            id={`project-section-${item.id}`}
+            type="button"
+            aria-pressed={section === item.id}
+            onClick={() => {
+              setSection(item.id);
+              if (item.id === "updates") setUpdatesOpened(true);
+            }}
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${section === item.id ? "bg-primary/10 text-primary ring-1 ring-primary/30" : "text-muted-foreground hover:bg-muted"}`}
+          >
+            {item.label}
+            {item.id === "details" && dirty ? (
+              <span className="ml-1.5 text-xs">· Unsaved</span>
+            ) : null}
+          </button>
+        ))}
+      </nav>
+      <div
+        className="mt-5"
+        role="region"
+        aria-labelledby={`project-section-${section}`}
+      >
+        <div hidden={section !== "delivery"}>
+          <ProjectDeliveryPanel projectId={projectId} clientId={clientId} />
+        </div>
+        <div hidden={section !== "details"} className="space-y-4">
+          <label className="block space-y-2 text-sm">
+            <span className="block font-medium">Project status</span>
             <select
               disabled={pending}
               value={status}
-              onChange={(e) => setStatus(e.target.value as ProjectStatus)}
+              onChange={(e) => {
+                setStatus(e.target.value as ProjectStatus);
+                setMessage("");
+              }}
               className="w-full rounded-lg border border-border bg-background p-2"
             >
               {ALL_PROJECT_STATUSES.map((s) => (
@@ -79,52 +151,66 @@ export function ProjectWorkspaceControls({
             through the existing delivery workflow. Notification settings still
             apply.
           </p>
-        </div>
-        <label className="block space-y-2 text-sm">
-          <span>Project notes</span>
-          <textarea
-            rows={3}
-            maxLength={5000}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background p-3"
-          />
-        </label>
-        {error && (
-          <p role="alert" className="text-sm text-destructive">
-            {error}
+          <label className="block space-y-2 text-sm">
+            <span className="font-medium">Project description</span>
+            <textarea
+              disabled={pending}
+              rows={4}
+              maxLength={5000}
+              value={notes}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setMessage("");
+              }}
+              className="w-full rounded-lg border border-border bg-background p-3"
+            />
+          </label>
+          <p className="text-xs text-muted-foreground">
+            This description is visible in the customer project overview.
           </p>
-        )}
-        <p role="status" className="text-sm text-muted-foreground">
-          {message}
-        </p>
-        <button
-          disabled={pending}
-          onClick={save}
-          className={buttonClassName({})}
-        >
-          {pending ? "Saving…" : "Save project"}
-        </button>
-        <ProjectCustomerUpdatePanel projectId={projectId} />
-        <ProjectDeliveryPanel projectId={projectId} clientId={clientId} />
-        <Link href={`/projects?selected=${projectId}`} className="inline-block text-xs text-muted-foreground underline underline-offset-4">Advanced project controls and assessment context</Link>
-        {isAdmin && (
-          <details className="rounded-lg border border-border p-3">
-            <summary className="cursor-pointer text-sm text-muted-foreground">
-              Record management
-            </summary>
-            <div className="mt-3">
-              <ProjectAdminActions
-                projectId={projectId}
-                projectTitle={title}
-                status={initialStatus}
-                onUpdated={() => router.refresh()}
-                onDeleted={() => router.push(`/clients/${clientId}/projects`)}
-              />
-            </div>
-          </details>
-        )}
+          {error ? (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
+          <p role="status" className="text-sm text-muted-foreground">
+            {pending
+              ? "Saving project changes…"
+              : message ||
+                (dirty
+                  ? "You have unsaved project changes."
+                  : "Project details are up to date.")}
+          </p>
+          <button
+            type="button"
+            disabled={pending || !dirty}
+            onClick={save}
+            className={buttonClassName({})}
+          >
+            {pending ? "Saving…" : "Save project"}
+          </button>
+        </div>
+        {updatesOpened ? (
+          <div hidden={section !== "updates"}>
+            <ProjectCustomerUpdatePanel projectId={projectId} />
+          </div>
+        ) : null}
+        {section === "records" && isAdmin ? (
+          <ProjectAdminActions
+            projectId={projectId}
+            projectTitle={title}
+            status={initialStatus}
+            onUpdated={() => router.refresh()}
+            onDeleted={() => router.push(`/clients/${clientId}/projects`)}
+          />
+        ) : null}
       </div>
-    </details>
+      <Link
+        href={`/projects?selected=${projectId}`}
+        className="mt-5 inline-block text-xs text-muted-foreground underline underline-offset-4"
+      >
+        Advanced project controls and assessment context
+      </Link>
+    </section>
   );
 }
