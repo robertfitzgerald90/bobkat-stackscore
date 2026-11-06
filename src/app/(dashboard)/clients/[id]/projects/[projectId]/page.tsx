@@ -50,6 +50,7 @@ export default async function CustomerProjectDetailPage({ params }: PageProps) {
       management={
         management ? (
           <ProjectWorkspaceControls
+            key={projectId}
             projectId={projectId}
             clientId={clientId}
             title={detail.title}
