@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowDown, ArrowUp, Check, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import type {
 } from "@/lib/projects/delivery-service";
 import type { ProjectProgressResult } from "@/lib/projects/progress";
 import { toast } from "sonner";
+import { TaskDueDateControl } from "@/components/projects/task-due-date-control";
 
 type DeliveryBundle = {
   progress: ProjectProgressResult;
@@ -32,9 +34,14 @@ const TASK_STATUS_LABEL: Record<SerializedProjectTask["status"], string> = {
   completed: "Complete",
 };
 
-export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPanelProps) {
+export function ProjectDeliveryPanel({
+  projectId,
+  clientId,
+}: ProjectDeliveryPanelProps) {
+  const router = useRouter();
   const [bundle, setBundle] = useState<DeliveryBundle | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [taskTitle, setTaskTitle] = useState("");
   const [milestoneTitle, setMilestoneTitle] = useState("");
   const [linkRecommendationId, setLinkRecommendationId] = useState("");
@@ -42,16 +49,16 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError("");
     try {
       const response = await fetch(`/api/v1/projects/${projectId}/delivery`);
       if (!response.ok) {
-        toast.error("Failed to load delivery details");
-        return;
+        throw new Error("Failed to load delivery details");
       }
       const data = (await response.json()) as DeliveryBundle;
       setBundle(data);
     } catch {
-      toast.error("Failed to load delivery details");
+      setLoadError("Delivery details could not be loaded. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -78,6 +85,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setTaskTitle("");
       toast.success("Task created");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -90,18 +102,26 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
   ) {
     setBusy(true);
     try {
-      const response = await fetch(`/api/v1/projects/${projectId}/tasks/${taskId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         toast.error(error.error ?? "Failed to update task");
-        return;
+        return false;
       }
       toast.success(successMessage);
       await load();
+      router.refresh();
+      return true;
+    } catch {
+      toast.error("Task changes could not be saved. Please try again.");
+      return false;
     } finally {
       setBusy(false);
     }
@@ -111,15 +131,23 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
     if (!window.confirm("Delete this task?")) return;
     setBusy(true);
     try {
-      const response = await fetch(`/api/v1/projects/${projectId}/tasks/${taskId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (!response.ok) {
         toast.error("Failed to delete task");
         return;
       }
       toast.success("Task deleted");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -136,16 +164,24 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
     orderedIds.splice(next, 0, item);
     setBusy(true);
     try {
-      const response = await fetch(`/api/v1/projects/${projectId}/tasks/reorder`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderedIds }),
-      });
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/tasks/reorder`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderedIds }),
+        },
+      );
       if (!response.ok) {
         toast.error("Failed to reorder tasks");
         return;
       }
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -168,6 +204,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setMilestoneTitle("");
       toast.success("Milestone created");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -188,8 +229,15 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
         toast.error("Failed to update milestone");
         return;
       }
-      toast.success(milestone.completedAt ? "Milestone reopened" : "Milestone completed");
+      toast.success(
+        milestone.completedAt ? "Milestone reopened" : "Milestone completed",
+      );
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -209,6 +257,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success("Milestone deleted");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -225,16 +278,24 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
     orderedIds.splice(next, 0, item);
     setBusy(true);
     try {
-      const response = await fetch(`/api/v1/projects/${projectId}/milestones/reorder`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderedIds }),
-      });
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/milestones/reorder`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderedIds }),
+        },
+      );
       if (!response.ok) {
         toast.error("Failed to reorder milestones");
         return;
       }
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -244,11 +305,16 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
     if (!linkRecommendationId.trim()) return;
     setBusy(true);
     try {
-      const response = await fetch(`/api/v1/projects/${projectId}/recommendations`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recommendationId: linkRecommendationId.trim() }),
-      });
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/recommendations`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recommendationId: linkRecommendationId.trim(),
+          }),
+        },
+      );
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         toast.error(error.error ?? "Failed to link recommendation");
@@ -257,12 +323,20 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       setLinkRecommendationId("");
       toast.success("Recommendation linked (status unchanged)");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
   }
 
-  async function unlinkRecommendation(recommendationId: string, isPrimary: boolean) {
+  async function unlinkRecommendation(
+    recommendationId: string,
+    isPrimary: boolean,
+  ) {
     if (isPrimary) {
       toast.error("Primary recommendation cannot be unlinked yet");
       return;
@@ -281,15 +355,42 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       }
       toast.success("Recommendation unlinked");
       await load();
+      router.refresh();
+    } catch {
+      toast.error(
+        "Changes could not be saved. Check your connection and try again.",
+      );
     } finally {
       setBusy(false);
     }
   }
 
-  if (loading || !bundle) {
+  if (loading) {
     return (
-      <div className="rounded-lg border border-border/60 bg-muted/10 p-3 text-sm text-muted-foreground">
+      <div
+        role="status"
+        className="rounded-lg border border-border/60 bg-muted/10 p-3 text-sm text-muted-foreground"
+      >
         Loading delivery checklist…
+      </div>
+    );
+  }
+
+  if (loadError || !bundle) {
+    return (
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+        <p role="alert" className="text-sm">
+          {loadError || "Delivery details are unavailable."}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-3"
+          onClick={() => void load()}
+        >
+          Retry delivery details
+        </Button>
       </div>
     );
   }
@@ -306,24 +407,49 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
           Delivery progress
         </p>
         <p className="text-sm font-medium">{progressLabel}</p>
+        {bundle.progress.progressPercent !== null ? (
+          <div
+            role="progressbar"
+            aria-label="Task completion"
+            aria-valuenow={bundle.progress.progressPercent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            className="h-2 overflow-hidden rounded-full bg-muted"
+          >
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${bundle.progress.progressPercent}%` }}
+            />
+          </div>
+        ) : null}
         <p className="text-xs text-muted-foreground">
-          Task completion does not auto-complete the project or change StackScore.
+          Task completion does not auto-complete the project or change
+          StackScore.
         </p>
       </section>
 
       <section className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">Tasks</h3>
-          <span className="text-xs text-muted-foreground">{bundle.tasks.length}</span>
+          <span className="text-xs text-muted-foreground">
+            {bundle.tasks.length}
+          </span>
         </div>
         <div className="flex gap-2">
           <Input
             value={taskTitle}
             onChange={(event) => setTaskTitle(event.target.value)}
+            aria-label="New task title"
             placeholder="New task title"
             disabled={busy}
           />
-          <Button type="button" size="sm" onClick={() => void createTask()} disabled={busy}>
+          <Button
+            type="button"
+            size="sm"
+            aria-label="Add task"
+            onClick={() => void createTask()}
+            disabled={busy || !taskTitle.trim()}
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
@@ -337,7 +463,9 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                 <div className="min-w-0 space-y-1">
                   <p className="font-medium leading-snug">{task.title}</p>
                   <div className="flex flex-wrap gap-1">
-                    <Badge variant="secondary">{TASK_STATUS_LABEL[task.status]}</Badge>
+                    <Badge variant="secondary">
+                      {TASK_STATUS_LABEL[task.status]}
+                    </Badge>
                     {task.dueDate ? (
                       <Badge variant="outline">
                         Due {new Date(task.dueDate).toLocaleDateString()}
@@ -381,7 +509,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                     variant="outline"
                     disabled={busy}
                     onClick={() =>
-                      void patchTask(task.id, { status: "completed" }, "Task completed")
+                      void patchTask(
+                        task.id,
+                        { status: "completed" },
+                        "Task completed",
+                      )
                     }
                   >
                     <Check className="mr-1 h-3.5 w-3.5" />
@@ -394,7 +526,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                     variant="outline"
                     disabled={busy}
                     onClick={() =>
-                      void patchTask(task.id, { status: "in_progress" }, "Task reopened")
+                      void patchTask(
+                        task.id,
+                        { status: "in_progress" },
+                        "Task reopened",
+                      )
                     }
                   >
                     Reopen
@@ -407,7 +543,11 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                     variant="ghost"
                     disabled={busy}
                     onClick={() =>
-                      void patchTask(task.id, { status: "in_progress" }, "Task started")
+                      void patchTask(
+                        task.id,
+                        { status: "in_progress" },
+                        "Task started",
+                      )
                     }
                   >
                     Start
@@ -418,31 +558,50 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                   size="sm"
                   variant="ghost"
                   disabled={busy}
+                  aria-label={`Delete task ${task.title}`}
                   onClick={() => void removeTask(task.id)}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden />
                 </Button>
               </div>
+              <TaskDueDateControl
+                key={`${task.id}:${task.dueDate ?? "none"}`}
+                title={task.title}
+                dueDate={task.dueDate}
+                disabled={busy}
+                onSave={(dueDate) =>
+                  patchTask(task.id, { dueDate }, "Task due date saved")
+                }
+              />
             </li>
           ))}
         </ul>
+        {bundle.tasks.length === 0 ? (
+          <p className="text-xs text-muted-foreground">
+            Add the first task to give this project a clear next step.
+          </p>
+        ) : null}
       </section>
 
       <section className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">Milestones</h3>
-          <span className="text-xs text-muted-foreground">{bundle.milestones.length}</span>
+          <span className="text-xs text-muted-foreground">
+            {bundle.milestones.length}
+          </span>
         </div>
         <div className="flex gap-2">
           <Input
             value={milestoneTitle}
             onChange={(event) => setMilestoneTitle(event.target.value)}
+            aria-label="New milestone title"
             placeholder="New milestone title"
             disabled={busy}
           />
           <Button
             type="button"
             size="sm"
+            aria-label="Add milestone"
             onClick={() => void createMilestone()}
             disabled={busy}
           >
@@ -458,7 +617,9 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 space-y-1">
                   <p className="font-medium leading-snug">{milestone.title}</p>
-                  <Badge variant={milestone.completedAt ? "success" : "secondary"}>
+                  <Badge
+                    variant={milestone.completedAt ? "success" : "secondary"}
+                  >
                     {milestone.completedAt ? "Complete" : "Open"}
                   </Badge>
                 </div>
@@ -513,7 +674,8 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">Linked recommendations</h3>
         <p className="text-xs text-muted-foreground">
-          Linking does not change recommendation status. Client: {clientId.slice(0, 8)}…
+          Linking does not change recommendation status. Client:{" "}
+          {clientId.slice(0, 8)}…
         </p>
         <div className="flex gap-2">
           <Input
@@ -548,7 +710,12 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
                 size="sm"
                 variant="ghost"
                 disabled={busy || link.isPrimary}
-                onClick={() => void unlinkRecommendation(link.recommendationId, link.isPrimary)}
+                onClick={() =>
+                  void unlinkRecommendation(
+                    link.recommendationId,
+                    link.isPrimary,
+                  )
+                }
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
@@ -558,9 +725,12 @@ export function ProjectDeliveryPanel({ projectId, clientId }: ProjectDeliveryPan
       </section>
 
       <div className="space-y-1">
-        <Label className="text-xs text-muted-foreground">Staff notes on tasks</Label>
+        <Label className="text-xs text-muted-foreground">
+          Staff notes on tasks
+        </Label>
         <p className="text-xs text-muted-foreground">
-          Use task internal notes for private staff context — never shown to customers.
+          Use task internal notes for private staff context — never shown to
+          customers.
         </p>
       </div>
     </div>

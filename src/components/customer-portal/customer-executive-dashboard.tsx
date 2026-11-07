@@ -1,18 +1,18 @@
+import { OverviewMaturityProfile } from "@/components/customer-portal/overview/overview-maturity-profile";
 import Link from "next/link";
-import { ArrowRight, Calendar, ClipboardList, FileText } from "lucide-react";
+import { ArrowRight, Calendar, ClipboardList } from "lucide-react";
 import {
   ClientEmptyState,
   ClientNextActionCard,
   ClientPageShell,
-  ClientSectionHeader,
 } from "@/components/client-ui";
 import {
   WorkspaceHubLinks,
   type WorkspaceHubLink,
 } from "@/components/client-workspace/workspace-hub-links";
-import { OverviewMaturityHero } from "@/components/customer-portal/overview/overview-maturity-hero";
+import { OverviewCommandSummary } from "@/components/customer-portal/overview/overview-command-summary";
+import { OverviewNextMoves } from "@/components/customer-portal/overview/overview-next-moves";
 import { OverviewPillarGrid } from "@/components/customer-portal/overview/overview-pillar-grid";
-import { OverviewPriorityOpportunities } from "@/components/customer-portal/overview/overview-priority-opportunities";
 import { OverviewRoadmapProgress } from "@/components/customer-portal/overview/overview-roadmap-progress";
 import { OverviewStrengthsExposure } from "@/components/customer-portal/overview/overview-strengths-exposure";
 import { OverviewVcioStrip } from "@/components/customer-portal/overview/overview-vcio-strip";
@@ -39,7 +39,9 @@ export type CustomerExecutiveDashboardProps = {
   showBookingCta?: boolean;
 };
 
-function defaultWorkspaceLinks(overview: CustomerOverviewDto): WorkspaceHubLink[] {
+function defaultWorkspaceLinks(
+  overview: CustomerOverviewDto,
+): WorkspaceHubLink[] {
   const recommendationsHref = clientRecommendationsPath(overview.clientId);
   return [
     {
@@ -98,7 +100,8 @@ export function CustomerExecutiveDashboard({
   const bookingUrl = showBookingCta ? getBookingUrl() : null;
   const resolvedRecommendationsHref =
     recommendationsHref ?? clientRecommendationsPath(overview.clientId);
-  const resolvedWorkspaceLinks = workspaceLinks ?? defaultWorkspaceLinks(overview);
+  const resolvedWorkspaceLinks =
+    workspaceLinks ?? defaultWorkspaceLinks(overview);
 
   return (
     <ClientPageShell>
@@ -109,7 +112,10 @@ export function CustomerExecutiveDashboard({
           description="Complete the Technology Maturity Assessment to receive your StackScore, executive report, and strategic priorities — translated into business language you can act on."
           nextStep="Begin the assessment when you are ready."
           action={
-            <Link href="/assessment/start" className={buttonClassName({ size: "lg" })}>
+            <Link
+              href="/assessment/start"
+              className={buttonClassName({ size: "lg" })}
+            >
               Start Assessment
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
             </Link>
@@ -141,63 +147,58 @@ export function CustomerExecutiveDashboard({
 
       {overview.hasCompletedAssessment ? (
         <>
-          <OverviewMaturityHero overview={overview} />
+          <OverviewCommandSummary overview={overview} />
 
-          <OverviewVcioStrip vcio={overview.vcio} />
-
-          {overview.nextAction && !overview.assessmentInProgress ? (
-            <ClientNextActionCard
-              title={overview.nextAction.label}
-              description={overview.nextAction.description}
-              actions={
-                <>
-                  <Link href={overview.nextAction.href} className={buttonClassName({})}>
-                    {overview.nextAction.label}
-                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-                  </Link>
-                  {overview.reportHref && overview.nextAction.href !== overview.reportHref ? (
-                    <Link
-                      href={overview.reportHref}
-                      className={buttonClassName({ variant: "outline" })}
-                    >
-                      <FileText className="mr-2 h-4 w-4" aria-hidden />
-                      Assessment report
-                    </Link>
-                  ) : null}
-                </>
-              }
+          {overview.plannerTasks ? (
+            <OverviewMaturityProfile
+              pillars={overview.pillars}
+              tasks={overview.plannerTasks}
+              clientId={overview.clientId}
+              assessedAtLabel={overview.assessedAtLabel}
             />
-          ) : null}
+          ) : (
+            <OverviewPillarGrid pillars={overview.pillars} />
+          )}
 
-          <OverviewPillarGrid pillars={overview.pillars} />
-
-          <OverviewPriorityOpportunities
+          <OverviewNextMoves
             priorities={overview.priorities}
-            activeOpportunityCount={overview.activeOpportunityCount}
+            tasks={overview.plannerTasks ?? []}
+            clientId={overview.clientId}
+            roadmapHref={overview.roadmap.href}
             recommendationsHref={resolvedRecommendationsHref}
+            readOnly={!overview.plannerTasks}
           />
 
-          <OverviewStrengthsExposure
-            demonstratedStrengths={overview.demonstratedStrengths}
-            comparativeStrengths={overview.comparativeStrengths}
-            pillars={overview.pillars}
-          />
+          <details className="rounded-xl border border-border bg-card p-5">
+            <summary className="cursor-pointer text-sm font-semibold">
+              Strengths, exposure, and detailed progress
+            </summary>
+            <div className="mt-6 space-y-6">
+              <OverviewStrengthsExposure
+                demonstratedStrengths={overview.demonstratedStrengths}
+                comparativeStrengths={overview.comparativeStrengths}
+                pillars={overview.pillars}
+              />
 
-          <OverviewRoadmapProgress
-            roadmap={overview.roadmap}
-            journey={overview.journey}
-            stackScore={overview.stackScore}
-          />
+              <OverviewRoadmapProgress
+                roadmap={overview.roadmap}
+                journey={overview.journey}
+                stackScore={overview.stackScore}
+              />
+              <OverviewVcioStrip vcio={overview.vcio} />
+            </div>
+          </details>
         </>
       ) : null}
 
-      <section className="space-y-3">
-        <ClientSectionHeader
-          title="Workspace"
-          description="Continue to Explore, Roadmap, Reports, and related tools."
-        />
-        <WorkspaceHubLinks links={resolvedWorkspaceLinks} />
-      </section>
+      <details className="rounded-xl border border-border bg-card p-5">
+        <summary className="cursor-pointer text-sm font-semibold">
+          Workspace shortcuts
+        </summary>
+        <div className="mt-4">
+          <WorkspaceHubLinks links={resolvedWorkspaceLinks} />
+        </div>
+      </details>
     </ClientPageShell>
   );
 }

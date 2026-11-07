@@ -27,6 +27,7 @@ import { conciseFocusTitle } from "@/lib/client-workspace";
 import { takeTopRecommendations } from "@/lib/recommendations/sort";
 import type { TechnologyProfileDetail } from "@/lib/technology-profile/types";
 import {
+  getPillarDisplayForCategoryCode,
   TECHNOLOGY_PILLARS,
   type TechnologyPillarCode,
 } from "@/lib/technology-maturity/pillars";
@@ -36,7 +37,7 @@ function canUseOngoingVcioFeatures(accessState: VcioAccessState): boolean {
   return accessState === "FULL_ACCESS" || accessState === "GRACE_PERIOD";
 }
 
-export const CUSTOMER_OVERVIEW_PRIORITY_LIMIT = 5;
+export const CUSTOMER_OVERVIEW_PRIORITY_LIMIT = 3;
 export const CUSTOMER_OVERVIEW_PRIORITY_MIN = 3;
 
 export type CustomerOverviewPillar = {
@@ -50,6 +51,11 @@ export type CustomerOverviewPillar = {
 };
 
 export type CustomerOverviewOpportunity = {
+  description?: string;
+  actionStatus?: "planned" | "in_progress";
+  businessImpact?: string;
+  pillarCode?: string | null;
+  pillarName?: string;
   id: string;
   title: string;
   priority: Priority;
@@ -135,6 +141,7 @@ export type CustomerOverviewVcioSummary = {
 };
 
 export type CustomerOverviewDto = {
+  plannerTasks?: import("@/lib/planner/model").PlannerTaskView[];
   clientId: string;
   companyName: string;
   welcomeName: string;
@@ -187,7 +194,9 @@ function maturityExplanationForScore(score: number, label: string): string {
   return `${label} maturity means technology readiness is early-stage. Focused improvement opportunities can raise resilience after reassessment confirms progress.`;
 }
 
-function formatAssessedAt(value: Date | string | null | undefined): string | null {
+function formatAssessedAt(
+  value: Date | string | null | undefined,
+): string | null {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return null;
@@ -198,7 +207,9 @@ function formatAssessedAt(value: Date | string | null | undefined): string | nul
   });
 }
 
-function buildPillars(detail: TechnologyProfileDetail): CustomerOverviewPillar[] {
+function buildPillars(
+  detail: TechnologyProfileDetail,
+): CustomerOverviewPillar[] {
   const byCode = new Map(detail.pillarInsights.map((p) => [p.pillarCode, p]));
   return TECHNOLOGY_PILLARS.map((pillar) => {
     const insight = byCode.get(pillar.code);
@@ -215,17 +226,34 @@ function buildPillars(detail: TechnologyProfileDetail): CustomerOverviewPillar[]
   });
 }
 
-function buildPriorities(detail: TechnologyProfileDetail): CustomerOverviewOpportunity[] {
-  const active = detail.openRecommendations.filter((row) =>
-    isCustomerActiveOpportunityStatus(row.status),
+export function buildPriorities(
+  detail: TechnologyProfileDetail,
+  completedIds = new Set<string>(),
+): CustomerOverviewOpportunity[] {
+  const active = detail.openRecommendations.filter(
+    (row) =>
+      isCustomerActiveOpportunityStatus(row.status) &&
+      !completedIds.has(row.id),
   );
   const ranked = takeTopRecommendations(
-    active.length > 0 ? active : detail.openRecommendations,
+    active,
     CUSTOMER_OVERVIEW_PRIORITY_LIMIT,
   );
   return ranked.map((row) => ({
     id: row.id,
     title: conciseFocusTitle(row.title),
+    description: row.description,
+    actionStatus: row.status === "in_progress" ? "in_progress" : "planned",
+    businessImpact: row.businessImpact,
+    pillarCode:
+      TECHNOLOGY_PILLARS.find(
+        (p) =>
+          p.name ===
+          getPillarDisplayForCategoryCode(row.categoryCode)?.pillarName,
+      )?.code ?? null,
+    pillarName:
+      getPillarDisplayForCategoryCode(row.categoryCode)?.pillarName ??
+      row.categoryName,
     priority: row.priority,
     priorityLabel: PRIORITY_LABELS[row.priority],
     href: clientRecommendationDetailPath(detail.profile.clientId, row.id, {
@@ -239,7 +267,9 @@ function buildStrengths(detail: TechnologyProfileDetail): {
   comparative: CustomerOverviewStrength[];
 } {
   const scored = detail.pillarInsights
-    .filter((p): p is typeof p & { percentScore: number } => p.percentScore !== null)
+    .filter(
+      (p): p is typeof p & { percentScore: number } => p.percentScore !== null,
+    )
     .map((p) => ({
       categoryName: p.pillarName,
       percentScore: p.percentScore,
@@ -315,7 +345,8 @@ export function buildVcioSummary(
       accessState,
       canUseFeatures,
       title: "vCIO Engagement",
-      description: "A payment action is required to restore full advisory features.",
+      description:
+        "A payment action is required to restore full advisory features.",
       href,
     };
   }
@@ -325,7 +356,8 @@ export function buildVcioSummary(
     accessState,
     canUseFeatures,
     title: "vCIO Engagement",
-    description: "Historical advisory information remains available in read-only mode.",
+    description:
+      "Historical advisory information remains available in read-only mode.",
     href,
   };
 }
@@ -350,7 +382,8 @@ function enrichNextAction(
   if (hasRoadmap && roadmapProgressPercent < 100) {
     return {
       label: "Continue Roadmap",
-      description: "Review your living execution plan and next implementation priorities.",
+      description:
+        "Review your living execution plan and next implementation priorities.",
       href: clientWorkspaceRoadmapPath(detail.profile.clientId),
     };
   }
@@ -377,10 +410,15 @@ export function buildCustomerOverviewFromDetail(input: {
   const roadmapProgressPercent = input.roadmapProgressPercent ?? 0;
   const emptyStateLabel =
     input.roadmapEmptyStateLabel ??
-    (hasInitiatives ? null : hasRoadmap ? "Not started" : "No roadmap established");
+    (hasInitiatives
+      ? null
+      : hasRoadmap
+        ? "Not started"
+        : "No roadmap established");
   const journeyProgressPercent =
     input.journeyProgressPercent ?? detail.journey.progressPercent;
-  const journeyPhaseLabel = input.journeyPhaseLabel ?? detail.journey.phaseLabel;
+  const journeyPhaseLabel =
+    input.journeyPhaseLabel ?? detail.journey.phaseLabel;
   const score = detail.profile.overallStackScore;
   const maturityLabel = score !== null ? getCustomerMaturityLabel(score) : null;
   const { demonstrated, comparative } = buildStrengths(detail);
@@ -427,6 +465,9 @@ export function buildCustomerOverviewFromDetail(input: {
       phaseLabel: journeyPhaseLabel,
     },
     nextAction: enrichNextAction(detail, roadmapProgressPercent, hasRoadmap),
-    vcio: buildVcioSummary(detail.profile.clientId, input.vcioAccessState ?? "NO_ACCESS"),
+    vcio: buildVcioSummary(
+      detail.profile.clientId,
+      input.vcioAccessState ?? "NO_ACCESS",
+    ),
   };
 }

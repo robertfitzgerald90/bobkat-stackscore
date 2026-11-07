@@ -119,9 +119,7 @@ export function ProjectsDashboard({
   }, [selectedId, projects]);
 
   function openProject(project: SerializedProject) {
-    setSelectedProject(project);
-    setEditStatus(project.status);
-    setEditNotes(project.notes ?? "");
+    router.push(`/clients/${project.clientId}/projects/${project.id}`);
   }
 
   function closeProject() {
@@ -224,6 +222,8 @@ export function ProjectsDashboard({
         </Card>
       </div>
 
+      <details className="rounded-xl border border-border bg-card p-4">
+        <summary className="cursor-pointer text-sm font-medium">Portfolio breakdown by status and client</summary>
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="stat-card lg:col-span-1">
           <CardHeader>
@@ -273,6 +273,8 @@ export function ProjectsDashboard({
           </CardContent>
         </Card>
       </div>
+
+      </details>
 
       <Card className="stat-card">
         <CardHeader>
@@ -371,9 +373,7 @@ export function ProjectsDashboard({
                 <TableRow>
                   <TableHead>Project</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead>Source Recommendation</TableHead>
                   <TableHead>Priority</TableHead>
-                  <TableHead>Score Impact</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
@@ -385,20 +385,20 @@ export function ProjectsDashboard({
                     className="cursor-pointer"
                     onClick={() => openProject(project)}
                   >
-                    <TableCell className="font-medium">{project.title}</TableCell>
-                    <TableCell>{project.clientName}</TableCell>
-                    <TableCell className="max-w-[200px] truncate text-muted-foreground">
-                      {project.recommendationTitle}
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/clients/${project.clientId}/projects/${project.id}`}
+                        className="hover:underline"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        {project.title}
+                      </Link>
                     </TableCell>
+                    <TableCell>{project.clientName}</TableCell>
                     <TableCell>
                       <Badge variant={PRIORITY_VARIANT[project.priority]}>
                         {formatPriority(project.priority)}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {project.estimatedImpactPoints !== null
-                        ? `+${project.estimatedImpactPoints}`
-                        : "—"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[project.status]}>

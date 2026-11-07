@@ -10,7 +10,9 @@ import { isCustomerMode } from "@/lib/navigation/portal-mode";
 
 type PageProps = { params: Promise<{ id: string }> };
 
-export default async function ClientWorkspaceOverviewPage({ params }: PageProps) {
+export default async function ClientWorkspaceOverviewPage({
+  params,
+}: PageProps) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -36,7 +38,11 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
 
   // SS-UX-002: Overview is the unified customer landing — do not redirect to vCIO.
   if (isCustomerMode(session.user.role)) {
-    const overview = await getCustomerOverview(id, session.user.role, client.companyName);
+    const overview = await getCustomerOverview(
+      id,
+      session.user.role,
+      client.companyName,
+    );
     if (!overview) notFound();
     return <CustomerExecutiveDashboard overview={overview} />;
   }
@@ -45,10 +51,23 @@ export default async function ClientWorkspaceOverviewPage({ params }: PageProps)
   if (!detail) notFound();
 
   const { sections } = detail;
+  const overview = await getCustomerOverview(
+    id,
+    session.user.role,
+    client.companyName,
+  );
 
   return (
     <div className="space-y-6">
-      <TechnologyProfileDetailView detail={detail} />
+      {overview ? <CustomerExecutiveDashboard overview={overview} /> : null}
+      <details className="rounded-xl border border-border bg-card p-5">
+        <summary className="cursor-pointer text-sm font-semibold">
+          Advanced client profile and administration
+        </summary>
+        <div className="mt-6">
+          <TechnologyProfileDetailView detail={detail} />
+        </div>
+      </details>
 
       {sections.showAdminActions ? (
         <ClientAdminActions

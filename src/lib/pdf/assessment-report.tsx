@@ -1,1227 +1,524 @@
 import React from "react";
-import {
-  Document,
-  Page,
-  StyleSheet,
-  Text,
-  View,
-} from "@react-pdf/renderer";
-import { formatAssessmentType } from "@/lib/assessments/display";
-import { MEANINGFUL_STRENGTH_MIN_PERCENT } from "@/lib/assessments/customer-trust";
-import { getCustomerMaturityLabel } from "@/lib/assessments/customer-reporting";
-import type { RecommendationSummary } from "@/lib/assessments/results-summary";
+import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { BRAND } from "@/lib/branding";
 import {
-  COLORS,
-  PDF_SCORE_BAR,
-  PDF_TARGET_SCORE as TARGET_SCORE,
-  PdfBulletSection,
-  PdfClosingHero,
-  PdfCoverPage,
-  PdfFlowSection,
-  PdfMiniScoreBar,
+  isCustomerActiveOpportunityStatus,
+  getCustomerMaturityLabel,
+} from "@/lib/assessments/customer-reporting";
+import {
+  RECOMMENDATION_STATUS_LABELS,
+  type RecommendationSummary,
+} from "@/lib/assessments/results-summary";
+import { presentRecommendationDescription } from "@/lib/customer-portal/recommendation-content";
+import { buildAssessmentReportSections } from "@/lib/reports/assessment-content";
+import { getReportTypeMeta } from "@/lib/reports/meta";
+import {
+  PdfReportHeader,
   PdfReportFooter,
-  PdfPriorityBadge,
-  PdfScoreGauge,
   PDF_LAYOUT,
   registerPdfFonts,
 } from "@/lib/pdf/shared";
-import { PdfCornerBrackets } from "@/lib/pdf/shared/components/corner-brackets";
-import { REPORT_COLORS, REPORT_FONTS, REPORT_RADIUS } from "@/lib/pdf/shared/tokens";
-import {
-  computeRoadmapScores,
-  countByPriority,
-  getRating,
-  sortRecommendationsForDisplay,
-} from "@/lib/pdf/report-helpers";
+import { REPORT_COLORS as C, REPORT_FONTS as F } from "@/lib/pdf/shared/tokens";
 import {
   formatGeneratedDate,
-  PRIORITY_LABELS,
-  PRIORITY_ORDER,
   type AssessmentReportData,
 } from "@/lib/pdf/types";
-import { RATING_LABELS } from "@/lib/scoring";
 import { formatMaturityScore } from "@/lib/scoring/score-display";
-import type { Priority, Rating } from "@/generated/prisma/client";
+import { RATING_LABELS } from "@/lib/scoring";
 
 registerPdfFonts();
 
-const styles = StyleSheet.create({
+// A flowing executive document, matching the Progress report's compact summary,
+// metric grid, plain section rules, and readable detail rather than slide-like heroes.
+const s = StyleSheet.create({
   page: {
-    paddingTop: PDF_LAYOUT.paddingTop,
+    paddingTop: 88,
     paddingBottom: PDF_LAYOUT.paddingBottom,
     paddingHorizontal: PDF_LAYOUT.paddingHorizontal,
-    fontFamily: REPORT_FONTS.body,
+    fontFamily: F.body,
     fontSize: 10,
-    color: COLORS.slate,
-    backgroundColor: COLORS.paper,
+    color: C.ink,
+    backgroundColor: C.white,
   },
-  coverPage: {
-    paddingTop: 0,
-    paddingBottom: PDF_LAYOUT.paddingBottom,
-    paddingHorizontal: 0,
-    fontFamily: REPORT_FONTS.body,
-    fontSize: 10,
-    color: COLORS.slate,
-    backgroundColor: COLORS.paper,
-  },
-  coverHero: {
-    backgroundColor: COLORS.paper,
-    paddingTop: 52,
-    paddingBottom: 40,
-    paddingHorizontal: 54,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  coverBody: {
-    paddingHorizontal: 54,
-    paddingTop: 36,
-    flexGrow: 1,
-  },
-  coverBrandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    marginBottom: 28,
-  },
-  coverBrandLogo: {
-    width: 56,
-    height: 56,
-    objectFit: "contain",
-  },
-  coverPreparedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 28,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  coverPreparedLogo: {
-    width: 40,
-    height: 40,
-    objectFit: "contain",
-  },
-  coverProduct: {
-    fontSize: 26,
-    fontFamily: REPORT_FONTS.displayBold,
-    color: REPORT_COLORS.ink,
-    marginBottom: 4,
-  },
-  coverSubtitle: {
-    fontSize: 12,
-    color: REPORT_COLORS.inkSecondary,
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-  },
-  coverClientName: {
-    fontSize: 24,
-    fontFamily: REPORT_FONTS.displayBold,
-    color: REPORT_COLORS.ink,
-    marginBottom: 22,
-    lineHeight: 1.3,
-  },
-  coverMetaBlock: { marginBottom: 12 },
-  coverMetaLabel: {
-    fontSize: 8,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 3,
-  },
-  coverMetaValue: {
-    fontSize: 12,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.slate,
-    lineHeight: 1.4,
-  },
-  coverPreparedBy: {
-    fontSize: 11,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.4,
-  },
-  coverFinePrint: {
-    fontSize: 9,
-    color: COLORS.muted,
-    marginTop: 4,
-    lineHeight: 1.5,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 28,
-    left: 54,
-    right: 54,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontSize: 8,
-    color: COLORS.muted,
-  },
-  footerCenter: { fontSize: 8, color: COLORS.muted, textAlign: "center" },
-  sectionBlock: { marginBottom: 22 },
-  sectionTitleWrap: { marginBottom: 14, marginTop: 4 },
-  sectionTitle: {
-    fontSize: 14,
-    fontFamily: REPORT_FONTS.displayBold,
-    color: REPORT_COLORS.ink,
-    paddingBottom: 6,
-    borderBottomWidth: 2,
-    borderBottomColor: REPORT_COLORS.accent,
-  },
-  sectionSubtitle: {
-    fontSize: 9,
-    color: COLORS.muted,
-    marginTop: 6,
-    lineHeight: 1.5,
-  },
-  bodyText: {
-    fontSize: 10,
-    lineHeight: 1.65,
-    color: COLORS.slate,
-    marginBottom: 10,
-  },
-  panel: {
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 12,
+  intro: {
+    paddingBottom: 12,
     marginBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: C.accent,
   },
-  panelTitle: {
-    fontSize: 9,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginBottom: 8,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-  },
-  scoreRow: { flexDirection: "row", gap: 12, marginBottom: 10, alignItems: "stretch" },
-  executiveNarrative: {
-    marginBottom: 8,
-  },
-  executiveParagraph: {
-    fontSize: 9,
-    lineHeight: 1.5,
-    color: COLORS.slate,
-    marginBottom: 6,
-  },
-  gaugeCard: {
-    flex: 1,
-    backgroundColor: COLORS.paper,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  gaugeCardAccent: {
-    flex: 1,
-    backgroundColor: REPORT_COLORS.accentBg,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.navy,
-  },
-  gaugeLabel: {
+  eyebrow: {
     fontSize: 8,
-    color: COLORS.muted,
+    color: C.accent,
+    letterSpacing: 1,
+    marginBottom: 7,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    fontFamily: F.bodyBold,
+  },
+  title: {
+    fontSize: 25,
+    lineHeight: 1.15,
+    fontFamily: F.displayBold,
     marginBottom: 8,
   },
-  gaugeValue: {
-    fontSize: 28,
-    fontFamily: REPORT_FONTS.monoBold,
-    color: COLORS.navy,
-    lineHeight: 1.25,
+  subtitle: { fontSize: 10, lineHeight: 1.5, color: C.inkSecondary },
+  client: {
+    fontSize: 13,
+    fontFamily: F.bodyBold,
+    marginTop: 12,
     marginBottom: 4,
   },
-  gaugeRating: {
-    fontSize: 9,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.35,
-    marginBottom: 0,
-  },
-  gaugeTrack: {
-    height: 10,
-    backgroundColor: REPORT_COLORS.rule,
-    borderRadius: REPORT_RADIUS.sm,
-    position: "relative",
-    overflow: "hidden",
-    marginTop: 10,
-  },
-  gaugeFill: { height: 10, borderRadius: REPORT_RADIUS.sm },
-  targetLine: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    width: 2,
-    backgroundColor: COLORS.target,
-    opacity: 0.65,
-  },
-  targetCaption: {
-    fontSize: 7,
-    color: COLORS.muted,
-    marginTop: 4,
-    textAlign: "right",
-  },
-  summaryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 16,
-  },
-  summaryStat: {
-    width: "48%",
-    minHeight: 54,
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 12,
-  },
-  summaryStatValue: {
-    fontSize: 20,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginBottom: 3,
-  },
-  summaryStatLabel: {
-    fontSize: 8,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  indexGroupTitle: {
-    fontSize: 9,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginTop: 10,
-    marginBottom: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    backgroundColor: COLORS.surface,
-    borderRadius: REPORT_RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  summaryListItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    paddingVertical: 7,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  summaryListIndex: {
-    width: 16,
-    fontSize: 8,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.muted,
-  },
-  summaryListTitle: {
+  meta: { fontSize: 9, lineHeight: 1.45, color: C.inkSecondary },
+  metrics: { flexDirection: "row", gap: 8, marginBottom: 12 },
+  metric: {
     flex: 1,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: C.rule,
+    backgroundColor: C.white,
+  },
+  metricLabel: { fontSize: 8, color: C.inkSecondary, marginBottom: 6 },
+  metricValue: {
+    fontSize: 23,
+    fontFamily: F.bodyBold,
+    color: C.ink,
+    marginBottom: 4,
+  },
+  metricHint: { fontSize: 8, color: C.inkSecondary },
+  sectionTitle: {
+    fontSize: 15,
+    fontFamily: F.displayBold,
+    paddingBottom: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: C.rule,
+    marginBottom: 9,
+  },
+  section: { marginBottom: 14 },
+  body: { fontSize: 10, lineHeight: 1.5, marginBottom: 6 },
+  small: {
     fontSize: 9,
     lineHeight: 1.5,
-    color: COLORS.slate,
-  },
-  summaryListImpact: {
-    fontSize: 8,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    minWidth: 28,
-    textAlign: "right",
-  },
-  roadmapRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    backgroundColor: COLORS.paper,
-  },
-  roadmapRowHighlight: {
-    backgroundColor: REPORT_COLORS.accentBg,
-    borderColor: COLORS.navy,
-  },
-  roadmapLabel: { flex: 1, fontSize: 10, fontFamily: REPORT_FONTS.bodyBold, color: COLORS.slate },
-  roadmapScore: { fontSize: 18, fontFamily: REPORT_FONTS.monoBold, color: COLORS.navy, minWidth: 36 },
-  roadmapBarWrap: { width: 120 },
-  bulletSection: { marginBottom: 10 },
-  bulletHeading: {
-    fontSize: 10,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
+    color: C.inkSecondary,
     marginBottom: 5,
   },
-  bulletItem: {
-    fontSize: 9,
-    lineHeight: 1.5,
-    color: COLORS.slate,
-    marginBottom: 3,
-    paddingLeft: 10,
-  },
-  categoryCard: {
-    marginBottom: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    backgroundColor: COLORS.paper,
-    flexDirection: "column",
-  },
-  categoryTitleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
-    marginBottom: 10,
-    width: "100%",
-  },
-  categoryName: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    fontSize: 10,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.45,
-    paddingRight: 4,
-  },
-  categoryPercent: {
-    flexShrink: 0,
-    width: 44,
-    fontSize: 15,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.2,
-    textAlign: "right",
-  },
-  categoryProgressWrap: {
-    width: "100%",
-    marginBottom: 10,
-  },
-  categoryRatingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  categoryRatingLabel: {
-    fontSize: 9,
-    color: COLORS.muted,
-    lineHeight: 1.4,
-  },
-  categoryRatingValue: {
-    fontSize: 9,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.4,
-  },
-  progressTrack: {
-    height: 10,
-    width: "100%",
-    backgroundColor: REPORT_COLORS.rule,
-    borderRadius: REPORT_RADIUS.sm,
-    overflow: "hidden",
-  },
-  progressFill: { height: 10, borderRadius: REPORT_RADIUS.sm },
-  priorityGroup: { marginBottom: 12 },
-  priorityGroupTitle: {
-    fontSize: 10,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginBottom: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    backgroundColor: COLORS.surface,
-    borderRadius: REPORT_RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  recommendationCard: {
-    marginBottom: 8,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    backgroundColor: COLORS.paper,
-  },
-  recommendationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 6,
-  },
-  recommendationTitle: {
-    flex: 1,
-    fontSize: 10.5,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.4,
-  },
-  priorityBadge: {
-    paddingVertical: 3,
-    paddingHorizontal: 7,
-    borderRadius: REPORT_RADIUS.md,
-    borderWidth: 1,
-    fontSize: 7,
-    fontFamily: REPORT_FONTS.bodyBold,
-    letterSpacing: 0.5,
-  },
-  recommendationField: { marginBottom: 5 },
-  recommendationFieldLabel: {
-    fontSize: 7,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginBottom: 2,
-  },
-  recommendationFieldValue: { fontSize: 9, lineHeight: 1.45, color: COLORS.slate },
-  recommendationImpact: {
-    fontSize: 10,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    lineHeight: 1.35,
-  },
-  closingHero: {
-    backgroundColor: REPORT_COLORS.accentBg,
-    borderWidth: 1,
-    borderColor: COLORS.accentBorder,
+  columns: { flexDirection: "row", gap: 22 },
+  column: { flex: 1 },
+  label: { fontSize: 9, fontFamily: F.bodyBold, marginBottom: 6, color: C.ink },
+  bullet: { fontSize: 10, lineHeight: 1.5, marginBottom: 6 },
+  warning: {
+    padding: 8,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.forest,
-    borderRadius: REPORT_RADIUS.lg,
-    padding: 16,
-    marginBottom: 12,
-  },
-  closingHeroTitle: {
-    fontSize: 16,
-    fontFamily: REPORT_FONTS.displayBold,
-    color: COLORS.forest,
-    marginBottom: 4,
-  },
-  closingHeroSubtitle: {
-    fontSize: 10,
-    color: REPORT_COLORS.inkSecondary,
-    lineHeight: 1.45,
-  },
-  closingStatGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 12,
-  },
-  closingStat: {
-    width: "48%",
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 12,
-    backgroundColor: COLORS.surface,
-  },
-  closingStatValue: {
-    fontSize: 20,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginBottom: 3,
-  },
-  closingStatLabel: {
-    fontSize: 8,
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  ctaBox: {
-    padding: 14,
-    backgroundColor: REPORT_COLORS.accentBg,
-    borderRadius: REPORT_RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.navy,
-  },
-  ctaTitle: {
-    fontSize: 12,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.navy,
-    marginBottom: 6,
-  },
-  warningBox: {
-    backgroundColor: COLORS.criticalBg,
-    borderWidth: 1,
-    borderColor: COLORS.criticalBorder,
-    borderRadius: REPORT_RADIUS.md,
-    padding: 10,
+    borderLeftColor: C.critical,
+    backgroundColor: C.criticalBg,
     marginBottom: 10,
   },
   warningTitle: {
+    fontFamily: F.bodyBold,
     fontSize: 10,
-    fontFamily: REPORT_FONTS.bodyBold,
-    color: COLORS.critical,
-    marginBottom: 4,
+    color: C.critical,
+    marginBottom: 3,
   },
-  warningText: { fontSize: 9, color: REPORT_COLORS.critical, lineHeight: 1.55 },
+  tableHead: {
+    flexDirection: "row",
+    padding: 9,
+    backgroundColor: C.sectionBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: C.rule,
+  },
+  tableRow: {
+    flexDirection: "row",
+    padding: 9,
+    borderBottomWidth: 1,
+    borderBottomColor: C.rule,
+    alignItems: "center",
+  },
+  pillar: { width: "54%", fontSize: 10, paddingRight: 8 },
+  score: {
+    width: "17%",
+    fontSize: 11,
+    fontFamily: F.bodyBold,
+    color: C.accent,
+  },
+  maturity: { width: "29%", fontSize: 9, color: C.inkSecondary },
+  track: {
+    height: 3,
+    backgroundColor: C.sectionBackground,
+    marginTop: 5,
+    width: 160,
+  },
+  fill: { height: 3, backgroundColor: C.accent },
+  actionRow: {
+    flexDirection: "row",
+    gap: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: C.rule,
+  },
+  number: { width: 20, fontSize: 10, color: C.accent, fontFamily: F.bodyBold },
+  action: { flex: 1, fontSize: 10, lineHeight: 1.5 },
+  recommendation: {
+    marginBottom: 16,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: C.rule,
+  },
+  recommendationTitle: {
+    fontSize: 12,
+    lineHeight: 1.35,
+    fontFamily: F.bodyBold,
+    marginBottom: 5,
+  },
+  recommendationMeta: {
+    fontSize: 8,
+    color: C.accent,
+    lineHeight: 1.5,
+    marginBottom: 10,
+  },
+  fieldLabel: {
+    fontSize: 9,
+    fontFamily: F.bodyBold,
+    marginTop: 3,
+    marginBottom: 3,
+  },
 });
 
-function CategoryScoreCard({
-  categoryName,
-  percentScore,
-  rating,
-  useDoc119Maturity = false,
-}: {
-  categoryName: string;
-  percentScore: number;
-  rating: Rating;
-  useDoc119Maturity?: boolean;
-}) {
-  const displayScore = formatMaturityScore(percentScore);
-  const fillWidth = `${Math.max(0, Math.min(100, percentScore))}%`;
-  const classificationLabel = useDoc119Maturity
-    ? getCustomerMaturityLabel(percentScore)
-    : RATING_LABELS[rating];
-
-  // No corner brackets — absolute overlays misplace when pillar cards paginate (SS-REL-017-R3).
+function SectionTitle({ children }: { children: string }) {
   return (
-    <View wrap={false} style={styles.categoryCard}>
-      <View style={styles.categoryTitleRow}>
-        <Text style={styles.categoryName}>{categoryName}</Text>
-        <Text style={styles.categoryPercent}>{displayScore}%</Text>
-      </View>
-
-      <View style={styles.categoryProgressWrap}>
-        <View style={styles.progressTrack}>
-          <View
-            style={[styles.progressFill, { width: fillWidth, backgroundColor: PDF_SCORE_BAR.current }]}
-          />
-        </View>
-      </View>
-
-      <View style={styles.categoryRatingRow}>
-        <Text style={styles.categoryRatingLabel}>
-          {useDoc119Maturity ? "Maturity:" : "Rating:"}
-        </Text>
-        <Text style={styles.categoryRatingValue}>{classificationLabel}</Text>
-      </View>
-    </View>
+    <Text style={s.sectionTitle} minPresenceAhead={75}>
+      {children}
+    </Text>
   );
 }
-
-function RecommendationCard({
-  priority,
-  title,
-  estimatedImpactPoints,
-  suggestedService,
-  businessImpact,
-  categoryName,
-}: {
-  priority: Priority;
-  title: string;
-  estimatedImpactPoints: number;
-  suggestedService: string | null;
-  businessImpact: string;
-  categoryName: string;
-}) {
-  return (
-    <PdfCornerBrackets corners="two" tone="forest">
-      <View wrap={false} style={styles.recommendationCard}>
-        <View style={styles.recommendationHeader}>
-          <Text style={styles.recommendationTitle}>{title}</Text>
-          <PdfPriorityBadge priority={priority} />
-        </View>
-        <View style={styles.recommendationField}>
-          <Text style={styles.recommendationFieldLabel}>Priority-Impact Rating</Text>
-          <Text style={styles.recommendationImpact}>
-            {estimatedImpactPoints} (planning weight)
-          </Text>
-        </View>
-        {suggestedService ? (
-          <View style={styles.recommendationField}>
-            <Text style={styles.recommendationFieldLabel}>Recommended Service</Text>
-            <Text style={styles.recommendationFieldValue}>{suggestedService}</Text>
-          </View>
-        ) : null}
-        <View style={styles.recommendationField}>
-          <Text style={styles.recommendationFieldLabel}>Business Impact</Text>
-          <Text style={styles.recommendationFieldValue}>{businessImpact}</Text>
-        </View>
-        <View style={{ marginBottom: 0 }}>
-          <Text style={styles.recommendationFieldLabel}>Category</Text>
-          <Text style={styles.recommendationFieldValue}>{categoryName}</Text>
-        </View>
-      </View>
-    </PdfCornerBrackets>
-  );
-}
-
-function RecommendationIndex({
-  sortedRecommendations,
-}: {
-  sortedRecommendations: RecommendationSummary[];
-}) {
-  let index = 0;
-
+function Narrative({ text }: { text: string }) {
   return (
     <>
-      {PRIORITY_ORDER.map((priority) => {
-        const group = sortedRecommendations.filter(
-          (recommendation) => recommendation.priority === priority,
-        );
-        if (group.length === 0) return null;
-
-        const [first, ...rest] = group;
-
-        return (
-          <View key={priority}>
-            <View wrap={false}>
-              <Text style={styles.indexGroupTitle}>
-                {PRIORITY_LABELS[priority]} ({group.length})
-              </Text>
-              {(() => {
-                index += 1;
-                return (
-                  <View style={styles.summaryListItem}>
-                    <Text style={styles.summaryListIndex}>{index}.</Text>
-                    <Text style={styles.summaryListTitle}>{first.title}</Text>
-                    <Text style={styles.summaryListImpact}>
-                      {first.estimatedImpactPoints}
-                    </Text>
-                  </View>
-                );
-              })()}
-            </View>
-            {rest.map((recommendation) => {
-              index += 1;
-              return (
-                <View key={recommendation.id} wrap={false} style={styles.summaryListItem}>
-                  <Text style={styles.summaryListIndex}>{index}.</Text>
-                  <Text style={styles.summaryListTitle}>{recommendation.title}</Text>
-                  <Text style={styles.summaryListImpact}>
-                    {recommendation.estimatedImpactPoints}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-        );
-      })}
+      {text
+        .split(/\n\s*\n/)
+        .filter((p) => p.trim())
+        .map((paragraph, i) => (
+          <Text key={i} style={s.body} orphans={3} widows={3}>
+            {paragraph.trim()}
+          </Text>
+        ))}
     </>
   );
 }
-
-function PriorityRecommendationGroup({
-  label,
+function Findings({
+  title,
   items,
+  empty,
 }: {
-  label: string;
-  items: RecommendationSummary[];
+  title: string;
+  items: string[];
+  empty: string;
 }) {
-  const [first, ...rest] = items;
-  if (!first) return null;
-
   return (
-    <View style={styles.priorityGroup}>
-      <View wrap={false}>
-        <Text style={styles.priorityGroupTitle}>{label}</Text>
-        <RecommendationCard
-          priority={first.priority}
-          title={first.title}
-          estimatedImpactPoints={first.estimatedImpactPoints}
-          suggestedService={first.suggestedService}
-          businessImpact={first.businessImpact}
-          categoryName={first.categoryName}
-        />
+    <View style={s.column}>
+      <Text style={s.label} minPresenceAhead={40}>
+        {title}
+      </Text>
+      {items.length ? (
+        items.map((item, i) => (
+          <Text key={i} style={s.bullet} orphans={2} widows={2}>
+            {item}
+          </Text>
+        ))
+      ) : (
+        <Text style={s.small}>{empty}</Text>
+      )}
+    </View>
+  );
+}
+function Recommendation({
+  item,
+  number,
+}: {
+  item: RecommendationSummary;
+  number: number;
+}) {
+  const { sections, paragraphs } = presentRecommendationDescription(
+    item.description,
+  );
+  const fields = [
+    ["Finding", sections.finding],
+    ["Recommended action", sections.recommendedAction],
+    ["Expected outcome", sections.expectedOutcome],
+    ["Implementation considerations", sections.implementationConsiderations],
+  ];
+  const renderFields = (rows: typeof fields) =>
+    rows.map(([label, value]) =>
+      value ? (
+        <View key={label} wrap={value.length > 900}>
+          <Text style={s.fieldLabel} minPresenceAhead={35}>
+            {label}
+          </Text>
+          <Narrative text={value} />
+        </View>
+      ) : null,
+    );
+  const closingLength =
+    (sections.expectedOutcome?.length ?? 0) +
+    (sections.implementationConsiderations?.length ?? 0) +
+    item.businessImpact.length;
+  return (
+    <View style={s.recommendation}>
+      <View wrap={false} minPresenceAhead={65}>
+        <Text style={s.recommendationTitle}>
+          {String(number).padStart(2, "0")} {item.title}
+        </Text>
+        <Text style={s.recommendationMeta}>
+          {item.priority.toUpperCase()} PRIORITY | {item.categoryName} |{" "}
+          {RECOMMENDATION_STATUS_LABELS[item.status]}
+        </Text>
       </View>
-      {rest.map((recommendation) => (
-        <RecommendationCard
-          key={recommendation.id}
-          priority={recommendation.priority}
-          title={recommendation.title}
-          estimatedImpactPoints={recommendation.estimatedImpactPoints}
-          suggestedService={recommendation.suggestedService}
-          businessImpact={recommendation.businessImpact}
-          categoryName={recommendation.categoryName}
-        />
-      ))}
+      {sections.leadingText && <Narrative text={sections.leadingText} />}
+      {sections.hasStructuredSections
+        ? renderFields(fields.slice(0, 2))
+        : paragraphs.map((text, i) => <Narrative key={i} text={text} />)}
+      <View wrap={closingLength > 900}>
+        {sections.hasStructuredSections ? renderFields(fields.slice(2)) : null}
+        {item.businessImpact && (
+          <View wrap={item.businessImpact.length > 900}>
+            <Text style={s.fieldLabel} minPresenceAhead={35}>
+              Business impact
+            </Text>
+            <Narrative text={item.businessImpact} />
+          </View>
+        )}
+        <View wrap={false} style={{ marginTop: 6 }}>
+          {item.suggestedService && (
+            <Text style={s.small}>
+              Recommended service: {item.suggestedService}
+            </Text>
+          )}
+          <Text style={s.small}>
+            Priority-impact rating: {item.estimatedImpactPoints} (planning
+            weight; not a guaranteed score increase).
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
 
-type AssessmentReportDocumentProps = {
+export function AssessmentReportDocument({
+  data,
+}: {
   data: AssessmentReportData;
-};
-
-export function AssessmentReportDocument({ data }: AssessmentReportDocumentProps) {
-  const {
-    summary,
-    clientName,
-    assessmentName,
-    assessmentType,
-    assessmentDate,
-    executiveSummary,
-  } = data;
-
-  const suppressCatalogProjectedMaturity = Boolean(data.suppressCatalogProjectedMaturity);
-  const maturityLabel =
-    summary.overallMaturityLabel ?? getCustomerMaturityLabel(summary.overallScore);
-  const scoreClassificationLabel = suppressCatalogProjectedMaturity
-    ? maturityLabel
-    : summary.overallRatingLabel;
-  const opportunityCount =
-    summary.activeImprovementOpportunityCount ?? summary.openRecommendationsCount;
+}) {
+  const { summary, clientName, assessmentName, assessmentDate } = data;
+  const content = buildAssessmentReportSections(data);
+  const meta = getReportTypeMeta("assessment");
   const generatedDate = formatGeneratedDate();
-  const assessmentTypeLabel = formatAssessmentType(assessmentType);
-
-  const clientRecommendations = summary.recommendations.filter(
-    (recommendation) => recommendation.status !== "declined",
+  const customer = Boolean(data.suppressCatalogProjectedMaturity);
+  const classification = customer
+    ? (summary.overallMaturityLabel ??
+      getCustomerMaturityLabel(summary.overallScore))
+    : summary.overallRatingLabel;
+  const opportunities =
+    summary.activeImprovementOpportunityCount ??
+    summary.openRecommendationsCount;
+  const nextMoves = (
+    summary.immediateActions.length
+      ? summary.immediateActions
+      : content.sortedRecommendations
+  )
+    .filter((item) => isCustomerActiveOpportunityStatus(item.status))
+    .slice(0, 3);
+  const narrative =
+    data.executiveSummary?.trim() ||
+    `${clientName} completed a ${content.assessmentTypeLabel.toLowerCase()} technology maturity assessment. The current StackScore is ${formatMaturityScore(summary.overallScore)} / 100 (${classification}). The following findings and recommendations support improvement planning.`;
+  const frame = (
+    <>
+      <PdfReportHeader
+        clientName={clientName}
+        generatedDate={generatedDate}
+        documentLabel={meta.title}
+      />
+      <PdfReportFooter clientName={clientName} generatedDate={generatedDate} />
+    </>
   );
-
-  const sortedRecommendations = sortRecommendationsForDisplay(clientRecommendations);
-
-  const recommendationsByPriority = PRIORITY_ORDER.map((priority) => ({
-    priority,
-    label: PRIORITY_LABELS[priority],
-    items: sortedRecommendations.filter(
-      (recommendation) => recommendation.priority === priority,
-    ),
-  })).filter((group) => group.items.length > 0);
-
-  const roadmap = computeRoadmapScores(summary.overallScore, summary.recommendations);
-  const estimatedImprovement = summary.projectedScore - summary.overallScore;
-  const criticalCount = countByPriority(summary.recommendations, "critical");
-  const highCount = countByPriority(summary.recommendations, "high");
-  const totalRecommendationCount = clientRecommendations.length;
-
-  const executiveParagraphs = executiveSummary
-    ? executiveSummary
-        .split(/\n+/)
-        .map((line) => line.trim().replace(/\ba initial\b/gi, "an initial"))
-        .filter(Boolean)
-    : [];
-
-  // Authoritative category-max impact (DOC-111A) — never the raw sum of recommendation points.
-  const projectionImpact = summary.projectionImpact;
-
-  const overallRiskBullets = [
-    `Overall StackScore: ${summary.overallScore} / 100 (${scoreClassificationLabel})`,
-    summary.hasCriticalExposure
-      ? `${summary.criticalFindingsCount} critical security or recovery gap${summary.criticalFindingsCount === 1 ? "" : "s"} identified`
-      : "No critical exposure flags were triggered in this assessment",
-    `${opportunityCount} improvement opportunit${opportunityCount === 1 ? "y" : "ies"} requiring follow-up (${summary.openRecommendationsCount} open)`,
-  ];
-
-  const strengthBullets = summary.topStrengths
-    .filter((strength) => strength.percentScore >= MEANINGFUL_STRENGTH_MIN_PERCENT)
-    .map((strength) => {
-      const score = Math.round(strength.percentScore);
-      const label = suppressCatalogProjectedMaturity
-        ? getCustomerMaturityLabel(score)
-        : RATING_LABELS[strength.rating];
-      return `${strength.categoryName}: ${score}% (${label})`;
-    });
-
-  const riskBullets = summary.topRisks.map((risk) => {
-    const score = Math.round(risk.percentScore);
-    const label = suppressCatalogProjectedMaturity
-      ? getCustomerMaturityLabel(score)
-      : RATING_LABELS[risk.rating];
-    return `${risk.categoryName}: ${score}% (${label})`;
-  });
-
-  const priorityBullets =
-    summary.immediateActions.length > 0
-      ? summary.immediateActions.map(
-          (action) =>
-            `${action.title} (priority-impact rating ${action.estimatedImpactPoints})`,
-        )
-      : sortedRecommendations.slice(0, 3).map(
-          (action) =>
-            `${action.title} (priority-impact rating ${action.estimatedImpactPoints})`,
-        );
-
-  const improvementBullets = suppressCatalogProjectedMaturity
-    ? [
-        `Current StackScore: ${summary.overallScore} (${maturityLabel})`,
-        `${opportunityCount} improvement opportunit${
-          opportunityCount === 1 ? "y" : "ies"
-        } identified for follow-up`,
-        "Roadmap progress tracks approved initiatives; official StackScore updates after reassessment",
-      ]
-    : [
-        `Current score: ${summary.overallScore} → Projected score: ${summary.projectedScore}`,
-        `Estimated improvement: +${estimatedImprovement} point${estimatedImprovement === 1 ? "" : "s"} if recommendations are addressed`,
-        `Target maturity threshold: ${TARGET_SCORE}+ StackScore`,
-      ];
-
-  const overviewFallbackParagraphs = suppressCatalogProjectedMaturity
-    ? [
-        `${clientName} was assessed across core technology maturity categories.`,
-        `The current StackScore is ${summary.overallScore}. Prioritized recommendations identify improvement opportunities for follow-through.`,
-      ]
-    : [
-        `${clientName} was assessed across core technology maturity categories.`,
-        `The current StackScore is ${summary.overallScore} with a projected score of ${summary.projectedScore} after remediation.`,
-      ];
-  const narrativeParagraphs =
-    executiveParagraphs.length > 0 ? executiveParagraphs : overviewFallbackParagraphs;
-
-  const roadmapMilestones: Array<{
-    label: string;
-    score: number;
-    highlight: boolean;
-    isTarget?: boolean;
-  }> = suppressCatalogProjectedMaturity
-    ? [
-        { label: "Current StackScore", score: roadmap.current, highlight: true },
-        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
-      ]
-    : [
-        { label: "Current StackScore", score: roadmap.current, highlight: false },
-        { label: "After Critical Recommendations", score: roadmap.afterCritical, highlight: false },
-        {
-          label: "After Critical + High Recommendations",
-          score: roadmap.afterCriticalAndHigh,
-          highlight: true,
-        },
-        { label: "After All Recommendations", score: summary.projectedScore, highlight: false },
-        { label: "Target Score", score: TARGET_SCORE, highlight: false, isTarget: true },
-      ];
-
   return (
     <Document
-      title={`${clientName} — StackScore Assessment`}
+      title={`${clientName} - ${meta.title}`}
       author={BRAND.companyName}
-      subject={BRAND.reportTitle}
+      subject={meta.subtitle}
     >
-      <Page size="LETTER" style={styles.coverPage} wrap={false}>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfCoverPage
-          eyebrow={`Bobkat ${BRAND.productName}`}
-          title={BRAND.reportTitle}
-          subtitle="Executive technology maturity assessment and remediation roadmap"
-          clientName={clientName}
-          meta={[
-            { label: "Assessment Type", value: assessmentTypeLabel },
-            { label: "Assessment", value: assessmentName },
-            { label: "Assessment Date", value: assessmentDate },
-          ]}
-          confidentialNotice="Confidential executive deliverable"
-        />
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfFlowSection
-          title="Recommendation Summary"
-          subtitle={
-            suppressCatalogProjectedMaturity
-              ? "Prioritized remediation opportunities and priority-impact ratings"
-              : "Prioritized remediation opportunities and projected StackScore impact"
-          }
-        >
-          <View wrap={false} style={styles.scoreRow}>
-            <PdfScoreGauge
-              score={summary.overallScore}
-              label="Current StackScore"
-              ratingLabel={scoreClassificationLabel}
-              bracketCorners="four"
-            />
-            {suppressCatalogProjectedMaturity ? null : (
-              <PdfScoreGauge
-                score={summary.projectedScore}
-                label="Projected StackScore"
-                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-                variant="accent"
-                barVariant="improvement"
-                bracketCorners="two"
-              />
-            )}
-          </View>
-
-          <View style={styles.summaryGrid}>
-            <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>{clientRecommendations.length}</Text>
-              <Text style={styles.summaryStatLabel}>Identified Recommendations</Text>
-            </View>
-            <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>{opportunityCount}</Text>
-              <Text style={styles.summaryStatLabel}>Improvement Opportunities</Text>
-            </View>
-            <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>
-                {suppressCatalogProjectedMaturity
-                  ? String(criticalCount + highCount)
-                  : `+${projectionImpact}`}
-              </Text>
-              <Text style={styles.summaryStatLabel}>
-                {suppressCatalogProjectedMaturity ? "Priority Actions" : "Projected Impact"}
-              </Text>
-            </View>
-            <View wrap={false} style={styles.summaryStat}>
-              <Text style={styles.summaryStatValue}>{criticalCount + highCount}</Text>
-              <Text style={styles.summaryStatLabel}>Critical + High</Text>
-            </View>
-          </View>
-
-          {sortedRecommendations.length > 0 ? (
-            <View>
-              <View wrap={false} style={{ marginBottom: 8 }}>
-                <Text style={styles.panelTitle}>Recommendation Index</Text>
-                <Text style={[styles.bodyText, { marginBottom: 0 }]}>
-                  Sorted by priority (Critical → High → Medium → Low), then by highest
-                  priority-impact rating within each group. Ratings are planning weights for
-                  sequencing—not guaranteed StackScore increases.
-                </Text>
-              </View>
-              <RecommendationIndex sortedRecommendations={sortedRecommendations} />
-            </View>
-          ) : (
-            <Text style={styles.bodyText}>No recommendations at this time.</Text>
-          )}
-        </PdfFlowSection>
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfFlowSection
-          title="Technology Maturity Roadmap"
-          subtitle={
-            suppressCatalogProjectedMaturity
-              ? "Current maturity and target threshold for executive planning"
-              : "Phased StackScore improvement path for executive planning"
-          }
-        >
-          <Text style={styles.bodyText}>
-            {suppressCatalogProjectedMaturity
-              ? "Use this view to compare your current StackScore against the maturity target. Prioritized recommendations identify where remediation work should begin; StackScore improvement is confirmed through reassessment."
-              : "This roadmap shows how your StackScore can improve as recommendations are addressed in priority order. Use it to sequence remediation, allocate budget, and align technology projects with business risk reduction."}
+      <Page size="LETTER" style={s.page} wrap>
+        {frame}
+        <View style={s.intro} wrap={false}>
+          <Text style={s.eyebrow}>Prepared by {BRAND.companyName}</Text>
+          <Text style={s.title}>{meta.title}</Text>
+          <Text style={s.subtitle}>{meta.subtitle}</Text>
+          <Text style={s.client}>{clientName}</Text>
+          <Text style={s.meta}>{assessmentName}</Text>
+          <Text style={s.meta}>
+            {content.assessmentTypeLabel} assessment | {assessmentDate}
           </Text>
-
-          {roadmapMilestones.map((milestone) => (
-            <View
-              key={milestone.label}
-              wrap={false}
-              style={
-                milestone.highlight
-                  ? [styles.roadmapRow, styles.roadmapRowHighlight]
-                  : styles.roadmapRow
-              }
-            >
-              <Text style={styles.roadmapLabel}>{milestone.label}</Text>
-              <PdfMiniScoreBar score={milestone.score} />
-              <Text style={styles.roadmapScore}>
-                {milestone.isTarget ? `${TARGET_SCORE}+` : milestone.score}
+        </View>
+        <View style={s.metrics} wrap={false}>
+          {[
+            {
+              label: "Overall StackScore",
+              value: `${formatMaturityScore(summary.overallScore)} / 100`,
+              hint: classification,
+            },
+            {
+              label: "Improvement opportunities",
+              value: String(opportunities),
+              hint: "Active recommendations",
+            },
+            {
+              label: "Critical findings",
+              value: String(summary.criticalFindingsCount),
+              hint: summary.hasCriticalExposure
+                ? "Follow-up required"
+                : "Assessment findings",
+            },
+          ].map((m) => (
+            <View style={s.metric} key={m.label}>
+              <Text style={s.metricLabel}>{m.label}</Text>
+              <Text style={s.metricValue}>{m.value}</Text>
+              <Text style={s.metricHint}>{m.hint}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={s.section}>
+          <SectionTitle>Executive Summary</SectionTitle>
+          <Narrative text={narrative} />
+          {summary.hasCriticalExposure && (
+            <View style={s.warning} wrap={false}>
+              <Text style={s.warningTitle}>Critical exposure identified</Text>
+              <Text style={s.small}>
+                Prioritize the security or recovery gaps identified in this
+                assessment.
+              </Text>
+            </View>
+          )}
+          <View style={s.columns}>
+            <Findings
+              title="Demonstrated strengths"
+              items={content.strengthBullets}
+              empty="No assessed pillars meet the demonstrated strength threshold."
+            />
+            <Findings
+              title="Areas of exposure"
+              items={content.riskBullets}
+              empty="No additional risk areas identified in this assessment."
+            />
+          </View>
+        </View>
+        <View style={s.section} wrap={false}>
+          <SectionTitle>Your Next Best Moves</SectionTitle>
+          {nextMoves.length ? (
+            nextMoves.map((item, i) => (
+              <View key={item.id} style={s.actionRow} wrap={false}>
+                <Text style={s.number}>{String(i + 1).padStart(2, "0")}</Text>
+                <Text style={s.action}>{item.title}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={s.small}>
+              No pending recommendations are recorded for this assessment.
+            </Text>
+          )}
+        </View>
+      </Page>
+      <Page size="LETTER" style={s.page} wrap>
+        {frame}
+        <SectionTitle>Technology Pillars</SectionTitle>
+        <Text style={s.small}>
+          Scores reflect the completed assessment. Improvement activity is
+          tracked separately; reassessment confirms changes to official
+          maturity.
+        </Text>
+        <View style={s.tableHead} wrap={false}>
+          <Text style={[s.pillar, { fontFamily: F.bodyBold }]}>
+            Technology pillar
+          </Text>
+          <Text style={s.score}>Score</Text>
+          <Text style={s.maturity}>{customer ? "Maturity" : "Rating"}</Text>
+        </View>
+        {summary.categoryScores.length ? (
+          summary.categoryScores.map((category) => (
+            <View key={category.categoryId} style={s.tableRow} wrap={false}>
+              <View style={s.pillar}>
+                <Text>{category.categoryName}</Text>
+                <View style={s.track}>
+                  <View
+                    style={[
+                      s.fill,
+                      {
+                        width: `${Math.max(0, Math.min(100, category.percentScore))}%`,
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+              <Text style={s.score}>
+                {formatMaturityScore(category.percentScore)}
+              </Text>
+              <Text style={s.maturity}>
+                {customer
+                  ? getCustomerMaturityLabel(category.percentScore)
+                  : RATING_LABELS[category.rating]}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <Text style={s.body}>No pillar scores available.</Text>
+        )}
+        <View style={[s.section, { marginTop: 22 }]}>
+          <SectionTitle>Recommendation Summary</SectionTitle>
+          <Text style={s.body}>
+            {content.clientRecommendations.length} recommendations identified;{" "}
+            {opportunities} active improvement opportunities.
+          </Text>
+          {content.recommendationsByPriority.map((group) => (
+            <View key={group.priority} style={s.tableRow} wrap={false}>
+              <Text style={{ flex: 1 }}>{group.label}</Text>
+              <Text style={{ fontFamily: F.bodyBold }}>
+                {group.items.length}
               </Text>
             </View>
           ))}
-
-          <View style={styles.panel}>
-            <Text style={styles.panelTitle}>How to Use This Roadmap</Text>
-            <Text style={[styles.bodyText, { marginBottom: 4 }]}>
-              • Address Critical items first to reduce immediate business and security risk.
-            </Text>
-            <Text style={[styles.bodyText, { marginBottom: 4 }]}>
-              • High-priority items deliver the next wave of meaningful score improvement.
-            </Text>
-            <Text style={[styles.bodyText, { marginBottom: 0 }]}>
-              • Medium and Low items complete the path toward the {TARGET_SCORE}+ maturity target.
-            </Text>
-          </View>
-        </PdfFlowSection>
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfFlowSection
-          title="Executive Summary"
-          subtitle="Leadership briefing of assessment findings and next priorities"
-        >
-          <View wrap={false} style={styles.scoreRow}>
-            <PdfScoreGauge
-              score={summary.overallScore}
-              label="Current StackScore"
-              ratingLabel={scoreClassificationLabel}
-              bracketCorners="four"
-            />
-            {suppressCatalogProjectedMaturity ? null : (
-              <PdfScoreGauge
-                score={summary.projectedScore}
-                label="Projected StackScore"
-                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-                variant="accent"
-                barVariant="improvement"
-                bracketCorners="two"
-              />
-            )}
-          </View>
-
-          {summary.hasCriticalExposure ? (
-            <View wrap={false} style={styles.warningBox}>
-              <Text style={styles.warningTitle}>Critical Exposure Warning</Text>
-              <Text style={styles.warningText}>
-                Immediate remediation is recommended to reduce business risk and protect
-                operational continuity.
-              </Text>
-            </View>
-          ) : null}
-
-          <View style={styles.panel}>
-            <View style={styles.executiveNarrative}>
-              <Text style={styles.panelTitle}>Assessment Overview</Text>
-              {narrativeParagraphs.map((paragraph, index) => (
-                <Text
-                  key={`exec-para-${index}`}
-                  wrap
-                  style={[
-                    styles.executiveParagraph,
-                    index === narrativeParagraphs.length - 1 ? { marginBottom: 0 } : {},
-                  ]}
-                >
-                  {paragraph}
-                </Text>
-              ))}
-            </View>
-            <PdfBulletSection title="Overall Risk" items={overallRiskBullets} />
-            {strengthBullets.length > 0 ? (
-              <PdfBulletSection title="Top Strengths" items={strengthBullets} />
-            ) : null}
-            <PdfBulletSection title="Top Risks" items={riskBullets} />
-            <PdfBulletSection title="Immediate Priorities" items={priorityBullets} />
-            <PdfBulletSection
-              title={
-                suppressCatalogProjectedMaturity
-                  ? "Improvement Opportunities"
-                  : "Projected Improvement"
-              }
-              items={improvementBullets}
-            />
-          </View>
-        </PdfFlowSection>
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfFlowSection
-          title="Technology Pillars"
-          subtitle="Technology maturity performance across assessed domains"
-        >
-          {summary.categoryScores.length === 0 ? (
-            <Text style={styles.bodyText}>No category scores available.</Text>
-          ) : (
-            summary.categoryScores.map((category) => (
-              <CategoryScoreCard
-                key={category.categoryId}
-                categoryName={category.categoryName}
-                percentScore={category.percentScore}
-                rating={category.rating}
-                useDoc119Maturity={suppressCatalogProjectedMaturity}
-              />
-            ))
-          )}
-        </PdfFlowSection>
-      </Page>
-
-      <Page size="LETTER" style={styles.page} wrap>
-        <PdfReportFooter generatedDate={generatedDate} clientName={clientName} />
-
-        <PdfFlowSection
-          title="Detailed Recommendations"
-          subtitle="Prioritized remediation guidance with business impact and service alignment"
-        >
-          <Text style={styles.bodyText}>
-            Recommendations are organized by priority. Each card includes a priority-impact
-            rating (planning weight for sequencing—not a guaranteed StackScore increase),
-            recommended service, and business impact to support project planning.
-          </Text>
-
-          {recommendationsByPriority.length === 0 ? (
-            <Text style={styles.bodyText}>No recommendations at this time.</Text>
-          ) : (
-            recommendationsByPriority.map((group) => (
-              <PriorityRecommendationGroup
-                key={group.priority}
-                label={`${group.label} (${group.items.length})`}
-                items={group.items}
-              />
-            ))
-          )}
-        </PdfFlowSection>
-
-        {/* Closing stays on the recommendations Page as one unbreakable block so we do not
-            open a trailing empty page between sections (SS-REL-017-R3). */}
-        <View wrap={false} style={{ marginTop: 8 }}>
-          <PdfClosingHero
-            title="Technology Improvement Plan"
-            subtitle={
-              suppressCatalogProjectedMaturity
-                ? "A prioritized path from current maturity toward stronger operational readiness"
-                : "A prioritized path from current maturity to your projected StackScore target"
-            }
-          />
-
-          <View style={styles.scoreRow}>
-            <PdfScoreGauge
-              score={summary.overallScore}
-              label="Current Score"
-              ratingLabel={scoreClassificationLabel}
-              bracketCorners="four"
-            />
-            {suppressCatalogProjectedMaturity ? null : (
-              <PdfScoreGauge
-                score={summary.projectedScore}
-                label="Projected Score"
-                ratingLabel={RATING_LABELS[getRating(summary.projectedScore)]}
-                variant="accent"
-                bracketCorners="two"
-              />
-            )}
-          </View>
-
-          <View style={styles.closingStatGrid}>
-            <View style={styles.closingStat}>
-              <Text style={styles.closingStatValue}>{criticalCount}</Text>
-              <Text style={styles.closingStatLabel}>Critical Projects</Text>
-            </View>
-            <View style={styles.closingStat}>
-              <Text style={styles.closingStatValue}>{highCount}</Text>
-              <Text style={styles.closingStatLabel}>High Priority Projects</Text>
-            </View>
-            <View style={styles.closingStat}>
-              <Text style={styles.closingStatValue}>{totalRecommendationCount}</Text>
-              <Text style={styles.closingStatLabel}>Recommendations</Text>
-            </View>
-            <View style={styles.closingStat}>
-              <Text style={styles.closingStatValue}>{TARGET_SCORE}+</Text>
-              <Text style={styles.closingStatLabel}>Maturity Target</Text>
-            </View>
-          </View>
-
-          <View style={styles.ctaBox}>
-            <Text style={styles.ctaTitle}>Partner with {BRAND.companyName}</Text>
-            <Text style={[styles.bodyText, { marginBottom: 0 }]}>
-              Ready to turn these recommendations into measurable improvement? {BRAND.companyName}{" "}
-              can help you prioritize projects, implement remediation, and track StackScore progress
-              over time.
-            </Text>
-            <Text style={{ fontSize: 9, color: COLORS.muted, marginTop: 8, lineHeight: 1.5 }}>
-              {BRAND.email}
-              {BRAND.phone ? ` · ${BRAND.phone}` : ""} · {BRAND.website}
-            </Text>
-          </View>
         </View>
+        {!customer && (
+          <View style={s.section}>
+            <SectionTitle>Internal Planning Estimates</SectionTitle>
+            <Text style={s.body}>
+              Projected StackScore:{" "}
+              {formatMaturityScore(summary.projectedScore)} / 100. Category-max
+              estimated improvement: {summary.projectionImpact} points.
+            </Text>
+            {content.roadmapMilestones.map((milestone) => (
+              <View style={s.tableRow} key={milestone.label} wrap={false}>
+                <Text style={{ flex: 1 }}>{milestone.label}</Text>
+                <Text style={{ fontFamily: F.bodyBold }}>
+                  {formatMaturityScore(milestone.score)}
+                </Text>
+              </View>
+            ))}
+            <Text style={[s.small, { marginTop: 10 }]}>
+              Planning estimates are not verified maturity scores. Actual score
+              changes require reassessment.
+            </Text>
+          </View>
+        )}
+      </Page>
+      <Page size="LETTER" style={s.page} wrap>
+        {frame}
+        <SectionTitle>Detailed Recommendations</SectionTitle>
+        <Text style={s.small}>
+          Recommendations are ordered by priority. The following findings,
+          actions, and outcomes are taken from the assessment record.
+        </Text>
+        {content.sortedRecommendations.length ? (
+          content.sortedRecommendations.map((item, i) => (
+            <Recommendation key={item.id} item={item} number={i + 1} />
+          ))
+        ) : (
+          <Text style={s.body}>No recommendations at this time.</Text>
+        )}
       </Page>
     </Document>
   );
