@@ -109,6 +109,13 @@ const STAFF_NAV = [
     keywords: ["email"],
   },
   {
+    href: "/admin/analytics",
+    label: "Analytics",
+    adminOnly: true,
+    icon: "BarChart3",
+    keywords: ["operations", "traffic", "ga4", "visitors"],
+  },
+  {
     href: "/admin/billing",
     label: "Billing",
     adminOnly: true,

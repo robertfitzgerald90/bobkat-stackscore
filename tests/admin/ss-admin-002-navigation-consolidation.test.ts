@@ -44,12 +44,16 @@ describe("SS-ADMIN-002 — administrative navigation consolidation", () => {
       (item) => item.id === "operations",
     );
     expect(operations?.children?.map((child) => child.label)).toEqual([
+      "Analytics",
       "Billing",
       "Users",
       "Assessment Library",
       "Technology Catalog",
       "Settings",
     ]);
+    expect(operations?.children?.find((child) => child.href === "/admin/analytics")?.adminOnly).toBe(
+      true,
+    );
     expect(operations?.children?.some((child) => child.href === "/technology-catalog")).toBe(
       true,
     );
@@ -133,6 +137,7 @@ describe("SS-ADMIN-002 — administrative navigation consolidation", () => {
       ["/website-leads", "leads"],
       ["/admin/vcio", "recurring-services"],
       ["/admin/communications/campaigns", "communications"],
+      ["/admin/analytics", "operations"],
       ["/admin/billing", "operations"],
       ["/admin/users", "operations"],
       ["/technology-catalog", "operations"],
