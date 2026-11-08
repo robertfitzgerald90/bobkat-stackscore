@@ -38,7 +38,8 @@ export const COMMUNICATION_AUTOMATION_REGISTRY: CommunicationAutomationDefinitio
     enabled: true,
     status: "connected",
     idempotencyKey: "account-activation:{userId}:{assessmentPurchaseId}",
-    retryBehavior: "Provider send failure is recorded; webhook retry is guarded by checkout fulfillment state.",
+    retryBehavior:
+      "Failed sends stay FAILED and are retried without creating another purchase. Accepted sends are not sent again.",
     logBehavior: "CommunicationMessage and OrganizationActivityEvent",
     manualResend: true,
     verified: true,
@@ -54,7 +55,8 @@ export const COMMUNICATION_AUTOMATION_REGISTRY: CommunicationAutomationDefinitio
     enabled: true,
     status: "connected",
     idempotencyKey: "assessment-ready:{assessmentId}",
-    retryBehavior: "Provider send failure is recorded; checkout fulfillment prevents duplicate business state.",
+    retryBehavior:
+      "Failed sends stay FAILED and are retried without creating another purchase. Accepted sends are not sent again.",
     logBehavior: "CommunicationMessage and OrganizationActivityEvent",
     manualResend: true,
     verified: true,

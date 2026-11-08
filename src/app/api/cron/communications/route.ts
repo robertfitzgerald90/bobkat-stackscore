@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { scanQuarterlyReviewReminders } from "@/lib/communications/quarterly-review/reminders";
 import { processDueScheduledQueueItems } from "@/lib/communications/queue/service";
+import { retryFailedPurchaseFulfillmentEmails } from "@/lib/email/purchase-fulfillment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,15 +15,17 @@ export async function GET(request: Request) {
   }
 
   const startedAt = Date.now();
-  const [reminders, scheduled] = await Promise.all([
+  const [reminders, scheduled, purchaseEmails] = await Promise.all([
     scanQuarterlyReviewReminders(),
     processDueScheduledQueueItems(),
+    retryFailedPurchaseFulfillmentEmails(),
   ]);
 
   return NextResponse.json({
     ok: true,
     reminders,
     scheduledProcessed: scheduled,
+    purchaseEmailsRetried: purchaseEmails,
     elapsedMs: Date.now() - startedAt,
   });
 }

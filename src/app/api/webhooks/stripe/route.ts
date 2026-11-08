@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { logEmailEnvDiagnostics } from "@/lib/email/config";
-import { sendPurchaseFulfillmentEmail } from "@/lib/email/purchase-fulfillment";
+import {
+  retryPurchaseFulfillmentEmail,
+  sendPurchaseFulfillmentEmail,
+} from "@/lib/email/purchase-fulfillment";
 import { purchaseTrace, purchaseTraceError, purchaseTraceStop } from "@/lib/purchase-trace";
 import {
   isStripeWebhookProcessed,
@@ -52,7 +55,9 @@ async function resolvePurchaserEmailForEmail(
   return "";
 }
 
-async function handleAssessmentCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleAssessmentCheckoutCompleted(
+  session: Stripe.Checkout.Session,
+): Promise<{ response: NextResponse; markProcessed: boolean }> {
   purchaseTrace("W06", "checkout.session.completed session loaded", {
     sessionId: session.id,
     paymentStatus: session.payment_status,
@@ -79,13 +84,31 @@ async function handleAssessmentCheckoutCompleted(session: Stripe.Checkout.Sessio
     purchaseTraceError("W08", "route.ts → fulfillTechnologyAssessmentPurchase() throw", error, {
       sessionId: session.id,
     });
-    return NextResponse.json(
-      { error: "Fulfillment failed", code: "FULFILLMENT_FAILED" },
-      { status: 500 },
-    );
+    return {
+      response: NextResponse.json(
+        { error: "Fulfillment failed", code: "FULFILLMENT_FAILED" },
+        { status: 500 },
+      ),
+      markProcessed: false,
+    };
   }
 
   const result = fulfillmentResult;
+
+  if (result.outcome === "already_fulfilled" && result.purchaseId) {
+    try {
+      await retryPurchaseFulfillmentEmail(result.purchaseId);
+      return { response: NextResponse.json({ received: true }), markProcessed: true };
+    } catch (emailError) {
+      purchaseTraceError(
+        "W11",
+        "route.ts → retryPurchaseFulfillmentEmail() catch",
+        emailError,
+        { sessionId: session.id, purchaseId: result.purchaseId },
+      );
+      return { response: NextResponse.json({ received: true }), markProcessed: false };
+    }
+  }
 
   if (result.outcome !== "fulfilled") {
     purchaseTraceStop(
@@ -99,7 +122,7 @@ async function handleAssessmentCheckoutCompleted(session: Stripe.Checkout.Sessio
         purchaseId: result.purchaseId ?? null,
       },
     );
-    return NextResponse.json({ received: true });
+    return { response: NextResponse.json({ received: true }), markProcessed: true };
   }
 
   purchaseTrace("W09", "PASS outcome === fulfilled — entering email path", {
@@ -129,6 +152,7 @@ async function handleAssessmentCheckoutCompleted(session: Stripe.Checkout.Sessio
       sessionId: session.id,
       purchaserEmail: emailInput.purchaserEmail,
     });
+    return { response: NextResponse.json({ received: true }), markProcessed: true };
   } catch (emailError) {
     purchaseTraceError(
       "W11",
@@ -139,9 +163,8 @@ async function handleAssessmentCheckoutCompleted(session: Stripe.Checkout.Sessio
         purchaserEmail: emailInput.purchaserEmail,
       },
     );
+    return { response: NextResponse.json({ received: true }), markProcessed: false };
   }
-
-  return NextResponse.json({ received: true });
 }
 
 export async function POST(request: Request) {
@@ -256,9 +279,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const response = await handleAssessmentCheckoutCompleted(session);
-  // Only mark processed on successful handling so Stripe retries can recover from 5xx.
-  if (response.status < 400) {
+  const handled = await handleAssessmentCheckoutCompleted(session);
+  // Purchase creation is idempotent. Leave the event unmarked when the email is still
+  // failed so a replay can retry delivery without creating another purchase.
+  if (handled.response.status < 400 && handled.markProcessed) {
     await markStripeWebhookProcessed(event.id, event.type, {
       sessionId: session.id,
       productType,
@@ -267,8 +291,9 @@ export async function POST(request: Request) {
 
   purchaseTrace("W12", "EXIT POST /api/webhooks/stripe — returning response", {
     sessionId: session.id,
-    status: response.status,
+    status: handled.response.status,
+    markProcessed: handled.markProcessed,
   });
 
-  return response;
+  return handled.response;
 }

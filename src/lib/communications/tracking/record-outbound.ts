@@ -51,9 +51,94 @@ export type OutboundCommunicationResult = {
   provider: "resend" | "console";
 };
 
+const ACCEPTED_SEND_STATUSES = new Set<CommunicationMessageStatus>([
+  "SENT",
+  "DELIVERED",
+  "OPENED",
+  "CLICKED",
+  "DELAYED",
+]);
+
 async function resolveTemplateVersion(templateKey: string): Promise<number | null> {
   const published = await getPublishedTemplateVersion(templateKey);
   return published?.versionNumber ?? null;
+}
+
+async function sendTrackedMessage(
+  messageId: string,
+  input: OutboundCommunicationInput,
+  email: string,
+): Promise<OutboundCommunicationResult> {
+  try {
+    const result = await sendEmail({
+      to: email,
+      subject: input.subject,
+      html: input.html,
+      text: input.text,
+    });
+
+    if (result.provider !== "resend" || !result.delivered) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+
+    const sentAt = new Date();
+    await prisma.communicationMessage.update({
+      where: { id: messageId },
+      data: {
+        providerMessageId: result.id ?? null,
+        status: "SENT",
+        sentAt,
+        failedAt: null,
+        failureReason: null,
+      },
+    });
+
+    await createCommunicationEvent({
+      messageId,
+      eventType: "SENT",
+      source: "RESEND",
+      occurredAt: sentAt,
+      metadata: { provider: result.provider },
+    });
+
+    if (!input.isTest && input.clientId) {
+      await recordCommunicationSentActivity({
+        clientId: input.clientId,
+        userId: input.userId,
+        messageId,
+        templateKey: input.templateKey,
+        subject: input.subject,
+        recipientEmail: email,
+      });
+    }
+
+    return {
+      messageId,
+      providerMessageId: result.id,
+      status: "SENT",
+      delivered: true,
+      provider: "resend",
+    };
+  } catch (error) {
+    const failureReason = error instanceof Error ? error.message : "Send failed";
+    const failedAt = new Date();
+    await prisma.communicationMessage.update({
+      where: { id: messageId },
+      data: {
+        status: "FAILED",
+        failedAt,
+        failureReason,
+      },
+    });
+    await createCommunicationEvent({
+      messageId,
+      eventType: "FAILED",
+      source: "STACKSCORE",
+      occurredAt: failedAt,
+      metadata: { reason: failureReason },
+    });
+    throw error;
+  }
 }
 
 export async function recordAndSendCommunication(
@@ -79,12 +164,15 @@ export async function recordAndSendCommunication(
         status: true,
       },
     });
+    if (existing?.status === "FAILED") {
+      return sendTrackedMessage(existing.id, input, email);
+    }
     if (existing) {
       return {
         messageId: existing.id,
         providerMessageId: existing.providerMessageId ?? undefined,
         status: existing.status,
-        delivered: false,
+        delivered: ACCEPTED_SEND_STATUSES.has(existing.status),
         provider: "resend",
       };
     }
@@ -131,11 +219,12 @@ export async function recordAndSendCommunication(
       html: input.html,
       text: input.text,
     });
+    const accepted = result.provider === "resend" && result.delivered;
     return {
       messageId: "untracked",
       providerMessageId: result.id,
-      status: result.delivered ? "SENT" : "FAILED",
-      delivered: result.delivered,
+      status: accepted ? "SENT" : "FAILED",
+      delivered: accepted,
       provider: result.provider,
     };
   }
@@ -153,71 +242,7 @@ export async function recordAndSendCommunication(
     occurredAt: message.createdAt,
   });
 
-  try {
-    const result = await sendEmail({
-      to: email,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-    });
-
-    const sentAt = new Date();
-    await prisma.communicationMessage.update({
-      where: { id: message.id },
-      data: {
-        providerMessageId: result.id ?? null,
-        status: "SENT",
-        sentAt,
-        failureReason: null,
-      },
-    });
-
-    await createCommunicationEvent({
-      messageId: message.id,
-      eventType: "SENT",
-      source: result.provider === "resend" ? "RESEND" : "SYSTEM",
-      occurredAt: sentAt,
-      metadata: { provider: result.provider },
-    });
-
-    if (!input.isTest && input.clientId) {
-      await recordCommunicationSentActivity({
-        clientId: input.clientId,
-        userId: input.userId,
-        messageId: message.id,
-        templateKey: input.templateKey,
-        subject: input.subject,
-        recipientEmail: email,
-      });
-    }
-
-    return {
-      messageId: message.id,
-      providerMessageId: result.id,
-      status: "SENT",
-      delivered: result.delivered,
-      provider: result.provider,
-    };
-  } catch (error) {
-    const failureReason = error instanceof Error ? error.message : "Send failed";
-    const failedAt = new Date();
-    await prisma.communicationMessage.update({
-      where: { id: message.id },
-      data: {
-        status: "FAILED",
-        failedAt,
-        failureReason,
-      },
-    });
-    await createCommunicationEvent({
-      messageId: message.id,
-      eventType: "FAILED",
-      source: "STACKSCORE",
-      occurredAt: failedAt,
-      metadata: { reason: failureReason },
-    });
-    throw error;
-  }
+  return sendTrackedMessage(message.id, input, email);
 }
 
 export async function createCommunicationEvent(input: {

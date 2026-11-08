@@ -9,14 +9,20 @@ export type SendEmailInput = {
 };
 
 export type SendEmailResult = {
+  /** True only after Resend accepts the API call. Delivery is recorded later from webhooks. */
   delivered: boolean;
   provider: "resend" | "console";
   id?: string;
 };
 
+function emailDiagnostic(to: string): { recipientDomain: string } {
+  const domain = to.split("@")[1]?.trim().toLowerCase();
+  return { recipientDomain: domain || "unknown" };
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   purchaseTrace("S01", "ENTER sendEmail()", {
-    to: input.to,
+    ...emailDiagnostic(input.to),
     subject: input.subject,
   });
 
@@ -25,26 +31,23 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   const { from, resendApiKey } = getEmailConfig();
 
   purchaseTrace("S02", "sendEmail config loaded", {
-    to: input.to,
+    ...emailDiagnostic(input.to),
     subject: input.subject,
-    emailFrom: from,
     resendApiKeyPresent: Boolean(resendApiKey),
-    resendApiKeyLength: resendApiKey?.length ?? 0,
   });
 
   if (!resendApiKey) {
     purchaseTraceStop(
       "S03",
       "send.ts → if (!resendApiKey)",
-      "RESEND_API_KEY missing at runtime — returning console fallback, resend.emails.send() NOT called",
+      "RESEND_API_KEY missing at runtime — resend.emails.send() NOT called",
       {
-        to: input.to,
+        ...emailDiagnostic(input.to),
         subject: input.subject,
-        emailFrom: from,
-        textPreview: input.text.slice(0, 200),
+        provider: "console",
       },
     );
-    return { delivered: true, provider: "console" };
+    return { delivered: false, provider: "console" };
   }
 
   const resendRequest = {
@@ -55,8 +58,10 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     text: input.text,
   };
 
-  purchaseTrace("S04", "BEFORE resend.emails.send() — full request payload", {
-    request: resendRequest,
+  purchaseTrace("S04", "BEFORE resend.emails.send()", {
+    provider: "resend",
+    ...emailDiagnostic(input.to),
+    subject: input.subject,
   });
 
   try {
@@ -64,12 +69,11 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     const resend = new Resend(resendApiKey);
     const response = await resend.emails.send(resendRequest);
 
-    purchaseTrace("S05", "AFTER resend.emails.send() — full response", {
-      to: input.to,
-      response: {
-        data: response.data ?? null,
-        error: response.error ?? null,
-      },
+    purchaseTrace("S05", "AFTER resend.emails.send()", {
+      ...emailDiagnostic(input.to),
+      provider: "resend",
+      messageId: response.data?.id ?? null,
+      errorName: response.error?.name ?? null,
     });
 
     if (response.error) {
@@ -78,15 +82,15 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
         "send.ts → if (response.error)",
         new Error(response.error.message),
         {
-          to: input.to,
-          resendError: response.error,
+          ...emailDiagnostic(input.to),
+          provider: "resend",
         },
       );
       throw new Error(response.error.message);
     }
 
     purchaseTrace("S07", "EXIT sendEmail() — Resend success", {
-      to: input.to,
+      ...emailDiagnostic(input.to),
       messageId: response.data?.id ?? null,
       provider: "resend",
     });
@@ -98,8 +102,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     };
   } catch (error) {
     purchaseTraceError("S08", "send.ts → resend.emails.send() catch", error, {
-      to: input.to,
+      ...emailDiagnostic(input.to),
       subject: input.subject,
+      provider: "resend",
     });
     throw error;
   }
