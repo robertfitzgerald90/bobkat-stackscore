@@ -550,6 +550,7 @@ model Assessment {
   campaignRecipients      CampaignRecipient[]
   communicationQueueItems CommunicationQueueItem[]
   websiteLeads            WebsiteLead[]
+  aiReviews               AssessmentAiReview[]
 }
 
 model TechnologyProfile {
@@ -2841,4 +2842,33 @@ model PlannerTask {
 
   @@index([clientId, createdAt])
   @@unique([clientId, sourceRecommendationId])
+}
+
+/// Versioned internal AI draft. Never changes assessment scoring or customer roadmap records.
+model AssessmentAiReview {
+  id               String   @id @default(uuid())
+  assessmentId     String
+  clientId         String
+  status           String   @default("queued")
+  createdByUserId  String
+  approvedByUserId String?
+  inputHash        String
+  snapshot         Json
+  draft            Json?
+  model            String
+  promptVersion    String
+  revision         Int      @default(0)
+  usage            Json?
+  errorCode        String?
+  startedAt        DateTime?
+  finishedAt       DateTime?
+  approvedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId, createdAt])
+  @@index([clientId, status])
+  @@index([createdAt])
 }

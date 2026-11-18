@@ -1,3 +1,4 @@
+import { AssessmentAiReview } from "@/components/ai-assessment/assessment-ai-review";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
@@ -82,6 +83,9 @@ export default async function AssessmentResultsPage({ params }: PageProps) {
         pillarSnapshots={pillarSnapshots}
         hasImprovementSummary={hasImprovementSummary}
       />
+      {isAdmin ? (
+        <AssessmentAiReview key={assessment.id} assessmentId={assessment.id} />
+      ) : null}
       {showCustomerResponses ? (
         <Suspense
           fallback={
