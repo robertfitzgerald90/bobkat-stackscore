@@ -348,6 +348,7 @@ describe("SS-UX-013 — Project tasks, milestones & recommendation relationships
         "utf8",
       );
       expect(dashboard).toContain("ProjectDeliveryPanel");
+      expect(dashboard).toContain("ProjectCustomerUpdatePanel");
     });
   });
 });

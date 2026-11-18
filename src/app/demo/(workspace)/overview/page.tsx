@@ -1,17 +1,23 @@
-import type { Metadata } from "next";
 import { CustomerExecutiveDashboard } from "@/components/customer-portal/customer-executive-dashboard";
-import { PUBLIC_DEMO_COMPANY_NAME } from "@/lib/public-demo/constants";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 import {
   PUBLIC_DEMO_RECOMMENDATIONS_HREF,
   getPublicDemoWorkspaceLinks,
 } from "@/lib/public-demo/presentation";
 import { getPublicDemoOverview } from "@/lib/public-demo/provider";
 
-export const metadata: Metadata = {
-  title: `Overview | ${PUBLIC_DEMO_COMPANY_NAME} Demo`,
-  description:
-    "Sample StackScore Overview for Northstar Manufacturing — official score, pillars, and priority opportunities.",
-  alternates: { canonical: "/demo/overview" },
+/**
+ * `/demo` redirects here — share crawlers often use the final URL.
+ * Keep OG/Twitter aligned with `/demo` and canonical at `/demo`.
+ */
+export const metadata = {
+  ...buildSocialPageMetadata({
+    title: "StackScore Demo | See Technology Intelligence in Action",
+    description:
+      "Explore an interactive technology maturity assessment dashboard. See how StackScore identifies risks and prioritizes improvements.",
+    path: "/demo",
+    image: "stackscoreDemo",
+  }),
   robots: { index: true, follow: true },
 };
 

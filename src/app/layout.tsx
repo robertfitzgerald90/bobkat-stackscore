@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
 import { getGaMeasurementId, isGa4Enabled } from "@/lib/analytics/ga4-config";
 import { bobkatLogoSrc } from "@/lib/branding/assets";
+import { socialOgImage } from "@/lib/branding/social-og";
 import { getBaseUrl } from "@/lib/url/base-url";
 import { instrumentFontVariables } from "@/components/design-system/instrument-fonts";
 import { appSans } from "@/lib/fonts/app-sans";
@@ -15,10 +16,25 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const defaultOg = socialOgImage("stackscoreDemo");
+
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
-  title: "Bobkat StackScore",
-  description: "Technology maturity assessments for small and medium businesses",
+  title: {
+    default: "StackScore | Technology Intelligence for Business",
+    template: "%s | StackScore",
+  },
+  description:
+    "Understand your technology environment, identify risks, and prioritize improvements with StackScore.",
+  openGraph: {
+    type: "website",
+    siteName: "StackScore",
+    images: [defaultOg],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [defaultOg.url],
+  },
   icons: {
     icon: bobkatLogoSrc(),
     apple: bobkatLogoSrc(),

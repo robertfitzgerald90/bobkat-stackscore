@@ -45,15 +45,13 @@ try {
   fail("prisma generate", error);
 }
 
+// Apply pending additive migrations before building. A legacy SKIP_PRISMA_MIGRATE
+// setting must not deploy the planner against a database missing its schema.
 if (process.env.VERCEL === "1") {
-  if (process.env.SKIP_PRISMA_MIGRATE === "1") {
-    console.log("\n> Skipping prisma migrate deploy (SKIP_PRISMA_MIGRATE=1)");
-  } else {
-    try {
-      run("npx prisma migrate deploy");
-    } catch (error) {
-      fail("prisma migrate deploy", error);
-    }
+  try {
+    run("npx prisma migrate deploy");
+  } catch (error) {
+    fail("prisma migrate deploy", error);
   }
 }
 

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { VcioOfferLanding } from "@/components/vcio/vcio-offer-landing";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 import { VCIO_OFFER_PATH } from "@/lib/marketing/stackscore-routes";
 import { buildAppUrl } from "@/lib/url/base-url";
 
@@ -7,17 +7,14 @@ const title = "Strategic IT Consulting by Bobkat IT | StackScore Checkout";
 const description =
   "Start Strategic IT Consulting by Bobkat IT at $500/month. StackScore is included as your technology planning portal with ongoing advisory, business reviews, and executive reporting.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  robots: { index: false, follow: false },
-  alternates: { canonical: VCIO_OFFER_PATH },
-  openGraph: {
+export const metadata = {
+  ...buildSocialPageMetadata({
     title,
     description,
-    url: VCIO_OFFER_PATH,
-    type: "website",
-  },
+    path: VCIO_OFFER_PATH,
+    image: "stackscoreDemo",
+    robots: { index: false, follow: false },
+  }),
 };
 
 export default function VcioOfferPage() {

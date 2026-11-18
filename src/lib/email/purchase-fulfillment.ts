@@ -7,7 +7,31 @@ import {
 import { recordAndSendCommunication } from "@/lib/communications/tracking/record-outbound";
 import { purchaseTrace, purchaseTraceError, purchaseTraceStop } from "@/lib/purchase-trace";
 import { normalizePurchaserEmail } from "@/lib/stripe/fulfillment/helpers";
+import { createActivationTokenForUser } from "@/lib/stripe/fulfillment/technology-assessment";
 import { prisma } from "@/lib/db";
+
+const ACCEPTED_EMAIL_STATUSES = new Set<string>([
+  "SENT",
+  "DELIVERED",
+  "OPENED",
+  "CLICKED",
+  "DELAYED",
+]);
+
+export function purchaseActivationIdempotencyKey(
+  userId: string | null,
+  email: string,
+  assessmentId: string | null,
+): string {
+  return `account-activation:${userId ?? email}:${assessmentId ?? "unknown"}`;
+}
+
+export function assessmentReadyIdempotencyKey(
+  assessmentId: string | null,
+  email: string,
+): string {
+  return `assessment-ready:${assessmentId ?? email}`;
+}
 
 export type PurchaseFulfillmentEmailInput = {
   purchaserEmail: string;
@@ -107,7 +131,11 @@ export async function sendPurchaseFulfillmentEmail(
         templateKey: "EMAIL-001",
         eventKey: "ACCOUNT_ACTIVATION_CREATED",
         sendType: "AUTOMATED",
-        idempotencyKey: `account-activation:${context.userId ?? email}:${context.assessmentId ?? "unknown"}`,
+        idempotencyKey: purchaseActivationIdempotencyKey(
+          context.userId,
+          email,
+          context.assessmentId,
+        ),
         triggeredBy: "Stripe checkout fulfillment",
         relatedEntityType: "Assessment",
         relatedEntityId: context.assessmentId,
@@ -145,7 +173,7 @@ export async function sendPurchaseFulfillmentEmail(
       templateKey: "LEGACY-ASSESSMENT-READY",
       eventKey: "ASSESSMENT_READY",
       sendType: "AUTOMATED",
-      idempotencyKey: `assessment-ready:${context.assessmentId ?? email}`,
+      idempotencyKey: assessmentReadyIdempotencyKey(context.assessmentId, email),
       triggeredBy: "Stripe checkout fulfillment",
       relatedEntityType: "Assessment",
       relatedEntityId: context.assessmentId,
@@ -171,3 +199,94 @@ export async function sendPurchaseFulfillmentEmail(
 
 /** Alias for sendPurchaseFulfillmentEmail — same function reference. */
 export const sendActivationEmail = sendPurchaseFulfillmentEmail;
+
+/**
+ * Sends the purchase email again when the purchase already exists and the prior
+ * send did not reach Resend acceptance. A SENT (or later) message is left untouched.
+ * Returns true when a send was attempted.
+ */
+export async function retryPurchaseFulfillmentEmail(purchaseId: string): Promise<boolean> {
+  const purchase = await prisma.assessmentPurchase.findUnique({
+    where: { id: purchaseId },
+    include: { user: { select: { id: true, isActive: true } } },
+  });
+  if (!purchase || purchase.status !== "fulfilled") return false;
+
+  const requiresActivation = Boolean(purchase.user && !purchase.user.isActive);
+  const idempotencyKey = requiresActivation
+    ? purchaseActivationIdempotencyKey(
+        purchase.userId,
+        purchase.purchaserEmail,
+        purchase.assessmentId,
+      )
+    : assessmentReadyIdempotencyKey(purchase.assessmentId, purchase.purchaserEmail);
+
+  const existing = await prisma.communicationMessage.findUnique({
+    where: { idempotencyKey },
+    select: { status: true },
+  });
+  if (existing && ACCEPTED_EMAIL_STATUSES.has(existing.status)) return false;
+
+  let activationToken: string | undefined;
+  if (requiresActivation) {
+    if (!purchase.userId) {
+      throw new Error("Activation email requires a user");
+    }
+    activationToken = await createActivationTokenForUser(purchase.userId);
+  }
+
+  purchaseTrace("E13", "Retry purchase fulfillment email", {
+    purchaseId: purchase.id,
+    assessmentId: purchase.assessmentId,
+    requiresActivation,
+    previousStatus: existing?.status ?? null,
+  });
+
+  await sendPurchaseFulfillmentEmail({
+    purchaserEmail: purchase.purchaserEmail,
+    requiresActivation,
+    activationToken,
+    assessmentId: purchase.assessmentId ?? undefined,
+  });
+  return true;
+}
+
+/** Retries failed assessment purchase emails without creating another purchase. */
+export async function retryFailedPurchaseFulfillmentEmails(limit = 20): Promise<{
+  attempted: number;
+  sent: number;
+}> {
+  const failed = await prisma.communicationMessage.findMany({
+    where: {
+      status: "FAILED",
+      isTest: false,
+      OR: [
+        { idempotencyKey: { startsWith: "account-activation:" } },
+        { idempotencyKey: { startsWith: "assessment-ready:" } },
+      ],
+    },
+    orderBy: { failedAt: "asc" },
+    take: limit,
+    select: { assessmentId: true },
+  });
+
+  let sent = 0;
+  for (const message of failed) {
+    if (!message.assessmentId) continue;
+    const purchase = await prisma.assessmentPurchase.findUnique({
+      where: { assessmentId: message.assessmentId },
+      select: { id: true },
+    });
+    if (!purchase) continue;
+    try {
+      if (await retryPurchaseFulfillmentEmail(purchase.id)) sent += 1;
+    } catch (error) {
+      purchaseTraceError("E14", "purchase-fulfillment.ts retryFailedPurchaseFulfillmentEmails", error, {
+        purchaseId: purchase.id,
+        assessmentId: message.assessmentId,
+      });
+    }
+  }
+
+  return { attempted: failed.length, sent };
+}

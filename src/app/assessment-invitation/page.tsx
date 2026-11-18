@@ -1,43 +1,22 @@
-import type { Metadata } from "next";
 import { AssessmentInvitationLanding } from "@/components/assessment-invitation/assessment-invitation-landing";
 import type {
   AssessmentInvitationContext,
   AssessmentInvitationPersonalization,
 } from "@/lib/assessment-invitation/content";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 
-const title = "You've Been Invited | StackScore";
-const description =
-  "Start your free Technology Snapshot and discover strengths, risks, and practical technology insights.";
-const ogImagePath = "/images/og/assessment-invitation.png";
-
-export const metadata: Metadata = {
-  title,
-  description,
-  robots: {
-    index: false,
-    follow: false,
-  },
-  alternates: {
-    canonical: "/assessment-invitation",
-  },
-  openGraph: {
-    title,
-    description,
-    url: "/assessment-invitation",
-    type: "website",
-    images: [
-      {
-        url: ogImagePath,
-        alt: "StackScore Technology Snapshot invitation",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: [ogImagePath],
-  },
+export const metadata = {
+  ...buildSocialPageMetadata({
+    title: "You've Been Invited | StackScore",
+    description:
+      "Start your free Technology Snapshot and discover strengths, risks, and practical technology insights.",
+    path: "/assessment-invitation",
+    image: "snapshot",
+    robots: {
+      index: false,
+      follow: false,
+    },
+  }),
 };
 
 type PageProps = {

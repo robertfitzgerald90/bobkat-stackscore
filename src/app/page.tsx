@@ -1,15 +1,16 @@
 import { redirect } from "next/navigation";
-import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
 import { StackScoreGatewayHome } from "@/components/public/stackscore-gateway-home";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
+import { auth } from "@/lib/auth";
 import { getDefaultLandingPath } from "@/lib/navigation/default-landing";
 
-export const metadata: Metadata = {
-  title: "StackScore | Technology Intelligence by Bobkat IT",
+export const metadata = buildSocialPageMetadata({
+  title: "StackScore | Technology Intelligence for Business",
   description:
-    "Know your technology. Own your next move. StackScore is the technology intelligence platform developed by Bobkat IT.",
-  alternates: { canonical: "/" },
-};
+    "Understand your technology environment, identify risks, and prioritize improvements with StackScore.",
+  path: "/",
+  image: "stackscoreDemo",
+});
 
 export default async function HomePage() {
   const session = await auth();

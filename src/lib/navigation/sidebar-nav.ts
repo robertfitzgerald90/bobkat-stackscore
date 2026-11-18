@@ -238,6 +238,7 @@ export function getConsultantSidebarNav(
       label: "Operations",
       icon: Settings,
       children: [
+        { href: "/admin/analytics", label: "Analytics", icon: BarChart3, adminOnly: true },
         { href: "/admin/billing", label: "Billing", icon: WalletCards, adminOnly: true },
         { href: "/admin/users", label: "Users", icon: Shield, adminOnly: true },
         {
@@ -297,6 +298,7 @@ export function resolveActiveStaffPrimaryId(pathname: string): StaffPrimaryNavId
   if (pathMatchesPrefix(pathname, "/admin/communications")) return "communications";
   if (pathMatchesPrefix(pathname, "/admin/vcio")) return "recurring-services";
   if (
+    pathMatchesPrefix(pathname, "/admin/analytics") ||
     pathMatchesPrefix(pathname, "/admin/billing") ||
     pathMatchesPrefix(pathname, "/admin/users") ||
     pathMatchesPrefix(pathname, "/admin/assessment-library") ||

@@ -147,3 +147,26 @@ Never send to GA4:
 NEXT_PUBLIC_GA_MEASUREMENT_ID=
 NEXT_PUBLIC_ENABLE_ANALYTICS=false
 ```
+
+## Admin analytics read path
+
+`/admin/analytics` is an admin-only Operations page. It reads StackScore records directly and, when server credentials exist, the GA4 Data API and Vercel Web Analytics API. It does not invent traffic, and it does not add Bobkat IT and StackScore into one visitor total.
+
+Anonymous provider totals stay separate from website leads, snapshot submissions, and assessment purchases. Those records are not a measured cross-domain journey.
+
+Server-only variables (Vercel project settings, never committed):
+
+| Variable | Purpose |
+| --- | --- |
+| `GA4_SERVICE_ACCOUNT_JSON` | Google service account JSON, or its base64 form. Grant the account Viewer on each GA4 property. |
+| `GA4_STACKSCORE_PROPERTY_ID` | Numeric GA4 property id for stackscore.tech |
+| `GA4_BOBKAT_PROPERTY_ID` | Numeric GA4 property id for bobkatit.com |
+| `VERCEL_WEB_ANALYTICS_TOKEN` | Vercel access token that can query Web Analytics |
+| `VERCEL_TEAM_ID` | Team id, when the projects belong to a team |
+| `VERCEL_STACKSCORE_PROJECT_ID` | StackScore Vercel project id |
+| `VERCEL_BOBKAT_PROJECT_ID` | Bobkat IT Vercel project id |
+
+Assessment revenue on that page is the net amount stored on confirmed Technology Assessment checkouts. Full refunds are excluded. Partial refunds are omitted because the retained cents are not stored. It is not accounting revenue.
+
+Google Search Console and multi-touch campaign attribution are follow-ups. They need separate access and are not estimated here.
+

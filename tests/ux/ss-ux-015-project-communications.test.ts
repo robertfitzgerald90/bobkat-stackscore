@@ -342,12 +342,13 @@ describe("SS-UX-015 — Project updates & customer communications", () => {
       expect(draftSource).not.toMatch(/credential|password|secret/i);
     });
 
-    it("wires Prepare Customer Update into staff delivery panel", () => {
-      const panel = readFileSync(
-        join(process.cwd(), "src/components/projects/project-delivery-panel.tsx"),
+    it("wires Prepare Customer Update into the staff project detail sheet", () => {
+      const dashboard = readFileSync(
+        join(process.cwd(), "src/components/projects/projects-dashboard.tsx"),
         "utf8",
       );
-      expect(panel).toMatch(/ProjectCustomerUpdatePanel/);
+      expect(dashboard).toMatch(/ProjectCustomerUpdatePanel/);
+      expect(dashboard).toMatch(/Prepare Customer Update|ProjectCustomerUpdatePanel/);
     });
 
     it("exposes customer Updates section", () => {

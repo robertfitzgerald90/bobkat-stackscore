@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>SS-ADMIN-008 after (fixed layout)</title>
+<style>
+  body{margin:0;font:14px/1.4 system-ui;background:#e8e8ec;color:#111}
+  .sheet{width:420px;height:640px;margin:24px auto;background:#fff;border:1px solid #ccc;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;flex-direction:column}
+  .head{padding:16px 20px;border-bottom:1px solid #ddd;font-weight:600;flex:0 0 auto}
+  .body{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+  .box{border:1px solid #ddd;border-radius:8px;padding:12px;background:#f7f7f9}
+  textarea{display:block;width:100%;min-height:8rem;max-height:12rem;overflow-y:auto;border:1px solid #ccc;border-radius:8px;padding:8px;resize:vertical;box-sizing:border-box}
+  .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px}
+  .label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#666;margin-bottom:4px}
+  .caption{text-align:center;color:#666;margin-top:8px;font-size:12px}
+  section{display:block}
+</style></head><body>
+<div class="sheet"><div class="head">Project detail (after — SS-ADMIN-008)</div>
+<div class="body">
+  <section class="box">Source recommendation / status</section>
+  <section>
+    <div class="label">Notes</div>
+    <textarea>Long staff notes about scheduling, vendor coordination, firewall change window, and follow-up with the client. Additional lines scroll inside the textarea. Customer Communications stays fully below this block with clear spacing.</textarea>
+  </section>
+  <section class="box">
+    <div class="label">Customer communications</div>
+    <div>Prepare a consolidated update from real project activity. Nothing sends automatically.</div>
+    <div class="btn">Prepare Customer Update</div>
+  </section>
+  <section class="box">
+    <div class="label">Delivery progress</div>
+    <div>42% (3/7)</div>
+  </section>
+  <section class="box">Tasks / milestones / linked recommendations</section>
+  <section class="box">Save Changes</section>
+</div></div>
+<p class="caption">Illustrative mock of the corrected vertical stack.</p>
+</body></html>

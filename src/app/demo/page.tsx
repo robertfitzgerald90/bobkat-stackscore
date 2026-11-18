@@ -1,37 +1,26 @@
-import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { BRAND } from "@/lib/branding";
+import { buildSocialPageMetadata } from "@/lib/branding/social-og";
 import { PUBLIC_DEMO_OVERVIEW_PATH } from "@/lib/public-demo/routes";
 
-const title = "StackScore Interactive Demo";
-const description =
-  "Explore a sample StackScore customer workspace — Overview, Explore, Roadmap, Projects, and Reports — using fictional Northstar Manufacturing data. No login required.";
-
-export const metadata: Metadata = {
-  title,
-  description,
+/**
+ * Metadata for `/demo` before the Overview redirect.
+ * Crawlers that follow the redirect also need matching fields on `/demo/overview`.
+ */
+export const metadata = {
+  ...buildSocialPageMetadata({
+    title: "StackScore Demo | See Technology Intelligence in Action",
+    description:
+      "Explore an interactive technology maturity assessment dashboard. See how StackScore identifies risks and prioritizes improvements.",
+    path: "/demo",
+    image: "stackscoreDemo",
+  }),
   keywords: [
     "StackScore",
-    "StackScore Interactive Demo",
+    "StackScore Demo",
     "technology maturity assessment",
     "customer portal demo",
     "Bobkat IT",
   ],
-  alternates: {
-    canonical: "/demo",
-  },
-  openGraph: {
-    title,
-    description,
-    url: "/demo",
-    type: "website",
-    siteName: BRAND.productName,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-  },
   robots: {
     index: true,
     follow: true,

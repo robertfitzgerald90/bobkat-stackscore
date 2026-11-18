@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   ArrowRight,
+  BarChart3,
   BookOpen,
   Building2,
   CalendarDays,
@@ -37,6 +38,7 @@ import {
 export const COMMAND_ICON_MAP: Record<string, LucideIcon> = {
   Activity,
   ArrowRight,
+  BarChart3,
   BookOpen,
   Building2,
   CalendarDays,
